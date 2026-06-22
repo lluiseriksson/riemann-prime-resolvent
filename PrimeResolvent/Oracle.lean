@@ -1,3 +1,5 @@
+import PrimeResolvent
+
 /-!
 # Axiom audit entry point
 
@@ -5,8 +7,6 @@ Run with:
 
 `lake env lean PrimeResolvent/Oracle.lean`
 -/
-
-import PrimeResolvent
 
 #print axioms PrimeResolvent.hausdorffDiff_atomicMoment
 #print axioms PrimeResolvent.atomicMoment_isHausdorffCompletelyMonotone

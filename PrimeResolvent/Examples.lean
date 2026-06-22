@@ -1,11 +1,11 @@
+import PrimeResolvent.FiniteCertificates
+
 /-!
 # Small exact examples
 
 These examples are kernel-checked consequences of the generic theorems.  They
 are not numerical evidence for RH.
 -/
-
-import PrimeResolvent.FiniteCertificates
 
 set_option autoImplicit false
 

@@ -1,3 +1,5 @@
+import PrimeResolvent.ResolventCompactification
+
 /-!
 # Finite Gram certificates
 
@@ -5,8 +7,6 @@ These definitions expose the positive sum-of-squares certificates behind
 finite Hankel and localizing matrix tests.  They deliberately avoid any claim
 about the infinite Hausdorff moment theorem.
 -/
-
-import PrimeResolvent.ResolventCompactification
 
 set_option autoImplicit false
 

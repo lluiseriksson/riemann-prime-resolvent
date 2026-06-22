@@ -1,3 +1,5 @@
+import PrimeResolvent.HausdorffFinite
+
 /-!
 # Resolvent compactification
 
@@ -9,8 +11,6 @@ lands in `[0,1]`.  Together with the positive weight
 `(λ+x₀)⁻¹`, it turns finite squared-resolvent moments into finite Hausdorff
 moments.
 -/
-
-import PrimeResolvent.HausdorffFinite
 
 set_option autoImplicit false
 

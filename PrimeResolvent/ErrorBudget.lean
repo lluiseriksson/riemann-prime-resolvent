@@ -1,3 +1,5 @@
+import Mathlib
+
 /-!
 # Three-part comparison budget
 
@@ -5,8 +7,6 @@ The concrete spectral programme naturally separates a comparison into a
 spectral/Galerkin error, a model-normalization error, and an arithmetic prime-
 tail error.  This file verifies the elementary deterministic glue.
 -/
-
-import Mathlib
 
 set_option autoImplicit false
 

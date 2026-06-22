@@ -1,3 +1,10 @@
+import PrimeResolvent.Basic
+import PrimeResolvent.HausdorffFinite
+import PrimeResolvent.ResolventCompactification
+import PrimeResolvent.FiniteCertificates
+import PrimeResolvent.ErrorBudget
+import PrimeResolvent.Examples
+
 /-!
 # PrimeResolvent
 
@@ -11,10 +18,3 @@ positive certificates, and the three-part error-budget inequality.
 -/
 
 set_option autoImplicit false
-
-import PrimeResolvent.Basic
-import PrimeResolvent.HausdorffFinite
-import PrimeResolvent.ResolventCompactification
-import PrimeResolvent.FiniteCertificates
-import PrimeResolvent.ErrorBudget
-import PrimeResolvent.Examples

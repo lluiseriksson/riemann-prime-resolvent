@@ -1,11 +1,11 @@
+import Mathlib
+
 /-!
 # Atomic moments and signed forward differences
 
 This file contains only finite sums.  It is independent of the Riemann zeta
 function and of measure theory.
 -/
-
-import Mathlib
 
 set_option autoImplicit false
 

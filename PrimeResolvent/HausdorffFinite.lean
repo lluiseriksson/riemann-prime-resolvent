@@ -1,3 +1,5 @@
+import PrimeResolvent.Basic
+
 /-!
 # Finite atomic Hausdorff moments
 
@@ -7,8 +9,6 @@ identity
 
 `D^k b_n = Σ_i w_i p_i^n (1-p_i)^k`.
 -/
-
-import PrimeResolvent.Basic
 
 set_option autoImplicit false
 
