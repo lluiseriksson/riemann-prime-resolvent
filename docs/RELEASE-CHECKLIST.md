@@ -4,7 +4,7 @@
 - [ ] `./scripts/verify_lean.sh`
 - [ ] `mkdocs build --strict`
 - [ ] no `paper/` directory or committed PDF
-- [ ] interface contract synchronized with companion repository
+- [ ] interface contract synchronized with criterion subproject
 - [ ] theorem ledger and status pages updated
 - [ ] source audit and novelty wording reviewed
 - [ ] manifest regenerated

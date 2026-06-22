@@ -1,0 +1,9 @@
+digraph G {
+  graph [rankdir=LR, bgcolor="white", pad=0.25, nodesep=0.5, ranksep=0.75, fontname="DejaVu Sans"];
+  node [shape=box, style="rounded,filled", fontname="DejaVu Sans", fontsize=16];
+  prime [label="riemann-prime-resolvent\nconstruction + convergence", fillcolor="#fff4e5", color="#b26a00"];
+  contract [label="shared resolvent interface\none-point bound + interval limit", fillcolor="#eef4fb", color="#365f91"];
+  criterion [label="riemann-one-point-resolvent\ncriterion + finite certificates", fillcolor="#edf8ef", color="#397547"];
+  rh [label="RH-level conclusion gate", fillcolor="#f6eef8", color="#76517f"];
+  prime -> contract -> criterion -> rh;
+}

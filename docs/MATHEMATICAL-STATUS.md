@@ -6,7 +6,7 @@ The Lean source establishes only finite and scalar statements independent of RH:
 
 ## Documented reduction
 
-The integrated documentation explains how a positive Stieltjes limit agreeing with the completed-zeta target on one interval would imply that all zeros of \(\Xi\) are real. The canonical criterion lives in the companion repository and is not yet fully closed in Lean.
+The integrated documentation explains how a positive Stieltjes limit agreeing with the completed-zeta target on one interval would imply that all zeros of \(\Xi\) are real. The canonical criterion lives in `subprojects/riemann-one-point-resolvent` and is not yet fully closed in Lean.
 
 ## Open construction frontier
 

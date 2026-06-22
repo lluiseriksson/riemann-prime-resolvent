@@ -5,7 +5,9 @@ title: "[THEOREM] "
 labels: research
 ---
 
-**Statement**
+**Statement and exact hypotheses**
+
+**Canonical repository ownership**
 
 **Primary references**
 

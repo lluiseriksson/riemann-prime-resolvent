@@ -1,88 +1,55 @@
 #!/usr/bin/env python3
-"""Validate manifest hashes and the exact toy certificate without extra packages."""
-
+"""Release policy and manifest verification."""
 from __future__ import annotations
 
+import csv
 import hashlib
 import json
-import re
 import sys
-from fractions import Fraction
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-FRACTION = re.compile(r"^-?\d+(?:/\d+)?$")
 
 
-def sha256(path: Path) -> str:
+def digest(path: Path) -> str:
     h = hashlib.sha256()
-    with path.open("rb") as f:
-        for chunk in iter(lambda: f.read(1 << 20), b""):
+    with path.open('rb') as f:
+        for chunk in iter(lambda: f.read(1 << 20), b''):
             h.update(chunk)
     return h.hexdigest()
 
 
-def check_fraction(value: str) -> None:
-    if not FRACTION.fullmatch(value):
-        raise ValueError(f"not an exact integer/fraction string: {value!r}")
-    Fraction(value)
-
-
-def check_certificate() -> None:
-    path = ROOT / "data/certificates/exact_atomic_certificate.json"
-    data = json.loads(path.read_text(encoding="utf-8"))
-    required = {
-        "status",
-        "x0",
-        "spectrum",
-        "weights",
-        "compactified_points",
-        "moments",
-        "signed_differences",
-        "hankel_matrix",
-        "localizing_matrix",
-    }
-    missing = required - data.keys()
-    if missing:
-        raise ValueError(f"certificate missing fields: {sorted(missing)}")
-    check_fraction(data["x0"])
-    for key in ["spectrum", "weights", "compactified_points", "moments"]:
-        for value in data[key]:
-            check_fraction(value)
-    for value in data["signed_differences"].values():
-        check_fraction(value)
-        if Fraction(value) < 0:
-            raise ValueError("negative signed difference")
-    for key in ["hankel_matrix", "localizing_matrix"]:
-        matrix = data[key]
-        if not matrix or any(len(row) != len(matrix) for row in matrix):
-            raise ValueError(f"{key} is not square")
-        for row in matrix:
-            for value in row:
-                check_fraction(value)
-
-
-def check_manifest() -> None:
-    manifest_path = ROOT / "MANIFEST.json"
-    if not manifest_path.exists():
-        return
-    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-    for record in manifest["files"]:
-        path = ROOT / record["path"]
-        if not path.exists():
-            raise FileNotFoundError(record["path"])
-        if path.stat().st_size != record["bytes"]:
-            raise ValueError(f"size mismatch: {record['path']}")
-        if sha256(path) != record["sha256"]:
-            raise ValueError(f"hash mismatch: {record['path']}")
-
-
 def main() -> int:
-    check_certificate()
-    check_manifest()
-    print("Release/certificate checks: passed")
+    failures: list[str] = []
+    if any(path.is_dir() and path.name.lower() == 'paper' for path in ROOT.rglob('*')):
+        failures.append('standalone paper directory is forbidden')
+    pdfs = [p.relative_to(ROOT).as_posix() for p in ROOT.rglob('*.pdf')]
+    if pdfs:
+        failures.append(f'committed PDFs are forbidden: {pdfs}')
+    contract = ROOT / 'docs/contracts/resolvent-interface.json'
+    try:
+        json.loads(contract.read_text(encoding='utf-8'))
+    except Exception as exc:
+        failures.append(f'invalid interface contract: {exc}')
+    manifest = ROOT / 'MANIFEST-SHA256.csv'
+    if manifest.exists():
+        with manifest.open(newline='', encoding='utf-8') as f:
+            for row in csv.DictReader(f):
+                path = ROOT / row['path']
+                if not path.exists():
+                    failures.append(f'manifest missing file: {row["path"]}')
+                    continue
+                if path.stat().st_size != int(row['bytes']):
+                    failures.append(f'manifest size mismatch: {row["path"]}')
+                if digest(path) != row['sha256']:
+                    failures.append(f'manifest hash mismatch: {row["path"]}')
+    if failures:
+        print('Release audit FAILED:', file=sys.stderr)
+        print('\n'.join(failures), file=sys.stderr)
+        return 1
+    print('Release audit passed')
     return 0
 
 
-if __name__ == "__main__":
-    sys.exit(main())
+if __name__ == '__main__':
+    raise SystemExit(main())

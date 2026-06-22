@@ -1,3 +1,3 @@
-# Code of Conduct
+# Code of conduct
 
-Be precise, constructive, and respectful. Critique claims and proofs rather than people. Report errors openly, preserve attribution, and distinguish verified results from conjectural research targets.
+Be precise, constructive and respectful. Critique statements and proofs, not people. Report errors openly, preserve attribution, and distinguish verified theorems, conventional arguments, numerical evidence and open targets.

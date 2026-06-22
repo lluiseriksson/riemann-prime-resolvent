@@ -1,0 +1,102 @@
+#!/usr/bin/env python3
+from __future__ import annotations
+
+import csv
+import subprocess
+from fractions import Fraction
+from pathlib import Path
+
+import matplotlib.pyplot as plt
+
+plt.rcParams["svg.hashsalt"] = "riemann-resolvent-v0.3.0"
+import numpy as np
+
+ROOT = Path(__file__).resolve().parents[1]
+SRC = ROOT / 'figures/src'
+OUT = ROOT / 'docs/assets/images'
+DATA = ROOT / 'docs/assets/data'
+
+
+def save(fig: plt.Figure, stem: str) -> None:
+    OUT.mkdir(parents=True, exist_ok=True)
+    fig.savefig(OUT / f'{stem}.svg', bbox_inches='tight', metadata={'Date': None})
+    fig.savefig(OUT / f'{stem}.png', dpi=180, bbox_inches='tight', metadata={'Software': 'matplotlib'})
+    plt.close(fig)
+
+
+def graphviz() -> None:
+    OUT.mkdir(parents=True, exist_ok=True)
+    for source in sorted(SRC.glob('*.dot')):
+        for fmt in ('svg', 'png'):
+            subprocess.run([
+                'dot', f'-T{fmt}', '-Gsize=16,9!', '-Gratio=fill',
+                str(source), '-o', str(OUT / f'{source.stem}.{fmt}')
+            ], check=True)
+
+
+def compactification() -> None:
+    lam = np.linspace(0, 20, 500)
+    x0s = (0.5, 1.0, 2.0)
+    fig, ax = plt.subplots(figsize=(10.67, 6.0))
+    for x0, style in zip(x0s, ('-', '--', ':'), strict=True):
+        ax.plot(lam, x0 / (lam + x0), linestyle=style, linewidth=2, label=rf'$x_0={x0:g}$')
+    ax.set_xlabel(r'nonnegative squared spectral coordinate $\lambda$')
+    ax.set_ylabel(r'compactified point $x_0/(\lambda+x_0)$')
+    ax.set_ylim(-0.02, 1.02)
+    ax.grid(True, linewidth=0.4, alpha=0.6)
+    ax.legend()
+    fig.tight_layout()
+    save(fig, 'resolvent_compactification')
+
+
+def finite_differences() -> None:
+    x0 = Fraction(1)
+    spectrum = [Fraction(1), Fraction(4), Fraction(9)]
+    weights = [1 / (x0 + x) for x in spectrum]
+    points = [x0 / (x0 + x) for x in spectrum]
+    grid = np.array([
+        [float(sum(w * p**n * (1 - p)**k for w, p in zip(weights, points, strict=True))) for n in range(9)]
+        for k in range(9)
+    ])
+    DATA.mkdir(parents=True, exist_ok=True)
+    with (DATA / 'finite_signed_differences.csv').open('w', newline='', encoding='utf-8') as f:
+        writer = csv.writer(f, lineterminator='\n')
+        writer.writerow(['k', 'n', 'value'])
+        for k in range(grid.shape[0]):
+            for n in range(grid.shape[1]):
+                writer.writerow([k, n, f'{grid[k, n]:.17g}'])
+    fig, ax = plt.subplots(figsize=(10.67, 6.0))
+    image = ax.imshow(np.log10(grid), origin='lower', aspect='auto')
+    ax.set_xlabel('moment index n')
+    ax.set_ylabel('difference order k')
+    ax.set_title(r'$\log_{10}(D^k b_n)$ for the exact three-atom toy model')
+    fig.colorbar(image, ax=ax, label='log10 value')
+    fig.tight_layout()
+    save(fig, 'finite_moment_differences')
+
+
+def finite_resolvent() -> None:
+    x = np.linspace(0.25, 25, 500)
+    spectra = ([1, 4, 9], [1, 4, 9, 16, 25, 36])
+    fig, ax = plt.subplots(figsize=(10.67, 6.0))
+    for spectrum, style in zip(spectra, ('--', '-'), strict=True):
+        y = sum(1 / (lam + x) for lam in spectrum)
+        ax.plot(x, y, linestyle=style, linewidth=2, label=f'{len(spectrum)} finite atoms')
+    ax.set_xlabel('x')
+    ax.set_ylabel(r'$\sum_i(\lambda_i+x)^{-1}$')
+    ax.grid(True, linewidth=0.4, alpha=0.6)
+    ax.legend()
+    fig.tight_layout()
+    save(fig, 'finite_resolvent_observable')
+
+
+def main() -> None:
+    graphviz()
+    compactification()
+    finite_differences()
+    finite_resolvent()
+    print(f'Generated SVG/PNG figures in {OUT.relative_to(ROOT)}')
+
+
+if __name__ == '__main__':
+    main()

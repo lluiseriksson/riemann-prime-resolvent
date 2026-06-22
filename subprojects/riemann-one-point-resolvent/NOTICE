@@ -1,4 +1,4 @@
-One-Point Resolvent–Hausdorff Programme
+Riemann One-Point Resolvent–Hausdorff Programme
 Copyright 2026 Lluís Eriksson
 
-This product includes software developed by the Lean and Mathlib communities through declared package dependencies. Numerical scripts use NumPy, mpmath, Matplotlib, and SymPy under their respective licenses.
+The source code and repository documentation are licensed under Apache License 2.0. Automated assistance does not replace human authorship or independent mathematical review.

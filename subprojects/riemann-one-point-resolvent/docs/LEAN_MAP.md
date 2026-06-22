@@ -1,26 +1,19 @@
-# Lean 4 theorem map
+# Lean map
 
-| Module | Main declarations | Role |
-|---|---|---|
-| `Basic.lean` | `atomicMoment`, `hausdorffDiff`, `IsHausdorffCompletelyMonotone` | Definitions |
-| `HausdorffFinite.lean` | `hausdorffDiff_atomicMoment`, `atomicMoment_isHausdorffCompletelyMonotone` | Exact finite identity and positivity |
-| `ResolventCompactification.lean` | `resolventWeight`, `compactifiedPoint`, `finiteResolventMoment_isHausdorffCompletelyMonotone` | Spectral-to-Hausdorff bridge |
-| `FiniteCertificates.lean` | `atomicHankelCertificate_nonneg`, `atomicLocalizingCertificate_nonneg` | Finite PSD/SOS certificates |
-| `ErrorBudget.lean` | `primeResolvent_errorBudget` | Three-error comparison glue |
-| `Examples.lean` | `demoSpectrum` examples | Exact regression examples |
-| `Oracle.lean` | `#print axioms ...` | Kernel dependency audit |
+| Module | Verified content |
+|---|---|
+| `OnePointResolvent.Basic` | finite atomic moments, recursive signed differences and complete-monotonicity predicate |
+| `OnePointResolvent.HausdorffFinite` | exact finite difference formula and positivity on `[0,1]` |
+| `OnePointResolvent.ResolventCompactification` | positive weights and compactified points in `[0,1]` |
+| `OnePointResolvent.FiniteCertificates` | finite Hankel/localizing sum-of-squares nonnegativity |
+| `OnePointResolvent.ErrorBudget` | three-stage triangle inequality |
+| `OnePointResolvent.Examples` | exact finite toy consequences |
+| `OnePointResolvent.Oracle` | `#print axioms` audit entry point |
 
-## Planned analytic modules
+## Namespace migration
 
-```text
-PrimeResolvent/Xi.lean
-PrimeResolvent/SlitPlane.lean
-PrimeResolvent/LogDerivative.lean
-PrimeResolvent/HausdorffInfinite.lean
-PrimeResolvent/PrimeTail.lean
-PrimeResolvent/NormalFamily.lean
-PrimeResolvent/SpectralCriterion.lean
-PrimeResolvent/CertifiedMatrix.lean
-```
+Version 0.2 used the misleading namespace and directory `PrimeResolvent`. Version 0.3 canonicalizes the library as `OnePointResolvent`, leaving prime/operator construction to the companion repository. This is an intentional source-level breaking change.
 
-The publication gate forbids presenting these planned modules as completed work.
+## What is absent on purpose
+
+There is no theorem named “Riemann hypothesis” whose proof is an open assumption, no structure field disguising the missing convergence theorem, and no analytic statement promoted merely because it has a complete prose proof.

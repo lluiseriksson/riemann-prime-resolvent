@@ -6,7 +6,7 @@ This site is the canonical scholarly record for the construction repository. It 
 
 ## Read in this order
 
-1. [Programme relationship](PROGRAMME_RELATION.md): why two repositories exist.
+1. [Programme relationship](PROGRAMME_RELATION.md): how the construction and criterion layers fit in one repository.
 2. [Integrated programme](programme/index.md): mathematical narrative and current reduction.
 3. [Mathematical status](MATHEMATICAL-STATUS.md): exact claim boundary.
 4. [Theorem ledger](THEOREM-LEDGER.md): what Lean actually checks.

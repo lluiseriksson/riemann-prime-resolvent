@@ -1,18 +1,13 @@
+[build-system]
+requires = ["setuptools>=75"]
+build-backend = "setuptools.build_meta"
+
 [project]
-name = "riemann-one-point-resolvent"
-version = "0.2.0"
-description = "Numerical and exact-certificate companion to a Lean 4 resolvent–Hausdorff research programme"
-requires-python = ">=3.11"
-dependencies = [
-  "mpmath==1.3.0",
-  "numpy>=2.0,<3",
-  "matplotlib>=3.8,<4",
-  "sympy>=1.12,<2"
-]
+name = "riemann-one-point-resolvent-tools"
+version = "0.3.0"
+requires-python = ">=3.12"
+dependencies = []
 
 [tool.pytest.ini_options]
-addopts = "-ra"
 testpaths = ["tests"]
-
-[tool.ruff]
-line-length = 100
+addopts = "-ra"

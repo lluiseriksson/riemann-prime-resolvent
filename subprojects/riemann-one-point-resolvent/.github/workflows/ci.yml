@@ -8,6 +8,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   lean:
     runs-on: ubuntu-latest
@@ -17,14 +21,12 @@ jobs:
         with:
           build: true
           test: false
-      - name: Axiom audit
-        run: lake env lean PrimeResolvent/Oracle.lean
-      - name: Placeholder audit
+      - name: Axiom oracle and placeholder audit
         run: |
+          lake env lean OnePointResolvent/Oracle.lean
           python3 scripts/check_no_placeholders.py
-          python3 scripts/static_lean_sanity.py
 
-  python:
+  static:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -32,8 +34,7 @@ jobs:
         with:
           python-version: "3.12"
           cache: pip
+      - run: sudo apt-get update && sudo apt-get install -y graphviz
       - run: python -m pip install --upgrade pip
-      - run: python -m pip install -r requirements.txt
-      - run: python -m pytest -q
-      - run: python scripts/exact_atomic_certificate.py --output-dir data/certificates
-      - run: python scripts/check_release.py
+      - run: python -m pip install -r requirements.txt -r requirements-docs.txt
+      - run: ./scripts/verify_static.sh

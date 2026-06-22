@@ -1,42 +1,34 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/lluiseriksson/riemann-one-point-resolvent/schemas/exact_atomic_certificate.schema.json",
-  "title": "Exact atomic resolvent-Hausdorff certificate",
+  "$id": "https://github.com/lluiseriksson/riemann-prime-resolvent/tree/main/subprojects/riemann-one-point-resolvent/schemas/exact_atomic_certificate.schema.json",
+  "title": "Exact finite atomic Hausdorff certificate",
   "type": "object",
   "required": [
-    "status",
-    "x0",
-    "spectrum",
-    "weights",
-    "compactified_points",
-    "moments",
-    "signed_differences",
-    "hankel_matrix",
-    "localizing_matrix"
+    "format_version", "status", "x0", "spectrum", "weights",
+    "compactified_points", "moments", "signed_differences",
+    "hankel_matrix", "localizing_matrix",
+    "hankel_leading_principal_minors", "localizing_leading_principal_minors"
   ],
   "properties": {
+    "format_version": {"const": "0.3.0"},
     "status": {"type": "string"},
-    "x0": {"type": "string"},
-    "spectrum": {"type": "array", "items": {"type": "string"}},
-    "weights": {"type": "array", "items": {"type": "string"}},
-    "compactified_points": {"type": "array", "items": {"type": "string"}},
-    "moments": {"type": "array", "items": {"type": "string"}},
-    "signed_differences": {
-      "type": "object",
-      "additionalProperties": {"type": "string"}
-    },
-    "hankel_matrix": {
+    "x0": {"$ref": "#/$defs/fraction"},
+    "spectrum": {"type": "array", "items": {"$ref": "#/$defs/fraction"}},
+    "weights": {"type": "array", "items": {"$ref": "#/$defs/fraction"}},
+    "compactified_points": {"type": "array", "items": {"$ref": "#/$defs/fraction"}},
+    "moments": {"type": "array", "items": {"$ref": "#/$defs/fraction"}},
+    "signed_differences": {"type": "object", "additionalProperties": {"$ref": "#/$defs/fraction"}},
+    "hankel_matrix": {"$ref": "#/$defs/matrix"},
+    "localizing_matrix": {"$ref": "#/$defs/matrix"},
+    "hankel_leading_principal_minors": {"type": "array", "items": {"$ref": "#/$defs/fraction"}},
+    "localizing_leading_principal_minors": {"type": "array", "items": {"$ref": "#/$defs/fraction"}}
+  },
+  "$defs": {
+    "fraction": {"type": "string", "pattern": "^-?[0-9]+(?:/[1-9][0-9]*)?$"},
+    "matrix": {
       "type": "array",
-      "items": {"type": "array", "items": {"type": "string"}}
-    },
-    "localizing_matrix": {
-      "type": "array",
-      "items": {"type": "array", "items": {"type": "string"}}
-    },
-    "hankel_leading_principal_minors": {"type": "array", "items": {"type": "string"}},
-    "localizing_leading_principal_minors": {"type": "array", "items": {"type": "string"}},
-    "rank_hankel": {"type": "integer", "minimum": 0},
-    "rank_localizing": {"type": "integer", "minimum": 0}
+      "items": {"type": "array", "items": {"$ref": "#/$defs/fraction"}}
+    }
   },
   "additionalProperties": false
 }

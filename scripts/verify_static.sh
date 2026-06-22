@@ -7,6 +7,7 @@ python3 scripts/generate_figures.py
 python3 scripts/validate_certificate.py experiments/examples/demo_exact_rational.json
 python3 scripts/check_markdown_links.py
 python3 -m pytest -q
+(cd subprojects/riemann-one-point-resolvent && ./scripts/verify_static.sh)
 python3 scripts/generate_manifest.py
 python3 scripts/check_release.py
 

@@ -1,0 +1,14 @@
+digraph G {
+  graph [rankdir=LR, bgcolor="white", pad=0.25, nodesep=0.55, ranksep=0.75, fontname="DejaVu Sans"];
+  node [shape=box, style="rounded,filled", fillcolor="#eef4fb", color="#365f91", fontname="DejaVu Sans", fontsize=16];
+  edge [color="#526b82", fontname="DejaVu Sans", fontsize=13, penwidth=1.4];
+  jet [label="One derivative jet\nb_n(x0)"];
+  moment [label="Hausdorff moments\non [0,1]"];
+  extension [label="Holomorphic Stieltjes\nextension on slit plane"];
+  logder [label="Holomorphic -Xi'/Xi\nin upper half-plane"];
+  rh [label="No non-real Xi zeros / RH", fillcolor="#edf8ef", color="#397547"];
+  jet -> moment [label="Hausdorff theorem"];
+  moment -> extension [label="integral reconstruction"];
+  extension -> logder [label="identity theorem"];
+  logder -> rh [label="pole contradiction"];
+}

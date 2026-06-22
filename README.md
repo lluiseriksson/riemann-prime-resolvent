@@ -5,9 +5,9 @@
 
 > **Status:** research programme and verified finite bookkeeping. This repository does not prove the Riemann hypothesis.
 
-This is the **construction and convergence layer** of a two-repository programme. It develops the prime-built spectral side, explicit error budgets, finite resolvent models, rate bookkeeping and the non-circular convergence obligations needed by the abstract criterion.
+This is the **single public repository** for the Riemann resolvent programme. The root project owns the construction and convergence layer: prime-built spectral side, explicit error budgets, finite resolvent models, rate bookkeeping and the non-circular convergence obligations needed by the abstract criterion.
 
-The companion repository [`riemann-one-point-resolvent`](https://github.com/lluiseriksson/riemann-one-point-resolvent) owns the criterion layer: slit-plane continuation, one-point Hausdorff reconstruction and finite moment certificates.
+The former companion repository now lives inside this monorepo at [`subprojects/riemann-one-point-resolvent`](subprojects/riemann-one-point-resolvent). That subproject owns the criterion layer: slit-plane continuation, one-point Hausdorff reconstruction and finite moment certificates.
 
 ## Canonical dependency
 
@@ -62,6 +62,7 @@ mkdocs build --strict
 | `figures/` | DOT/CSV sources plus generated SVG/PNG graphics |
 | `experiments/` | exact certificate schema and examples |
 | `scripts/` | deterministic verification, figure, manifest and release tooling |
+| `subprojects/riemann-one-point-resolvent/` | imported criterion layer, including its preserved Git history |
 | `.github/workflows/` | Lean/static CI, Pages documentation and source releases |
 
 Start with [`docs/index.md`](docs/index.md) and [`docs/PROGRAMME_RELATION.md`](docs/PROGRAMME_RELATION.md).

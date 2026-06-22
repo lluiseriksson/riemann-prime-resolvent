@@ -47,7 +47,7 @@ nav:
       - Formalization boundary: programme/formalization-boundary.md
       - Publication gates: programme/publication-gates.md
       - References: programme/references.md
-  - Cross-repository contract: PROGRAMME_RELATION.md
+  - Programme contract: PROGRAMME_RELATION.md
   - Mathematical status: MATHEMATICAL-STATUS.md
   - Lean theorem ledger: THEOREM-LEDGER.md
   - Lean roadmap: LEAN-ROADMAP.md

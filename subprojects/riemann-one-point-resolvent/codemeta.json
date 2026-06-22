@@ -1,12 +1,25 @@
 {
   "@context": "https://doi.org/10.5063/schema/codemeta-2.0",
   "@type": "SoftwareSourceCode",
+  "author": {
+    "@type": "Person",
+    "familyName": "Eriksson",
+    "givenName": "Lluís"
+  },
+  "codeRepository": "https://github.com/lluiseriksson/riemann-prime-resolvent/tree/main/subprojects/riemann-one-point-resolvent",
+  "dateModified": "2026-06-22",
+  "description": "Criterion layer and finite Lean 4 certificate library with integrated mathematical documentation.",
+  "keywords": [
+    "Riemann hypothesis",
+    "resolvent",
+    "formalized mathematics",
+    "Lean 4"
+  ],
+  "license": "https://spdx.org/licenses/Apache-2.0.html",
   "name": "One-Point Resolvent–Hausdorff Programme",
-  "version": "0.2.0",
-  "dateCreated": "2026-06-22",
-  "author": [{"@type": "Person", "givenName": "Lluís", "familyName": "Eriksson"}],
-  "codeRepository": "https://github.com/lluiseriksson/riemann-one-point-resolvent",
-  "programmingLanguage": ["Lean", "Python", "TeX"],
-  "license": "https://spdx.org/licenses/Apache-2.0",
-  "description": "Formal finite certificate layer and publication artifact for a one-point resolvent–Hausdorff research programme."
+  "programmingLanguage": [
+    "Lean 4",
+    "Python"
+  ],
+  "version": "0.3.0-docs-integrated"
 }

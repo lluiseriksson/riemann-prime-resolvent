@@ -1,21 +1,21 @@
 cff-version: 1.2.0
-message: "If you use this research artifact, please cite it as below."
+message: "If you use this research software and documentation, cite the repository release."
 title: "One-Point Resolvent–Hausdorff Programme"
-version: 0.2.0
-date-released: 2026-06-22
+version: "0.3.0-docs-integrated"
+date-released: "2026-06-22"
 authors:
   - family-names: Eriksson
     given-names: Lluís
-repository-code: "https://github.com/lluiseriksson/riemann-one-point-resolvent"
+repository-code: "https://github.com/lluiseriksson/riemann-prime-resolvent/tree/main/subprojects/riemann-one-point-resolvent"
 license: Apache-2.0
 type: software
 abstract: >-
-  Research repository and Lean 4 finite certificate layer for a one-point
-  resolvent–Hausdorff criterion associated with the Riemann Xi function.
+  Criterion layer and Lean 4 finite certificate library for a one-point
+  resolvent–Hausdorff formulation associated with the Riemann Xi function,
+  with the mathematical exposition integrated into versioned documentation.
 keywords:
   - Riemann hypothesis
   - Hausdorff moment problem
   - Stieltjes transform
   - resolvent
   - Lean 4
-  - formalized mathematics

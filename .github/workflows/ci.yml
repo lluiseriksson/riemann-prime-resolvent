@@ -25,6 +25,10 @@ jobs:
         run: |
           lake env lean oracle_check.lean
           python3 scripts/check_no_placeholders.py
+          cd subprojects/riemann-one-point-resolvent
+          lake build
+          lake env lean OnePointResolvent/Oracle.lean
+          python3 scripts/check_no_placeholders.py
 
   static:
     runs-on: ubuntu-latest
@@ -36,5 +40,5 @@ jobs:
           cache: pip
       - run: sudo apt-get update && sudo apt-get install -y graphviz
       - run: python -m pip install --upgrade pip
-      - run: python -m pip install -r requirements.txt -r requirements-docs.txt
+      - run: python -m pip install -r requirements.txt -r requirements-docs.txt -r subprojects/riemann-one-point-resolvent/requirements.txt -r subprojects/riemann-one-point-resolvent/requirements-docs.txt
       - run: ./scripts/verify_static.sh

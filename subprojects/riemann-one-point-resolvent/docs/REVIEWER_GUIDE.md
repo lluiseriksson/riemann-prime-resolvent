@@ -1,43 +1,19 @@
 # Reviewer guide
 
-A reviewer can audit the artifact in four passes.
+Review the project in four independent passes.
 
-## Pass 1 — claim boundary
+## 1. Claim audit
 
-Read `STATUS.md`, `docs/MATHEMATICAL_STATUS.md`, and the red status box on page 1 of the paper. Confirm that no text claims RH or concrete spectral convergence.
+Check that every headline is labeled verified, documented, open or numerical. Search for hidden assumptions equivalent to RH.
 
-## Pass 2 — mathematics
+## 2. Mathematical audit
 
-Check, in order:
+Check the \(\xi/\Xi\) conventions, the map \(-z^2\), connectivity after removing discrete zeros, local logarithmic-derivative poles, the Hausdorff theorem hypotheses, dominated holomorphic integration and the integer-cutoff sum–integral bound.
 
-1. the sign in the identity relating `-Xi'(iy)/Xi(iy)` to `xi'/xi(1/2+y)`;
-2. the image of the upper half-plane under `z -> -z^2`;
-3. the pole contradiction at a non-real zero;
-4. the scaling `b_n = x0^n (-1)^n S^(n)(x0)/n!`;
-5. the singular set of the reconstructed integral extension;
-6. the prime-tail constants.
+## 3. Formal audit
 
-## Pass 3 — formal artifact
+Run the pinned build and oracle. Confirm that finite theorem names match the documentation and that no project axiom or placeholder enters the imported root module.
 
-```bash
-lake exe cache get
-lake build
-lake env lean PrimeResolvent/Oracle.lean
-python3 scripts/check_no_placeholders.py
-python3 scripts/static_lean_sanity.py
-```
+## 4. Cross-repository audit
 
-The static script is not a substitute for Lean; it is only a quick failure detector.
-
-## Pass 4 — reproducibility
-
-```bash
-python3 -m pytest -q
-python3 scripts/exact_atomic_certificate.py --output-dir data/certificates
-python3 scripts/numerical_demo.py --output-dir data/demo
-./scripts/build_paper.sh
-python3 scripts/generate_manifest.py
-python3 scripts/check_release.py
-```
-
-Compare `SHA256SUMS`, inspect the figures, and verify that generated data is labelled non-probative.
+Compare the interface contract byte-for-byte. Verify that construction obligations are not silently assumed by the criterion repository and that criterion results are not duplicated with divergent definitions.

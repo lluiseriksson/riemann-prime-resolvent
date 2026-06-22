@@ -1,33 +1,27 @@
 # Reproducibility
 
-## Pinned environment
+## Static layer
 
-- Lean: `leanprover/lean4:v4.31.0`
-- Mathlib: tag `v4.31.0`
-- Python dependencies: `requirements.txt`
-- LaTeX dependencies: documented in `paper/README.md`
+```bash
+python3 -m pip install -r requirements.txt -r requirements-docs.txt
+./scripts/verify_static.sh
+```
 
-## Full verification
+This regenerates exact data and figures, runs tests, checks local documentation links, builds the site when MkDocs is installed, rejects standalone paper/PDF artifacts and verifies the release manifest.
+
+## Lean layer
+
+```bash
+lake exe cache get
+./scripts/verify_lean.sh
+```
+
+The repository pins Lean 4.31.0 and Mathlib commit `fabf563a7c95a166b8d7b6efca11c8b4dc9d911f`.
+
+## Full layer
 
 ```bash
 ./scripts/verify.sh
 ```
 
-The script records system metadata, runs Python tests, regenerates deterministic exact certificates, builds the paper, scans Lean sources for placeholders, and—when Lean is installed—runs:
-
-```bash
-lake exe cache get
-lake build
-lake env lean PrimeResolvent/Oracle.lean
-```
-
-Set `REQUIRE_LEAN=1` to make absence of Lean a hard failure.
-
-## Release creation
-
-```bash
-python3 scripts/generate_manifest.py
-python3 scripts/make_release.py
-```
-
-A release contains source, paper, generated data, manifest, and SHA-256 checksums. Numerical plots are reproducible within normal floating-point and library-version tolerances; exact certificate JSON uses rational arithmetic.
+The ZIP construction environment did not contain Lean. The source was statically audited here; the publishing agent must preserve a green CI build before tagging the release.

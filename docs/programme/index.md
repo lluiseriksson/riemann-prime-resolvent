@@ -31,7 +31,7 @@ S_j\longrightarrow \mathcal S_\Xi
 \quad\text{on one real interval, with one-point compactness control.}
 \]
 
-The companion criterion repository owns the second arrow from that convergence to RH.
+The criterion subproject owns the second arrow from that convergence to RH.
 
 ## Source boundary
 

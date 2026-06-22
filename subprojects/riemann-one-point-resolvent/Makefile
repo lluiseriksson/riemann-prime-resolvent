@@ -1,31 +1,30 @@
-.PHONY: all lean python demo certificates paper verify clean release
+.PHONY: all lean figures certificates docs static verify manifest package clean
 
 all: verify
 
 lean:
-	lake exe cache get
-	lake build
-	lake env lean PrimeResolvent/Oracle.lean
+	./scripts/verify_lean.sh
 
-python:
-	python3 -m pytest -q
+figures:
+	python3 scripts/generate_figures.py
 
 certificates:
-	python3 scripts/exact_atomic_certificate.py --output-dir data/certificates
+	python3 scripts/exact_atomic_certificate.py --output docs/assets/data/exact_atomic_certificate.json
 
-demo:
-	python3 scripts/numerical_demo.py --output-dir data/demo
+docs: figures certificates
+	mkdocs build --strict
 
-paper: demo certificates
-	./scripts/build_paper.sh
+static:
+	./scripts/verify_static.sh
 
 verify:
 	./scripts/verify.sh
 
-release:
+manifest:
 	python3 scripts/generate_manifest.py
-	python3 scripts/make_release.py
+
+package:
+	python3 scripts/package_release.py
 
 clean:
-	rm -rf .lake .pytest_cache __pycache__ tests/__pycache__ data/demo data/certificates
-	latexmk -C -cd paper/main.tex || true
+	rm -rf .lake/build site .pytest_cache scripts/__pycache__ tests/__pycache__

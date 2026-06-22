@@ -1,0 +1,61 @@
+site_name: One-Point Resolvent–Hausdorff Programme
+site_description: Criterion layer and Lean 4 finite certificate library
+site_url: https://lluiseriksson.github.io/riemann-prime-resolvent/
+repo_url: https://github.com/lluiseriksson/riemann-prime-resolvent
+repo_name: lluiseriksson/riemann-prime-resolvent
+strict: true
+theme:
+  name: material
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.indexes
+    - content.code.copy
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle:
+        icon: material/brightness-7
+        name: Dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Light mode
+markdown_extensions:
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.details
+  - pymdownx.highlight
+  - pymdownx.superfences
+  - tables
+extra_javascript:
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+nav:
+  - Home: index.md
+  - Integrated manuscript:
+      - manuscript/index.md
+      - Target and conventions: manuscript/01-target-and-conventions.md
+      - Slit-plane criterion: manuscript/02-slit-plane-criterion.md
+      - One-point Hausdorff criterion: manuscript/03-one-point-hausdorff.md
+      - Finite certificates: manuscript/04-finite-certificates.md
+      - Arithmetic target: manuscript/05-arithmetic-target.md
+      - Positive approximants: manuscript/06-positive-approximants.md
+      - Lean formalization: manuscript/07-lean-formalization.md
+      - Status and novelty: manuscript/08-status-and-novelty.md
+      - References: manuscript/references.md
+  - Programme relationship: PROGRAMME_RELATION.md
+  - Mathematical status: MATHEMATICAL_STATUS.md
+  - Formal proof plan: FORMAL_PROOF_PLAN.md
+  - Lean map: LEAN_MAP.md
+  - Publication gate: PUBLICATION_GATE.md
+  - Numerical protocol: NUMERICAL_PROTOCOL.md
+  - Reproducibility: REPRODUCIBILITY.md
+  - Reviewer guide: REVIEWER_GUIDE.md
+  - Migration from v0.2: MIGRATION-v0.3.md
+  - Documentation license: LICENSE.md

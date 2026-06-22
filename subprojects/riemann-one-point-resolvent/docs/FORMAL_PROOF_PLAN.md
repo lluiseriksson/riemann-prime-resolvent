@@ -1,82 +1,34 @@
-# Formal proof plan for the analytic criterion
+# Formal proof plan
 
-The next formalization should preserve the following dependency order.
+The order below minimizes circularity and API churn.
 
-## 1. Xi conventions
+## Milestone A — conventions and geometry
 
-```lean
-noncomputable def riemannXi (z : ℂ) : ℂ := ...
-noncomputable def xiResolventTarget (x : ℝ) : ℝ := ...
+1. Define the project's \(\xi\), \(\Xi\) and \(\mathcal S_\Xi\) in terms of Mathlib's completed zeta API.
+2. Prove the exact equivalence between real zeros of \(\Xi\) and Mathlib's `RiemannHypothesis` proposition.
+3. Prove that \(z\mapsto-z^2\) sends the open upper half-plane into `Complex.slitPlane`.
 
-theorem riemannHypothesis_iff_riemannXi_realZeros : ...
-```
+## Milestone B — logarithmic-derivative criterion
 
-The proof must audit Mathlib’s normalization of the completed zeta function. No theorem should be stated until the exact factors `s(s-1)/2`, `π^{-s/2}`, and `Γ(s/2)` are matched.
+4. Establish differentiability of the composed slit-plane function.
+5. State the meromorphic identity theorem in the form needed on the upper half-plane minus a discrete zero set.
+6. Use local factorization at a zero to show that \(-\Xi'/\Xi\) has a nonremovable pole.
+7. Close the slit-plane extension theorem with no project axioms.
 
-## 2. Slit-plane geometry
+## Milestone C — Hausdorff reconstruction
 
-```lean
-def slitPlane : Set ℂ := {z | z ∉ Set.Iic (0 : ℝ)} -- exact coercion to be settled
+8. Connect the derivative normalization to Taylor coefficients.
+9. Import or formalize the Hausdorff moment theorem for finite positive measures on `[0,1]`.
+10. Prove holomorphy of the parameterized integral
+    \[
+    F(w)=\int_0^1\frac{d\mu(v)}{1+((w-x_0)/x_0)v}.
+    \]
+11. Identify the Taylor series near \(x_0\) and apply the slit-plane theorem.
 
-theorem neg_sq_mem_slitPlane_of_im_pos
-    {z : ℂ} (hz : 0 < z.im) : -z^2 ∈ slitPlane := ...
-```
+## Milestone D — arithmetic and compactness
 
-A robust implementation may define the removed ray explicitly as `{z : ℂ | z.im = 0 ∧ z.re ≤ 0}`.
+12. Formalize the integer-cutoff von Mangoldt tail.
+13. Formalize one-point local boundedness for positive Stieltjes transforms.
+14. Package the normal-family criterion in the exact shared-interface form.
 
-## 3. Logarithmic-derivative poles
-
-```lean
-theorem hasPole_logDeriv_at_zero
-    (hf : AnalyticAt ℂ f z0)
-    (hzero : f z0 = 0)
-    (hnonzero : f ≠ᶠ[𝓝 z0] 0) : ...
-```
-
-Prefer a local factorization theorem with multiplicity over informal manipulation of meromorphic functions.
-
-## 4. Slit-plane criterion
-
-```lean
-theorem riemannHypothesis_of_slitPlaneExtension
-    (I : Set ℝ) (hIopen : IsOpen I) (hInonempty : I.Nonempty)
-    (hI : I ⊆ Set.Ioi (1 / 4 : ℝ))
-    (S : ℂ → ℂ)
-    (hShol : HolomorphicOn S slitPlane)
-    (hSaxis : ∀ x ∈ I, S x = xiResolventTarget x) :
-    RiemannHypothesis := ...
-```
-
-## 5. Hausdorff theorem interface
-
-```lean
-def IsHausdorffMomentSequence (b : ℕ → ℝ) : Prop :=
-  ∃ μ : Measure ℝ,
-    IsFiniteMeasure μ ∧ μ (Set.Icc 0 1)ᶜ = 0 ∧
-    ∀ n, b n = ∫ x, x^n ∂μ
-
-theorem hausdorff_iff_signedDiff_nonneg : ...
-```
-
-Search Mathlib first for an existing theorem before adding a new general moment library.
-
-## 6. One-point theorem
-
-```lean
-def xiJetMoment (x0 : ℝ) (n : ℕ) : ℝ :=
-  x0^n * ((-1 : ℝ)^n / n.factorial) * iteratedDeriv n xiResolventTarget x0
-
-theorem riemannHypothesis_iff_onePointHausdorff
-    (hx0 : 1 / 4 < x0) :
-    RiemannHypothesis ↔ IsHausdorffMomentSequence (xiJetMoment x0) := ...
-```
-
-The reverse direction must construct the explicit integral extension and prove its holomorphy on the slit plane.
-
-## 7. Prime tail
-
-Formalize the completed-zeta logarithmic derivative, the von Mangoldt Dirichlet series, and the integral majorant. The statement should expose all cutoff and domain assumptions rather than bury them in notation.
-
-## 8. Publication oracle
-
-Add every headline theorem to `PrimeResolvent/Oracle.lean` and require the standard Mathlib kernel footprint only. No open research statement may be introduced as an axiom or opaque theorem.
+Only after A–D should the companion repository import a released criterion theorem.

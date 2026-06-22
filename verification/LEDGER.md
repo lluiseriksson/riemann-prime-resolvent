@@ -11,6 +11,6 @@ Executed in the delivery environment:
 - local Markdown link validation;
 - no-PDF/no-standalone-paper policy audit;
 - repository and outer-package SHA-256 manifests;
-- byte-identical cross-repository contract comparison.
+- byte-identical monorepo contract comparison.
 
 Lean and MkDocs were absent from the packaging environment. Their pinned CI jobs must be green on the exact public commits before tagging.

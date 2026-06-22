@@ -1,13 +1,10 @@
 # Contributing
 
-Contributions are welcome when they preserve the project’s claim boundary.
-
-1. Open an issue describing the exact theorem, source, and dependency graph.
-2. Keep each pull request mathematically narrow.
-3. Add tests and `#print axioms` for headline Lean theorems.
-4. Do not introduce `sorry`, `admit`, or project axioms into publication targets.
-5. Mark conjectural statements as `Conjecture`, `ResearchTarget`, or documentation—not as proved theorems.
-6. Numerical work must export reproducible data or certificates.
-7. Cite primary literature and pin version-dependent API claims.
-
-Run `./scripts/verify.sh` before submitting.
+1. Abstract slit-plane, Hausdorff and certificate results belong here; concrete operator estimates belong in the companion prime repository.
+2. State exact hypotheses and primary references.
+3. Do not add `sorry`, `admit`, project axioms or theorem-shaped placeholders.
+4. Add headline declarations to `OnePointResolvent/Oracle.lean`.
+5. Mark conventional but unformalized arguments as documented, not kernel checked.
+6. Numerical data must be deterministic and clearly non-probative unless an exact verifier checks it.
+7. Keep the interface contract byte-identical to the companion repository.
+8. Run `./scripts/verify.sh` and `mkdocs build --strict` before a pull request.

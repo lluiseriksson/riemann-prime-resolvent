@@ -1,3 +1,3 @@
-# Security policy
+# Security and integrity
 
-This repository is mathematical research software. Report supply-chain, CI, or certificate-parser vulnerabilities privately to the repository owner. Mathematical errors should be filed publicly as issues unless disclosure would create a security concern.
+Privately report dependency, release-signing or artifact-integrity vulnerabilities to the repository owner. Mathematical errors and proof issues should normally be public issues so the claim history remains auditable.

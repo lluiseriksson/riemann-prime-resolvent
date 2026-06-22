@@ -1,7 +1,7 @@
 # Status
 
 - **Verified in Lean:** finite/scalar bookkeeping listed in the theorem ledger.
-- **Documented, not yet fully formalized:** the abstract slit-plane/Stieltjes implication, owned by the companion repository.
+- **Documented, not yet fully formalized:** the abstract slit-plane/Stieltjes implication, owned by the criterion subproject.
 - **Open:** concrete prime-built one-point bounds and interval convergence, operator domains, trace-class control, alignment, multiplicity and normalization.
 - **Numerical:** regression and convention checks only.
 

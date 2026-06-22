@@ -1,23 +1,17 @@
 # Numerical protocol
 
-## Purpose
+Numerical scripts serve three purposes only:
 
-The numerical script is an interface test for formulas, signs, normalizations, file formats, and plots. It is not a proof strategy by itself.
+1. test signs and normalization conventions;
+2. produce deterministic documentation figures;
+3. exercise certificate and release pipelines.
 
-## Default calculation
+They do not establish infinite Hausdorff positivity or spectral convergence.
 
-- domain: `x in [1,25]`;
-- target precision: 50 decimal digits in mpmath;
-- prime-power cutoff: 20,000;
-- critical-line zeros: first 40 returned by mpmath;
-- output grid: 70 points.
+## Exact certificates
 
-## Interpretation
+`exact_atomic_certificate.py` uses rational arithmetic for a finite toy spectrum. The verifier recomputes compactified points, moments, signed differences, Hankel and localizing matrices. Exact toy certificates validate code paths and finite theorems only.
 
-- The prime truncation approaches the target rapidly when `sigma = 1/2 + sqrt(x)` is well inside the Euler-product half-plane.
-- The finite-zero curve lies below the target because the positive spectral tail is omitted.
-- Floating-point agreement is not evidence that a concrete operator family converges.
+## Floating-point figures
 
-## Certification rule
-
-Any future numerical claim used in a theorem must export exact rational or interval certificates. Lean should check the certificate and a theorem must connect the finite object to the infinite operator. Screenshots and decimal tables are insufficient.
+The figures show finite resolvent moments, compactification and finite signed differences. Generated CSV data accompany the images. Any future interval-arithmetic claim must state precision, rounding mode, external library versions and a machine-checkable enclosure format.

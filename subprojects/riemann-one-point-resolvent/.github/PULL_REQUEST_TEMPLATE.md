@@ -1,17 +1,17 @@
 ## Mathematical change
 
-- [ ] The exact statement and hypotheses are documented.
-- [ ] The change does not hide an open claim in a structure field.
-- [ ] Primary references are cited.
+- [ ] Exact statement and hypotheses documented
+- [ ] Repository ownership respected
+- [ ] No open claim hidden in a theorem or package field
+- [ ] Primary references and convention bridge checked
 
 ## Verification
 
-- [ ] `lake build`
-- [ ] `lake env lean PrimeResolvent/Oracle.lean`
-- [ ] `python3 -m pytest -q`
-- [ ] `python3 scripts/check_no_placeholders.py`
-- [ ] Paper rebuilt when claims changed
+- [ ] `./scripts/verify_static.sh`
+- [ ] `./scripts/verify_lean.sh`
+- [ ] `mkdocs build --strict`
+- [ ] interface contract unchanged or synchronized with companion repo
 
 ## Claim boundary
 
-Explain why the PR does not overstate progress toward RH.
+Explain why this change does not overstate progress toward RH.

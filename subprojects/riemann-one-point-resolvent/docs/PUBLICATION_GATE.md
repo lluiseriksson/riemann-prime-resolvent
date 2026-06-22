@@ -1,41 +1,23 @@
-# Publication gate — “10/10+” standard
+# Publication gate
 
-A polished repository is not the same thing as a solved open problem. The following gates prevent presentation from outrunning mathematics.
+## Current release
 
-## Gate 1 — formalization paper
+The integrated documentation and finite verified library may be published as a research programme. The title and abstract must say that the complete analytic criterion is not yet fully formalized and that the construction theorem is open.
 
-Required:
+## Formalization-focused result
 
-- [ ] Slit-plane criterion fully formalized in Lean.
-- [ ] Exact Mathlib RH bridge.
-- [ ] Infinite Hausdorff moment theorem instantiated.
-- [ ] Prime-tail theorem formalized.
-- [ ] Finite certificate checker and test vectors.
-- [ ] Clean CI, no project `sorry` or project axioms.
-- [ ] Independent Lean reviewer reproduces from a fresh clone.
+A defensible formalization result requires:
 
-Target assessment: strong formalization paper.
+- milestones A–D from the formal proof plan;
+- a green pinned Lean build;
+- an oracle audit with no project axioms;
+- a theorem-level literature comparison;
+- independent review of conventions and analytic steps.
 
-## Gate 2 — analysis/spectral paper
+It would still not prove RH without the construction-side input.
 
-In addition to Gate 1:
+## RH-level claim
 
-- [ ] A new, unconditional estimate for a concrete operator family.
-- [ ] Uniform trace-resolvent control.
-- [ ] Domain and trace-class theorems.
-- [ ] Certified numerical examples tied to the infinite model.
-- [ ] Specialist novelty audit.
+An RH claim requires the companion repository to provide a concrete non-circular family satisfying every field of the shared contract, followed by independent mathematical and formal verification.
 
-Target assessment: substantive research paper.
-
-## Gate 3 — RH claim
-
-In addition to Gates 1–2:
-
-- [ ] Full convergence on an interval.
-- [ ] No use of RH-equivalent positivity hidden in hypotheses.
-- [ ] Multiplicity and normalization audit.
-- [ ] Independent proofs or verification by several experts.
-- [ ] Public immutable source, logs, certificates, and archival DOI.
-
-Only Gate 3 supports a claim of proving RH.
+Finite numerical success, exact toy atoms, or positive truncated matrices cannot cross this gate.
