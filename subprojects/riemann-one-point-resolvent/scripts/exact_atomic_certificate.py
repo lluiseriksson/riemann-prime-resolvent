@@ -72,7 +72,7 @@ def main() -> None:
         'localizing_leading_principal_minors': [encode(determinant([row[:n] for row in localizing[:n]])) for n in range(1, size + 1)],
     }
     args.output.parent.mkdir(parents=True, exist_ok=True)
-    args.output.write_text(json.dumps(data, indent=2, sort_keys=True) + '\n', encoding='utf-8')
+    args.output.write_bytes((json.dumps(data, indent=2, sort_keys=True) + '\n').encode('utf-8'))
     print(args.output)
 
 
