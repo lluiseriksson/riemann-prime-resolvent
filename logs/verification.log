@@ -1,0 +1,26 @@
+=== environment ===
+2026-06-22T13:42:22+00:00
+Linux 041f15db81a0 4.4.0 #1 SMP Sun Jan 10 15:06:54 PST 2016 x86_64 GNU/Linux
+Python 3.13.5
+Latexmk, John Collins, 11 Dec. 2024. Version 4.86
+leanprover/lean4:v4.31.0
+=== static Lean audit ===
+Lean placeholder scan: clean
+Static Lean sanity: passed (25 declarations scanned)
+=== Python tests ===
+....                                                                     [100%]
+4 passed in 0.14s
+=== exact certificates ===
+Wrote data/certificates/exact_atomic_certificate.json
+=== numerical illustration ===
+Wrote data/demo/resolvent_comparison.csv
+Wrote data/demo/resolvent_comparison.pdf
+Wrote data/demo/metadata.json
+=== paper ===
+Built /mnt/data/riemann-one-point-resolvent-v0.2.0/paper/one_point_resolvent_hausdorff.pdf
+=== Lean ===
+not-run: Lean/lake absent in this environment
+=== manifest ===
+Manifested 82 files
+Release/certificate checks: passed
+Verification complete. Lean status: not-run: Lean/lake absent in this environment

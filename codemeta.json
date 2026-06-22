@@ -1,0 +1,12 @@
+{
+  "@context": "https://doi.org/10.5063/schema/codemeta-2.0",
+  "@type": "SoftwareSourceCode",
+  "name": "One-Point Resolvent–Hausdorff Programme",
+  "version": "0.2.0",
+  "dateCreated": "2026-06-22",
+  "author": [{"@type": "Person", "givenName": "Lluís", "familyName": "Eriksson"}],
+  "codeRepository": "https://github.com/lluiseriksson/riemann-one-point-resolvent",
+  "programmingLanguage": ["Lean", "Python", "TeX"],
+  "license": "https://spdx.org/licenses/Apache-2.0",
+  "description": "Formal finite certificate layer and publication artifact for a one-point resolvent–Hausdorff research programme."
+}

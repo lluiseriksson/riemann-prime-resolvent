@@ -1,0 +1,13 @@
+{
+  "name": "One-Point Resolvent–Hausdorff",
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu-24.04",
+  "features": {
+    "ghcr.io/devcontainers/features/python:1": {"version": "3.12"}
+  },
+  "postCreateCommand": "bash -lc 'curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf | sh -s -- -y && python3 -m pip install -r requirements.txt'",
+  "customizations": {
+    "vscode": {
+      "extensions": ["leanprover.lean4", "ms-python.python", "james-yu.latex-workshop"]
+    }
+  }
+}

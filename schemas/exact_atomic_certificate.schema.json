@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/lluiseriksson/riemann-one-point-resolvent/schemas/exact_atomic_certificate.schema.json",
+  "title": "Exact atomic resolvent-Hausdorff certificate",
+  "type": "object",
+  "required": [
+    "status",
+    "x0",
+    "spectrum",
+    "weights",
+    "compactified_points",
+    "moments",
+    "signed_differences",
+    "hankel_matrix",
+    "localizing_matrix"
+  ],
+  "properties": {
+    "status": {"type": "string"},
+    "x0": {"type": "string"},
+    "spectrum": {"type": "array", "items": {"type": "string"}},
+    "weights": {"type": "array", "items": {"type": "string"}},
+    "compactified_points": {"type": "array", "items": {"type": "string"}},
+    "moments": {"type": "array", "items": {"type": "string"}},
+    "signed_differences": {
+      "type": "object",
+      "additionalProperties": {"type": "string"}
+    },
+    "hankel_matrix": {
+      "type": "array",
+      "items": {"type": "array", "items": {"type": "string"}}
+    },
+    "localizing_matrix": {
+      "type": "array",
+      "items": {"type": "array", "items": {"type": "string"}}
+    },
+    "hankel_leading_principal_minors": {"type": "array", "items": {"type": "string"}},
+    "localizing_leading_principal_minors": {"type": "array", "items": {"type": "string"}},
+    "rank_hankel": {"type": "integer", "minimum": 0},
+    "rank_localizing": {"type": "integer", "minimum": 0}
+  },
+  "additionalProperties": false
+}
