@@ -11,12 +11,12 @@ set_option autoImplicit false
 namespace OnePointResolvent
 
 /-- Positive resolvent weight at base point `x₀`. -/
-def resolventWeight (x₀ λ : ℝ) : ℝ :=
-  (λ + x₀)⁻¹
+def resolventWeight (x₀ lam : ℝ) : ℝ :=
+  (lam + x₀)⁻¹
 
 /-- Compactified spectral coordinate. -/
-def compactifiedPoint (x₀ λ : ℝ) : ℝ :=
-  x₀ / (λ + x₀)
+def compactifiedPoint (x₀ lam : ℝ) : ℝ :=
+  x₀ / (lam + x₀)
 
 /-- Finite one-point resolvent moment sequence. -/
 def finiteResolventMoment
@@ -26,30 +26,30 @@ def finiteResolventMoment
     (fun i => resolventWeight x₀ (spectrum i))
     (fun i => compactifiedPoint x₀ (spectrum i)) n
 
-lemma spectrum_shift_pos {x₀ λ : ℝ} (hx₀ : 0 < x₀) (hλ : 0 ≤ λ) :
-    0 < λ + x₀ := by
+lemma spectrum_shift_pos {x₀ lam : ℝ} (hx₀ : 0 < x₀) (hlam : 0 ≤ lam) :
+    0 < lam + x₀ := by
   linarith
 
 /-- Resolvent weights are nonnegative on a nonnegative spectrum. -/
-theorem resolventWeight_nonneg {x₀ λ : ℝ}
-    (hx₀ : 0 < x₀) (hλ : 0 ≤ λ) :
-    0 ≤ resolventWeight x₀ λ := by
+theorem resolventWeight_nonneg {x₀ lam : ℝ}
+    (hx₀ : 0 < x₀) (hlam : 0 ≤ lam) :
+    0 ≤ resolventWeight x₀ lam := by
   unfold resolventWeight
-  exact inv_nonneg.mpr (le_of_lt (spectrum_shift_pos hx₀ hλ))
+  exact inv_nonneg.mpr (le_of_lt (spectrum_shift_pos hx₀ hlam))
 
 /-- Compactified coordinates are nonnegative. -/
-theorem compactifiedPoint_nonneg {x₀ λ : ℝ}
-    (hx₀ : 0 < x₀) (hλ : 0 ≤ λ) :
-    0 ≤ compactifiedPoint x₀ λ := by
+theorem compactifiedPoint_nonneg {x₀ lam : ℝ}
+    (hx₀ : 0 < x₀) (hlam : 0 ≤ lam) :
+    0 ≤ compactifiedPoint x₀ lam := by
   unfold compactifiedPoint
-  exact div_nonneg (le_of_lt hx₀) (le_of_lt (spectrum_shift_pos hx₀ hλ))
+  exact div_nonneg (le_of_lt hx₀) (le_of_lt (spectrum_shift_pos hx₀ hlam))
 
 /-- Compactified coordinates are at most one. -/
-theorem compactifiedPoint_le_one {x₀ λ : ℝ}
-    (hx₀ : 0 < x₀) (hλ : 0 ≤ λ) :
-    compactifiedPoint x₀ λ ≤ 1 := by
+theorem compactifiedPoint_le_one {x₀ lam : ℝ}
+    (hx₀ : 0 < x₀) (hlam : 0 ≤ lam) :
+    compactifiedPoint x₀ lam ≤ 1 := by
   unfold compactifiedPoint
-  apply (div_le_one (spectrum_shift_pos hx₀ hλ)).2
+  apply (div_le_one (spectrum_shift_pos hx₀ hlam)).2
   linarith
 
 /-- Every finite nonnegative spectrum produces a completely monotone resolvent moment sequence. -/

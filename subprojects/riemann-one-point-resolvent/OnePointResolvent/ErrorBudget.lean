@@ -17,7 +17,9 @@ theorem abs_sub_le_three (a b c d : ℝ) :
       ring
     _ ≤ |(a - b) + (b - c)| + |c - d| := abs_add_le _ _
     _ ≤ (|a - b| + |b - c|) + |c - d| :=
-      add_le_add_right (abs_add_le _ _) _
+      by
+        have hleft := abs_add_le (a - b) (b - c)
+        linarith
     _ = |a - b| + |b - c| + |c - d| := rfl
 
 /-- Named three-error budget used by the cross-repository interface. -/
