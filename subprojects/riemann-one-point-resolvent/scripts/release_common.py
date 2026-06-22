@@ -13,6 +13,7 @@ import io
 import json
 import os
 import re
+import subprocess
 from dataclasses import dataclass
 from pathlib import Path, PurePosixPath
 from typing import Iterator
@@ -78,6 +79,24 @@ def is_excluded(relative: PurePosixPath) -> bool:
     )
 
 
+def _git_tracked_case_map(root: Path) -> dict[str, str]:
+    try:
+        result = subprocess.run(
+            ["git", "-C", str(root), "ls-files", "-z"],
+            check=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.DEVNULL,
+        )
+    except (OSError, subprocess.CalledProcessError):
+        return {}
+    paths = [
+        PurePosixPath(raw.decode("utf-8")).as_posix()
+        for raw in result.stdout.split(b"\0")
+        if raw
+    ]
+    return {path.casefold(): path for path in paths}
+
+
 def _canonical_relative_path(raw: str, *, line: int) -> str:
     if not raw or "\\" in raw or "\x00" in raw:
         raise ReleaseError(f"manifest line {line}: invalid path {raw!r}")
@@ -97,6 +116,7 @@ def iter_source_files(root: Path) -> Iterator[tuple[str, Path]]:
     root = root.resolve()
     if not root.is_dir():
         raise ReleaseError(f"repository root is not a directory: {root}")
+    tracked_case = _git_tracked_case_map(root)
 
     for directory, directory_names, file_names in os.walk(root, topdown=True, followlinks=False):
         base = Path(directory)
@@ -120,7 +140,8 @@ def iter_source_files(root: Path) -> Iterator[tuple[str, Path]]:
                 raise ReleaseError(f"included file symlink is forbidden: {relative}")
             if not path.is_file():
                 raise ReleaseError(f"included path is not a regular file: {relative}")
-            yield relative.as_posix(), path
+            relative_text = relative.as_posix()
+            yield tracked_case.get(relative_text.casefold(), relative_text), path
 
 
 def inventory(root: Path) -> list[ManifestEntry]:
