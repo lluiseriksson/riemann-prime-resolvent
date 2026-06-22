@@ -19,10 +19,9 @@ theorem abs_sub_le_three (a b c d : ℝ) :
     |a - d| = |(a - b) + (b - c) + (c - d)| := by
       congr 1
       ring
-    _ ≤ |(a - b) + (b - c)| + |c - d| := abs_add _ _
+    _ ≤ |(a - b) + (b - c)| + |c - d| := abs_add_le _ _
     _ ≤ (|a - b| + |b - c|) + |c - d| := by
-      gcongr
-      exact abs_add _ _
+      exact add_le_add_left (abs_add_le _ _) _
     _ = |a - b| + |b - c| + |c - d| := by ring
 
 /-- Named version of the three-error budget used in the paper. -/

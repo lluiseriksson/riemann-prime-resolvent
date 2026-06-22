@@ -1,7 +1,7 @@
 {
   "artifact": "riemann-one-point-resolvent",
   "version": "0.2.0",
-  "generated_utc": "2026-06-22T15:33:08.474032+00:00",
+  "generated_utc": "2026-06-22T15:37:07.523852+00:00",
   "files": [
     {
       "path": ".devcontainer/devcontainer.json",
@@ -280,8 +280,8 @@
     },
     {
       "path": "PrimeResolvent/ErrorBudget.lean",
-      "bytes": 1056,
-      "sha256": "7a8c1785757850e87203acfa26f503697f4fd255a980ec5368f1676becf106f5"
+      "bytes": 1069,
+      "sha256": "30e177b0522fc4594d3e442b017316d70fa350080465fa838b56a13b1fa20b94"
     },
     {
       "path": "PrimeResolvent/Examples.lean",
@@ -305,8 +305,8 @@
     },
     {
       "path": "PrimeResolvent/ResolventCompactification.lean",
-      "bytes": 3062,
-      "sha256": "22189b9af09e4fb5ead15790b2ee2de6deaa9d8aa82dc79be997a760d8eaae16"
+      "bytes": 3085,
+      "sha256": "8a3efe3932854c4e30484ceb07e040f8ca3caae5147a2f0da9e880971d4d8ac9"
     },
     {
       "path": "PrimeResolvent.lean",
