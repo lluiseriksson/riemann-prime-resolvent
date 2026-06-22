@@ -1,0 +1,29 @@
+name: Theorem ledger item
+about: Propose work on one formal or mathematical brick
+title: "[THEOREM] "
+labels: ["theorem"]
+body:
+  - type: input
+    id: ledger
+    attributes:
+      label: Ledger ID
+      placeholder: X002
+    validations:
+      required: true
+  - type: dropdown
+    id: status
+    attributes:
+      label: Current status
+      options: [OPEN, CANDIDATE, PAPER, LEAN]
+    validations:
+      required: true
+  - type: textarea
+    id: statement
+    attributes:
+      label: Exact statement and dependencies
+    validations:
+      required: true
+  - type: textarea
+    id: sources
+    attributes:
+      label: Primary sources / Mathlib API

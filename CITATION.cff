@@ -1,0 +1,11 @@
+cff-version: 1.2.0
+title: "Riemann Prime-Resolvent Lean 4 Programme"
+message: "Please cite the tagged repository release and the associated paper draft."
+type: software
+authors:
+  - family-names: Eriksson
+    given-names: Lluís
+repository-code: "https://github.com/lluiseriksson/riemann-prime-resolvent"
+license: AGPL-3.0-only
+version: 0.1.0-seed
+date-released: 2026-06-22

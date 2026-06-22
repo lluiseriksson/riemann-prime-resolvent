@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Prime-resolvent finite spectral certificate",
+  "type": "object",
+  "required": ["lambda", "N", "matrix", "trial_vector", "residual_upper", "separation_lower"],
+  "properties": {
+    "lambda": {"type": "string", "description": "Exact rational or interval string"},
+    "N": {"type": "integer", "minimum": 1},
+    "matrix": {"type": "array"},
+    "trial_vector": {"type": "array"},
+    "residual_upper": {"type": "string"},
+    "separation_lower": {"type": "string"},
+    "galerkin_tail_upper": {"type": "string"},
+    "resolvent_grid": {"type": "array"},
+    "provenance": {"type": "object"}
+  }
+}

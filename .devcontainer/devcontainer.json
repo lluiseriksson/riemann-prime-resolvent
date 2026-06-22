@@ -1,0 +1,11 @@
+{
+  "name": "Riemann Prime-Resolvent Lean 4",
+  "build": {"dockerfile": "../Dockerfile", "context": ".."},
+  "workspaceFolder": "/workspace",
+  "customizations": {
+    "vscode": {
+      "extensions": ["leanprover.lean4"]
+    }
+  },
+  "postCreateCommand": "./scripts/verify.sh"
+}

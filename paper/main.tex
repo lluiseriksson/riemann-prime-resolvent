@@ -1,0 +1,379 @@
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage[margin=1in]{geometry}
+\usepackage{microtype}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{enumitem}
+
+\hypersetup{colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{conjecture}[theorem]{Conjecture}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+
+\newcommand{\C}{\mathbb C}
+\newcommand{\R}{\mathbb R}
+\newcommand{\N}{\mathbb N}
+\newcommand{\XiR}{\mathcal S_{\Xi}}
+\newcommand{\Spec}{\operatorname{Spec}}
+\newcommand{\Tr}{\operatorname{Tr}}
+
+\title{A Prime--Resolvent Research Programme\\
+for Spectral Approximations to the Riemann $\Xi$ Function}
+\author{Lluís Eriksson}
+\date{Research seed draft, 22 June 2026}
+
+\begin{document}
+\maketitle
+
+\begin{center}
+\fbox{\begin{minipage}{0.91\linewidth}
+\textbf{Status and scope.}
+This document does not claim a proof of the Riemann hypothesis.  It isolates an
+abstract Stieltjes/slit-plane criterion, an explicit prime-tail target, and a
+three-part error budget for spectral approximants.  The concrete spectral
+alignment and full convergence remain open.  Some rate calculations are
+labelled candidate results pending a line-by-line source and convention audit.
+\end{minipage}}
+\end{center}
+
+\begin{abstract}
+Recent work constructs self-adjoint spectral approximants from Euler products
+over primes up to $\lambda^2$ and reports striking numerical agreement with low
+non-trivial zeros of the Riemann zeta function.  A rigorous convergence theorem
+would imply the Riemann hypothesis.  We formulate a research programme based on
+the positive observable
+\[
+\frac12\Tr(D^2+xI)^{-1},
+\]
+rather than direct convergence of regularized determinants.  The central
+abstract observation is that a holomorphic extension to the slit plane of the
+critical-line logarithmic-derivative target excludes non-real zeros of $\Xi$.
+Positive Stieltjes approximants with one-point control provide such extensions
+through normal-family compactness.  On the arithmetic side, the target admits
+an absolutely convergent prime expansion for $x>1/4$, with an elementary
+explicit tail majorant.  We separate the desired comparison into spectral,
+model, and prime errors, describe a certificate-driven finite-dimensional
+route, and give a Lean~4 formalization plan.  The accompanying repository
+contains an axiom-free elementary Lean seed and a strict publication gate.
+\end{abstract}
+
+\section{Introduction}
+
+Let
+\[
+\xi(s)=\frac12s(s-1)\pi^{-s/2}\Gamma(s/2)\zeta(s),
+\qquad
+\Xi(z)=\xi\!\left(\frac12+iz\right).
+\]
+The Riemann hypothesis is equivalent to all zeros of the entire even function
+$\Xi$ being real.  The Hilbert--Pólya philosophy seeks a self-adjoint operator
+whose spectrum encodes those zeros.  Connes, Consani and Moscovici recently
+proposed self-adjoint operators obtained from rank-one perturbations of a
+scaling spectral triple on $[\lambda^{-1},\lambda]$; their construction uses
+Euler products over primes $p\leq \lambda^2$, and numerical experiments show
+high-precision agreement with low Riemann zeros.  They state explicitly that a
+rigorous proof of convergence would establish RH and discuss regularized
+determinants as approximants to $\Xi$~\cite{CCM2025}.
+
+A companion theorem of Connes and van Suijlekom shows, under lower-bounded
+self-adjointness and a simple isolated lowest eigenvalue with an even
+eigenfunction, that the Fourier transform of that eigenfunction has only real
+zeros~\cite{CvS2025}.  This supplies a real-zero mechanism for each finite or
+semilocal model but does not prove convergence to $\Xi$.
+
+The present programme proposes to compare squared resolvents instead of entire
+determinants.  Resolvents are positive, suppress high spectral values, and are
+stable under perturbation.  More importantly, the corresponding scalar
+functions lie in the Stieltjes--Nevanlinna class, where local boundedness and
+normal-family arguments are natural.
+
+The contribution of this draft is organizational and reductive.  It gives a
+complete proof of an abstract slit-plane extension criterion, isolates an
+explicit arithmetic target and prime tail, and states precisely what remains to
+be shown for the concrete operators.  It should be read as a blueprint for
+formalization and further analysis, not as a completed RH argument.
+
+\section{The critical-line resolvent target}
+
+For $x>1/4$, define
+\begin{equation}\label{eq:target}
+\XiR(x)=\frac{1}{2\sqrt{x}}
+\frac{\xi'}{\xi}\!\left(\frac12+\sqrt{x}\right).
+\end{equation}
+The restriction $x>1/4$ ensures that $\sigma=1/2+\sqrt{x}>1$, so the Euler
+product is absolutely convergent and $\zeta(\sigma)\neq0$.
+
+If RH holds and the positive zeros of $\Xi$ are $\gamma_k$, counted with
+multiplicity, the symmetric canonical product formally gives
+\begin{equation}\label{eq:stieltjes-rh}
+\XiR(x)=\sum_{k\ge1}\frac1{\gamma_k^2+x}.
+\end{equation}
+Thus $\XiR$ is a Stieltjes transform of a positive discrete measure.  A final
+paper must verify the canonical-product normalization carefully.  The
+one-way criterion below does not assume~\eqref{eq:stieltjes-rh}.
+
+\section{A slit-plane extension criterion}
+
+Let
+\[
+\Omega=\C\setminus(-\infty,0].
+\]
+
+\begin{theorem}[Slit-plane extension criterion]\label{thm:slit}
+Suppose there is a holomorphic function $S:\Omega\to\C$ and a nonempty open
+interval $I\subset(1/4,\infty)$ such that
+\[
+S(x)=\XiR(x)\qquad(x\in I).
+\]
+Then all zeros of $\Xi$ are real.
+\end{theorem}
+
+\begin{proof}
+For $z$ in the open upper half-plane define
+\[
+M(z)=2zS(-z^2).
+\]
+The map $z\mapsto-z^2$ takes the upper half-plane into $\Omega$.  Indeed, if
+$\operatorname{Re}z=0$, then $-z^2>0$; otherwise
+$\operatorname{Im}(-z^2)=-2\operatorname{Re}z\operatorname{Im}z\neq0$.
+Hence $M$ is holomorphic.
+
+Take $z=iy$ with $y>0$ and $y^2\in I$.  The functional equation
+$\xi(s)=\xi(1-s)$ gives $\xi'(s)=-\xi'(1-s)$, and therefore
+\[
+-\frac{\Xi'(iy)}{\Xi(iy)}
+=i\frac{\xi'}{\xi}\!\left(\frac12+y\right)
+=2iyS(y^2)=M(iy).
+\]
+The function $-\Xi'/\Xi$ is holomorphic away from the discrete zeros of $\Xi$.
+The upper half-plane minus a discrete subset is connected, so the identity
+theorem yields
+\[
+M(z)=-\frac{\Xi'(z)}{\Xi(z)}
+\]
+away from the zeros.
+
+If $z_0$ were an upper-half-plane zero of multiplicity $m>0$, local
+factorization would give $\Xi(z)=(z-z_0)^m g(z)$ with $g(z_0)\neq0$.  Hence
+\[
+-\frac{\Xi'(z)}{\Xi(z)}=-\frac{m}{z-z_0}-\frac{g'(z)}{g(z)},
+\]
+which has a nonremovable pole at $z_0$, contradicting holomorphy of $M$.
+Conjugation symmetry excludes zeros in the lower half-plane.  Thus every zero
+is real.
+\end{proof}
+
+\begin{remark}
+The theorem only requires an extension on the slit plane agreeing with the
+target on one interval.  It does not require prior identification of every
+zero, global determinant convergence, or an explicit inverse spectral theorem.
+\end{remark}
+
+\section{Stieltjes approximants and compactness}
+
+Let $\nu_j$ be positive measures on $[0,\infty)$ and define
+\[
+S_j(w)=\int_0^\infty\frac{d\nu_j(t)}{t+w},\qquad w\in\Omega.
+\]
+For a discrete paired spectrum $\{\pm\gamma_{j,k}\}$ one expects
+\[
+S_j(x)=\sum_k\frac1{\gamma_{j,k}^2+x}
+=\frac12\Tr(D_j^2+xI)^{-1}.
+\]
+
+\begin{proposition}[One-point control]\label{prop:normal}
+Fix $x_0>0$.  If $\sup_j S_j(x_0)<\infty$, then the family $\{S_j\}$ is locally
+bounded on $\Omega$.
+\end{proposition}
+
+\begin{proof}
+For each compact $K\subset\Omega$, continuity and avoidance of the negative
+axis imply the existence of $C_K$ with
+\[
+\frac1{|t+w|}\leq\frac{C_K}{t+x_0}
+\]
+for all $t\ge0$ and $w\in K$.  Integrating gives
+$|S_j(w)|\le C_K S_j(x_0)$.
+\end{proof}
+
+Montel's theorem then gives compact-open convergent subsequences.  If $S_j(x)$
+converges to $\XiR(x)$ on an open interval, any subsequential limit supplies the
+extension required by Theorem~\ref{thm:slit}.
+
+\begin{theorem}[Abstract prime--resolvent criterion]\label{thm:abstract}
+Assume $S_j$ are Stieltjes transforms of positive measures, are uniformly
+bounded at one positive point, and converge pointwise to $\XiR$ on a nonempty
+open interval contained in $(1/4,\infty)$.  Then RH holds.
+\end{theorem}
+
+\begin{proof}
+Combine Proposition~\ref{prop:normal}, Montel compactness, the identity theorem,
+and Theorem~\ref{thm:slit}.
+\end{proof}
+
+\section{The arithmetic side}
+
+For real $\sigma>1$,
+\begin{equation}\label{eq:logxi}
+\frac{\xi'}{\xi}(\sigma)
+=\frac1\sigma+\frac1{\sigma-1}-\frac12\log\pi
++\frac12\psi(\sigma/2)
+-\sum_{n\ge2}\frac{\Lambda(n)}{n^\sigma},
+\end{equation}
+where $\psi=\Gamma'/\Gamma$ and $\Lambda$ is the von Mangoldt function.
+Putting $y=\sqrt{x}$ and $\sigma=1/2+y$, define the truncation
+\begin{equation}\label{eq:PX}
+P_X(x)=\frac1{2y}\left[
+\frac1\sigma+\frac1{\sigma-1}-\frac12\log\pi
++\frac12\psi(\sigma/2)
+-\sum_{2\le n\le X}\frac{\Lambda(n)}{n^\sigma}
+\right].
+\end{equation}
+
+Fix $\delta>0$ and suppose $\sigma\ge1+\delta$.  Since
+$0\le\Lambda(n)\le\log n$, a decreasing-integral comparison for $X\ge3$ gives
+\begin{equation}\label{eq:tail}
+\sum_{n>X}\frac{\Lambda(n)}{n^\sigma}
+\le X^{-\delta}
+\left(\frac{\log X}{\delta}+\frac1{\delta^2}\right).
+\end{equation}
+This produces a uniform explicit bound for
+$|\XiR(x)-P_X(x)|$ on any compact interval corresponding to
+$y\ge1/2+\delta$.
+
+The Lean seed formalizes the closed-form majorant and its sign.  The full
+sum--integral comparison and log-derivative formula are formalization targets.
+
+\section{The three-part error budget}
+
+Let $S_{\lambda,N}$ be a concrete spectral observable and
+$\widetilde S_\lambda$ a source-audited model observable.  Then
+\begin{align}
+|S_{\lambda,N}-P_{\lambda^2}|
+&\le |S_{\lambda,N}-\widetilde S_\lambda|
+ +|\widetilde S_\lambda-\XiR|
+ +|\XiR-P_{\lambda^2}|\\
+&=:E_{\mathrm{spectral}}+E_{\mathrm{model}}+E_{\mathrm{prime}}.
+\end{align}
+This elementary inequality and addition of component limits are already
+encoded in Lean.
+
+The arithmetic term is controlled by~\eqref{eq:tail}.  The model term depends
+on exact Fourier/Mellin conventions and is presently under source audit.  The
+spectral term is the decisive open contribution.
+
+\section{Spectral alignment and finite certificates}
+
+Let $A$ be a finite Hermitian matrix with lowest eigenvalues
+$\epsilon_0<\epsilon_1$ and gap $g=\epsilon_1-\epsilon_0$.  For a normalized
+trial vector $v$ define
+\[
+r=\langle Av,v\rangle-\epsilon_0.
+\]
+Expansion in an eigenbasis yields
+\[
+\inf_\theta\|v-e^{i\theta}\xi_0\|\le\sqrt{2r/g}.
+\]
+A Galerkin projection tail $\tau$ then motivates the scalar defect
+\[
+\eta_{\lambda,N}
+=\|k_\lambda\|\sqrt{2r_{\lambda,N}/g_{\lambda,N}}+2\tau_{\lambda,N}.
+\]
+
+For computation, exact knowledge of $\epsilon_0$ should be replaced by a
+residual and a certified separation bound.  The external program exports
+rational or interval data; Lean checks Hermitian symmetry, residual inequalities,
+gap/separation conditions, and the resulting scalar bound.
+
+No numerical result is accepted as proof without a certificate and a theorem
+connecting the certificate to the infinite model.
+
+\section{Candidate rate and its status}
+
+An exploratory calculation suggested that a bound
+\[
+\eta_{\lambda,N(\lambda)}=O(\lambda^{-q}),\qquad q>1/2,
+\]
+may be enough to force total convergence on a suitable interval, with optimized
+exponent
+\[
+\rho(q)=\min\left\{\frac{2q-1}{3},\frac23\right\}.
+\]
+The scalar positivity and saturation properties of this expression are included
+in Lean.  However, the analytic derivation of the $2/3$ ceiling depends on a
+candidate enlargement of a prolate/model estimate.  Before this can be stated
+as a theorem, one must verify the precise transform normalization, support,
+constants, and source hypotheses in~\cite{CCM2025}.  Accordingly this section is
+a research target, not a claimed result.
+
+\section{Lean formalization architecture}
+
+Mathlib supplies definitions of the Riemann zeta function, a pole-removed
+completed zeta, a functional equation, and a proposition named
+`RiemannHypothesis`.  The formalization is divided into:
+
+\begin{enumerate}[label=\arabic*.]
+\item the exact $\xi/\Xi$ bridge;
+\item geometry of the slit plane and the map $z\mapsto-z^2$;
+\item local analytic factorization and logarithmic-derivative poles;
+\item the extension criterion;
+\item the explicit prime tail;
+\item finite Stieltjes and spectral certificates;
+\item normal-family compactness;
+\item the concrete unbounded operator.
+\end{enumerate}
+
+The seed repository contains no project axioms and represents open results as
+propositions or explicit fields of a future package.  The operator layer will
+not be introduced until the abstract analytic chain is complete.
+
+\section{Publication criteria}
+
+A first formalization paper becomes defensible after the abstract slit-plane
+criterion, the Mathlib RH bridge, the prime-tail theorem, and the finite
+certificate layer are all complete and reproducible.  A substantive analytic
+paper additionally needs a new concrete estimate for the Galerkin, gap, or
+state-alignment error.  A claim of RH requires full convergence, absence of
+circular use of Weil positivity, and independent specialist review.
+
+\section{Conclusion}
+
+The squared-resolvent/Stieltjes viewpoint converts an imprecise aspiration
+(``the spectral determinant converges to $\Xi$'') into several separable and
+falsifiable tasks.  The extension criterion shows that convergence on one real
+interval can be enough, while positivity provides compactness and the Euler
+product provides an explicit arithmetic target.  The remaining hard step is
+not hidden: it is a quantitative, non-circular comparison between the concrete
+lowest spectral state and the target model, together with all trace and domain
+properties needed to pass to the limit.
+
+\begin{thebibliography}{9}
+\bibitem{CCM2025}
+A.~Connes, C.~Consani, and H.~Moscovici,
+\emph{Zeta Spectral Triples}, arXiv:2511.22755, 2025.
+
+\bibitem{CvS2025}
+A.~Connes and W.~D. van Suijlekom,
+\emph{Quadratic Forms, Real Zeros and Echoes of the Spectral Action},
+arXiv:2511.23257, 2025.
+
+\bibitem{Mathlib}
+The mathlib community,
+\emph{Mathlib: a library for Lean 4}, pinned source revision
+\texttt{07642720480157414db592fa85b626dafb71355b}.
+
+\bibitem{Riemann1859}
+B.~Riemann,
+\emph{Ueber die Anzahl der Primzahlen unter einer gegebenen Grösse}, 1859.
+\end{thebibliography}
+
+\end{document}

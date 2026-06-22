@@ -1,0 +1,15 @@
+/.lake/
+/build/
+/verification/latest.log
+/verification/*.tmp
+/paper/*.aux
+/paper/*.bbl
+/paper/*.blg
+/paper/*.log
+/paper/*.out
+/paper/*.pdf
+*.olean
+.DS_Store
+
+__pycache__/
+*.pyc

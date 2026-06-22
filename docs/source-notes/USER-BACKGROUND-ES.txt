@@ -1,0 +1,331 @@
+NON-NORMATIVE USER-PROVIDED BACKGROUND. Verify all claims against primary sources.
+
+Aquí tienes una versión depurada, cohesionada y con varios matices matemáticos corregidos a partir de la transcripción. 
+
+# La hipótesis de Riemann: el orden oculto de los números primos
+
+Los números primos son los componentes básicos de la aritmética: todo entero mayor que uno puede descomponerse, de manera esencialmente única, como producto de primos. Su aparente irregularidad contrasta con el papel estructural que desempeñan en teoría de números y en algunos sistemas criptográficos. Sin embargo, la hipótesis de Riemann no es una afirmación sobre la seguridad inmediata de nuestras comunicaciones, sino sobre algo mucho más profundo: la precisión con la que podemos describir la distribución colectiva de los primos.
+
+Formulada por Bernhard Riemann en 1859, incluida por David Hilbert entre sus grandes problemas de 1900 y convertida después en uno de los Problemas del Milenio, la hipótesis sigue oficialmente sin resolver en 2026. ([Clay Mathematics Institute][1])
+
+## De los primos a la función zeta
+
+Sea (\pi(x)) el número de primos menores o iguales que (x). Gauss y Legendre observaron que, cuando (x) crece, esta cantidad se aproxima a
+
+[
+\operatorname{Li}(x)=\int_2^x\frac{dt}{\log t},
+]
+
+o, de forma más elemental,
+
+[
+\pi(x)\sim \frac{x}{\log x}.
+]
+
+Este último resultado es el teorema de los números primos. Describe la tendencia media de los primos, pero no sus oscilaciones: la diferencia entre (\pi(x)) y su aproximación suave continúa subiendo y bajando de una forma muy compleja.
+
+Riemann comprendió que esas oscilaciones podían estudiarse mediante una función de variable compleja. Si
+
+[
+s=\sigma+it,
+]
+
+la función zeta de Riemann se define inicialmente, para (\sigma>1), mediante la serie
+
+[
+\zeta(s)=\sum_{n=1}^{\infty}\frac1{n^s}.
+]
+
+La conexión con los primos aparece en el producto de Euler:
+
+[
+\zeta(s)=\prod_{p\ \mathrm{primo}}\frac{1}{1-p^{-s}}.
+]
+
+Esta identidad es una traducción analítica de la factorización única: la suma sobre todos los enteros puede reorganizarse como un producto sobre todos los primos. Por eso la función zeta contiene, de manera comprimida, información sobre el conjunto completo de los números primos. La serie anterior solo converge cuando (\operatorname{Re}(s)>1), pero (\zeta(s)) admite una continuación meromorfa a todo el plano complejo, con una única singularidad: un polo simple en (s=1). ([dlmf.nist.gov][2])
+
+## La simetría y los ceros
+
+Para mostrar mejor las simetrías de la función se introduce la función completada
+
+[
+\xi(s)=\frac12s(s-1)\pi^{-s/2}
+\Gamma!\left(\frac{s}{2}\right)\zeta(s).
+]
+
+Esta función satisface la ecuación funcional
+
+[
+\xi(s)=\xi(1-s).
+]
+
+La ecuación funcional explica por qué la recta
+
+[
+\operatorname{Re}(s)=\frac12
+]
+
+ocupa el centro del problema. Si (\rho) es un cero no real, las simetrías de la función producen también ceros en
+
+[
+\overline{\rho},\qquad 1-\rho,\qquad 1-\overline{\rho}.
+]
+
+Por tanto, los ceros aparecen reflejados respecto del eje real y de la línea crítica. Pero esta simetría, por sí sola, no obliga a que se encuentren sobre ella: también permitiría parejas simétricas situadas a ambos lados.
+
+La función zeta posee ceros en
+
+[
+-2,-4,-6,\ldots,
+]
+
+llamados **ceros triviales**. Todos los demás ceros se encuentran en la franja crítica
+
+[
+0<\operatorname{Re}(s)<1.
+]
+
+La hipótesis de Riemann afirma que cada cero no trivial tiene exactamente la forma
+
+[
+\boxed{\rho=\frac12+i\gamma},
+]
+
+con (\gamma\in\mathbb R). En otras palabras:
+
+[
+\boxed{\zeta(\rho)=0,\quad 0<\operatorname{Re}(\rho)<1
+\ \Longrightarrow\
+\operatorname{Re}(\rho)=\frac12.}
+]
+
+Lo importante no es que (\gamma) sea real —la parte imaginaria de cualquier número complejo es siempre un número real—, sino que la parte real de todos los ceros no triviales sea exactamente (1/2). ([dlmf.nist.gov][3])
+
+## Cómo los ceros producen las oscilaciones de los primos
+
+La conexión entre ceros y primos se ve con especial claridad mediante la función de Chebyshev
+
+[
+\psi(x)=\sum_{n\le x}\Lambda(n),
+]
+
+donde la función de von Mangoldt se define por
+
+[
+\Lambda(n)=
+\begin{cases}
+\log p,& n=p^k\text{ para algún primo }p,\
+0,&\text{en otro caso}.
+\end{cases}
+]
+
+En una forma simplificada de la fórmula explícita de Riemann,
+
+[
+\psi(x)
+=======
+
+x-\sum_{\rho}\frac{x^\rho}{\rho}
+-\log(2\pi)
+-\frac12\log(1-x^{-2}),
+]
+
+donde la suma se extiende sobre los ceros no triviales y debe interpretarse mediante un procedimiento simétrico de convergencia.
+
+Esta fórmula permite entender el papel de cada cero. Si
+
+[
+\rho=\beta+i\gamma,
+]
+
+entonces
+
+[
+x^\rho=x^\beta e^{i\gamma\log x}.
+]
+
+La coordenada (\gamma) determina la frecuencia de una oscilación en la variable (\log x), mientras que (\beta) determina su tamaño, aproximadamente (x^\beta). Un cero situado muy a la derecha de la línea crítica produciría una oscilación demasiado grande en la distribución de los primos. Si todos los ceros tienen (\beta=1/2), las fluctuaciones permanecen en la escala natural de raíz cuadrada.
+
+De hecho, la hipótesis de Riemann equivale a una estimación del tipo
+
+[
+\psi(x)=x+O!\left(\sqrt{x}\log^2x\right),
+]
+
+y conduce asimismo a
+
+[
+\pi(x)=\operatorname{Li}(x)
++O!\left(\sqrt{x}\log x\right).
+]
+
+Así pues, la hipótesis no proporciona una fórmula sencilla para predecir el siguiente primo. Lo que hace es imponer un límite extraordinariamente preciso al error acumulado en su distribución. ([dlmf.nist.gov][4])
+
+## La vía espectral: Hilbert, Pólya y la física cuántica
+
+En álgebra lineal, una ecuación como
+
+[
+Av=\lambda v
+]
+
+significa que (v) es un vector propio de (A) y que (\lambda) es su valor propio. En dimensión infinita se estudian operadores que actúan sobre espacios de funciones. Cuando un operador (H) es autoadjunto, sus valores propios son necesariamente reales.
+
+La idea de Hilbert y Pólya consiste en buscar un operador autoadjunto cuyo espectro sea precisamente el conjunto de números
+
+[
+\gamma_1,\gamma_2,\gamma_3,\ldots
+]
+
+asociados a los ceros
+
+[
+\frac12+i\gamma_n.
+]
+
+Si se construyera tal operador y se demostrara una correspondencia exacta entre su espectro y todos los ceros no triviales, la realidad de los valores propios daría una explicación estructural de la hipótesis de Riemann.
+
+No bastaría, sin embargo, con encontrar un operador cuyos valores propios se pareciesen estadísticamente a los ceros. Habría que demostrar simultáneamente que es autoadjunto, que no faltan ceros, que no aparecen valores adicionales y que las multiplicidades coinciden correctamente.
+
+El indicio más célebre a favor de esta idea apareció en el trabajo de Hugh Montgomery sobre la correlación entre pares de ceros. Una vez normalizadas las distancias, la correlación prevista contiene la expresión
+
+[
+1-\left(\frac{\sin \pi u}{\pi u}\right)^2.
+]
+
+Freeman Dyson reconoció en ella la misma estadística que aparece en los valores propios de grandes matrices hermíticas aleatorias del conjunto unitario gaussiano, o GUE. Los cálculos numéricos de Andrew Odlyzko reforzaron espectacularmente esa coincidencia.
+
+Esto sugiere una conexión con el caos cuántico: los ceros parecen comportarse estadísticamente como niveles espectrales de ciertos sistemas cuánticos caóticos sin simetría de inversión temporal. Pero una semejanza estadística no identifica el operador buscado. La evidencia apunta hacia una estructura espectral; todavía no revela cuál es. ([Clay Mathematics Institute][5])
+
+## La vía geométrica: una hipótesis de Riemann que ya fue demostrada
+
+Existe otro indicio aún más profundo. Para una curva algebraica (C) definida sobre un cuerpo finito (\mathbb F_q), se puede construir una función zeta mediante
+
+[
+Z(C,u)
+======
+
+\exp\left(
+\sum_{n=1}^{\infty}
+\frac{#C(\mathbb F_{q^n})}{n}u^n
+\right).
+]
+
+Esta función tiene la forma racional
+
+[
+Z(C,u)=
+\frac{P(u)}{(1-u)(1-qu)},
+]
+
+donde
+
+[
+P(u)=\prod_{j=1}^{2g}(1-\alpha_j u)
+]
+
+y (g) es el género de la curva. El análogo de la hipótesis de Riemann afirma que
+
+[
+|\alpha_j|=\sqrt q.
+]
+
+Al realizar el cambio (u=q^{-s}), esta condición se convierte precisamente en una afirmación de línea crítica:
+
+[
+\operatorname{Re}(s)=\frac12.
+]
+
+André Weil demostró este resultado para curvas sobre cuerpos finitos. Las conjeturas de Weil para variedades de dimensión superior fueron finalmente demostradas por Pierre Deligne utilizando la cohomología étale y la acción del endomorfismo de Frobenius.
+
+En ese mundo geométrico, los números que desempeñan el papel de los ceros aparecen como valores propios de un operador natural: Frobenius actuando sobre grupos de cohomología. Es justamente la clase de explicación geométrica y espectral que querríamos poseer para la función zeta clásica.
+
+El problema es que no conocemos una variedad, una teoría cohomológica ni un operador de Frobenius adecuado para el “espacio” aritmético asociado a los enteros. Una demostración por esta vía exigiría inventar una geometría de la aritmética capaz de reproducir el papel que la geometría algebraica desempeña sobre cuerpos finitos. ([Clay Mathematics Institute][5])
+
+Esta analogía se extiende a las llamadas (L)-funciones. La función zeta de Riemann es el ejemplo más básico de una gran familia de funciones dotadas de series de Dirichlet, productos de Euler y ecuaciones funcionales. La clase de Selberg intenta axiomatizar parte de esta estructura. La expectativa general es que cada (L)-función primitiva posea su propia versión de la hipótesis de Riemann.
+
+## Lo que pueden comprobar los ordenadores
+
+El número (N(T)) de ceros no triviales con parte imaginaria entre (0) y (T) satisface aproximadamente
+
+[
+N(T)=
+\frac{T}{2\pi}\log\frac{T}{2\pi}
+-\frac{T}{2\pi}
++O(\log T).
+]
+
+Por tanto, hay infinitos ceros y su densidad aumenta lentamente con la altura.
+
+Los ordenadores pueden localizar ceros en la línea crítica y, mediante métodos de conteo global, comprobar que no han quedado otros ceros ocultos fuera de ella hasta cierta altura. El Clay Mathematics Institute informa de que los primeros (10^{13}) ceros han sido verificados. Todos se encuentran sobre la línea crítica. Pero una comprobación finita, por gigantesca que sea, nunca puede demostrar una afirmación sobre infinitos ceros. ([Clay Mathematics Institute][1])
+
+Los pares de ceros extremadamente próximos, conocidos como **pares de Lehmer**, son especialmente interesantes para estudiar la dinámica de los ceros. No constituyen por sí mismos un contraejemplo. Tampoco debe confundirse la hipótesis de Riemann con la conjetura de que todos los ceros son simples. Un cero múltiple situado en la línea crítica seguiría siendo compatible con la hipótesis de Riemann, y un operador autoadjunto puede perfectamente tener valores propios repetidos.
+
+## La constante de De Bruijn–Newman
+
+Existe una familia de deformaciones (H_t) de la función de Riemann, relacionada con una evolución de tipo calor. De Bruijn y Newman demostraron que existe una constante real (\Lambda) tal que todos los ceros de (H_t) son reales exactamente cuando
+
+[
+t\geq\Lambda.
+]
+
+La dirección de la desigualdad es importante. La hipótesis de Riemann equivale a
+
+[
+\Lambda\leq 0.
+]
+
+En 2018, Brad Rodgers y Terence Tao demostraron la desigualdad opuesta:
+
+[
+\Lambda\geq0.
+]
+
+Por consiguiente, si la hipótesis de Riemann es verdadera, necesariamente
+
+[
+\boxed{\Lambda=0}.
+]
+
+Esta es la base técnica de la conocida expresión según la cual la hipótesis, de ser cierta, sería “apenas cierta”: el sistema original estaría situado exactamente en la frontera entre una región donde todos los ceros son reales y otra donde empiezan a abandonar el eje correspondiente. ([arXiv][6])
+
+## Lo que ya se ha demostrado
+
+Aunque no exista una demostración completa, el progreso no ha sido nulo. Hardy probó que hay infinitos ceros sobre la línea crítica. Selberg demostró después que una proporción positiva se encuentra en ella. Trabajos sucesivos de Levinson, Conrey y otros elevaron esa proporción, y actualmente se sabe que al menos el (41%) de los ceros están sobre la línea crítica. Naturalmente, demostrar el (41%), el (90%) o incluso el (99{,}999%) no basta: la hipótesis exige el (100%). ([dlmf.nist.gov][3])
+
+También existen regiones libres de ceros y teoremas de densidad que limitan cuántos ceros podrían encontrarse lejos de la línea crítica. El trabajo reciente de Larry Guth y James Maynard obtuvo nuevas estimaciones para valores grandes de polinomios de Dirichlet y, como consecuencia, mejores cotas de densidad para los ceros. Es un avance real en teoría analítica de números, pero no coloca individualmente cada cero sobre la recta (\operatorname{Re}(s)=1/2). ([arXiv][7])
+
+## ¿Podría ser indecidible?
+
+En principio, una afirmación aritmética puede resultar independiente de un sistema axiomático concreto: podría no ser demostrable ni refutable dentro de ese sistema. Pero los teoremas de incompletitud de Gödel no implican automáticamente que la hipótesis de Riemann sea indecidible. No se ha demostrado que lo sea, y la ausencia actual de una prueba no constituye evidencia suficiente de independencia lógica.
+
+La dificultad parece más matemática que metamatemática: conocemos muchas consecuencias, analogías y aproximaciones, pero todavía no poseemos la estructura que explique simultáneamente por qué aparecen los primos, la simetría (s\leftrightarrow1-s), las estadísticas de matrices aleatorias y la geometría de los cuerpos finitos.
+
+## El verdadero núcleo del problema
+
+La hipótesis de Riemann puede expresarse en una sola línea:
+
+[
+\zeta(\rho)=0,\quad 0<\operatorname{Re}(\rho)<1
+\quad\Longrightarrow\quad
+\operatorname{Re}(\rho)=\frac12.
+]
+
+Pero esa línea conecta cuatro mundos:
+
+* la factorización de los enteros y la distribución de los primos;
+* el análisis complejo y las ecuaciones funcionales;
+* los espectros de operadores autoadjuntos y el caos cuántico;
+* la geometría algebraica, la cohomología y los valores propios de Frobenius.
+
+La evidencia numérica indica que la hipótesis es cierta. La teoría de matrices aleatorias sugiere que existe una explicación espectral. Las variedades sobre cuerpos finitos muestran que una explicación geométrica de este tipo es posible. Las fórmulas explícitas demuestran que los ceros controlan directamente las oscilaciones de los primos.
+
+Lo que falta no es otra comprobación, sino un principio capaz de unificar esas pistas. Una prueba de la hipótesis de Riemann no solo confirmaría que todos los ceros están sobre una recta: explicaría por qué la aparente irregularidad de los números primos está sometida a una forma de orden tan rígida y precisa.
+
+[1]: https://www.claymath.org/millennium/riemann-hypothesis/ "Riemann Hypothesis - Clay Mathematics Institute"
+[2]: https://dlmf.nist.gov/25.2 "DLMF: §25.2 Definition and Expansions ‣ Riemann Zeta Function ‣ Chapter 25 Zeta and Related Functions"
+[3]: https://dlmf.nist.gov/25.10 "DLMF: §25.10 Zeros ‣ Riemann Zeta Function ‣ Chapter 25 Zeta and Related Functions"
+[4]: https://dlmf.nist.gov/25.16 "DLMF: §25.16 Mathematical Applications ‣ Applications ‣ Chapter 25 Zeta and Related Functions"
+[5]: https://www.claymath.org/wp-content/uploads/2022/05/riemann.pdf "Riemann-new.dvi"
+[6]: https://arxiv.org/abs/1801.05914 "[1801.05914] The De Bruijn-Newman constant is non-negative"
+[7]: https://arxiv.org/abs/2405.20552 "[2405.20552] New large value estimates for Dirichlet polynomials"

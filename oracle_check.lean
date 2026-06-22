@@ -1,0 +1,11 @@
+import RiemannPrimeResolvent
+
+#print axioms RiemannPrimeResolvent.ErrorBudget.total_nonneg
+#print axioms RiemannPrimeResolvent.three_step_triangle
+#print axioms RiemannPrimeResolvent.error_le_budget
+#print axioms RiemannPrimeResolvent.ErrorBudget.tendsto_total_zero
+#print axioms RiemannPrimeResolvent.finiteStieltjes_nonneg
+#print axioms RiemannPrimeResolvent.finiteSquaredResolvent_nonneg
+#print axioms RiemannPrimeResolvent.primeTailMajorant_nonneg
+#print axioms RiemannPrimeResolvent.rateExponent_pos
+#print axioms RiemannPrimeResolvent.rayleighGapDefect_nonneg
