@@ -1,0 +1,773 @@
+\documentclass[11pt]{article}
+
+\usepackage[a4paper,margin=29mm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{listings}
+\usepackage{hyperref}
+\usepackage[nameinlink,capitalise,noabbrev]{cleveref}
+
+\definecolor{navy}{RGB}{26,55,91}
+\definecolor{softblue}{RGB}{235,242,250}
+\definecolor{softred}{RGB}{252,239,239}
+\hypersetup{
+  colorlinks=true,
+  linkcolor=navy,
+  citecolor=navy,
+  urlcolor=navy,
+  pdftitle={A One-Point Resolvent--Hausdorff Criterion for the Riemann Xi Function},
+  pdfauthor={Lluís Eriksson}
+}
+
+\lstdefinestyle{lean}{
+  basicstyle=\ttfamily\small,
+  frame=single,
+  breaklines=true,
+  columns=fullflexible,
+  backgroundcolor=\color{softblue},
+  showstringspaces=false
+}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{researchtarget}[theorem]{Research target}
+
+\newcommand{\C}{\mathbb C}
+\newcommand{\R}{\mathbb R}
+\newcommand{\N}{\mathbb N}
+\newcommand{\XiR}{\mathcal S_{\Xi}}
+\newcommand{\RH}{\mathrm{RH}}
+\newcommand{\slit}{\C\setminus(-\infty,0]}
+\newcommand{\dd}{\,\mathrm d}
+\newcommand{\Tr}{\operatorname{Tr}}
+\newcommand{\arsinh}{\operatorname{arsinh}}
+
+\title{\textbf{A One-Point Resolvent--Hausdorff Criterion\\for the Riemann $\Xi$ Function}}
+\author{Lluís Eriksson}
+\date{Research artifact v0.2.0 --- 22 June 2026}
+
+\begin{document}
+\maketitle
+
+\begin{center}
+\fcolorbox{navy}{softred}{\parbox{0.91\textwidth}{
+\textbf{Status and scope.} This manuscript does not claim a proof of the Riemann
+hypothesis. It proves an abstract reduction, develops finite certificate hierarchies,
+and supplies a finite Lean 4 proof layer with mandatory CI verification. The concrete spectral convergence
+that would imply RH remains open. Novelty relative to existing Hausdorff-moment criteria
+also requires specialist review.
+}}
+\end{center}
+
+\begin{abstract}
+For $x>1/4$ define
+\[
+ \XiR(x)=\frac{1}{2\sqrt{x}}\frac{\xi'}{\xi}
+ \left(\frac12+\sqrt{x}\right),
+ \qquad
+ \Xi(z)=\xi\left(\frac12+iz\right).
+\]
+We isolate a slit-plane extension criterion: if $\XiR$ agrees on one real interval
+with a holomorphic function on $\C\setminus(-\infty,0]$, then every zero of $\Xi$
+is real. Fixing a single $x_0>1/4$, we encode the derivative jet by
+\[
+ b_n(x_0)=x_0^n\frac{(-1)^n}{n!}\XiR^{(n)}(x_0).
+\]
+Using the Hausdorff moment theorem, we show that RH is equivalent to the sequence
+$(b_n(x_0))_{n\ge0}$ being a moment sequence of a finite positive measure on $[0,1]$,
+or equivalently to all signed forward differences being nonnegative. Under RH the
+measure is obtained by the resolvent compactification
+$\gamma^2\mapsto x_0/(\gamma^2+x_0)$ of the ordinates of the zeros. Conversely, a
+Hausdorff representing measure reconstructs a slit-plane extension. We derive finite
+difference and positive semidefinite certificate hierarchies, an explicit prime-side
+target with a uniform elementary truncation bound, and a normal-family criterion for
+positive squared-resolvent approximants. A Lean 4 companion encodes proofs of the finite atomic
+identities, compactification inequalities, sum-of-squares certificates, and error-budget
+glue. The decisive open task is a non-circular convergence estimate for a concrete
+prime-built self-adjoint family.
+\end{abstract}
+
+\tableofcontents
+
+\section{Introduction}
+
+The Riemann hypothesis is the assertion that every non-trivial zero of the zeta
+function has real part $1/2$ \cite{Riemann1859,Titchmarsh1986,ClayRH}. A classical
+spectral ambition is to realize the corresponding ordinates as the spectrum of a
+self-adjoint operator. Recent work has produced prime-built self-adjoint approximants
+with striking numerical behaviour, while identifying rigorous convergence as the
+central unresolved step \cite{ConnesConsaniMoscovici2025,ConnesVanSuijlekom2025}.
+
+This paper advocates a positive scalar observable rather than direct convergence of
+regularized determinants:
+\[
+ S_D(x)=\frac12\Tr(D^2+xI)^{-1}.
+\]
+It suppresses high spectral values, is stable under perturbation, and belongs to the
+Stieltjes class whenever the squared resolvent is trace class. The transformation
+\[
+ \lambda\longmapsto \frac{x_0}{\lambda+x_0}
+\]
+compactifies a nonnegative spectrum to $[0,1]$. At a single fixed point $x_0$, the
+entire derivative jet of the target therefore becomes a candidate Hausdorff moment
+sequence.
+
+Moment formulations of RH already exist; in particular Zhang develops Hausdorff-moment
+criteria for classes of entire functions and for RH \cite{Zhang2023}. Accordingly, the
+present manuscript does not assert that ``moments imply RH'' is new. Its proposed
+contribution is the integrated package: a squared-resolvent target, one-point derivative
+jet, slit-plane reconstruction, prime-side truncation, finite semidefinite certificates,
+and formal verification. Whether the precise one-point formulation is novel is a
+literature question, not a theorem.
+
+\paragraph{Contributions.}
+The paper establishes the following chain.
+\begin{enumerate}[label=(\roman*)]
+  \item A slit-plane extension of $\XiR$ excludes non-real zeros of $\Xi$.
+  \item For every fixed $x_0>1/4$, RH is equivalent to a Hausdorff moment condition on
+  the derivatives of $\XiR$ at $x_0$.
+  \item The moment condition yields scalar finite-difference and finite PSD tests.
+  \item The arithmetic target has an absolutely convergent prime expansion and an
+  explicit elementary tail bound.
+  \item Positive Stieltjes approximants with one-point control need only converge on one
+  real interval to imply RH.
+  \item A Lean 4 artifact encodes the finite algebraic substrate without project axioms and makes compilation an explicit CI gate.
+\end{enumerate}
+
+\section{The completed zeta function and the resolvent target}
+
+Define
+\begin{equation}\label{eq:xi-def}
+ \xi(s)=\frac12s(s-1)\pi^{-s/2}\Gamma\left(\frac{s}{2}\right)\zeta(s),
+ \qquad
+ \Xi(z)=\xi\left(\frac12+iz\right).
+\end{equation}
+The function $\xi$ is entire and satisfies $\xi(s)=\xi(1-s)$; hence $\Xi$ is entire,
+even, and real on the real axis. The non-trivial zero $\rho=\beta+i\gamma$ of $\zeta$
+corresponds to the zero
+\[
+ z=\gamma-i\left(\beta-\frac12\right)
+\]
+of $\Xi$. Thus
+\begin{equation}\label{eq:rh-real-zeros}
+ \RH\quad\Longleftrightarrow\quad\text{all zeros of $\Xi$ are real}.
+\end{equation}
+
+For $x>1/4$, set
+\begin{equation}\label{eq:target}
+ \XiR(x)=\frac{1}{2\sqrt{x}}\frac{\xi'}{\xi}
+ \left(\frac12+\sqrt{x}\right).
+\end{equation}
+The restriction ensures $\sigma=1/2+\sqrt{x}>1$, where the Euler product is absolutely
+convergent and $\zeta(\sigma)\ne0$.
+
+\begin{proposition}[Spectral representation under RH]\label{prop:rh-stieltjes}
+Assume RH and enumerate the positive zeros of $\Xi$, with multiplicity, by
+$0<\gamma_1\le\gamma_2\le\cdots$. Then
+\begin{equation}\label{eq:stieltjes-zeros}
+ \XiR(x)=\sum_{j\ge1}\frac{1}{\gamma_j^2+x},\qquad x>0.
+\end{equation}
+In particular $\XiR$ is the Stieltjes transform of the positive discrete measure
+$\sum_j\delta_{\gamma_j^2}$.
+\end{proposition}
+
+\begin{proof}
+Because $\Xi$ is even of order one and $\sum_j\gamma_j^{-2}<\infty$, its symmetric
+canonical product has the form
+\[
+ \Xi(z)=\Xi(0)\prod_{j\ge1}\left(1-\frac{z^2}{\gamma_j^2}\right).
+\]
+Logarithmic differentiation gives
+\[
+ -\frac{\Xi'(z)}{\Xi(z)}=2z\sum_{j\ge1}\frac{1}{\gamma_j^2-z^2}.
+\]
+At $z=iy$, the functional equation implies
+\[
+ -\frac{\Xi'(iy)}{\Xi(iy)}
+ =i\frac{\xi'}{\xi}\left(\frac12+y\right).
+\]
+Dividing by $2iy$ and putting $x=y^2$ yields \eqref{eq:stieltjes-zeros}. Standard zero
+counting gives convergence locally uniformly away from the negative real cut.
+\end{proof}
+
+\section{A slit-plane extension criterion}
+
+Let
+\[
+ \Omega=\slit.
+\]
+The quadratic map used below is the key geometric device.
+
+\begin{lemma}\label{lem:quadratic-map}
+If $\operatorname{Im}z>0$, then $-z^2\in\Omega$.
+\end{lemma}
+
+\begin{proof}
+Write $z=a+ib$ with $b>0$. If $a=0$, then $-z^2=b^2>0$. If $a\ne0$, then
+$\operatorname{Im}(-z^2)=-2ab\ne0$, so $-z^2$ is not on the non-positive real axis.
+\end{proof}
+
+\begin{theorem}[Slit-plane extension criterion]\label{thm:slit-extension}
+Let $I\subset(1/4,\infty)$ be a nonempty open interval. Suppose that a holomorphic
+function $S:\Omega\to\C$ satisfies
+\[
+ S(x)=\XiR(x),\qquad x\in I.
+\]
+Then RH holds.
+\end{theorem}
+
+\begin{proof}
+For $z$ in the upper half-plane define
+\[
+ M(z)=2zS(-z^2).
+\]
+By \cref{lem:quadratic-map}, $M$ is holomorphic. If $z=iy$ and $y^2\in I$, then
+\[
+ M(iy)=2iy\XiR(y^2)
+ =i\frac{\xi'}{\xi}\left(\frac12+y\right)
+ =-\frac{\Xi'(iy)}{\Xi(iy)}.
+\]
+The meromorphic identity theorem therefore gives
+\[
+ M(z)=-\frac{\Xi'(z)}{\Xi(z)}
+\]
+throughout the upper half-plane away from the zeros of $\Xi$.
+
+Suppose $z_0$ were an upper-half-plane zero of multiplicity $m>0$. Locally
+$\Xi(z)=(z-z_0)^m g(z)$ with $g(z_0)\ne0$, and hence
+\[
+ -\frac{\Xi'(z)}{\Xi(z)}=-\frac{m}{z-z_0}-\frac{g'(z)}{g(z)}.
+\]
+This has a non-removable pole at $z_0$, contradicting the holomorphy of $M$. Thus no
+zero lies in the upper half-plane. Conjugation symmetry excludes the lower half-plane,
+so all zeros are real. By \eqref{eq:rh-real-zeros}, RH follows.
+\end{proof}
+
+\begin{remark}
+The theorem does not reconstruct every zero, require determinant convergence, or identify
+an inverse spectral problem. Agreement on one interval is enough because analyticity
+propagates the logarithmic derivative.
+\end{remark}
+
+\section{The one-point Hausdorff criterion}
+
+Fix once and for all $x_0>1/4$. Define the normalized derivative jet
+\begin{equation}\label{eq:bn-def}
+ b_n(x_0)=x_0^n\frac{(-1)^n}{n!}\XiR^{(n)}(x_0),\qquad n\ge0.
+\end{equation}
+For a sequence $b=(b_n)$ define the signed forward differences recursively by
+\[
+ D^0b_n=b_n,\qquad D^{k+1}b_n=D^kb_n-D^kb_{n+1}.
+\]
+Thus $D^k=(-1)^k\Delta^k$ under the usual convention $\Delta b_n=b_{n+1}-b_n$.
+
+We use the classical Hausdorff moment theorem \cite{Hausdorff1921,ShohatTamarkin1943,Akhiezer1965}:
+\begin{equation}\label{eq:hausdorff-theorem}
+ b_n=\int_0^1 v^n\dd\mu(v)\text{ for a finite positive measure $\mu$}
+ \quad\Longleftrightarrow\quad
+ D^kb_n\ge0\text{ for all $k,n\ge0$}.
+\end{equation}
+
+\begin{theorem}[One-point resolvent--Hausdorff criterion]\label{thm:one-point}
+For every fixed $x_0>1/4$, the following are equivalent.
+\begin{enumerate}[label=(\alph*)]
+  \item RH holds.
+  \item The sequence $\bigl(b_n(x_0)\bigr)_{n\ge0}$ is a Hausdorff moment sequence.
+  \item For all $k,n\ge0$,
+  \[
+    D^k b_n(x_0)\ge0.
+  \]
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+Assume RH. By \cref{prop:rh-stieltjes}, differentiation term by term gives
+\[
+ \frac{(-1)^n}{n!}\XiR^{(n)}(x_0)
+ =\sum_{j\ge1}\frac{1}{(\gamma_j^2+x_0)^{n+1}}.
+\]
+Put
+\[
+ u_j=\frac{1}{\gamma_j^2+x_0},
+ \qquad
+ v_j=\frac{x_0}{\gamma_j^2+x_0}\in(0,1).
+\]
+Then
+\[
+ b_n(x_0)=\sum_{j\ge1}u_jv_j^n
+ =\int_0^1 v^n\dd\mu_{x_0}(v),
+ \qquad
+ \mu_{x_0}=\sum_{j\ge1}u_j\delta_{v_j}.
+\]
+The measure is finite because its total mass is $\XiR(x_0)$. This proves (a)$\Rightarrow$(b),
+and (b)$\Leftrightarrow$(c) is \eqref{eq:hausdorff-theorem}.
+
+Now assume (b), with representing measure $\mu$. For $w\in\Omega$ define
+\begin{equation}\label{eq:hausdorff-extension}
+ F(w)=\int_0^1
+ \frac{\dd\mu(v)}{1+\frac{w-x_0}{x_0}v}.
+\end{equation}
+For $v>0$, the only zero of the denominator occurs at
+$w=x_0(1-v^{-1})\in(-\infty,0]$; for $v=0$ the denominator is one. Standard dominated
+holomorphic-parameter integration shows that $F$ is holomorphic on $\Omega$.
+
+For $h$ sufficiently small,
+\[
+ F(x_0+h)
+ =\int_0^1\sum_{n\ge0}\left(-\frac{h}{x_0}v\right)^n\dd\mu(v)
+ =\sum_{n\ge0}(-1)^n\frac{h^n}{x_0^n}b_n(x_0).
+\]
+By \eqref{eq:bn-def}, this is precisely the Taylor series of $\XiR(x_0+h)$.
+Consequently $F$ agrees with $\XiR$ on a nonempty interval around $x_0$. Applying
+\cref{thm:slit-extension} proves RH.
+\end{proof}
+
+\begin{corollary}[Explicit finite differences under RH]\label{cor:diff-spectral}
+Under RH,
+\[
+ D^k b_n(x_0)
+ =\sum_{j\ge1}
+ \frac{1}{\gamma_j^2+x_0}
+ \left(\frac{x_0}{\gamma_j^2+x_0}\right)^n
+ \left(1-\frac{x_0}{\gamma_j^2+x_0}\right)^k
+ \ge0.
+\]
+\end{corollary}
+
+\section{Finite certificate hierarchies}
+
+The infinite family in \cref{thm:one-point} can be truncated in several falsifiable ways.
+A single certified negative value of $D^kb_n$ would refute RH. Passing a finite number of
+tests is evidence about the truncation only, never a proof of RH.
+
+\subsection{Finite differences}
+
+For integers $K,N\ge0$, define the scalar test region
+\[
+ \mathcal D_{K,N}=\{D^kb_n:0\le k\le K,\ 0\le n\le N\}.
+\]
+Each quantity can in principle be evaluated from derivatives of the prime-side target, with
+interval arithmetic used to control truncation and differentiation errors.
+
+\subsection{Hankel and localizing forms}
+
+Given a moment sequence $(b_n)$, define
+\[
+ H_N=(b_{i+j})_{0\le i,j<N},
+ \qquad
+ L_N=(b_{i+j}-b_{i+j+1})_{0\le i,j<N}.
+\]
+If $b_n=\int_0^1v^n\dd\mu(v)$, then for every $c\in\R^N$,
+\begin{align*}
+ c^\mathsf{T}H_Nc
+ &=\int_0^1\left|\sum_{i=0}^{N-1}c_iv^i\right|^2\dd\mu(v)\ge0,\\
+ c^\mathsf{T}L_Nc
+ &=\int_0^1(1-v)\left|\sum_{i=0}^{N-1}c_iv^i\right|^2\dd\mu(v)\ge0.
+\end{align*}
+Thus
+\[
+ H_N\succeq0,\qquad L_N\succeq0.
+\]
+The Lean source encodes proofs of these facts for finite atomic measures as explicit sum-of-squares
+certificates, avoiding reliance on numerical eigenvalue computations.
+
+\subsection{Resolvent compactification}
+
+Let $\lambda_i\ge0$ be a finite squared spectrum and $x_0>0$. Define
+\[
+ w_i=\frac{1}{\lambda_i+x_0},
+ \qquad
+ p_i=\frac{x_0}{\lambda_i+x_0}\in[0,1],
+ \qquad
+ b_n^{\mathrm{fin}}=\sum_iw_ip_i^n.
+\]
+Then
+\begin{equation}\label{eq:finite-difference-identity}
+ D^kb_n^{\mathrm{fin}}
+ =\sum_iw_ip_i^n(1-p_i)^k\ge0.
+\end{equation}
+This identity is the central kernel-checked theorem in the current Lean layer.
+
+\section{The arithmetic target and an explicit prime tail}
+
+For real $\sigma>1$, logarithmic differentiation of \eqref{eq:xi-def} gives
+\begin{equation}\label{eq:xi-log-derivative}
+ \frac{\xi'}{\xi}(\sigma)
+ =\frac1\sigma+\frac1{\sigma-1}-\frac12\log\pi
+ +\frac12\psi\left(\frac\sigma2\right)
+ -\sum_{m=2}^{\infty}\frac{\Lambda(m)}{m^\sigma},
+\end{equation}
+where $\psi=\Gamma'/\Gamma$ and $\Lambda$ is the von Mangoldt function. With
+$y=\sqrt{x}$ and $\sigma=1/2+y$,
+\begin{equation}\label{eq:prime-target}
+ \XiR(x)=\frac{1}{2y}\left[
+ \frac1\sigma+\frac1{\sigma-1}-\frac12\log\pi
+ +\frac12\psi\left(\frac\sigma2\right)
+ -\sum_{m=2}^{\infty}\frac{\Lambda(m)}{m^\sigma}
+ \right].
+\end{equation}
+For a cutoff $X\ge3$, let $P_X(x)$ be the same expression with $m\le X$.
+
+\begin{proposition}[Elementary prime-tail bound]\label{prop:prime-tail}
+Let $\delta>0$ and $x\ge(1/2+\delta)^2$. For $X\ge3$,
+\begin{equation}\label{eq:tail-bound}
+ |\XiR(x)-P_X(x)|
+ \le
+ \frac{X^{-\delta}}{1+2\delta}
+ \left(\frac{\log X}{\delta}+\frac{1}{\delta^2}\right).
+\end{equation}
+\end{proposition}
+
+\begin{proof}
+Here $y\ge1/2+\delta$ and $\sigma\ge1+\delta$. Since
+$0\le\Lambda(m)\le\log m$,
+\[
+ |\XiR(x)-P_X(x)|
+ \le\frac{1}{2y}\sum_{m>X}\frac{\log m}{m^{1+\delta}}.
+\]
+For $X\ge3$ the summand is eventually decreasing, and the standard integral majorant gives
+\[
+ \sum_{m>X}\frac{\log m}{m^{1+\delta}}
+ \le\int_X^\infty\frac{\log t}{t^{1+\delta}}\dd t
+ =X^{-\delta}\left(\frac{\log X}{\delta}+\frac1{\delta^2}\right).
+\]
+Finally $(2y)^{-1}\le(1+2\delta)^{-1}$.
+\end{proof}
+
+\section{Positive spectral approximants}
+
+Let $\nu_j$ be positive measures on $[0,\infty)$ satisfying
+\[
+ \int_0^\infty\frac{\dd\nu_j(t)}{t+x_*}<\infty
+\]
+for some $x_*>0$, and define
+\[
+ S_j(w)=\int_0^\infty\frac{\dd\nu_j(t)}{t+w},\qquad w\in\Omega.
+\]
+For a paired discrete spectrum $\{\pm\gamma_{j,k}\}$ this takes the form
+\[
+ S_j(x)=\sum_k\frac{1}{\gamma_{j,k}^2+x}
+ =\frac12\Tr(D_j^2+xI)^{-1}.
+\]
+
+\begin{lemma}[One-point normal-family control]\label{lem:one-point-control}
+If $\sup_jS_j(x_*)<\infty$, then $(S_j)$ is locally bounded on $\Omega$.
+\end{lemma}
+
+\begin{proof}
+For every compact $K\subset\Omega$ there exists $C_K<\infty$ such that
+\[
+ \frac1{|t+w|}\le\frac{C_K}{t+x_*},
+ \qquad t\ge0,\ w\in K.
+\]
+Integration yields $|S_j(w)|\le C_KS_j(x_*)$, uniformly in $j$.
+\end{proof}
+
+\begin{theorem}[Abstract prime--resolvent criterion]\label{thm:abstract-resolvent}
+Let $I\subset(1/4,\infty)$ be a nonempty open interval. Suppose the $S_j$ above satisfy
+\[
+ \sup_jS_j(x_*)<\infty
+ \qquad\text{and}\qquad
+ S_j(x)\longrightarrow\XiR(x)\quad(x\in I).
+\]
+Then RH holds.
+\end{theorem}
+
+\begin{proof}
+By \cref{lem:one-point-control} and Montel's theorem, a subsequence converges uniformly on
+compact subsets of $\Omega$ to a holomorphic function $S$. Pointwise convergence on $I$
+forces $S=\XiR$ there. The conclusion follows from \cref{thm:slit-extension}.
+\end{proof}
+
+\begin{corollary}[Prime--resolvent error formulation]\label{cor:prime-resolvent-error}
+Fix $\delta>0$ and a compact interval
+$I_{\delta,B}\subset((1/2+\delta)^2,\infty)$. Let $X_j\to\infty$. If
+\[
+ \sup_{x\in I_{\delta,B}}|S_j(x)-P_{X_j}(x)|\to0
+\]
+and the one-point bound in \cref{thm:abstract-resolvent} holds, then RH holds.
+\end{corollary}
+
+\begin{proof}
+Combine the assumed comparison with the uniform bound \eqref{eq:tail-bound}, then apply
+\cref{thm:abstract-resolvent}.
+\end{proof}
+
+\section{A three-part error budget}
+
+For a concrete operator construction, the useful decomposition is
+\begin{align*}
+ |S_{\mathrm{spec}}-\XiR|
+ \le{}&|S_{\mathrm{spec}}-S_{\mathrm{model}}|
+ +|S_{\mathrm{model}}-P_X|
+ +|P_X-\XiR|.
+\end{align*}
+The three terms represent:
+\begin{enumerate}[label=(\arabic*)]
+  \item spectral/Galerkin or state-alignment error;
+  \item model normalization and transform-convention error;
+  \item the explicit arithmetic tail in \cref{prop:prime-tail}.
+\end{enumerate}
+Only the third term is closed here in a source-independent manner. For the prime-built
+operators of \cite{ConnesConsaniMoscovici2025}, the first two require a precise audit of
+domains, Fourier/Mellin conventions, spectral gaps, and trace-class estimates.
+
+The finite-dimensional resolvent identity
+\[
+ (A^2+xI)^{-1}-(B^2+xI)^{-1}
+ =(A^2+xI)^{-1}(B^2-A^2)(B^2+xI)^{-1}
+\]
+suggests the trace estimate
+\[
+ \left|\Tr\left((A^2+xI)^{-1}-(B^2+xI)^{-1}\right)\right|
+ \le x^{-2}\|A^2-B^2\|_1,
+\]
+whenever the indicated trace-class hypotheses hold. Establishing a useful version for the
+concrete unbounded models is a substantive analytic task, not formal bookkeeping.
+
+\section{Numerical illustration and exact toy certificates}
+
+The accompanying scripts compare \eqref{eq:target}, the prime truncation
+\eqref{eq:prime-target}, and a finite sum over the first critical-line zeros. The default
+run uses $40$ zeros, prime-power cutoff $20{,}000$, and $70$ points on $[1,25]$.
+These choices are intentionally modest: the goal is to test conventions and the artifact
+pipeline, not to provide new evidence for RH.
+
+\begin{figure}[ht]
+ \centering
+ \includegraphics[width=0.88\textwidth]{figures/resolvent_comparison.pdf}
+ \caption{Numerical comparison of the completed-zeta target, a truncated von Mangoldt
+ expansion, and a partial spectral sum. The visible spectral offset is the omitted positive
+ tail, not a contradiction.}
+ \label{fig:comparison}
+\end{figure}
+
+\begin{figure}[ht]
+ \centering
+ \includegraphics[width=0.88\textwidth]{figures/resolvent_errors.pdf}
+ \caption{Illustrative absolute errors for the same finite calculation. Neither curve is a
+ certified infinite-dimensional convergence result.}
+ \label{fig:errors}
+\end{figure}
+
+The exact certificate script uses
+\[
+ x_0=1,\qquad \lambda\in\{1,4,9\},
+\]
+so that
+\[
+ p\in\left\{\frac12,\frac15,\frac1{10}\right\},
+ \qquad w=p.
+\]
+It exports rational moments, signed differences, Hankel and localizing matrices, and exact
+principal minors. Because the support has three atoms, the Hankel rank stabilizes at three;
+zero higher principal minors are therefore expected.
+
+\section{Lean 4 formalization}
+
+The artifact is written for Lean 4 and Mathlib \cite{deMoura2015,Mathlib2020}, pinned to
+Lean/Mathlib release v4.31.0. The current source-complete layer is deliberately finite. The construction container used for this archive did not contain Lean, so compilation remains an explicit CI release check rather than a locally claimed success.
+
+\begin{table}[ht]
+\centering
+\small
+\begin{tabular}{p{0.31\textwidth}p{0.58\textwidth}}
+\toprule
+Module & Certified content \\
+\midrule
+\texttt{Basic} & Atomic moments, signed forward differences, complete-monotonicity predicate. \\
+\texttt{HausdorffFinite} & Exact identity \eqref{eq:finite-difference-identity} for finite atoms. \\
+\texttt{ResolventCompactification} & Positivity and $[0,1]$ support of compactified spectral atoms. \\
+\texttt{FiniteCertificates} & Hankel and localizing sum-of-squares nonnegativity. \\
+\texttt{ErrorBudget} & Deterministic three-term triangle inequality. \\
+\texttt{Oracle} & Kernel axiom audit via \texttt{\#print axioms}. \\
+\bottomrule
+\end{tabular}
+\caption{Current Lean 4 source proof boundary.}
+\label{tab:lean}
+\end{table}
+
+The headline finite theorem has the schematic form:
+\begin{lstlisting}[style=lean,language={}]
+theorem hausdorffDiff_atomicMoment
+    (weight point : iota -> Real) (k n : Nat) :
+  hausdorffDiff k (atomicMoment weight point) n =
+    sum i, weight i * point i ^ n * (1 - point i) ^ k
+\end{lstlisting}
+The repository CI is configured to run a full build, the oracle file, a placeholder scan, exact rational
+certificate tests, and the paper build. No theorem in the current Lean source assumes RH.
+
+\paragraph{Formalization frontier.}
+The next high-value steps are the exact $\xi/\Xi$ convention bridge, the slit-plane map,
+local factorization of analytic zeros, the Hausdorff theorem, and the prime-tail estimate.
+The unbounded operator layer should be introduced only after this abstract chain is closed.
+
+\section{Novelty, falsifiability, and publication gates}
+
+The following distinctions are essential.
+
+\paragraph{Classical substance.}
+Stieltjes transforms, Hausdorff moments, normal families, and logarithmic-derivative pole
+arguments are classical. Moment criteria related to RH already appear in the literature,
+including \cite{Zhang2023}.
+
+\paragraph{Potentially publishable package.}
+A complete Lean formalization of \cref{thm:slit-extension,thm:one-point,prop:prime-tail},
+combined with finite certified tests and a careful literature comparison, would be a
+defensible formalization paper even without a new spectral convergence estimate.
+
+\paragraph{Substantive analytic advance.}
+A new unconditional bound for the Galerkin, ground-state alignment, model, or trace-resolvent
+error of a concrete prime-built family would materially strengthen the project.
+
+\paragraph{RH claim.}
+Only a full, non-circular convergence theorem satisfying all domain, multiplicity, trace,
+and normalization obligations would support a claim of proving RH. Finite numerical agreement,
+no matter how accurate, is insufficient.
+
+\section{Conclusion}
+
+The squared-resolvent viewpoint turns a global zero-location problem into a sequence of
+separable tasks. The key structural equivalence is
+\[
+ \boxed{
+ \RH
+ \iff
+ \left\{
+ x_0^n\frac{(-1)^n}{n!}\XiR^{(n)}(x_0)
+ \right\}_{n\ge0}
+ \text{ is a Hausdorff moment sequence}
+ }
+\]
+for any fixed $x_0>1/4$. The forward direction compactifies the squared ordinates of the
+zeros; the reverse direction uses a representing measure to build a holomorphic function on
+the slit plane, where the logarithmic derivative cannot hide a non-real zero.
+
+The resulting finite differences and semidefinite forms provide exact, falsifiable tests. The
+prime expansion supplies a directly computable arithmetic target. Positive spectral approximants
+need only be controlled at one point and converge on one real interval. What remains difficult is
+not obscured: one must prove a uniform, non-circular comparison for a concrete prime-built
+self-adjoint family. The repository is designed so that this open frontier is visible in the type and
+dependency structure rather than disguised as an assumption named ``convergence.''
+
+\appendix
+\section{Finite atomic identity}
+
+For completeness, let
+\[
+ b_n=\sum_{i=1}^mw_ip_i^n.
+\]
+Induction on $k$ proves
+\[
+ D^kb_n=\sum_{i=1}^mw_ip_i^n(1-p_i)^k.
+\]
+Indeed, the step from $k$ to $k+1$ is
+\begin{align*}
+ D^{k+1}b_n
+ &=D^kb_n-D^kb_{n+1}\\
+ &=\sum_iw_ip_i^n(1-p_i)^k
+   -\sum_iw_ip_i^{n+1}(1-p_i)^k\\
+ &=\sum_iw_ip_i^n(1-p_i)^{k+1}.
+\end{align*}
+This proof is mirrored directly in \texttt{PrimeResolvent/HausdorffFinite.lean}.
+
+\section{Reproducibility commands}
+
+From a fresh clone:
+\begin{lstlisting}[style=lean,language={}]
+lake exe cache get
+lake build
+lake env lean PrimeResolvent/Oracle.lean
+python3 -m pip install -r requirements.txt
+python3 -m pytest -q
+python3 scripts/exact_atomic_certificate.py --output-dir data/certificates
+python3 scripts/numerical_demo.py --output-dir data/demo
+./scripts/build_paper.sh
+\end{lstlisting}
+The release manifest records SHA-256 hashes of every distributed source and generated artifact.
+The numerical scripts are explicitly marked non-probative; exact toy certificates use rational
+arithmetic.
+
+\begin{thebibliography}{99}
+
+\bibitem{Riemann1859}
+B. Riemann,
+\newblock Ueber die Anzahl der Primzahlen unter einer gegebenen Grösse,
+\newblock \emph{Monatsberichte der Berliner Akademie} (1859), 671--680.
+
+\bibitem{Titchmarsh1986}
+E. C. Titchmarsh and D. R. Heath-Brown,
+\newblock \emph{The Theory of the Riemann Zeta-Function}, 2nd ed.,
+\newblock Oxford University Press, 1986.
+
+\bibitem{Edwards1974}
+H. M. Edwards,
+\newblock \emph{Riemann's Zeta Function},
+\newblock Academic Press, 1974.
+
+\bibitem{Hausdorff1921}
+F. Hausdorff,
+\newblock Summationsmethoden und Momentfolgen. I,
+\newblock \emph{Math. Z.} 9 (1921), 74--109.
+
+\bibitem{ShohatTamarkin1943}
+J. A. Shohat and J. D. Tamarkin,
+\newblock \emph{The Problem of Moments},
+\newblock American Mathematical Society, 1943.
+
+\bibitem{Akhiezer1965}
+N. I. Akhiezer,
+\newblock \emph{The Classical Moment Problem},
+\newblock Oliver and Boyd, 1965.
+
+\bibitem{Widder1941}
+D. V. Widder,
+\newblock \emph{The Laplace Transform},
+\newblock Princeton University Press, 1941.
+
+\bibitem{Zhang2023}
+R. Zhang,
+\newblock An Application of Hausdorff Moment Problem,
+\newblock arXiv:2303.09396, 2023.
+
+\bibitem{ConnesConsaniMoscovici2025}
+A. Connes, C. Consani, and H. Moscovici,
+\newblock Zeta Spectral Triples,
+\newblock arXiv:2511.22755, 2025.
+
+\bibitem{ConnesVanSuijlekom2025}
+A. Connes and W. D. van Suijlekom,
+\newblock Quadratic Forms, Real Zeros and Echoes of the Spectral Action,
+\newblock arXiv:2511.23257, 2025.
+
+\bibitem{deMoura2015}
+L. de Moura, S. Kong, J. Avigad, F. van Doorn, and J. von Raumer,
+\newblock The Lean theorem prover (system description),
+\newblock in \emph{CADE-25}, 2015, 378--388.
+
+\bibitem{Mathlib2020}
+The mathlib community,
+\newblock The Lean mathematical library,
+\newblock in \emph{CPP 2020}, 367--381.
+
+\bibitem{ClayRH}
+Clay Mathematics Institute,
+\newblock Riemann Hypothesis, Millennium Prize Problems,
+\newblock \url{https://www.claymath.org/millennium/riemann-hypothesis/}, accessed 22 June 2026.
+
+\end{thebibliography}
+
+\end{document}

@@ -1,0 +1,16 @@
+.lake/
+build/
+__pycache__/
+.pytest_cache/
+*.pyc
+paper/*.aux
+paper/*.bbl
+paper/*.blg
+paper/*.fdb_latexmk
+paper/*.fls
+paper/*.log
+paper/*.out
+paper/*.toc
+paper/*.synctex.gz
+release/*.zip
+release/*.tar.gz
