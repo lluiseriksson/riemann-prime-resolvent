@@ -26,6 +26,7 @@ jobs:
           lake env lean oracle_check.lean
           python3 scripts/check_no_placeholders.py
           cd subprojects/riemann-one-point-resolvent
+          lake exe cache get
           lake build
           lake env lean OnePointResolvent/Oracle.lean
           python3 scripts/check_no_placeholders.py
