@@ -4,6 +4,7 @@ open Lake DSL
 package «RiemannPrimeResolvent» where
   -- The research code is deliberately small; Mathlib is pinned below.
 
+@[default_target]
 lean_lib «RiemannPrimeResolvent» where
   -- Root module: RiemannPrimeResolvent.lean
 

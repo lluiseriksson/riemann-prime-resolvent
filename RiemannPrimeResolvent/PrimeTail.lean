@@ -32,18 +32,18 @@ theorem primeTailMajorant_nonneg {δ X : ℝ}
     (add_nonneg (div_nonneg hlog hδ.le)
       (div_nonneg zero_le_one hδsq.le))
 
-/-- Resolvent-scaled prime tail associated with `a > 1/2` and cutoff `λ²`. -/
-noncomputable def resolventPrimeTailMajorant (a λ : ℝ) : ℝ :=
-  primeTailMajorant (a - 1 / 2) (λ ^ 2) / (2 * a)
+/-- Resolvent-scaled prime tail associated with `a > 1/2` and cutoff `lam²`. -/
+noncomputable def resolventPrimeTailMajorant (a lam : ℝ) : ℝ :=
+  primeTailMajorant (a - 1 / 2) (lam ^ 2) / (2 * a)
 
 /-- Nonnegativity of the scaled majorant. -/
-theorem resolventPrimeTailMajorant_nonneg {a λ : ℝ}
-    (ha : 1 / 2 < a) (hλ : 1 ≤ λ) :
-    0 ≤ resolventPrimeTailMajorant a λ := by
+theorem resolventPrimeTailMajorant_nonneg {a lam : ℝ}
+    (ha : 1 / 2 < a) (hLam : 1 ≤ lam) :
+    0 ≤ resolventPrimeTailMajorant a lam := by
   have hδ : 0 < a - 1 / 2 := by linarith
-  have hλsq : 1 ≤ λ ^ 2 := by nlinarith [sq_nonneg (λ - 1)]
+  have hLamSq : 1 ≤ lam ^ 2 := by nlinarith [sq_nonneg (lam - 1)]
   have ha0 : 0 < 2 * a := by linarith
   unfold resolventPrimeTailMajorant
-  exact div_nonneg (primeTailMajorant_nonneg hδ hλsq) ha0.le
+  exact div_nonneg (primeTailMajorant_nonneg hδ hLamSq) ha0.le
 
 end RiemannPrimeResolvent

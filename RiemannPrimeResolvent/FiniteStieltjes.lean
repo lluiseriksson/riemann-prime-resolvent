@@ -16,17 +16,17 @@ namespace RiemannPrimeResolvent
 
 open scoped BigOperators
 
-variable {ι : Type*} [DecidableEq ι]
+variable {ι : Type*}
 
 /-- Finite Stieltjes transform of nonnegative spectral locations `t i`. -/
 noncomputable def finiteStieltjes
     (s : Finset ι) (t : ι → ℝ) (x : ℝ) : ℝ :=
-  ∑ i in s, (t i + x)⁻¹
+  ∑ i ∈ s, (t i + x)⁻¹
 
 /-- Finite version of `Tr (D² + x I)⁻¹`, indexed by positive ordinates. -/
 noncomputable def finiteSquaredResolvent
     (s : Finset ι) (γ : ι → ℝ) (x : ℝ) : ℝ :=
-  ∑ i in s, (γ i ^ 2 + x)⁻¹
+  ∑ i ∈ s, (γ i ^ 2 + x)⁻¹
 
 /-- Positivity of a finite Stieltjes transform. -/
 theorem finiteStieltjes_nonneg

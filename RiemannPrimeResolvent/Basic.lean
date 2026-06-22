@@ -44,9 +44,9 @@ theorem three_step_triangle (spectral prolate target prime : ℝ) :
   calc
     |(spectral - prolate) + (prolate - target) + (target - prime)|
         ≤ |(spectral - prolate) + (prolate - target)| + |target - prime| :=
-      abs_add _ _
+      abs_add_le _ _
     _ ≤ (|spectral - prolate| + |prolate - target|) + |target - prime| :=
-      add_le_add_right (abs_add _ _) _
+      add_le_add_left (abs_add_le _ _) _
     _ = |spectral - prolate| + |prolate - target| + |target - prime| := rfl
 
 /-- Replace each term of the three-step triangle inequality by a declared budget. -/

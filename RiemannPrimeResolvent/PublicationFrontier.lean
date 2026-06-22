@@ -31,7 +31,7 @@ def PrimeResolventConvergence (E : ℕ → ℝ) : Prop :=
 
 /-- Minimal abstract package required before the project can claim a complete
 prime--resolvent argument. -/
-structure PublicationGate : Prop where
+structure PublicationGate where
   xiBridge : XiStieltjesExtensionTarget → XiOnlyRealZeros
   concreteSpectralModel : Prop
   spectralRate : Prop
