@@ -1,10 +1,10 @@
+import OnePointResolvent.HausdorffFinite
+
 /-!
 # Resolvent compactification
 
 For `x₀ > 0` and `λ ≥ 0`, the map `λ ↦ x₀/(λ+x₀)` lands in `[0,1]`.
 -/
-
-import OnePointResolvent.HausdorffFinite
 
 set_option autoImplicit false
 

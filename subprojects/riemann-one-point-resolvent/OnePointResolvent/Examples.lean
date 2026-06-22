@@ -1,10 +1,10 @@
+import OnePointResolvent.FiniteCertificates
+
 /-!
 # Exact finite examples
 
 These are kernel-checked consequences of the generic theorems, not evidence for RH.
 -/
-
-import OnePointResolvent.FiniteCertificates
 
 set_option autoImplicit false
 

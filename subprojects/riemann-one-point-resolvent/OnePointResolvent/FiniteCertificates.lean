@@ -1,8 +1,8 @@
+import OnePointResolvent.ResolventCompactification
+
 /-!
 # Finite Gram and localizing certificates
 -/
-
-import OnePointResolvent.ResolventCompactification
 
 set_option autoImplicit false
 

@@ -1,10 +1,10 @@
+import OnePointResolvent.Basic
+
 /-!
 # Finite atomic Hausdorff moments
 
 For positive finite atoms supported in `[0,1]`, every signed forward difference is nonnegative.
 -/
-
-import OnePointResolvent.Basic
 
 set_option autoImplicit false
 

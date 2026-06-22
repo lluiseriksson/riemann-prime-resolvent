@@ -1,3 +1,10 @@
+import OnePointResolvent.Basic
+import OnePointResolvent.HausdorffFinite
+import OnePointResolvent.ResolventCompactification
+import OnePointResolvent.FiniteCertificates
+import OnePointResolvent.ErrorBudget
+import OnePointResolvent.Examples
+
 /-!
 # OnePointResolvent
 
@@ -6,10 +13,3 @@ The analytic RH criterion is documented but is not claimed as a completed Lean t
 -/
 
 set_option autoImplicit false
-
-import OnePointResolvent.Basic
-import OnePointResolvent.HausdorffFinite
-import OnePointResolvent.ResolventCompactification
-import OnePointResolvent.FiniteCertificates
-import OnePointResolvent.ErrorBudget
-import OnePointResolvent.Examples

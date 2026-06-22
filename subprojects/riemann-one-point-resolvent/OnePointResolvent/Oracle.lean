@@ -1,6 +1,6 @@
-/-! Axiom audit entry point: `lake env lean OnePointResolvent/Oracle.lean`. -/
-
 import OnePointResolvent
+
+/-! Axiom audit entry point: `lake env lean OnePointResolvent/Oracle.lean`. -/
 
 #print axioms OnePointResolvent.hausdorffDiff_atomicMoment
 #print axioms OnePointResolvent.atomicMoment_isHausdorffCompletelyMonotone

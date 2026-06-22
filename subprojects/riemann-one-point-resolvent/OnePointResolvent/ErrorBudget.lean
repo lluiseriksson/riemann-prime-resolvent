@@ -1,8 +1,8 @@
+import Mathlib
+
 /-!
 # Deterministic comparison budget
 -/
-
-import Mathlib
 
 set_option autoImplicit false
 
