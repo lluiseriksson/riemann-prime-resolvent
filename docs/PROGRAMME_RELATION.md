@@ -5,6 +5,24 @@ The programme used to be split across `riemann-prime-resolvent` and
 construction layer remains at the repository root; the criterion layer is
 preserved under `subprojects/riemann-one-point-resolvent/`.
 
+## Two interfaces for the same resolvent
+
+The interval/convergence interface compares positive Stieltjes transforms built
+from prime-dependent spectral approximants with the arithmetic target on a
+nonempty real interval. A one-point bound supplies the compactness input needed
+for the slit-plane limit.
+
+The one-point/Hausdorff interface starts from the derivative jet at a fixed
+\(x_0>1/4\),
+
+\[
+b_n(x_0)=x_0^n\frac{(-1)^n}{n!}\mathcal S_\Xi^{(n)}(x_0),
+\]
+
+and asks for complete monotonicity, equivalently Hausdorff moments on `[0,1]`.
+This is a second encoding of the same positive resolvent, not a separate
+research programme.
+
 ## This repository owns
 
 - concrete prime-built spectral models;

@@ -48,6 +48,7 @@ nav:
       - Publication gates: programme/publication-gates.md
       - References: programme/references.md
   - Programme contract: PROGRAMME_RELATION.md
+  - Resumen en español: resumen-es.md
   - Mathematical status: MATHEMATICAL-STATUS.md
   - Lean theorem ledger: THEOREM-LEDGER.md
   - Lean roadmap: LEAN-ROADMAP.md
