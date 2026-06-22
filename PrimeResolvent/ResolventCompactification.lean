@@ -19,15 +19,15 @@ namespace PrimeResolvent
 open scoped BigOperators
 
 /-- Positive resolvent weight at base point `x₀`. -/
-def resolventWeight (x₀ lam : ℝ) : ℝ :=
+noncomputable def resolventWeight (x₀ lam : ℝ) : ℝ :=
   (lam + x₀)⁻¹
 
 /-- Compactified spectral coordinate. -/
-def compactifiedPoint (x₀ lam : ℝ) : ℝ :=
+noncomputable def compactifiedPoint (x₀ lam : ℝ) : ℝ :=
   x₀ / (lam + x₀)
 
 /-- Finite resolvent moment sequence at a fixed base point. -/
-def finiteResolventMoment
+noncomputable def finiteResolventMoment
     {ι : Type*} [Fintype ι]
     (x₀ : ℝ) (spectrum : ι → ℝ) (n : ℕ) : ℝ :=
   atomicMoment
