@@ -19,13 +19,28 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: sudo apt-get update && sudo apt-get install -y graphviz zip
-      - run: python -m pip install -r requirements.txt -r requirements-docs.txt
+          cache: pip
+      - run: sudo apt-get update && sudo apt-get install -y graphviz
+      - run: python -m pip install --upgrade pip
+      - run: >-
+          python -m pip install
+          -r requirements.txt
+          -r requirements-docs.txt
+          -r subprojects/riemann-one-point-resolvent/requirements.txt
+          -r subprojects/riemann-one-point-resolvent/requirements-docs.txt
       - run: ./scripts/verify.sh
-      - run: python scripts/package_release.py
+      - name: Build and prove reproducible source archive
+        shell: bash
+        run: |
+          python scripts/package_release.py
+          first="$(sha256sum release/*.zip)"
+          python scripts/package_release.py
+          second="$(sha256sum release/*.zip)"
+          test "$first" = "$second"
       - uses: actions/upload-artifact@v4
         with:
           name: riemann-prime-resolvent-source
+          if-no-files-found: error
           path: |
             release/*.zip
             release/*.sha256

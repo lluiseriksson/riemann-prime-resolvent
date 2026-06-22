@@ -8,7 +8,8 @@ python3 scripts/validate_certificate.py experiments/examples/demo_exact_rational
 python3 scripts/check_markdown_links.py
 python3 -m pytest -q
 (cd subprojects/riemann-one-point-resolvent && ./scripts/verify_static.sh)
-python3 scripts/generate_manifest.py
+# Check, never rewrite: generated-artifact or source drift must fail CI.
+python3 scripts/generate_manifest.py --check
 python3 scripts/check_release.py
 
 if command -v mkdocs >/dev/null 2>&1; then

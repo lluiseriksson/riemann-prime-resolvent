@@ -7,7 +7,16 @@ python3 -m pip install -r requirements.txt -r requirements-docs.txt
 ./scripts/verify_static.sh
 ```
 
-This regenerates exact data and figures, runs tests, checks local documentation links, builds the site when MkDocs is installed, rejects standalone paper/PDF artifacts and verifies the release manifest.
+This regenerates exact data and figures, runs tests, checks local documentation links, builds the site when MkDocs is installed, rejects standalone paper/PDF artifacts and **checks** the committed manifest without rewriting it. Generated or source drift therefore fails CI.
+
+After deliberately reviewing a change, update and audit the manifest explicitly:
+
+```bash
+make manifest
+make audit
+```
+
+The audit requires a complete, sorted inventory of regular files and rejects unlisted files, missing files, duplicate or unsafe manifest paths and included symlinks.
 
 ## Lean layer
 
@@ -24,4 +33,11 @@ The repository pins Lean 4.31.0 and Mathlib commit `fabf563a7c95a166b8d7b6efca11
 ./scripts/verify.sh
 ```
 
-The ZIP construction environment did not contain Lean. The source was statically audited here; the publishing agent must preserve a green CI build before tagging the release.
+## Deterministic source archive
+
+```bash
+make package
+(cd release && sha256sum -c *.zip.sha256)
+```
+
+The archive is built directly from the validated manifest with fixed timestamps, canonical permissions, sorted uncompressed entries and a versioned top-level directory. The release workflow builds it twice and requires an identical SHA-256 before upload.

@@ -1,4 +1,4 @@
-.PHONY: all lean figures certificates docs static verify manifest package clean
+.PHONY: all lean figures certificates docs static verify manifest manifest-check audit package clean
 
 all: verify
 
@@ -23,8 +23,15 @@ verify:
 manifest:
 	python3 scripts/generate_manifest.py
 
-package:
+manifest-check:
+	python3 scripts/generate_manifest.py --check
+
+audit: manifest-check
+	python3 scripts/check_release.py
+
+package: audit
 	python3 scripts/package_release.py
 
 clean:
-	rm -rf .lake/build site .pytest_cache scripts/__pycache__ tests/__pycache__
+	rm -rf .lake/build site release .pytest_cache .mypy_cache .ruff_cache \
+		scripts/__pycache__ tests/__pycache__ .coverage

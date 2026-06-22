@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- Made manifest verification read-only in CI and added complete inventory/path/symlink checks.
+- Replaced the external ZIP command with a manifest-driven byte-reproducible Python archive.
+- Added release-tooling regression tests and reproducibility documentation.
+
 ## 0.3.0-docs-integrated — 2026-06-22
 
 - Integrated the complete scholarly exposition into `docs/manuscript/`.

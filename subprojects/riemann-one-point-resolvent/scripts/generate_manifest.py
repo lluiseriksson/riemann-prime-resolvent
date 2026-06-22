@@ -1,39 +1,60 @@
 #!/usr/bin/env python3
+"""Create or verify the deterministic source manifest."""
 from __future__ import annotations
 
-import csv
-import hashlib
+import argparse
+import difflib
+import sys
 from pathlib import Path
 
+from release_common import MANIFEST_NAME, ReleaseError, render_manifest, write_manifest
+
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT / 'MANIFEST-SHA256.csv'
-EXCLUDED_PARTS = {'.git', '.lake', 'site', '__pycache__', '.pytest_cache', 'release'}
-EXCLUDED_NAMES = {'MANIFEST-SHA256.csv'}
 
 
-def digest(path: Path) -> str:
-    h = hashlib.sha256()
-    with path.open('rb') as f:
-        for chunk in iter(lambda: f.read(1 << 20), b''):
-            h.update(chunk)
-    return h.hexdigest()
+def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--check",
+        action="store_true",
+        help="verify the committed manifest without modifying it",
+    )
+    args = parser.parse_args()
+
+    try:
+        expected = render_manifest(ROOT)
+        output = ROOT / MANIFEST_NAME
+        if args.check:
+            if not output.is_file() or output.is_symlink():
+                raise ReleaseError(f"missing required regular file: {MANIFEST_NAME}")
+            observed = output.read_bytes()
+            if observed != expected:
+                before = observed.decode("utf-8", errors="replace").splitlines(keepends=True)
+                after = expected.decode("utf-8").splitlines(keepends=True)
+                preview = "".join(
+                    difflib.unified_diff(
+                        before,
+                        after,
+                        fromfile=MANIFEST_NAME,
+                        tofile=f"{MANIFEST_NAME} (expected)",
+                        n=2,
+                    )
+                )
+                if len(preview) > 12_000:
+                    preview = preview[:12_000] + "\n… diff truncated …\n"
+                raise ReleaseError(
+                    f"{MANIFEST_NAME} is stale; run {Path(__file__).name} without --check\n{preview}"
+                )
+            print(f"{MANIFEST_NAME} is current ({expected.count(b'\n') - 1} entries)")
+            return 0
+
+        write_manifest(ROOT)
+        print(f"Wrote {MANIFEST_NAME} with {expected.count(b'\n') - 1} entries")
+        return 0
+    except (OSError, ReleaseError) as exc:
+        print(f"Manifest operation FAILED: {exc}", file=sys.stderr)
+        return 1
 
 
-def main() -> None:
-    rows = []
-    for path in sorted(ROOT.rglob('*')):
-        rel = path.relative_to(ROOT)
-        if not path.is_file() or any(part in EXCLUDED_PARTS for part in rel.parts):
-            continue
-        if path.name in EXCLUDED_NAMES:
-            continue
-        rows.append((rel.as_posix(), path.stat().st_size, digest(path)))
-    with OUT.open('w', newline='', encoding='utf-8') as f:
-        writer = csv.writer(f, lineterminator='\n')
-        writer.writerow(['path', 'bytes', 'sha256'])
-        writer.writerows(rows)
-    print(f'Wrote {OUT.name} with {len(rows)} entries')
-
-
-if __name__ == '__main__':
-    main()
+if __name__ == "__main__":
+    raise SystemExit(main())

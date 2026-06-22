@@ -8,7 +8,8 @@ python3 scripts/check_certificate.py docs/assets/data/exact_atomic_certificate.j
 python3 scripts/generate_figures.py
 python3 scripts/check_markdown_links.py
 python3 -m pytest -q
-python3 scripts/generate_manifest.py
+# Check, never rewrite: generated-artifact or source drift must fail CI.
+python3 scripts/generate_manifest.py --check
 python3 scripts/check_release.py
 
 if command -v mkdocs >/dev/null 2>&1; then
