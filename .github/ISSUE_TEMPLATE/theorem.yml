@@ -1,5 +1,5 @@
 name: Theorem ledger item
-about: Propose work on one formal or mathematical brick
+description: Propose work on one formal or mathematical brick
 title: "[THEOREM] "
 labels: ["theorem"]
 body:
@@ -14,7 +14,7 @@ body:
     id: status
     attributes:
       label: Current status
-      options: [OPEN, CANDIDATE, PAPER, LEAN]
+      options: [OPEN, BLOCKED, CANDIDATE, DOCUMENTED, SOURCE-AUDITED, LEAN-SOURCE, LEAN-BUILD]
     validations:
       required: true
   - type: textarea
@@ -27,3 +27,8 @@ body:
     id: sources
     attributes:
       label: Primary sources / Mathlib API
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance evidence
+      description: Required build, oracle, documentation, certificate or external-review evidence.

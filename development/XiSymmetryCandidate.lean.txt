@@ -1,0 +1,25 @@
+/-
+Candidate only: not imported by the release build and not locally compiled in
+the packaging environment.
+-/
+
+import RiemannPrimeResolvent.XiInterface
+
+namespace RiemannPrimeResolvent
+
+open Complex
+
+/-- Candidate direct consequence of Mathlib's completed-zeta functional equation. -/
+theorem riemannXiS_one_sub_candidate (s : ℂ) :
+    riemannXiS (1 - s) = riemannXiS s := by
+  unfold riemannXiS
+  rw [completedRiemannZeta₀_one_sub]
+  ring
+
+/-- Candidate evenness proof in the critical-line coordinate. -/
+theorem riemannXi_neg_candidate (z : ℂ) :
+    riemannXi (-z) = riemannXi z := by
+  unfold riemannXi
+  convert riemannXiS_one_sub_candidate ((1 / 2 : ℂ) + I * z) using 1 <;> ring
+
+end RiemannPrimeResolvent

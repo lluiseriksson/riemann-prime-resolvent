@@ -1,0 +1,95 @@
+#!/usr/bin/env python3
+from __future__ import annotations
+
+import csv
+import math
+import subprocess
+from pathlib import Path
+
+import matplotlib.pyplot as plt
+
+plt.rcParams["svg.hashsalt"] = "riemann-resolvent-v0.3.0"
+import numpy as np
+
+ROOT = Path(__file__).resolve().parents[1]
+SRC = ROOT / 'figures/src'
+OUT = ROOT / 'docs/assets/images'
+DATA = ROOT / 'figures/data'
+
+
+def run_graphviz() -> None:
+    OUT.mkdir(parents=True, exist_ok=True)
+    for source in sorted(SRC.glob('*.dot')):
+        for fmt in ('svg', 'png'):
+            subprocess.run([
+                'dot', f'-T{fmt}', '-Gsize=16,9!', '-Gratio=fill',
+                str(source), '-o', str(OUT / f'{source.stem}.{fmt}')
+            ], check=True)
+
+
+def rate_exponent(q: np.ndarray) -> np.ndarray:
+    return np.minimum((2 * q - 1) / 3, 2 / 3)
+
+
+def save_plot(fig: plt.Figure, stem: str) -> None:
+    OUT.mkdir(parents=True, exist_ok=True)
+    fig.savefig(OUT / f'{stem}.svg', bbox_inches='tight', metadata={'Date': None})
+    fig.savefig(OUT / f'{stem}.png', dpi=180, bbox_inches='tight', metadata={'Software': 'matplotlib'})
+    plt.close(fig)
+
+
+def rate_figure() -> None:
+    q = np.linspace(0.5, 2.5, 500)
+    r = rate_exponent(q)
+    DATA.mkdir(parents=True, exist_ok=True)
+    with (DATA / 'rate_exponent.csv').open('w', newline='', encoding='utf-8') as f:
+        writer = csv.writer(f, lineterminator='\n')
+        writer.writerow(['q', 'rate_exponent'])
+        writer.writerows(zip(q, r, strict=True))
+    fig, ax = plt.subplots(figsize=(10.67, 6.0))
+    ax.plot(q, r, linewidth=2)
+    ax.axvline(1.5, linewidth=1, linestyle='--')
+    ax.axhline(2 / 3, linewidth=1, linestyle=':')
+    ax.set_xlabel('spectral exponent q')
+    ax.set_ylabel('candidate decay exponent r(q)')
+    ax.grid(True, linewidth=0.4, alpha=0.6)
+    fig.tight_layout()
+    save_plot(fig, 'rate_exponent')
+
+
+def tail_majorant(delta: float, x: np.ndarray) -> np.ndarray:
+    return np.exp(-delta * np.log(x)) * (np.log(x) / delta + 1 / delta**2)
+
+
+def prime_tail_figure() -> None:
+    x = np.logspace(math.log10(3.0), 6.0, 450)
+    deltas = (0.10, 0.25, 0.50)
+    rows = []
+    fig, ax = plt.subplots(figsize=(10.67, 6.0))
+    for delta, style in zip(deltas, ('-', '--', ':'), strict=True):
+        y = tail_majorant(delta, x)
+        ax.plot(x, y, linestyle=style, linewidth=1.8, label=rf'$\delta={delta:g}$')
+        rows.extend((delta, float(xv), float(yv)) for xv, yv in zip(x, y, strict=True))
+    with (DATA / 'prime_tail_majorant.csv').open('w', newline='', encoding='utf-8') as f:
+        writer = csv.writer(f, lineterminator='\n')
+        writer.writerow(['delta', 'N', 'majorant'])
+        writer.writerows(rows)
+    ax.set_xscale('log')
+    ax.set_yscale('log')
+    ax.set_xlabel('integer cutoff N (continuous plot for visualization)')
+    ax.set_ylabel(r'$N^{-\delta}(\log N/\delta+1/\delta^2)$')
+    ax.grid(True, which='both', linewidth=0.35, alpha=0.55)
+    ax.legend()
+    fig.tight_layout()
+    save_plot(fig, 'prime_tail_majorant')
+
+
+def main() -> None:
+    run_graphviz()
+    rate_figure()
+    prime_tail_figure()
+    print(f'Generated SVG/PNG figures in {OUT.relative_to(ROOT)}')
+
+
+if __name__ == '__main__':
+    main()

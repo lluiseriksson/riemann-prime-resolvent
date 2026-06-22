@@ -1,0 +1,41 @@
+{
+  "N": 1,
+  "certificate_kind": "exact-rational-structural",
+  "format_version": "0.3.0",
+  "galerkin_tail_upper": "1/1000",
+  "lambda": "2",
+  "matrix": [
+    [
+      "0",
+      "0"
+    ],
+    [
+      "0",
+      "3"
+    ]
+  ],
+  "provenance": {
+    "generator": "hand-checked repository demo",
+    "input_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+    "purpose": "exercise the structural checker only; unrelated to zeta data"
+  },
+  "rayleigh_value": "0",
+  "residual_upper": "0",
+  "resolvent_grid": [
+    {
+      "lower": "11/20",
+      "upper": "11/20",
+      "x": "1"
+    },
+    {
+      "lower": "17/104",
+      "upper": "17/104",
+      "x": "4"
+    }
+  ],
+  "separation_lower": "3",
+  "trial_vector": [
+    "1",
+    "0"
+  ]
+}

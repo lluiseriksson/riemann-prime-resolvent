@@ -1,77 +1,67 @@
-# Riemann Prime–Resolvent Lean 4 Programme
+# Riemann Prime–Resolvent Programme
 
-> **Status:** research seed repository; no proof of the Riemann hypothesis is claimed.
+[![Lean and static CI](https://github.com/lluiseriksson/riemann-prime-resolvent/actions/workflows/ci.yml/badge.svg)](https://github.com/lluiseriksson/riemann-prime-resolvent/actions/workflows/ci.yml)
+[![Documentation](https://github.com/lluiseriksson/riemann-prime-resolvent/actions/workflows/docs.yml/badge.svg)](https://github.com/lluiseriksson/riemann-prime-resolvent/actions/workflows/docs.yml)
 
-This repository turns a spectral/Stieltjes strategy into a reproducible Lean 4
-research programme. Its intended long-term endpoint is a theorem of the form
+> **Status:** research programme and verified finite bookkeeping. This repository does not prove the Riemann hypothesis.
+
+This is the **construction and convergence layer** of a two-repository programme. It develops the prime-built spectral side, explicit error budgets, finite resolvent models, rate bookkeeping and the non-circular convergence obligations needed by the abstract criterion.
+
+The companion repository [`riemann-one-point-resolvent`](https://github.com/lluiseriksson/riemann-one-point-resolvent) owns the criterion layer: slit-plane continuation, one-point Hausdorff reconstruction and finite moment certificates.
+
+## Canonical dependency
 
 \[
-\text{prime--resolvent convergence}
-\Longrightarrow
-\text{holomorphic Stieltjes extension}
-\Longrightarrow
-\text{all zeros of }\Xi\text{ are real}.
+\text{concrete prime-built }S_j
+\xrightarrow{\text{one-point bound + interval convergence}}
+\mathcal S_\Xi
+\xrightarrow{\text{companion criterion}}
+\mathrm{RH}.
 \]
 
-The seed release already contains a small, axiom-free Lean core for the safe
-algebraic bookkeeping: the three-part error budget, finite positive Stieltjes
-models, scalar spectral-defect quantities, and rate optimization.  The hard
-analytic and operator-theoretic statements are represented as named
-**propositions and publication gates**, not as axioms.
+The difficult first arrow is open. It is split into separately reviewable spectral, model and prime-tail terms rather than hidden inside a global convergence assumption.
 
-## Start here
+## Documentation is the manuscript
+
+There is no separate `paper/` tree and no committed manuscript PDF. The full scholarly narrative lives under [`docs/programme/`](docs/programme/index.md) and is rendered as a versioned MkDocs site. Figures use web-native SVG/PNG sources.
+
+## Verified Lean layer
+
+The current modules prove elementary, unconditional results about:
+
+- three-part error bookkeeping and componentwise convergence;
+- finite Stieltjes and squared-resolvent positivity;
+- paired-spectrum normalization;
+- sign properties of the closed-form prime-tail majorant;
+- finite Rayleigh/gap and residual/separation defects;
+- the scalar candidate rate exponent.
+
+Run:
 
 ```bash
-./scripts/bootstrap.sh
-./scripts/verify.sh
+lake exe cache get
+./scripts/verify_lean.sh
 ```
 
-For a new coding or research agent, read in this order:
+The exact inventory is in [`docs/THEOREM-LEDGER.md`](docs/THEOREM-LEDGER.md).
 
-1. `AGENT-ONBOARDING.md`
-2. `RESEARCH-STATUS.md`
-3. `docs/MATHEMATICAL-DEVELOPMENT.md`
-4. `docs/THEOREM-LEDGER.md`
-5. `docs/LEAN-ROADMAP.md`
-6. `PUBLICATION-GATE.md`
+## Static and documentation checks
 
-A copy-paste task prompt is available in `HANDOFF-PROMPT.md`.
+```bash
+python3 -m pip install -r requirements.txt -r requirements-docs.txt
+./scripts/verify_static.sh
+mkdocs build --strict
+```
 
-## Honest scope
+## Repository map
 
-The source papers propose self-adjoint spectral approximants built from primes
-up to \(\lambda^2\), report striking numerical agreement with low Riemann
-zeros, and state that a rigorous convergence proof would imply RH.  This repo
-does **not** silently assume that convergence.  The central missing quantity is
-a quantitative comparison between the concrete lowest spectral state and the
-candidate/prolate model.
+| Path | Purpose |
+|---|---|
+| `RiemannPrimeResolvent/` | Lean source for the verified construction-side substrate |
+| `docs/` | integrated manuscript, claim ledger, roadmap, source audit and interface contract |
+| `figures/` | DOT/CSV sources plus generated SVG/PNG graphics |
+| `experiments/` | exact certificate schema and examples |
+| `scripts/` | deterministic verification, figure, manifest and release tooling |
+| `.github/workflows/` | Lean/static CI, Pages documentation and source releases |
 
-The proposed decomposition is
-
-\[
-E_{\lambda,N}
-\le E_{\mathrm{spectral}}+E_{\mathrm{model}}+E_{\mathrm{prime}}.
-\]
-
-The current Lean files verify only generic consequences of such a decomposition.
-
-## Repository policy
-
-- No `sorry`, `admit`, or project `axiom` declarations in Lean sources.
-- Every headline claim appears in `docs/SOURCE-CLAIM-AUDIT.md`.
-- Conjectural calculations are labelled `CANDIDATE`, never `THEOREM`.
-- A public paper is gated by `PUBLICATION-GATE.md`.
-- Numerical work must export interval/rational certificates that Lean can check.
-
-## Pinned environment
-
-- Lean: `v4.29.0-rc6`
-- Mathlib commit: `07642720480157414db592fa85b626dafb71355b`
-
-The pin is inherited from the supplied reproducible Lean project so an agent can
-reuse the same toolchain and cache.
-
-## Language
-
-The formal source and paper draft are in English.  Spanish launch instructions
-are in `INSTRUCCIONES-AGENTE.md`.
+Start with [`docs/index.md`](docs/index.md) and [`docs/PROGRAMME_RELATION.md`](docs/PROGRAMME_RELATION.md).

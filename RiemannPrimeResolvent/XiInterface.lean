@@ -13,7 +13,7 @@ Mathlib defines the entire pole-removed completed zeta as
 Riemann `ξ` function and evaluates it on the critical-line coordinate.
 
 The equivalence between `XiOnlyRealZeros` and Mathlib's `RiemannHypothesis` is
-an explicit formalization milestone; it is not asserted in this seed release.
+an explicit formalization milestone; it is not asserted in this blueprint release.
 -/
 
 namespace RiemannPrimeResolvent

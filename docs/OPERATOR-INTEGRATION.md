@@ -1,29 +1,7 @@
-# Concrete operator integration contract
+# Operator integration obligations
 
-The abstract Lean layer should accept a package with fields corresponding to
-mathematically checkable properties, rather than an opaque “Hilbert–Pólya
-operator” assumption.
+A concrete construction must specify the Hilbert space, domains, self-adjointness, finite truncations, spectral pairing, multiplicities and trace normalization. It must then prove a one-point resolvent bound and convergence on a nonempty interval.
 
-Proposed future package:
+Finite residual or Rayleigh certificates are useful only with independently proved gap/separation and truncation bounds. Source model convergence cannot be transferred to the true lowest state by notation alone.
 
-```lean
-structure SpectralApproximationPackage where
-  H : Type*
-  instHilbert : ...
-  D : index -> LinearPMap ...
-  selfAdjoint : ...
-  compactResolvent : ...
-  spectrumPaired : ...
-  squaredResolventTraceClass : ...
-  stieltjesObservable : index -> ℝ -> ℝ
-  observable_eq_trace : ...
-  onePointBound : ...
-  primeIntervalConvergence : ...
-```
-
-Each field must be independently justified.  In particular, `selfAdjoint` alone
-does not provide compact resolvent, trace class, paired spectrum, or the exact
-zero correspondence.
-
-The first implementation should be finite-dimensional and certificate-driven.
-The unbounded infinite-dimensional package comes later.
+The final theorem should consume the shared interface rather than restating the companion criterion.

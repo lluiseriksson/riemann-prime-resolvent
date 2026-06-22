@@ -1,26 +1,27 @@
-.PHONY: bootstrap build verify oracle audit paper clean package
+.PHONY: all lean figures docs static verify manifest package clean
 
-bootstrap:
-	./scripts/bootstrap.sh
+all: verify
 
-build:
-	lake build
+lean:
+	./scripts/verify_lean.sh
+
+figures:
+	python3 scripts/generate_figures.py
+
+docs: figures
+	mkdocs build --strict
+
+static:
+	./scripts/verify_static.sh
 
 verify:
 	./scripts/verify.sh
 
-oracle:
-	lake env lean oracle_check.lean
-
-audit:
-	python3 scripts/check_consistency.py
-
-paper:
-	$(MAKE) -C paper
-
-clean:
-	rm -rf .lake/build
-	$(MAKE) -C paper clean
+manifest:
+	python3 scripts/generate_manifest.py
 
 package:
-	./scripts/package_release.sh dev
+	python3 scripts/package_release.py
+
+clean:
+	rm -rf .lake/build site .pytest_cache scripts/__pycache__ tests/__pycache__

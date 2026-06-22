@@ -1,0 +1,31 @@
+name: Source release
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  release-artifact:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leanprover/lean-action@v1
+        with:
+          build: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: sudo apt-get update && sudo apt-get install -y graphviz zip
+      - run: python -m pip install -r requirements.txt -r requirements-docs.txt
+      - run: ./scripts/verify.sh
+      - run: python scripts/package_release.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: riemann-prime-resolvent-source
+          path: |
+            release/*.zip
+            release/*.sha256

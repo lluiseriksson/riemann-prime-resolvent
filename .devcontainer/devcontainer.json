@@ -1,11 +1,10 @@
 {
-  "name": "Riemann Prime-Resolvent Lean 4",
+  "name": "Riemann Prime–Resolvent",
   "build": {"dockerfile": "../Dockerfile", "context": ".."},
-  "workspaceFolder": "/workspace",
   "customizations": {
     "vscode": {
-      "extensions": ["leanprover.lean4"]
+      "extensions": ["leanprover.lean4", "ms-python.python"]
     }
   },
-  "postCreateCommand": "./scripts/verify.sh"
+  "postCreateCommand": "lake exe cache get"
 }

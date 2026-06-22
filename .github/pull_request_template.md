@@ -1,18 +1,17 @@
-## Scope
+## Mathematical change
 
-- Theorem ledger IDs:
-- Status change:
+- [ ] Exact statement and hypotheses documented
+- [ ] Repository ownership respected
+- [ ] No open claim hidden in a structure or theorem assumption
+- [ ] Primary sources and normalization checked
 
 ## Verification
 
-- [ ] `lake build`
-- [ ] `lake env lean oracle_check.lean`
-- [ ] `python3 scripts/check_consistency.py`
-- [ ] theorem ledger updated
-- [ ] verification ledger updated
+- [ ] `./scripts/verify_static.sh`
+- [ ] `./scripts/verify_lean.sh`
+- [ ] `mkdocs build --strict`
+- [ ] interface contract unchanged or synchronized with companion repo
 
-## Epistemic check
+## Claim boundary
 
-- [ ] No open result was hidden as an axiom.
-- [ ] Source-dependent claims include exact primary-source references.
-- [ ] This PR does not imply RH unless Publication Gate C is complete.
+Explain why this change does not overstate progress toward RH.

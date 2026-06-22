@@ -1,0 +1,59 @@
+site_name: Riemann Prime–Resolvent Programme
+site_description: Construction and convergence layer with Lean 4 verification
+site_url: https://lluiseriksson.github.io/riemann-prime-resolvent/
+repo_url: https://github.com/lluiseriksson/riemann-prime-resolvent
+repo_name: lluiseriksson/riemann-prime-resolvent
+strict: true
+theme:
+  name: material
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.indexes
+    - content.code.copy
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle:
+        icon: material/brightness-7
+        name: Dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Light mode
+markdown_extensions:
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.details
+  - pymdownx.highlight
+  - pymdownx.superfences
+  - tables
+extra_javascript:
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+nav:
+  - Home: index.md
+  - Integrated programme:
+      - programme/index.md
+      - Target and criterion: programme/target-and-criterion.md
+      - Arithmetic side: programme/arithmetic-side.md
+      - Spectral construction: programme/spectral-construction.md
+      - Error budget and rates: programme/error-budget-and-rates.md
+      - Formalization boundary: programme/formalization-boundary.md
+      - Publication gates: programme/publication-gates.md
+      - References: programme/references.md
+  - Cross-repository contract: PROGRAMME_RELATION.md
+  - Mathematical status: MATHEMATICAL-STATUS.md
+  - Lean theorem ledger: THEOREM-LEDGER.md
+  - Lean roadmap: LEAN-ROADMAP.md
+  - Operator integration: OPERATOR-INTEGRATION.md
+  - Source audit: SOURCE-AUDIT-ARXIV-2511.22755.md
+  - Numerical certification: NUMERICAL-CERTIFICATION.md
+  - Reviewer guide: REVIEWER-GUIDE.md
+  - Reproducibility: REPRODUCIBILITY.md
+  - Release checklist: RELEASE-CHECKLIST.md

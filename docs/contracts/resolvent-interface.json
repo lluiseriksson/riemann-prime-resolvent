@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "canonical_target": {
+    "domain": "x > 1/4",
+    "formula": "(1 / (2*sqrt(x))) * (xi_prime / xi)(1/2 + sqrt(x))",
+    "name": "S_Xi"
+  },
+  "construction_repository": {
+    "obligations": [
+      "construct concrete self-adjoint finite or limiting spectral models",
+      "prove positivity and trace/resolvent well-definedness",
+      "prove the one-point bound",
+      "prove interval convergence without assuming RH",
+      "audit Fourier/Mellin normalization and multiplicities"
+    ],
+    "repository": "lluiseriksson/riemann-prime-resolvent"
+  },
+  "contract_version": "0.3.0",
+  "criterion_repository": {
+    "documented_output": "all zeros of Xi are real, hence RH under the standard convention bridge",
+    "repository": "lluiseriksson/riemann-one-point-resolvent",
+    "required_input": [
+      "positive Stieltjes approximants on C minus the closed negative real axis",
+      "a uniform bound at one positive point",
+      "pointwise convergence to S_Xi on one nonempty open interval in (1/4, infinity)"
+    ]
+  },
+  "name": "Riemann resolvent cross-repository interface",
+  "status_policy": {
+    "documented": "complete conventional argument in versioned documentation, pending full Lean closure and peer review",
+    "numerical": "illustrative or regression-only unless an exact certificate is independently checked",
+    "open": "explicit research obligation; never encoded as a theorem or hidden assumption",
+    "verified": "named Lean declaration included in the axiom oracle"
+  }
+}

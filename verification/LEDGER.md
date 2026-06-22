@@ -1,13 +1,16 @@
 # Verification ledger
 
-## Seed packaging — 2026-06-22
+## v0.3.0-docs-integrated construction checkpoint — 2026-06-22
 
-- Generated standalone repository and git bundle.
-- Pinned Lean `v4.29.0-rc6` and Mathlib commit
-  `07642720480157414db592fa85b626dafb71355b`.
-- Ran static placeholder/axiom scanner.
-- Compiled the LaTeX research-programme draft.
-- Lean build not run in packaging environment because Lean was unavailable.
+Executed in the delivery environment:
 
-The first agent must append the exact build SHA, commands, exit codes, and axiom
-oracle output.
+- placeholder/project-axiom static scan;
+- Python syntax compilation and regression tests;
+- exact-rational certificate recomputation;
+- deterministic SVG/PNG figure regeneration;
+- local Markdown link validation;
+- no-PDF/no-standalone-paper policy audit;
+- repository and outer-package SHA-256 manifests;
+- byte-identical cross-repository contract comparison.
+
+Lean and MkDocs were absent from the packaging environment. Their pinned CI jobs must be green on the exact public commits before tagging.

@@ -1,10 +1,17 @@
 # Changelog
 
-## 0.1.0-seed — 2026-06-22
+## 0.3.0-docs-integrated — 2026-06-22
 
-- Created standalone Lean 4 project pinned to the supplied Mathlib revision.
-- Added elementary axiom-free Lean core for error budgets, finite Stieltjes
-  sums, prime-tail majorants, scalar defect models, and rate optimization.
-- Added Xi interface and machine-readable publication frontier without axioms.
-- Added research note, theorem ledger, source audit, risk register, paper draft,
-  CI, reproducibility scripts, Docker/devcontainer setup, and agent handoff.
+- Reframed the repository as the construction layer of a two-repository programme.
+- Integrated the full scholarly exposition into `docs/programme/`.
+- Removed the standalone paper tree, PDF manuscript artifacts and paper-only workflow.
+- Added strict MkDocs documentation and GitHub Pages deployment.
+- Added a byte-identical cross-repository resolvent interface contract.
+- Added no-PDF/no-paper-directory release checks and Markdown link validation.
+- Standardized web-native figures to SVG/PNG.
+- Corrected the three-step triangle proof to the current `abs_add_le` API.
+- Clarified that the prime cutoff in the sum–integral bound is an integer.
+
+## 0.2.0-blueprint — 2026-06-22
+
+- Publication blueprint with Lean seed, source audits, figures and release tooling.

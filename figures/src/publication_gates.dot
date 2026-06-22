@@ -1,0 +1,12 @@
+digraph G {
+  graph [rankdir=LR, bgcolor="white", pad=0.25, fontname="DejaVu Sans"];
+  node [shape=box, style="rounded,filled", fillcolor="#eef4fb", color="#365f91", fontname="DejaVu Sans", fontsize=16];
+  edge [color="#526b82", penwidth=1.4];
+  blueprint [label="Integrated research\nblueprint"];
+  formal [label="Abstract chain\nclosed in Lean"];
+  analytic [label="New concrete\noperator estimate"];
+  full [label="Complete non-circular\nconvergence theorem"];
+  review [label="Independent formal and\nmathematical review"];
+  claim [label="RH-level claim gate", fillcolor="#f6eef8", color="#76517f"];
+  blueprint -> formal -> analytic -> full -> review -> claim;
+}

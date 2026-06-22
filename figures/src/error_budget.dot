@@ -1,0 +1,12 @@
+digraph G {
+  graph [rankdir=LR, bgcolor="white", pad=0.25, fontname="DejaVu Sans"];
+  node [shape=box, style="rounded,filled", fillcolor="#eef4fb", color="#365f91", fontname="DejaVu Sans", fontsize=16];
+  edge [color="#526b82", fontname="DejaVu Sans", fontsize=13, penwidth=1.4];
+  spectral [label="Spectral observable"];
+  model [label="Source-audited model"];
+  prime [label="Prime truncation P_N"];
+  target [label="Completed-zeta target S_Xi"];
+  spectral -> model [label="E_spectral"];
+  model -> prime [label="E_model"];
+  prime -> target [label="E_prime"];
+}

@@ -1,17 +1,120 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "Prime-resolvent finite spectral certificate",
+  "$id": "https://raw.githubusercontent.com/lluiseriksson/riemann-prime-resolvent/v0.3.0-docs-integrated/experiments/schema/certificate.schema.json",
+  "title": "Prime-resolvent exact-rational finite spectral certificate",
+  "description": "Exact-rational structural certificate with verified finite half squared-resolvent trace enclosures. It is not by itself a proof of an infinite-dimensional or RH-related statement.",
   "type": "object",
-  "required": ["lambda", "N", "matrix", "trial_vector", "residual_upper", "separation_lower"],
+  "additionalProperties": false,
+  "required": [
+    "format_version",
+    "certificate_kind",
+    "lambda",
+    "N",
+    "matrix",
+    "trial_vector",
+    "rayleigh_value",
+    "residual_upper",
+    "separation_lower",
+    "galerkin_tail_upper",
+    "resolvent_grid",
+    "provenance"
+  ],
   "properties": {
-    "lambda": {"type": "string", "description": "Exact rational or interval string"},
-    "N": {"type": "integer", "minimum": 1},
-    "matrix": {"type": "array"},
-    "trial_vector": {"type": "array"},
-    "residual_upper": {"type": "string"},
-    "separation_lower": {"type": "string"},
-    "galerkin_tail_upper": {"type": "string"},
-    "resolvent_grid": {"type": "array"},
-    "provenance": {"type": "object"}
+    "format_version": {
+      "const": "0.3.0"
+    },
+    "certificate_kind": {
+      "const": "exact-rational-structural"
+    },
+    "lambda": {
+      "$ref": "#/$defs/rational"
+    },
+    "N": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "matrix": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "array",
+        "minItems": 1,
+        "items": {
+          "$ref": "#/$defs/rational"
+        }
+      }
+    },
+    "trial_vector": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/rational"
+      }
+    },
+    "rayleigh_value": {
+      "$ref": "#/$defs/rational"
+    },
+    "residual_upper": {
+      "$ref": "#/$defs/rational"
+    },
+    "separation_lower": {
+      "$ref": "#/$defs/rational"
+    },
+    "galerkin_tail_upper": {
+      "$ref": "#/$defs/rational"
+    },
+    "resolvent_grid": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "x",
+          "lower",
+          "upper"
+        ],
+        "properties": {
+          "x": {
+            "$ref": "#/$defs/rational"
+          },
+          "lower": {
+            "$ref": "#/$defs/rational"
+          },
+          "upper": {
+            "$ref": "#/$defs/rational"
+          }
+        }
+      },
+      "description": "Intervals enclosing (1/2) Tr((A^2 + x I)^-1), recomputed exactly by the checker."
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "generator",
+        "purpose",
+        "input_sha256"
+      ],
+      "properties": {
+        "generator": {
+          "type": "string",
+          "minLength": 1
+        },
+        "purpose": {
+          "type": "string",
+          "minLength": 1
+        },
+        "input_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
+    }
+  },
+  "$defs": {
+    "rational": {
+      "type": "string",
+      "pattern": "^-?[0-9]+(?:/[1-9][0-9]*)?$"
+    }
   }
 }

@@ -1,0 +1,12 @@
+digraph G {
+  graph [rankdir=LR, bgcolor="white", pad=0.25, nodesep=0.55, ranksep=0.8, fontname="DejaVu Sans"];
+  node [shape=box, style="rounded,filled", fillcolor="#eef4fb", color="#365f91", fontname="DejaVu Sans", fontsize=16, margin="0.16,0.10"];
+  edge [color="#526b82", fontname="DejaVu Sans", fontsize=13, penwidth=1.4];
+  primes [label="Primes and Weil-form data"];
+  operators [label="Concrete self-adjoint\napproximants D_{lambda,N}"];
+  resolvent [label="Positive observable\n(1/2) Tr(D^2+xI)^-1"];
+  convergence [label="One-point bound +\ninterval convergence", style="rounded,dashed,filled", fillcolor="#fff4e5", color="#b26a00"];
+  criterion [label="Companion one-point\nslit-plane criterion", fillcolor="#edf8ef", color="#397547"];
+  rh [label="All Xi zeros real / RH", fillcolor="#f6eef8", color="#76517f"];
+  primes -> operators -> resolvent -> convergence -> criterion -> rh;
+}

@@ -2,12 +2,10 @@ import Lake
 open Lake DSL
 
 package «RiemannPrimeResolvent» where
-  -- The research code is deliberately small; Mathlib is pinned below.
 
 @[default_target]
 lean_lib «RiemannPrimeResolvent» where
-  -- Root module: RiemannPrimeResolvent.lean
 
 require mathlib from git
   "https://github.com/leanprover-community/mathlib4.git" @
-    "07642720480157414db592fa85b626dafb71355b"
+    "fabf563a7c95a166b8d7b6efca11c8b4dc9d911f"
