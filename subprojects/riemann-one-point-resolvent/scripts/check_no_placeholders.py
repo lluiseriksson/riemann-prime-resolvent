@@ -19,6 +19,9 @@ PATTERNS: tuple[tuple[str, re.Pattern[str]], ...] = (
     ("sorry", re.compile(r"\bsorry\b")),
     ("admit", re.compile(r"\badmit\b")),
     ("axiom", re.compile(r"\baxiom\b")),
+    # Lean's `constant` command is an axiom-like declaration and must not bypass
+    # the project policy merely by using the synonym instead of `axiom`.
+    ("constant", re.compile(r"\bconstant\b")),
     ("unsafe theorem", re.compile(r"\bunsafe\s+(?:theorem|lemma)\b")),
 )
 

@@ -18,7 +18,7 @@ def labels(text: str) -> list[str]:
 def test_comments_and_plain_strings_are_ignored() -> None:
     text = '''
 /- outer sorry
-   /- nested axiom hidden : Prop -/
+   /- nested axiom hidden : Prop; constant hiddenToo : Prop -/
 -/
 -- admit
 #check "unsafe theorem fake : True"
@@ -46,6 +46,7 @@ def test_interpolated_expression_remains_auditable() -> None:
         ("theorem t : True := by sorry\n", "sorry"),
         ("theorem t : True := by admit\n", "admit"),
         ("axiom hidden : False\n", "axiom"),
+        ("constant hidden : False\n", "constant"),
         ("unsafe lemma hidden : True := by trivial\n", "unsafe theorem"),
     ],
 )
@@ -57,7 +58,9 @@ def test_forbidden_constructs_are_reported(source: str, expected: str) -> None:
 
 
 def test_identifier_substrings_are_not_false_positives() -> None:
-    assert labels("def sorryFree := True\ndef axiomatic := True\n") == []
+    assert labels(
+        "def sorryFree := True\ndef axiomatic := True\ndef constantWeight := 1\n"
+    ) == []
 
 
 def test_mask_preserves_newlines_and_length() -> None:
