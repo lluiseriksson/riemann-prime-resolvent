@@ -56,4 +56,5 @@ archive checksums in the GitHub release notes.
 
 Do not archive immediately. Keep the repository in maintenance-only mode so
 the four research-frontier issues remain writable. Archive only when the gate
-in [`../MAINTENANCE.md`](../MAINTENANCE.md) is satisfied.
+in [`MAINTENANCE.md`](https://github.com/lluiseriksson/riemann-prime-resolvent/blob/main/MAINTENANCE.md)
+is satisfied.

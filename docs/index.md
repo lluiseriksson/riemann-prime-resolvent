@@ -21,4 +21,4 @@ This site is the canonical scholarly record for the construction repository. It 
 
 - [Final 0.3.x release closeout](FINAL-RELEASE.md)
 - [Research frontier](RESEARCH-FRONTIER.md)
-- [Maintenance and archive policy](../MAINTENANCE.md)
+- [Maintenance and archive policy](https://github.com/lluiseriksson/riemann-prime-resolvent/blob/main/MAINTENANCE.md)
