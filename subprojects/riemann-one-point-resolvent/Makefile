@@ -1,4 +1,4 @@
-.PHONY: all lean figures certificates docs static verify manifest manifest-check audit package clean
+.PHONY: all lean figures certificates docs static verify metadata workflow-audit hygiene manifest manifest-check audit package clean
 
 all: verify
 
@@ -20,13 +20,22 @@ static:
 verify:
 	./scripts/verify.sh
 
+metadata:
+	python3 scripts/check_metadata.py
+
+workflow-audit:
+	python3 scripts/check_workflows.py
+
+hygiene:
+	python3 scripts/check_repo_hygiene.py
+
 manifest:
 	python3 scripts/generate_manifest.py
 
 manifest-check:
 	python3 scripts/generate_manifest.py --check
 
-audit: manifest-check
+audit: metadata workflow-audit hygiene manifest-check
 	python3 scripts/check_release.py
 
 package: audit

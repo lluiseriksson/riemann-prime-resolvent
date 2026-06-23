@@ -1,6 +1,6 @@
 # Reviewer guide
 
-Review the project in four independent passes.
+Review the project in five independent passes.
 
 ## 1. Claim audit
 
@@ -12,8 +12,12 @@ Check the \(\xi/\Xi\) conventions, the map \(-z^2\), connectivity after removing
 
 ## 3. Formal audit
 
-Run the pinned build and oracle. Confirm that finite theorem names match the documentation and that no project axiom or placeholder enters the imported root module.
+Run the pinned build and oracle. Confirm that finite theorem names match the documentation and that no project axiom or placeholder enters the imported root module. Treat the source scanner as a supplementary guard, not as kernel evidence.
 
-## 4. Cross-repository audit
+## 4. Monorepo interface audit
 
-Compare the interface contract byte-for-byte. Verify that construction obligations are not silently assumed by the criterion repository and that criterion results are not duplicated with divergent definitions.
+Compare the interface contract and shared release/audit scripts byte-for-byte. Verify that construction obligations are not silently assumed by the criterion layer and that criterion results are not duplicated with divergent definitions.
+
+## 5. Reproducibility audit
+
+Run `make audit`, inspect every manifest change, check VERSION/CFF/CodeMeta/Python-package coherence, and reproduce the criterion ZIP twice. Confirm the active root workflow publishes this site beneath `/criterion/` and attests the criterion source archive independently.

@@ -2,6 +2,9 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
+python3 scripts/check_workflows.py
+python3 scripts/check_repo_hygiene.py
+python3 scripts/check_metadata.py
 python3 scripts/check_no_placeholders.py
 python3 scripts/exact_atomic_certificate.py --output docs/assets/data/exact_atomic_certificate.json
 python3 scripts/check_certificate.py docs/assets/data/exact_atomic_certificate.json

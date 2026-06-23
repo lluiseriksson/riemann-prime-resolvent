@@ -7,7 +7,7 @@ python3 -m pip install -r requirements.txt -r requirements-docs.txt
 ./scripts/verify_static.sh
 ```
 
-This regenerates exact data and figures, runs tests, checks local documentation links, builds the site when MkDocs is installed, rejects standalone paper/PDF artifacts and **checks** the committed manifest without rewriting it. Generated or source drift therefore fails CI.
+This audits release metadata, workflow policy and Lean placeholder usage; regenerates exact data and figures; runs the criterion tests; checks local documentation links; builds the site when MkDocs is installed; rejects standalone paper/PDF artifacts; and **checks** the committed manifest without rewriting it. Generated or source drift therefore fails CI.
 
 After deliberately reviewing a change, update and audit the manifest explicitly:
 
@@ -16,11 +16,13 @@ make manifest
 make audit
 ```
 
-The audit requires a complete, sorted inventory of regular files and rejects unlisted files, missing files, duplicate or unsafe manifest paths and included symlinks.
+The audit requires a complete, sorted inventory of regular files. It rejects unlisted/missing files, duplicate or unsafe paths, Unicode/case collisions, Windows-reserved path segments and included symlinks. Shared release/audit tooling and the interface contract are also checked byte-for-byte by the monorepo root audit.
 
-## Workflow supply-chain policy
+## Workflow and metadata policy
 
-The preserved subproject workflows are kept SHA-pinned like the root workflows. The root monorepo static verification runs `scripts/check_workflows.py`, which scans both workflow trees and rejects mutable action tags, `pull_request_target`, and network installers piped directly to interpreters. Release workflows also request OIDC provenance attestations for generated source archives.
+The preserved subproject workflows remain SHA-pinned like the active root workflows. The root audit scans both workflow trees, requires fixed runner labels and non-persistent checkout credentials, and rejects mutable refs or network installers executed directly by interpreters.
+
+`scripts/check_metadata.py` checks CFF, CodeMeta, VERSION, changelog, Python package version, Lean toolchain and exact Mathlib revision coherence. The criterion Python package uses the PEP 440 local version `0.3.0+docs.integrated` for repository VERSION `0.3.0-docs-integrated`.
 
 ## Lean layer
 
@@ -41,7 +43,14 @@ The repository pins Lean 4.31.0 and Mathlib commit `fabf563a7c95a166b8d7b6efca11
 
 ```bash
 make package
-(cd release && sha256sum -c *.zip.sha256)
+(cd release && sha256sum -c -- *.zip.sha256)
 ```
 
-The archive is built directly from the validated manifest with fixed timestamps, canonical permissions, sorted uncompressed entries and a versioned top-level directory. The release workflow builds it twice, requires an identical SHA-256 before upload, and emits a provenance attestation for the ZIP.
+The archive is produced from a manifest-verified immutable byte snapshot with fixed timestamps, canonical permissions, sorted uncompressed entries and a versioned top-level directory. The active root release workflow builds this criterion archive twice, requires identical SHA-256 output, uploads it beside the monorepo archive and emits a provenance attestation.
+
+The canonical rendered criterion site is built by the active root Pages workflow beneath `https://lluiseriksson.github.io/riemann-prime-resolvent/criterion/`.
+
+
+## Cross-platform hygiene
+
+`check_repo_hygiene.py` rejects CRLF drift in normalized text files, case-insensitive path collisions, symlinks in the source inventory and accidentally committed local cache files. `generate_figures.py` also removes Graphviz version comments from SVG output so runner-image upgrades do not create irrelevant manifest churn.

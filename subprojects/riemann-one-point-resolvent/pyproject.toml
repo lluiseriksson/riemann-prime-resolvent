@@ -4,10 +4,11 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "riemann-one-point-resolvent-tools"
-version = "0.3.0"
+version = "0.3.0+docs.integrated"
 requires-python = ">=3.12"
 dependencies = []
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-addopts = "-ra"
+addopts = "-ra --strict-config --strict-markers"
+xfail_strict = true

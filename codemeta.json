@@ -7,7 +7,7 @@
     "givenName": "Lluís"
   },
   "codeRepository": "https://github.com/lluiseriksson/riemann-prime-resolvent",
-  "dateModified": "2026-06-22",
+  "dateModified": "2026-06-23",
   "description": "Construction and convergence layer for a prime-built resolvent programme with Lean 4 verification and integrated documentation.",
   "keywords": [
     "Riemann hypothesis",

@@ -1,0 +1,57 @@
+name: Container
+
+on:
+  push:
+    paths:
+      - "Dockerfile"
+      - ".dockerignore"
+      - "requirements.txt"
+      - "requirements-docs.txt"
+      - "subprojects/riemann-one-point-resolvent/requirements.txt"
+      - "subprojects/riemann-one-point-resolvent/requirements-docs.txt"
+      - "scripts/check_metadata.py"
+      - "scripts/check_no_placeholders.py"
+      - "scripts/check_workflows.py"
+      - ".github/workflows/container.yml"
+  pull_request:
+    paths:
+      - "Dockerfile"
+      - ".dockerignore"
+      - "requirements.txt"
+      - "requirements-docs.txt"
+      - "subprojects/riemann-one-point-resolvent/requirements.txt"
+      - "subprojects/riemann-one-point-resolvent/requirements-docs.txt"
+      - "scripts/check_metadata.py"
+      - "scripts/check_no_placeholders.py"
+      - "scripts/check_workflows.py"
+      - ".github/workflows/container.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  DOCKER_BUILDKIT: "1"
+  TZ: UTC
+
+concurrency:
+  group: container-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          persist-credentials: false
+      - name: Build reproducible development image
+        run: docker build --tag riemann-prime-resolvent:ci .
+      - name: Smoke-test bundled tooling and dependencies
+        run: >-
+          docker run --rm riemann-prime-resolvent:ci bash -lc
+          'python -m pip check &&
+           python scripts/check_metadata.py &&
+           python scripts/check_workflows.py &&
+           python scripts/check_no_placeholders.py'

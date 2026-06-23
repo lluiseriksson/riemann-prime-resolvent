@@ -4,6 +4,7 @@ import os
 import shutil
 import subprocess
 import sys
+import unicodedata
 import zipfile
 from pathlib import Path
 
@@ -13,9 +14,11 @@ REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 SCRIPTS = REPOSITORY_ROOT / "scripts"
 sys.path.insert(0, str(SCRIPTS))
 
+import package_release  # noqa: E402
 from package_release import FIXED_ZIP_TIME, build_archive  # noqa: E402
 from release_common import (  # noqa: E402
     MANIFEST_NAME,
+    MIRRORED_TOOLING_FILES,
     ReleaseError,
     audit_release,
     parse_manifest,
@@ -85,6 +88,45 @@ def test_manifest_rejects_duplicate_and_unsafe_rows(tmp_path: Path) -> None:
         parse_manifest(unsafe)
 
 
+def test_manifest_rejects_casefold_collisions() -> None:
+    data = (
+        "path,bytes,sha256\n"
+        f"A.txt,0,{'0' * 64}\n"
+        f"a.txt,0,{'0' * 64}\n"
+    ).encode()
+    with pytest.raises(ReleaseError, match="colliding paths"):
+        parse_manifest(data)
+
+
+def test_manifest_rejects_windows_reserved_and_non_nfc_paths() -> None:
+    reserved = (
+        "path,bytes,sha256\n" f"CON.txt,0,{'0' * 64}\n"
+    ).encode()
+    with pytest.raises(ReleaseError, match="Windows-reserved"):
+        parse_manifest(reserved)
+
+    decomposed = unicodedata.normalize("NFD", "café.txt")
+    non_nfc = (
+        "path,bytes,sha256\n" f"{decomposed},0,{'0' * 64}\n"
+    ).encode("utf-8")
+    with pytest.raises(ReleaseError, match="NFC"):
+        parse_manifest(non_nfc)
+
+
+def test_source_inventory_rejects_case_collisions_when_filesystem_allows_them(
+    tmp_path: Path,
+) -> None:
+    root = _project(tmp_path)
+    upper = root / "src/Case.txt"
+    lower = root / "src/case.txt"
+    upper.write_text("upper\n", encoding="utf-8")
+    lower.write_text("lower\n", encoding="utf-8")
+    if upper.samefile(lower):
+        pytest.skip("filesystem is case-insensitive")
+    with pytest.raises(ReleaseError, match="colliding paths"):
+        render_manifest(root)
+
+
 def test_contract_mirror_must_be_byte_identical(tmp_path: Path) -> None:
     root = _project(tmp_path)
     mirror = root / "subprojects/riemann-one-point-resolvent/docs/contracts"
@@ -94,6 +136,26 @@ def test_contract_mirror_must_be_byte_identical(tmp_path: Path) -> None:
     )
     write_manifest(root)
     with pytest.raises(ReleaseError, match="not byte-identical"):
+        validate_release_policy(root)
+
+
+def test_mirrored_release_tooling_must_be_byte_identical(tmp_path: Path) -> None:
+    root = _project(tmp_path)
+    subproject = root / "subprojects/riemann-one-point-resolvent"
+    (subproject / "docs/contracts").mkdir(parents=True)
+    (subproject / "docs/contracts/resolvent-interface.json").write_bytes(
+        (root / "docs/contracts/resolvent-interface.json").read_bytes()
+    )
+    for relative in MIRRORED_TOOLING_FILES:
+        primary = root / relative
+        mirror = subproject / relative
+        primary.parent.mkdir(parents=True, exist_ok=True)
+        mirror.parent.mkdir(parents=True, exist_ok=True)
+        primary.write_text(f"same: {relative}\n", encoding="utf-8")
+        mirror.write_bytes(primary.read_bytes())
+    (subproject / MIRRORED_TOOLING_FILES[0]).write_text("drift\n", encoding="utf-8")
+
+    with pytest.raises(ReleaseError, match="mirrored tooling"):
         validate_release_policy(root)
 
 
@@ -120,20 +182,54 @@ def test_archive_is_manifest_driven_safe_and_byte_reproducible(tmp_path: Path) -
     root = _project(tmp_path)
     audit_release(root)
 
-    first, _ = build_archive(root, tmp_path / "out-a", project_name="sample")
+    first, checksum = build_archive(root, tmp_path / "out-a", project_name="sample")
     for path in root.rglob("*"):
         if path.is_file():
             os.utime(path, (1_800_000_000, 1_800_000_000))
     second, _ = build_archive(root, tmp_path / "out-b", project_name="sample")
 
     assert first.read_bytes() == second.read_bytes()
+    assert first.name in checksum.read_text(encoding="utf-8")
     with zipfile.ZipFile(first) as archive:
         names = archive.namelist()
         assert len(names) == len(set(names))
         assert names[-1] == f"sample-1.2.3/{MANIFEST_NAME}"
         assert all(name.startswith("sample-1.2.3/") for name in names)
         assert all(".." not in Path(name).parts for name in names)
+        assert archive.comment == b""
         assert all(info.date_time == FIXED_ZIP_TIME for info in archive.infolist())
         assert all(info.compress_type == zipfile.ZIP_STORED for info in archive.infolist())
+        assert all(info.extra == b"" and info.comment == b"" for info in archive.infolist())
         script_info = archive.getinfo("sample-1.2.3/scripts/run.sh")
         assert (script_info.external_attr >> 16) & 0o777 == 0o755
+
+
+def test_archive_rejects_mutation_between_audit_and_snapshot(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    root = _project(tmp_path)
+    real_audit = package_release.audit_release
+
+    def mutating_audit(project: Path):
+        entries = real_audit(project)
+        (project / "src/data.txt").write_text("mutated after audit\n", encoding="utf-8")
+        return entries
+
+    monkeypatch.setattr(package_release, "audit_release", mutating_audit)
+    with pytest.raises(ReleaseError, match="source changed after manifest audit"):
+        build_archive(root, tmp_path / "out", project_name="sample")
+
+
+def test_archive_rejects_mutation_during_archive_creation(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    root = _project(tmp_path)
+    real_verify = package_release.verify_archive
+
+    def mutating_verify(*args, **kwargs):
+        real_verify(*args, **kwargs)
+        (root / "src/data.txt").write_text("mutated during build\n", encoding="utf-8")
+
+    monkeypatch.setattr(package_release, "verify_archive", mutating_verify)
+    with pytest.raises(ReleaseError, match="source changed during archive creation"):
+        build_archive(root, tmp_path / "out", project_name="sample")

@@ -1,0 +1,56 @@
+name: Bug, build or proof issue
+description: Report a reproducible code, proof, release or documentation defect
+title: "[BUG] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: >-
+        Please distinguish kernel-checked failures, documentation errors and
+        conjectural mathematical concerns. Do not disclose security-sensitive
+        release or dependency issues here; follow SECURITY.md instead.
+  - type: input
+    id: location
+    attributes:
+      label: Exact file or declaration
+      placeholder: RiemannPrimeResolvent/Basic.lean:theorem_name
+    validations:
+      required: true
+  - type: input
+    id: commit
+    attributes:
+      label: Commit SHA
+      placeholder: 40-character Git commit
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected result
+    validations:
+      required: true
+  - type: textarea
+    id: observed
+    attributes:
+      label: Observed result and complete diagnostic
+      render: shell
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Minimal reproduction
+      description: Include exact commands and environment details.
+    validations:
+      required: true
+  - type: dropdown
+    id: claim
+    attributes:
+      label: Claim impact
+      options:
+        - No mathematical claim impact
+        - Documentation/status wording only
+        - Possible finite Lean theorem issue
+        - Possible open-frontier or non-circularity issue
+    validations:
+      required: true

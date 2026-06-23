@@ -4,7 +4,7 @@
 
 > **Status:** abstract criterion programme and verified finite certificate layer. This repository does not prove the Riemann hypothesis.
 
-This is the **criterion layer** of the broader Riemann prime–resolvent programme. It is now maintained as a subproject inside [`lluiseriksson/riemann-prime-resolvent`](https://github.com/lluiseriksson/riemann-prime-resolvent), after preserving the former `riemann-one-point-resolvent` Git history in the monorepo.
+This is the **criterion layer** of the broader Riemann prime–resolvent programme. It is maintained as a subproject inside [`lluiseriksson/riemann-prime-resolvent`](https://github.com/lluiseriksson/riemann-prime-resolvent), after preserving the former `riemann-one-point-resolvent` Git history in the monorepo. The canonical rendered criterion documentation is [`https://lluiseriksson.github.io/riemann-prime-resolvent/criterion/`](https://lluiseriksson.github.io/riemann-prime-resolvent/criterion/).
 
 It studies the target
 
@@ -24,7 +24,7 @@ The documentation gives a conventional argument that RH is equivalent to this se
 
 ## Documentation is the manuscript
 
-There is no standalone `paper/` directory and no committed manuscript PDF. The full exposition is under [`docs/manuscript/`](docs/manuscript/index.md), versioned with the Lean source and published by GitHub Pages.
+There is no standalone `paper/` directory and no committed manuscript PDF. The full exposition is under [`docs/manuscript/`](docs/manuscript/index.md), versioned with the Lean source and published by the canonical monorepo Pages workflow.
 
 ## Relationship to the prime repository
 
@@ -37,7 +37,10 @@ lake exe cache get
 ./scripts/verify_lean.sh
 python3 -m pip install -r requirements.txt -r requirements-docs.txt
 ./scripts/verify_static.sh
+make audit
 ```
+
+The audit is read-only and checks release metadata, workflow policy, portable source inventory and deterministic packaging. Run `make manifest` only after deliberately reviewing changed source or generated files.
 
 ## Repository map
 
@@ -46,8 +49,8 @@ python3 -m pip install -r requirements.txt -r requirements-docs.txt
 | `OnePointResolvent/` | canonical Lean namespace and finite verified core |
 | `docs/manuscript/` | integrated mathematical exposition |
 | `docs/contracts/` | shared machine-readable interface |
-| `scripts/` | certificates, figures, static checks, manifests and release tooling |
+| `scripts/` | certificates, figures, static checks, metadata, manifests and release tooling |
 | `tests/` | exact and regression checks |
-| `.github/workflows/` | Lean/static CI, Pages documentation and source release |
+| `.github/workflows/` | preserved Lean/static CI, documentation and source-release definitions |
 
 Begin with [`docs/index.md`](docs/index.md) and [`docs/MATHEMATICAL_STATUS.md`](docs/MATHEMATICAL_STATUS.md).

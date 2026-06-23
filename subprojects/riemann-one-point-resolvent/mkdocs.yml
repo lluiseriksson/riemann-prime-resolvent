@@ -1,6 +1,6 @@
 site_name: One-Point Resolvent–Hausdorff Programme
 site_description: Criterion layer and Lean 4 finite certificate library
-site_url: https://lluiseriksson.github.io/riemann-prime-resolvent/
+site_url: https://lluiseriksson.github.io/riemann-prime-resolvent/criterion/
 repo_url: https://github.com/lluiseriksson/riemann-prime-resolvent
 repo_name: lluiseriksson/riemann-prime-resolvent
 strict: true

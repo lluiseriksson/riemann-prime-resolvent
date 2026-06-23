@@ -7,7 +7,7 @@
     "givenName": "Lluís"
   },
   "codeRepository": "https://github.com/lluiseriksson/riemann-prime-resolvent/tree/main/subprojects/riemann-one-point-resolvent",
-  "dateModified": "2026-06-22",
+  "dateModified": "2026-06-23",
   "description": "Criterion layer and finite Lean 4 certificate library with integrated mathematical documentation.",
   "keywords": [
     "Riemann hypothesis",

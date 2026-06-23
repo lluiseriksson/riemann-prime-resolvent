@@ -8,3 +8,7 @@ updates:
     directory: "/"
     schedule:
       interval: monthly
+  - package-ecosystem: pip
+    directory: "/subprojects/riemann-one-point-resolvent"
+    schedule:
+      interval: monthly
