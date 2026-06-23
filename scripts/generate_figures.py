@@ -95,7 +95,10 @@ def prime_tail_figure() -> None:
     with (DATA / 'prime_tail_majorant.csv').open('w', newline='', encoding='utf-8') as f:
         writer = csv.writer(f, lineterminator='\n')
         writer.writerow(['delta', 'N', 'majorant'])
-        writer.writerows(rows)
+        writer.writerows(
+            (f'{delta:.12e}', f'{xv:.12e}', f'{yv:.12e}')
+            for delta, xv, yv in rows
+        )
     ax.set_xscale('log')
     ax.set_yscale('log')
     ax.set_xlabel('integer cutoff N (continuous plot for visualization)')
