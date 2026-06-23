@@ -28,7 +28,9 @@ The order below minimizes circularity and API churn.
 ## Milestone D — arithmetic and compactness
 
 12. Formalize the integer-cutoff von Mangoldt tail.
-13. Formalize one-point local boundedness for positive Stieltjes transforms.
+13. Formalize one-point local boundedness for positive Stieltjes transforms,
+    with constants independent of the number of atoms, the spectrum and the
+    cutoff/approximant index.
 14. Package the normal-family criterion in the exact shared-interface form.
 
 Only after A–D should the companion repository import a released criterion theorem.

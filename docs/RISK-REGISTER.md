@@ -8,3 +8,4 @@
 | finite numerics promoted to infinity | false claim | numerical status labels and exact verifiers |
 | divergent copies of criterion | inconsistent theorem | canonical ownership in companion repo |
 | stale standalone manuscript | documentation drift | docs-only publication policy |
+| cutoff-dependent continuity treated as uniform | invalid finite-to-limit inference | require an explicit cutoff-independent modulus or a proved one-point Stieltjes domination theorem; see [arXiv:2605.0072 source audit](SOURCE-AUDIT-ARXIV-2605.0072.md) |
