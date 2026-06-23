@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Pinned all preserved subproject GitHub Actions to immutable commit SHAs.
+- Added source-release provenance attestations for the preserved subproject workflow.
+- Documented the inherited workflow supply-chain policy from the root monorepo audit.
 - Made manifest verification read-only in CI and added complete inventory/path/symlink checks.
 - Replaced the external ZIP command with a manifest-driven byte-reproducible Python archive.
 - Added release-tooling regression tests and reproducibility documentation.

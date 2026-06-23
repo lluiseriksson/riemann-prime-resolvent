@@ -13,7 +13,19 @@ lake exe cache get
 ./scripts/verify_lean.sh
 ```
 
-The static layer regenerates SVG/PNG figures, CSV data and exact certificates, runs the tests, checks local links, builds the documentation when MkDocs is available, and then **checks** the committed source manifests without rewriting them. A stale generated artifact or an unlisted source file therefore fails verification instead of being silently absorbed into a new manifest.
+The static layer audits GitHub Actions workflow references, regenerates SVG/PNG figures, CSV data and exact certificates, runs the tests, checks local links, builds the documentation when MkDocs is available, and then **checks** the committed source manifests without rewriting them. A stale generated artifact or an unlisted source file therefore fails verification instead of being silently absorbed into a new manifest.
+
+## Workflow supply-chain policy
+
+All third-party `uses:` entries in root and criterion-subproject workflows are pinned to full 40-character commit SHAs, with the human-readable major version kept only as a comment. `scripts/check_workflows.py` rejects mutable tags or branches, `pull_request_target`, and network installers piped directly to shell/Python interpreters. The release workflows use OIDC provenance attestations for the generated source ZIPs.
+
+When updating an Action, resolve the new tag to a commit, replace the SHA, keep the version comment current, and run:
+
+```bash
+python3 scripts/check_workflows.py
+make manifest
+make audit
+```
 
 ## Manifest workflow
 
@@ -34,4 +46,4 @@ make package
 (cd release && sha256sum -c *.zip.sha256)
 ```
 
-`package_release.py` uses only the Python standard library. It packages exactly the manifest inventory beneath one versioned top-level directory, uses sorted members, fixed timestamps, canonical permissions and uncompressed ZIP entries. Running it twice over identical source bytes produces an identical archive byte for byte; the release workflow verifies that invariant before uploading the artifact.
+`package_release.py` uses only the Python standard library. It packages exactly the manifest inventory beneath one versioned top-level directory, uses sorted members, fixed timestamps, canonical permissions and uncompressed ZIP entries. Running it twice over identical source bytes produces an identical archive byte for byte; the release workflow verifies that invariant before uploading and attesting the artifact.

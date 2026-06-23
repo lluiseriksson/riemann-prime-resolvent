@@ -1,0 +1,30 @@
+# Repository-wide normalization for reproducible manifests and releases.
+* text=auto eol=lf
+
+# Source and documentation are always normalized to LF.
+*.lean text eol=lf
+*.py text eol=lf
+*.sh text eol=lf
+*.md text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.json text eol=lf
+*.toml text eol=lf
+*.csv text eol=lf
+*.dot text eol=lf
+*.svg text eol=lf
+*.cff text eol=lf
+*.txt text eol=lf
+
+# Binary and archive artifacts must never be line-ending converted.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.pdf binary
+*.zip binary
+*.gz binary
+*.tar binary
+*.zst binary
+*.olean binary

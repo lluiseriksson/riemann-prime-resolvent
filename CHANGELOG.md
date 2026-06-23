@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Pinned all GitHub Actions in root and criterion-subproject workflows to immutable commit SHAs.
+- Added a workflow supply-chain audit that rejects mutable action refs, `pull_request_target`, and network installers piped to interpreters.
+- Added release provenance attestations for root and criterion-subproject source ZIPs.
+- Added `.gitattributes` to normalize source/doc line endings and protect binary artifacts from newline conversion.
 - Made manifest verification read-only in CI so stale generated/source files can no longer be silently accepted.
 - Added complete inventory checks, canonical-path validation, symlink rejection and byte-identical contract-mirror enforcement.
 - Replaced the external, timestamp-sensitive `zip -r` release with a manifest-driven byte-reproducible Python archive.
