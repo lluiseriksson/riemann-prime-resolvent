@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Added a machine-checked one-to-one mapping between each Lean `#print axioms` oracle and its documented verified theorem ledger.
+- Added two-clean-run byte reproducibility checks for figures, CSV data and exact criterion certificates.
+- Pinned the MathJax documentation asset to an exact version and added a remote-asset immutability audit.
 - Added a cross-platform repository hygiene audit for CRLF drift, case-insensitive path collisions and generated cache files.
 - Scrubbed Graphviz SVG generator-version comments to prevent manifest churn across runner images.
 - Replaced regex-only Lean placeholder scans with a position-preserving scanner for nested comments, strings and interpolated expressions.

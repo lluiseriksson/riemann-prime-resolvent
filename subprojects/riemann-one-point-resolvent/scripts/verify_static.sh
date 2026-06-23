@@ -5,10 +5,11 @@ cd "$(dirname "$0")/.."
 python3 scripts/check_workflows.py
 python3 scripts/check_repo_hygiene.py
 python3 scripts/check_metadata.py
+python3 scripts/check_docs_assets.py
 python3 scripts/check_no_placeholders.py
-python3 scripts/exact_atomic_certificate.py --output docs/assets/data/exact_atomic_certificate.json
+python3 scripts/check_oracle_coverage.py
+python3 scripts/check_generated_reproducibility.py
 python3 scripts/check_certificate.py docs/assets/data/exact_atomic_certificate.json
-python3 scripts/generate_figures.py
 python3 scripts/check_markdown_links.py
 python3 -m pytest -q
 # Check, never rewrite: generated-artifact or source drift must fail CI.

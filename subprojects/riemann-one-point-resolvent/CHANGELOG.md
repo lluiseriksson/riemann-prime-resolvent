@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Added an exact theorem ledger synchronized automatically with `OnePointResolvent/Oracle.lean`.
+- Added two-clean-run byte reproducibility checks for generated figures, data and the exact atomic certificate.
+- Pinned MathJax to an exact version and audited remote documentation assets for immutable references.
 - Added a cross-platform repository hygiene audit for CRLF drift, case-insensitive path collisions and generated cache files.
 - Scrubbed Graphviz SVG generator-version comments to prevent manifest churn across runner images.
 - Replaced regex-only placeholder checks with a nested-comment/string-aware Lean source scanner.

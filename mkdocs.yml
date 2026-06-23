@@ -35,7 +35,7 @@ markdown_extensions:
   - pymdownx.superfences
   - tables
 extra_javascript:
-  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+  - https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js
 nav:
   - Home: index.md
   - Integrated programme:

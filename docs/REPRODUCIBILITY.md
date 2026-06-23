@@ -33,6 +33,18 @@ make audit
 
 `python3 scripts/check_metadata.py` cross-checks VERSION, CFF, CodeMeta, changelog sections, Python package metadata, Lean toolchains and exact 40-character Mathlib revisions across both project roots. Tagged releases additionally require the exact tag `v$(cat VERSION)`.
 
+## Oracle/ledger traceability
+
+`scripts/check_oracle_coverage.py` masks Lean comments and strings, reads the exact `#print axioms` sequence from `oracle_check.lean`, and requires the verified rows in `docs/THEOREM-LEDGER.md` to match it one-for-one and in the same order. Wildcards and prose-only verified entries are rejected. The Lean build remains the source of kernel evidence; this check prevents the human-facing ledger from drifting away from the oracle.
+
+## Generated-artifact reproducibility
+
+`scripts/check_generated_reproducibility.py` runs the project generators twice with fresh Matplotlib configuration directories and deterministic environment variables. Every generated SVG, PNG and CSV must be byte-identical between runs. The criterion check applies the same rule to its exact atomic certificate. The subsequent manifest check still proves that the reproducible output equals the committed output.
+
+## Documentation asset pinning
+
+`scripts/check_docs_assets.py` requires remote MkDocs assets to use HTTPS and exact jsDelivr npm semantic versions. MathJax is pinned to `3.2.2`; mutable major-only, `latest`, `main` and `master` references fail verification.
+
 ## Manifest workflow
 
 ```bash
