@@ -34,12 +34,19 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          lake env lean oracle_check.lean
+          root_report="$(mktemp)"
+          criterion_report="$(mktemp)"
+          trap 'rm -f "$root_report" "$criterion_report"' EXIT
+
+          lake env lean oracle_check.lean 2>&1 | tee "$root_report"
+          python3 scripts/check_oracle_coverage.py --report "$root_report"
           python3 scripts/check_no_placeholders.py
+
           cd subprojects/riemann-one-point-resolvent
           lake exe cache get
           lake build
-          lake env lean OnePointResolvent/Oracle.lean
+          lake env lean OnePointResolvent/Oracle.lean 2>&1 | tee "$criterion_report"
+          python3 scripts/check_oracle_coverage.py --report "$criterion_report"
           python3 scripts/check_no_placeholders.py
 
   static:

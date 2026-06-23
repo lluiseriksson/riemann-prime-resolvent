@@ -2,8 +2,10 @@
 
 The verified rows below are synchronized one-for-one with every public
 `theorem`/`lemma` in the `OnePointResolvent` namespace and with
-`OnePointResolvent/Oracle.lean` by `scripts/check_oracle_coverage.py`. They cover
-only the finite certificate layer; they do not state the analytic RH criterion.
+`OnePointResolvent/Oracle.lean` by `scripts/check_oracle_coverage.py`. The actual
+Lean report must contain the same ordered declarations and may depend only on
+`Classical.choice`, `Quot.sound` and `propext`. These rows cover only the finite
+certificate layer; they do not state the analytic RH criterion.
 
 | Declaration | Status | Meaning |
 |---|---|---|

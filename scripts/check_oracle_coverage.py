@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Keep public Lean theorems, axiom oracles and theorem ledgers synchronized."""
+"""Synchronize public Lean theorems, axiom oracles, ledgers and Lean reports."""
 from __future__ import annotations
 
 import argparse
@@ -29,10 +29,22 @@ DECLARATION_RE = re.compile(
     rf"(?P<modifiers>(?:(?:private|protected|local|noncomputable)[ \t]+)*)"
     rf"(?P<kind>theorem|lemma)[ \t]+(?P<name>{LEAN_NAME})\b"
 )
+ANSI_ESCAPE_RE = re.compile(r"\x1b\[[0-?]*[ -/]*[@-~]")
+AXIOM_REPORT_RE = re.compile(
+    r"'(?P<name>[^\r\n]*?)'[ \t]+"
+    r"(?:(?P<empty>does not depend on any axioms)|"
+    r"depends on axioms:[ \t]*\[(?P<axioms>[^\]]*)\])"
+)
+SORRY_WARNING_RE = re.compile(r"declaration uses ['`]sorry['`]", re.IGNORECASE)
+
+# These are the standard logical axioms admitted by Lean/Mathlib's classical
+# foundation. Any project axiom, `sorryAx`, or new dependency must be reviewed
+# explicitly instead of silently entering a verified ledger row.
+ALLOWED_AXIOMS = frozenset({"Classical.choice", "Quot.sound", "propext"})
 
 
 class OracleCoverageError(RuntimeError):
-    """Raised when source declarations, the oracle and the ledger disagree."""
+    """Raised when sources, oracle, ledger or emitted Lean evidence disagree."""
 
 
 @dataclass(frozen=True)
@@ -42,6 +54,12 @@ class ProjectSpec:
     aggregate_import: str
     oracle: Path
     ledger: Path
+
+
+@dataclass(frozen=True)
+class AxiomReportEntry:
+    declaration: str
+    axioms: frozenset[str]
 
 
 def discover_project(root: Path) -> ProjectSpec:
@@ -195,7 +213,77 @@ def parse_source_declarations(root: Path, spec: ProjectSpec) -> list[str]:
     return declarations
 
 
-def audit(root: Path) -> list[str]:
+def parse_axiom_report(text: str) -> list[AxiomReportEntry]:
+    """Parse the information messages emitted by Lean's `#print axioms`."""
+
+    clean = ANSI_ESCAPE_RE.sub("", text)
+    entries: list[AxiomReportEntry] = []
+    for match in AXIOM_REPORT_RE.finditer(clean):
+        declaration = match.group("name")
+        if match.group("empty") is not None:
+            axioms = frozenset()
+        else:
+            raw_axioms = (match.group("axioms") or "").strip()
+            if not raw_axioms:
+                raise OracleCoverageError(
+                    f"malformed axiom report for {declaration}: empty dependency list"
+                )
+            parts = [part.strip() for part in raw_axioms.split(",")]
+            if any(not part for part in parts):
+                raise OracleCoverageError(
+                    f"malformed axiom report for {declaration}: {raw_axioms!r}"
+                )
+            if len(parts) != len(set(parts)):
+                raise OracleCoverageError(
+                    f"duplicate axiom in report for {declaration}: {raw_axioms!r}"
+                )
+            axioms = frozenset(parts)
+        entries.append(AxiomReportEntry(declaration, axioms))
+
+    if not entries:
+        raise OracleCoverageError("Lean output contains no `#print axioms` reports")
+    names = [entry.declaration for entry in entries]
+    if len(names) != len(set(names)):
+        raise OracleCoverageError("Lean output contains duplicate axiom reports")
+    return entries
+
+
+def audit_axiom_report(expected: list[str], text: str) -> list[str]:
+    """Require one ordered report per oracle declaration and only admitted axioms."""
+
+    failures: list[str] = []
+    clean = ANSI_ESCAPE_RE.sub("", text)
+    if SORRY_WARNING_RE.search(clean):
+        failures.append("Lean output contains a declaration-uses-sorry warning")
+
+    try:
+        entries = parse_axiom_report(clean)
+    except OracleCoverageError as exc:
+        return [*failures, str(exc)]
+
+    actual = [entry.declaration for entry in entries]
+    expected_set = set(expected)
+    actual_set = set(actual)
+    missing = [name for name in expected if name not in actual_set]
+    extra = [name for name in actual if name not in expected_set]
+    if missing:
+        failures.append("oracle declarations missing from Lean report: " + ", ".join(missing))
+    if extra:
+        failures.append("unexpected declarations in Lean report: " + ", ".join(extra))
+    if not missing and not extra and actual != expected:
+        failures.append("Lean axiom report order must follow the oracle declaration order")
+
+    for entry in entries:
+        unexpected = sorted(entry.axioms - ALLOWED_AXIOMS)
+        if unexpected:
+            failures.append(
+                f"{entry.declaration} depends on non-admitted axioms: "
+                + ", ".join(unexpected)
+            )
+    return failures
+
+
+def audit(root: Path, *, report_text: str | None = None) -> list[str]:
     root = root.resolve()
     try:
         spec = discover_project(root)
@@ -223,23 +311,40 @@ def audit(root: Path) -> list[str]:
         failures.append("public source declarations missing from oracle: " + ", ".join(uncovered))
     if stale:
         failures.append("oracle declarations missing from public source: " + ", ".join(stale))
+    if report_text is not None:
+        failures.extend(audit_axiom_report(oracle, report_text))
     return failures
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--root", type=Path, default=ROOT)
+    parser.add_argument(
+        "--report",
+        type=Path,
+        help="Lean stdout/stderr captured while running the project's axiom oracle",
+    )
     args = parser.parse_args()
-    failures = audit(args.root)
+
+    report_text: str | None = None
+    if args.report is not None:
+        try:
+            report_text = args.report.read_text(encoding="utf-8")
+        except (OSError, UnicodeError) as exc:
+            print(f"Lean oracle coverage FAILED:\n- cannot read report: {exc}", file=sys.stderr)
+            return 1
+
+    failures = audit(args.root, report_text=report_text)
     if failures:
         print("Lean oracle coverage FAILED:", file=sys.stderr)
         print("\n".join(f"- {failure}" for failure in failures), file=sys.stderr)
         return 1
     spec = discover_project(args.root)
     count = len(parse_oracle(spec))
+    suffix = "; emitted axioms are within the admitted kernel set" if report_text is not None else ""
     print(
         f"Lean oracle coverage passed for {spec.label}: "
-        f"{count} public declarations"
+        f"{count} public declarations{suffix}"
     )
     return 0
 

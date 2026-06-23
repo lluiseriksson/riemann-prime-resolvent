@@ -6,7 +6,11 @@ from pathlib import Path
 SCRIPTS = Path(__file__).resolve().parents[1] / "scripts"
 sys.path.insert(0, str(SCRIPTS))
 
-from check_oracle_coverage import audit  # noqa: E402
+from check_oracle_coverage import (  # noqa: E402
+    ALLOWED_AXIOMS,
+    audit,
+    parse_axiom_report,
+)
 
 
 def _construction(tmp_path: Path) -> Path:
@@ -38,6 +42,16 @@ def _construction(tmp_path: Path) -> Path:
         encoding="utf-8",
     )
     return root
+
+
+def _valid_report() -> str:
+    return (
+        "oracle_check.lean:3:0: information: "
+        "'RiemannPrimeResolvent.alpha' does not depend on any axioms\n"
+        "oracle_check.lean:4:0: information: "
+        "'RiemannPrimeResolvent.Space.beta' depends on axioms: "
+        "[Classical.choice, Quot.sound, propext]\n"
+    )
 
 
 def test_exact_oracle_ledger_sequence_passes(tmp_path: Path) -> None:
@@ -128,3 +142,60 @@ def test_dependency_cache_theorems_are_not_treated_as_project_source(
     )
 
     assert audit(root) == []
+
+
+def test_runtime_axiom_report_accepts_only_standard_kernel_axioms(
+    tmp_path: Path,
+) -> None:
+    root = _construction(tmp_path)
+    assert ALLOWED_AXIOMS == frozenset({"Classical.choice", "Quot.sound", "propext"})
+    assert audit(root, report_text=_valid_report()) == []
+
+
+def test_runtime_axiom_report_rejects_project_axioms(tmp_path: Path) -> None:
+    root = _construction(tmp_path)
+    report = _valid_report().replace(
+        "[Classical.choice, Quot.sound, propext]",
+        "[Classical.choice, RiemannPrimeResolvent.hiddenAxiom]",
+    )
+    failures = audit(root, report_text=report)
+    assert any("non-admitted axioms" in failure
+               and "RiemannPrimeResolvent.hiddenAxiom" in failure
+               for failure in failures)
+
+
+def test_runtime_axiom_report_rejects_sorry_ax_and_sorry_warning(
+    tmp_path: Path,
+) -> None:
+    root = _construction(tmp_path)
+    report = _valid_report().replace(
+        "[Classical.choice, Quot.sound, propext]", "[sorryAx]"
+    ) + "warning: declaration uses 'sorry'\n"
+    failures = audit(root, report_text=report)
+    assert any("sorry warning" in failure for failure in failures)
+    assert any("sorryAx" in failure for failure in failures)
+
+
+def test_runtime_axiom_report_requires_exact_order_and_coverage(
+    tmp_path: Path,
+) -> None:
+    root = _construction(tmp_path)
+    lines = _valid_report().splitlines(keepends=True)
+    failures = audit(root, report_text="".join(reversed(lines)))
+    assert any("report order" in failure for failure in failures)
+
+    missing = audit(root, report_text=lines[0])
+    assert any("missing from Lean report" in failure for failure in missing)
+
+
+def test_axiom_report_parser_tolerates_ansi_and_rejects_duplicates() -> None:
+    report = "\x1b[1m'x' depends on axioms: [propext]\x1b[0m\n"
+    assert parse_axiom_report(report)[0].axioms == frozenset({"propext"})
+
+    duplicate = "'x' depends on axioms: [propext, propext]\n"
+    try:
+        parse_axiom_report(duplicate)
+    except RuntimeError as exc:
+        assert "duplicate axiom" in str(exc)
+    else:
+        raise AssertionError("duplicate axiom report was accepted")

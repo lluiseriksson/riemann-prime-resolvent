@@ -2,8 +2,9 @@
 """Reject proof placeholders and project-level axiom shortcuts in Lean sources.
 
 The scanner masks nested Lean comments and string literals while preserving line
-positions.  Interpolated string expressions remain visible to the audit, so a
-placeholder cannot be hidden inside ``s!\"{...}\"``.
+positions. Interpolated string expressions remain visible to the audit, so a
+placeholder cannot be hidden inside ``s!\"{...}\"``. Direct use of Lean's
+underlying ``sorryAx`` constant is rejected as well as surface ``sorry`` syntax.
 """
 from __future__ import annotations
 
@@ -36,6 +37,9 @@ EXCLUDED_LEAN_DIRECTORIES = frozenset(
 )
 
 PATTERNS: tuple[tuple[str, re.Pattern[str]], ...] = (
+    # `sorry` elaborates through this kernel-level escape hatch, which can also
+    # be referenced directly and therefore needs its own explicit policy check.
+    ("sorryAx", re.compile(r"\bsorryAx\b")),
     ("sorry", re.compile(r"\bsorry\b")),
     ("admit", re.compile(r"\badmit\b")),
     ("axiom", re.compile(r"\baxiom\b")),
@@ -206,7 +210,7 @@ def lean_files(root: Path) -> list[Path]:
     """Discover every repository Lean source while pruning generated/vendor trees.
 
     Restricting the scan to the conventional library directory would let a new
-    imported root or support module bypass the placeholder policy.  Walking the
+    imported root or support module bypass the placeholder policy. Walking the
     complete source tree closes that gap while explicitly excluding build caches.
     """
 

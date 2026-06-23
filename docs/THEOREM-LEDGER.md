@@ -3,7 +3,8 @@
 The rows marked `verified` are machine-checked against the public theorem/lemma
 source inventory and `oracle_check.lean` by `scripts/check_oracle_coverage.py`.
 Each entry is exact, fully qualified and in the same order as its
-`#print axioms` command.
+`#print axioms` command. The emitted Lean report is also checked: only
+`Classical.choice`, `Quot.sound` and `propext` are admitted.
 
 | Declaration | Status | Meaning |
 |---|---|---|

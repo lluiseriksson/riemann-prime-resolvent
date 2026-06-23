@@ -34,7 +34,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          lake env lean OnePointResolvent/Oracle.lean
+          report="$(mktemp)"
+          trap 'rm -f "$report"' EXIT
+          lake env lean OnePointResolvent/Oracle.lean 2>&1 | tee "$report"
+          python3 scripts/check_oracle_coverage.py --report "$report"
           python3 scripts/check_no_placeholders.py
 
   static:
