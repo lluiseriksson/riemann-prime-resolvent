@@ -22,3 +22,11 @@
 - [ ] Pages workflow publishes root and `/criterion/` sites
 - [ ] source-only monorepo and criterion artifacts uploaded
 - [ ] provenance attestations created for both ZIPs
+
+## Final closeout gate
+
+- [ ] `python3 scripts/check_research_frontier.py`
+- [ ] Four RF issue drafts reviewed and opened or deliberately migrated
+- [ ] Final tag `v0.3.0-docs-integrated` published
+- [ ] Both deterministic source archives and attestations published
+- [ ] Repository left unarchived while RF issues remain active

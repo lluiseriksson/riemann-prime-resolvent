@@ -8,6 +8,7 @@ python3 scripts/check_metadata.py
 python3 scripts/check_docs_assets.py
 python3 scripts/check_no_placeholders.py
 python3 scripts/check_oracle_coverage.py
+python3 scripts/check_research_frontier.py
 python3 scripts/check_generated_reproducibility.py
 python3 scripts/validate_certificate.py experiments/examples/demo_exact_rational.json
 python3 scripts/check_markdown_links.py

@@ -6,3 +6,9 @@
 - **Numerical:** regression and convention checks only.
 
 The strongest honest headline is: *a reproducible construction-side research programme with a kernel-checked finite substrate and explicit convergence frontier.*
+
+## Closeout state
+
+Engineering status: complete for `v0.3.0-docs-integrated`. Research status: RF-1 through
+RF-4 remain open. Archive status: not recommended while those records need to
+remain writable. See `MAINTENANCE.md`.

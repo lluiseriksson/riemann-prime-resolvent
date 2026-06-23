@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Declared the 0.3.x engineering phase complete, added a machine-checked four-item mathematical research frontier, issue drafts, maintenance policy and an explicit archive gate.
 - Parsed the actual Lean `#print axioms` output in CI and admitted only `Classical.choice`, `Quot.sound` and `propext`; direct `sorryAx` use and any new project axiom now fail verification.
 - Closed theorem-oracle coverage over every public Lean `theorem`/`lemma`, added all previously omitted declarations, and expanded placeholder scanning to the complete repository source tree.
 - Added a machine-checked one-to-one mapping between each Lean `#print axioms` oracle and its documented verified theorem ledger.
