@@ -1,8 +1,9 @@
 # Lean theorem ledger
 
-The rows marked `verified` are machine-checked against `oracle_check.lean` by
-`scripts/check_oracle_coverage.py`. Each entry is exact, fully qualified and in
-the same order as its `#print axioms` command.
+The rows marked `verified` are machine-checked against the public theorem/lemma
+source inventory and `oracle_check.lean` by `scripts/check_oracle_coverage.py`.
+Each entry is exact, fully qualified and in the same order as its
+`#print axioms` command.
 
 | Declaration | Status | Meaning |
 |---|---|---|
@@ -10,6 +11,7 @@ the same order as its `#print axioms` command.
 | `RiemannPrimeResolvent.three_step_triangle` | verified | three-stage deterministic comparison |
 | `RiemannPrimeResolvent.error_le_budget` | verified | component bounds imply a total bound |
 | `RiemannPrimeResolvent.ErrorBudget.tendsto_total_zero` | verified | componentwise zero limits give total zero |
+| `RiemannPrimeResolvent.VanishingBudget.total` | verified | packaged componentwise convergence gives total convergence |
 | `RiemannPrimeResolvent.finiteStieltjes_nonneg` | verified | positivity of finite Stieltjes sums |
 | `RiemannPrimeResolvent.finiteSquaredResolvent_nonneg` | verified | positivity of finite squared resolvents |
 | `RiemannPrimeResolvent.half_finitePairedTrace` | verified | removes paired-spectrum double counting |

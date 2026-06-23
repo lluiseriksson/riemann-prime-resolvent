@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Keep the documented Lean theorem ledger synchronized with the axiom oracle."""
+"""Keep public Lean theorems, axiom oracles and theorem ledgers synchronized."""
 from __future__ import annotations
 
 import argparse
@@ -8,22 +8,31 @@ import sys
 from dataclasses import dataclass
 from pathlib import Path
 
-from check_no_placeholders import LeanLexError, mask_lean_source
+from check_no_placeholders import LeanLexError, lean_files, mask_lean_source
 
 ROOT = Path(__file__).resolve().parents[1]
+LEAN_NAME = r"[A-Za-z_][A-Za-z0-9_']*(?:\.[A-Za-z_][A-Za-z0-9_']*)*"
 PRINT_AXIOMS_RE = re.compile(
     r"(?m)^[ \t]*#print[ \t]+axioms[ \t]+"
-    r"([A-Za-z_][A-Za-z0-9_']*(?:\.[A-Za-z_][A-Za-z0-9_']*)+)[ \t]*$"
+    rf"({LEAN_NAME})[ \t]*$"
 )
 PRINT_AXIOMS_LINE_RE = re.compile(r"(?m)^[ \t]*#print[ \t]+axioms\b.*$")
 LEDGER_ROW_RE = re.compile(
     r"^\|\s*`([^`]+)`\s*\|\s*([A-Za-z][A-Za-z0-9_-]*)\s*\|",
     re.MULTILINE,
 )
+NAMESPACE_RE = re.compile(rf"^[ \t]*namespace[ \t]+({LEAN_NAME})[ \t]*$")
+SECTION_RE = re.compile(rf"^[ \t]*section(?:[ \t]+({LEAN_NAME}))?[ \t]*$")
+END_RE = re.compile(rf"^[ \t]*end(?:[ \t]+({LEAN_NAME}))?[ \t]*$")
+DECLARATION_RE = re.compile(
+    rf"^[ \t]*(?:@\[[^\]\n]*\][ \t]*)*"
+    rf"(?P<modifiers>(?:(?:private|protected|local|noncomputable)[ \t]+)*)"
+    rf"(?P<kind>theorem|lemma)[ \t]+(?P<name>{LEAN_NAME})\b"
+)
 
 
 class OracleCoverageError(RuntimeError):
-    """Raised when the oracle and theorem ledger disagree."""
+    """Raised when source declarations, the oracle and the ledger disagree."""
 
 
 @dataclass(frozen=True)
@@ -117,25 +126,103 @@ def parse_ledger(spec: ProjectSpec) -> list[str]:
     return verified
 
 
+def _source_declarations(path: Path, spec: ProjectSpec) -> list[str]:
+    try:
+        masked = mask_lean_source(path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeError, LeanLexError) as exc:
+        raise OracleCoverageError(f"cannot scan {path}: {exc}") from exc
+
+    scopes: list[tuple[str, str | None]] = []
+    declarations: list[str] = []
+    for line in masked.splitlines():
+        namespace = NAMESPACE_RE.fullmatch(line)
+        if namespace:
+            scopes.append(("namespace", namespace.group(1)))
+            continue
+        section = SECTION_RE.fullmatch(line)
+        if section:
+            scopes.append(("section", section.group(1)))
+            continue
+        if END_RE.fullmatch(line):
+            if scopes:
+                scopes.pop()
+            continue
+
+        declaration = DECLARATION_RE.match(line)
+        if not declaration:
+            continue
+        modifiers = declaration.group("modifiers").split()
+        if "private" in modifiers or "local" in modifiers:
+            continue
+        name = declaration.group("name")
+        namespace_parts = [
+            scope_name
+            for scope_kind, scope_name in scopes
+            if scope_kind == "namespace" and scope_name
+        ]
+        prefix = ".".join(namespace_parts)
+        if name.startswith(spec.namespace):
+            qualified = name
+        elif prefix:
+            qualified = f"{prefix}.{name}"
+        else:
+            qualified = name
+        if qualified.startswith(spec.namespace):
+            declarations.append(qualified)
+    return declarations
+
+
+def parse_source_declarations(root: Path, spec: ProjectSpec) -> list[str]:
+    """Enumerate public theorem/lemma commands in the project namespace."""
+
+    declarations: list[str] = []
+    locations: dict[str, str] = {}
+    root = root.resolve()
+    for path in lean_files(root):
+        for declaration in _source_declarations(path, spec):
+            relative = path.relative_to(root).as_posix()
+            previous = locations.get(declaration)
+            if previous is not None:
+                raise OracleCoverageError(
+                    f"duplicate public Lean declaration {declaration}: {previous}, {relative}"
+                )
+            locations[declaration] = relative
+            declarations.append(declaration)
+    if not declarations:
+        raise OracleCoverageError(
+            f"no public theorem/lemma declarations found in {spec.namespace}"
+        )
+    return declarations
+
+
 def audit(root: Path) -> list[str]:
+    root = root.resolve()
     try:
         spec = discover_project(root)
         oracle = parse_oracle(spec)
         ledger = parse_ledger(spec)
+        source = parse_source_declarations(root, spec)
     except OracleCoverageError as exc:
         return [str(exc)]
 
     failures: list[str] = []
     oracle_set = set(oracle)
     ledger_set = set(ledger)
+    source_set = set(source)
     missing = [name for name in oracle if name not in ledger_set]
     extra = [name for name in ledger if name not in oracle_set]
+    uncovered = sorted(source_set - oracle_set)
+    stale = [name for name in oracle if name not in source_set]
     if missing:
         failures.append("oracle declarations missing from ledger: " + ", ".join(missing))
     if extra:
         failures.append("verified ledger declarations missing from oracle: " + ", ".join(extra))
     if not missing and not extra and oracle != ledger:
         failures.append("verified ledger rows must follow the oracle declaration order")
+    if uncovered:
+        failures.append("public source declarations missing from oracle: " + ", ".join(uncovered))
+    if stale:
+        failures.append("oracle declarations missing from public source: " + ", ".join(stale))
     return failures
 
 
@@ -150,7 +237,10 @@ def main() -> int:
         return 1
     spec = discover_project(args.root)
     count = len(parse_oracle(spec))
-    print(f"Lean oracle coverage passed for {spec.label}: {count} declarations")
+    print(
+        f"Lean oracle coverage passed for {spec.label}: "
+        f"{count} public declarations"
+    )
     return 0
 
 

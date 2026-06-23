@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Closed theorem-oracle coverage over every public Lean `theorem`/`lemma`, added all previously omitted declarations, and expanded placeholder scanning to the complete repository source tree.
 - Added a machine-checked one-to-one mapping between each Lean `#print axioms` oracle and its documented verified theorem ledger.
 - Added two-clean-run byte reproducibility checks for figures, CSV data and exact criterion certificates.
 - Pinned the MathJax documentation asset to an exact version and added a remote-asset immutability audit.

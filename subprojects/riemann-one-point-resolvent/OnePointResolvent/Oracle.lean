@@ -2,9 +2,20 @@ import OnePointResolvent
 
 /-! Axiom audit entry point: `lake env lean OnePointResolvent/Oracle.lean`. -/
 
+#print axioms OnePointResolvent.hausdorffDiff_zero
+#print axioms OnePointResolvent.hausdorffDiff_succ
 #print axioms OnePointResolvent.hausdorffDiff_atomicMoment
 #print axioms OnePointResolvent.atomicMoment_isHausdorffCompletelyMonotone
+#print axioms OnePointResolvent.hausdorffDiff_atomicMoment_nonneg
+#print axioms OnePointResolvent.spectrum_shift_pos
+#print axioms OnePointResolvent.resolventWeight_nonneg
+#print axioms OnePointResolvent.compactifiedPoint_nonneg
+#print axioms OnePointResolvent.compactifiedPoint_le_one
 #print axioms OnePointResolvent.finiteResolventMoment_isHausdorffCompletelyMonotone
+#print axioms OnePointResolvent.finiteResolventMoment_hausdorffDiff_nonneg
+#print axioms OnePointResolvent.atomicHankelCertificate_nonneg
+#print axioms OnePointResolvent.atomicLocalizingCertificate_nonneg
 #print axioms OnePointResolvent.finiteResolventHankelCertificate_nonneg
 #print axioms OnePointResolvent.finiteResolventLocalizingCertificate_nonneg
+#print axioms OnePointResolvent.abs_sub_le_three
 #print axioms OnePointResolvent.resolvent_errorBudget

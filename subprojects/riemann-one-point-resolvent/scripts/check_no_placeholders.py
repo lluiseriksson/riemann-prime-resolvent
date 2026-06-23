@@ -8,12 +8,32 @@ placeholder cannot be hidden inside ``s!\"{...}\"``.
 from __future__ import annotations
 
 import argparse
+import os
 import re
 import sys
 from dataclasses import dataclass
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+
+EXCLUDED_LEAN_DIRECTORIES = frozenset(
+    {
+        ".git",
+        ".lake",
+        ".mypy_cache",
+        ".nox",
+        ".pytest_cache",
+        ".ruff_cache",
+        ".tox",
+        ".venv",
+        "__pycache__",
+        "build",
+        "dist",
+        "release",
+        "site",
+        "venv",
+    }
+)
 
 PATTERNS: tuple[tuple[str, re.Pattern[str]], ...] = (
     ("sorry", re.compile(r"\bsorry\b")),
@@ -22,7 +42,8 @@ PATTERNS: tuple[tuple[str, re.Pattern[str]], ...] = (
     # Lean's `constant` command is an axiom-like declaration and must not bypass
     # the project policy merely by using the synonym instead of `axiom`.
     ("constant", re.compile(r"\bconstant\b")),
-    ("unsafe theorem", re.compile(r"\bunsafe\s+(?:theorem|lemma)\b")),
+    # Any `unsafe` declaration is outside the trusted publication surface.
+    ("unsafe", re.compile(r"\bunsafe\b")),
 )
 
 
@@ -182,23 +203,30 @@ def audit_text(text: str, *, path: str = "<memory>") -> list[Finding]:
 
 
 def lean_files(root: Path) -> list[Path]:
-    """Discover the publication-target Lean files for either project layout."""
+    """Discover every repository Lean source while pruning generated/vendor trees.
 
+    Restricting the scan to the conventional library directory would let a new
+    imported root or support module bypass the placeholder policy.  Walking the
+    complete source tree closes that gap while explicitly excluding build caches.
+    """
+
+    root = root.resolve()
     candidates: list[Path] = []
-    construction = root / "RiemannPrimeResolvent"
-    criterion = root / "OnePointResolvent"
+    for directory, directory_names, file_names in os.walk(
+        root, topdown=True, followlinks=False
+    ):
+        directory_names[:] = sorted(
+            name for name in directory_names if name not in EXCLUDED_LEAN_DIRECTORIES
+        )
+        base = Path(directory)
+        for name in sorted(file_names):
+            if not name.endswith(".lean"):
+                continue
+            path = base / name
+            if path.is_file():
+                candidates.append(path)
 
-    if construction.is_dir():
-        candidates.extend(construction.rglob("*.lean"))
-        candidates.extend([root / "RiemannPrimeResolvent.lean", root / "oracle_check.lean"])
-    elif criterion.is_dir():
-        candidates.extend(criterion.rglob("*.lean"))
-        candidates.append(root / "OnePointResolvent.lean")
-    else:
-        # Useful for isolated tests and future extracted layouts.
-        candidates.extend(root.glob("*.lean"))
-
-    return sorted({path.resolve() for path in candidates if path.is_file()})
+    return sorted(set(candidates))
 
 
 def main() -> int:

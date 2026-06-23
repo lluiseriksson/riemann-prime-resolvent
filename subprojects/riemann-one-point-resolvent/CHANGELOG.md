@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Closed theorem-oracle coverage over all 17 public finite-layer `theorem`/`lemma` declarations and expanded placeholder scanning beyond the conventional library directory.
 - Added an exact theorem ledger synchronized automatically with `OnePointResolvent/Oracle.lean`.
 - Added two-clean-run byte reproducibility checks for generated figures, data and the exact atomic certificate.
 - Pinned MathJax to an exact version and audited remote documentation assets for immutable references.
