@@ -19,3 +19,8 @@ import OnePointResolvent
 #print axioms OnePointResolvent.finiteResolventLocalizingCertificate_nonneg
 #print axioms OnePointResolvent.abs_sub_le_three
 #print axioms OnePointResolvent.resolvent_errorBudget
+#print axioms OnePointResolvent.finitePositiveStieltjesAt_nonneg
+#print axioms OnePointResolvent.stieltjes_disk_denominator_bound
+#print axioms OnePointResolvent.stieltjes_atom_norm_le_two
+#print axioms OnePointResolvent.finitePositiveStieltjes_norm_le_two
+#print axioms OnePointResolvent.finitePositiveStieltjes_family_norm_le_two

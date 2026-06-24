@@ -77,10 +77,19 @@ repairable. The missing uniformity is not.
 
 The useful lesson is negative and methodological: finite-cutoff continuity must
 not be promoted to a limiting argument unless the modulus is proved independent
-of the cutoff. For the one-point criterion, the relevant positive task remains
-the formalization of one-point local boundedness for positive Stieltjes
-transforms, with constants independent of the number of atoms, the spectrum and
-the approximant index.
+of the cutoff. The follow-up module
+`OnePointResolvent.StieltjesLocalBound` now proves the concrete finite-disk
+estimate
 
-That future theorem belongs in the one-point subproject before any normal-family
-or Montel compactness argument is claimed.
+```text
+|S_j(z)| <= 2 S_j(x_0),    |z - x_0| <= x_0 / 2,
+```
+
+with the support, weights and spectrum varying with `j`. Thus the constant is
+independent of atom count and cutoff. This is the first positive repair of the
+audit obstruction, but it is deliberately narrower than the full
+normal-family input.
+
+The remaining theorem must replace the fixed disk by every compact subset of
+the slit plane and then combine that domination with convergence and Montel
+compactness. No finite-to-limit conclusion is claimed here.
