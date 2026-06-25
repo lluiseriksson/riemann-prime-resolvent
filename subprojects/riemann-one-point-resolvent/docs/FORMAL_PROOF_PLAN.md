@@ -29,17 +29,21 @@ The order below minimizes circularity and API churn.
 
 12. Formalize the integer-cutoff von Mangoldt tail.
 13. **Closed finite-disk subgoal.** `OnePointResolvent.StieltjesLocalBound`
-    proves that positive finite Stieltjes sums satisfy
+    proves the factor-two estimate on `‖z-x₀‖ ≤ x₀/2`, uniformly in all
+    cutoff data.
+14. **Closed compact-domination subgoal.**
+    `OnePointResolvent.StieltjesCompactBound` uses
+    \(u=x_0/(t+x_0)\in[0,1]\) and the exact identity
     \[
-    |S_j(z)|\le 2S_j(x_0),\qquad |z-x_0|\le x_0/2,
+    u(t+z)=x_0+u(z-x_0)
     \]
-    uniformly in the number of atoms, weights, spectrum and cutoff index.
-14. Extend the denominator comparison from the fixed disk to every compact
-    `K ⊂ Complex.slitPlane`. The preferred scaling route is to bridge the
-    atomic sums, after the sign change `a = -z`, to Mathlib's
-    `MeasureTheory.resolventTransform`, whose pinned API already supplies
-    holomorphy off the support.
-15. Package compact-set local boundedness, Montel extraction and interval
-    uniqueness in the exact shared-interface form.
+    to prove that every compact `K ⊂ Complex.slitPlane` has a constant `C_K`
+    with `|S_j(z)| ≤ C_K M`, uniformly in `j`.
+15. **Closed finite Mathlib bridge.**
+    `OnePointResolvent.StieltjesResolventBridge` identifies each finite sum
+    exactly with `MeasureTheory.resolventTransform` at the sign-changed
+    argument `a = -z`.
+16. Package Montel extraction, compact-open subsequential convergence and
+    interval uniqueness in the exact shared-interface form.
 
 Only after A–D should the companion repository import a released criterion theorem.

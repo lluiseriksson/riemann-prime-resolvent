@@ -5,8 +5,8 @@ The verified rows below are synchronized one-for-one with every public
 `OnePointResolvent/Oracle.lean` by `scripts/check_oracle_coverage.py`. The actual
 Lean report must contain the same ordered declarations and may depend only on
 `Classical.choice`, `Quot.sound` and `propext`. These rows cover the finite
-certificate and local Stieltjes-domination layers; they do not state the
-analytic RH criterion.
+certificate, compact Stieltjes-domination and atomic resolvent-bridge layers;
+they do not state the analytic RH criterion.
 
 | Declaration | Status | Meaning |
 |---|---|---|
@@ -28,11 +28,24 @@ analytic RH criterion.
 | `OnePointResolvent.abs_sub_le_three` | verified | deterministic three-link triangle inequality |
 | `OnePointResolvent.resolvent_errorBudget` | verified | deterministic three-stage resolvent error budget |
 | `OnePointResolvent.finitePositiveStieltjesAt_nonneg` | verified | positive finite Stieltjes one-point values are nonnegative |
+| `OnePointResolvent.stieltjes_atom_norm_le_of_denominator` | verified | any denominator comparison controls one positive atom |
+| `OnePointResolvent.finitePositiveStieltjes_norm_le_of_denominator` | verified | denominator comparisons propagate through finite positive sums |
+| `OnePointResolvent.finitePositiveStieltjes_family_norm_le_of_denominator` | verified | one denominator producer controls varying cutoff families |
 | `OnePointResolvent.stieltjes_disk_denominator_bound` | verified | half-radius disk gives a universal factor-two denominator comparison |
 | `OnePointResolvent.stieltjes_atom_norm_le_two` | verified | one positive atom is controlled by twice its center value |
 | `OnePointResolvent.finitePositiveStieltjes_norm_le_two` | verified | finite positive sums inherit the factor-two disk bound |
 | `OnePointResolvent.finitePositiveStieltjes_family_norm_le_two` | verified | one-point family bounds are uniform in cutoffs, weights and spectra |
+| `OnePointResolvent.compactifiedPoint_pos` | verified | the resolvent compactification coordinate is strictly positive |
+| `OnePointResolvent.stieltjesCompactifiedDenominator_ne_zero` | verified | the compactified denominator is nonzero on the slit plane |
+| `OnePointResolvent.stieltjes_compactified_denominator_identity` | verified | exact algebraic compactification of the Stieltjes denominator |
+| `OnePointResolvent.stieltjes_compactified_denominator_norm_identity` | verified | norm form of the compactified denominator identity |
+| `OnePointResolvent.stieltjes_compactified_denominator_cross_identity` | verified | cross-multiplied compactification identity without division |
+| `OnePointResolvent.stieltjes_denominator_bound_of_compactified` | verified | a compactified lower bound yields an unbounded-spectrum comparison |
+| `OnePointResolvent.exists_stieltjesCompactifiedDenominator_lower_bound` | verified | compact slit-plane sets have a positive compactified denominator minimum |
+| `OnePointResolvent.exists_stieltjes_denominator_bound_on_compact` | verified | every compact slit-plane set admits a spectrum-uniform comparison constant |
+| `OnePointResolvent.exists_finitePositiveStieltjes_family_bound_on_compact` | verified | one-point family bounds propagate uniformly to arbitrary compact slit-plane sets |
+| `OnePointResolvent.resolventTransform_finitePositiveStieltjesMeasure` | verified | finite positive sums equal Mathlib resolvent transforms at the sign-changed argument |
 
-The arbitrary-compact domination theorem, infinite Hausdorff representation,
-holomorphic slit-plane extension and equivalence with RH remain documented
-analytic targets rather than kernel-checked declarations.
+The infinite Hausdorff representation, Montel extraction, interval uniqueness,
+holomorphic slit-plane extension of the target and equivalence with RH remain
+documented analytic targets rather than kernel-checked declarations.
