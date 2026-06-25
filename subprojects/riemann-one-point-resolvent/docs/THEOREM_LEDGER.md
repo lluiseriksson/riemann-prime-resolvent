@@ -6,7 +6,7 @@ The verified rows below are synchronized one-for-one with every public
 Lean report must contain the same ordered declarations and may depend only on
 `Classical.choice`, `Quot.sound` and `propext`. These rows cover the finite
 certificate, compact Stieltjes-domination, atomic resolvent-bridge and
-compactified finite-measure layers; they do not state the analytic RH criterion.
+compactified finite-measure and pointwise weak-limit kernel layers; they do not state the analytic RH criterion.
 
 | Declaration | Status | Meaning |
 |---|---|---|
@@ -52,9 +52,12 @@ compactified finite-measure layers; they do not state the analytic RH criterion.
 | `OnePointResolvent.isCompact_compactifiedStieltjesMeasureFamily` | verified | the common bounded-mass `[0,1]`-supported family is weakly compact |
 | `OnePointResolvent.range_compactifiedStieltjesFiniteMeasure_subset_family` | verified | every uniformly one-point-bounded indexed family lies in the same compact measure set |
 | `OnePointResolvent.isCompact_closure_range_compactifiedStieltjesFiniteMeasure` | verified | the weak closure of every such indexed family is compact |
+| `OnePointResolvent.continuous_compactifiedStieltjesKernel_on_Icc` | verified | the compactified kernel is continuous on `[0,1]` for slit-plane arguments |
+| `OnePointResolvent.compactifiedStieltjesKernelBCF_apply_of_mem` | verified | the projected bounded extension agrees with the kernel on `[0,1]` |
+| `OnePointResolvent.compactifiedStieltjesWeight_mul_kernel` | verified | each compactified weighted kernel is the original Stieltjes atom |
+| `OnePointResolvent.compactifiedStieltjesFiniteMeasure_transform_eq` | verified | integrating a finite compactified measure recovers the finite Stieltjes sum |
+| `OnePointResolvent.tendsto_compactifiedStieltjesTransform_of_tendsto` | verified | weak measure convergence implies convergence of each fixed kernel observable |
+| `OnePointResolvent.tendsto_finitePositiveStieltjes_of_compactifiedMeasure_tendsto` | verified | weak limits of compactified approximants give pointwise Stieltjes limits |
+| `OnePointResolvent.closure_range_compactifiedStieltjesFiniteMeasure_subset_family` | verified | weak closure preserves the common mass and `[0,1]` support bounds |
 
-The finite-measure compactness and relative-compactness inputs are now
-kernel-checked. Exact integration against a limiting measure, compact-open
-extraction, interval uniqueness,
-holomorphic slit-plane extension of the target and equivalence with RH remain
-documented analytic targets rather than kernel-checked declarations.
+Finite-measure compactness, exact kernel integration and pointwise passage to every weak limit are now kernel-checked. Uniformization on compact slit-plane sets, compact-open extraction, interval uniqueness, holomorphic target identification and equivalence with RH remain documented analytic targets rather than kernel-checked declarations.
