@@ -5,8 +5,8 @@ The verified rows below are synchronized one-for-one with every public
 `OnePointResolvent/Oracle.lean` by `scripts/check_oracle_coverage.py`. The actual
 Lean report must contain the same ordered declarations and may depend only on
 `Classical.choice`, `Quot.sound` and `propext`. These rows cover the finite
-certificate, compact Stieltjes-domination and atomic resolvent-bridge layers;
-they do not state the analytic RH criterion.
+certificate, compact Stieltjes-domination, atomic resolvent-bridge and
+compactified finite-measure layers; they do not state the analytic RH criterion.
 
 | Declaration | Status | Meaning |
 |---|---|---|
@@ -45,7 +45,16 @@ they do not state the analytic RH criterion.
 | `OnePointResolvent.exists_stieltjes_denominator_bound_on_compact` | verified | every compact slit-plane set admits a spectrum-uniform comparison constant |
 | `OnePointResolvent.exists_finitePositiveStieltjes_family_bound_on_compact` | verified | one-point family bounds propagate uniformly to arbitrary compact slit-plane sets |
 | `OnePointResolvent.resolventTransform_finitePositiveStieltjesMeasure` | verified | finite positive sums equal Mathlib resolvent transforms at the sign-changed argument |
+| `OnePointResolvent.compactifiedStieltjesWeight_nonneg` | verified | compactified atomic weights are nonnegative for positive input data |
+| `OnePointResolvent.compactifiedStieltjesFiniteMeasure_mass_eq` | verified | compactified finite-measure mass is exactly the one-point Stieltjes value |
+| `OnePointResolvent.compactifiedStieltjesFiniteMeasure_compl_Icc_eq_zero` | verified | every compactified measure is supported on `[0,1]` |
+| `OnePointResolvent.compactifiedStieltjesFiniteMeasure_mem_family` | verified | one-point bounds place finite measures in a common mass/support family |
+| `OnePointResolvent.isCompact_compactifiedStieltjesMeasureFamily` | verified | the common bounded-mass `[0,1]`-supported family is weakly compact |
+| `OnePointResolvent.range_compactifiedStieltjesFiniteMeasure_subset_family` | verified | every uniformly one-point-bounded indexed family lies in the same compact measure set |
+| `OnePointResolvent.isCompact_closure_range_compactifiedStieltjesFiniteMeasure` | verified | the weak closure of every such indexed family is compact |
 
-The infinite Hausdorff representation, Montel extraction, interval uniqueness,
+The finite-measure compactness and relative-compactness inputs are now
+kernel-checked. Exact integration against a limiting measure, compact-open
+extraction, interval uniqueness,
 holomorphic slit-plane extension of the target and equivalence with RH remain
 documented analytic targets rather than kernel-checked declarations.
