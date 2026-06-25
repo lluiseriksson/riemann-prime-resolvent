@@ -1,6 +1,7 @@
 import OnePointResolvent.Basic
 import OnePointResolvent.HausdorffFinite
 import OnePointResolvent.ResolventCompactification
+import OnePointResolvent.StieltjesLocalBound
 import OnePointResolvent.FiniteCertificates
 import OnePointResolvent.ErrorBudget
 import OnePointResolvent.Examples

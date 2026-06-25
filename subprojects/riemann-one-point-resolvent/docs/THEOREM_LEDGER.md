@@ -4,8 +4,9 @@ The verified rows below are synchronized one-for-one with every public
 `theorem`/`lemma` in the `OnePointResolvent` namespace and with
 `OnePointResolvent/Oracle.lean` by `scripts/check_oracle_coverage.py`. The actual
 Lean report must contain the same ordered declarations and may depend only on
-`Classical.choice`, `Quot.sound` and `propext`. These rows cover only the finite
-certificate layer; they do not state the analytic RH criterion.
+`Classical.choice`, `Quot.sound` and `propext`. These rows cover the finite
+certificate and local Stieltjes-domination layers; they do not state the
+analytic RH criterion.
 
 | Declaration | Status | Meaning |
 |---|---|---|
@@ -26,7 +27,12 @@ certificate layer; they do not state the analytic RH criterion.
 | `OnePointResolvent.finiteResolventLocalizingCertificate_nonneg` | verified | finite localizing certificate is nonnegative |
 | `OnePointResolvent.abs_sub_le_three` | verified | deterministic three-link triangle inequality |
 | `OnePointResolvent.resolvent_errorBudget` | verified | deterministic three-stage resolvent error budget |
+| `OnePointResolvent.finitePositiveStieltjesAt_nonneg` | verified | positive finite Stieltjes one-point values are nonnegative |
+| `OnePointResolvent.stieltjes_disk_denominator_bound` | verified | half-radius disk gives a universal factor-two denominator comparison |
+| `OnePointResolvent.stieltjes_atom_norm_le_two` | verified | one positive atom is controlled by twice its center value |
+| `OnePointResolvent.finitePositiveStieltjes_norm_le_two` | verified | finite positive sums inherit the factor-two disk bound |
+| `OnePointResolvent.finitePositiveStieltjes_family_norm_le_two` | verified | one-point family bounds are uniform in cutoffs, weights and spectra |
 
-The infinite Hausdorff representation theorem, holomorphic slit-plane extension
-and equivalence with RH remain documented analytic targets rather than
-kernel-checked declarations.
+The arbitrary-compact domination theorem, infinite Hausdorff representation,
+holomorphic slit-plane extension and equivalence with RH remain documented
+analytic targets rather than kernel-checked declarations.

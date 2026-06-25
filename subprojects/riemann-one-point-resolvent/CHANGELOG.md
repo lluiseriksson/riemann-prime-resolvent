@@ -2,8 +2,9 @@
 
 ## Unreleased
 
+- Added a complex finite positive-Stieltjes API and a factor-two disk bound uniform over varying cutoffs, weights and spectra.
 - Parsed the emitted `#print axioms` evidence and admitted only Lean's standard classical kernel axioms; direct `sorryAx` use or any new project axiom now fails the criterion verification.
-- Closed theorem-oracle coverage over all 17 public finite-layer `theorem`/`lemma` declarations and expanded placeholder scanning beyond the conventional library directory.
+- Closed theorem-oracle coverage over all 22 public finite/local-layer `theorem`/`lemma` declarations and expanded placeholder scanning beyond the conventional library directory.
 - Added an exact theorem ledger synchronized automatically with `OnePointResolvent/Oracle.lean`.
 - Added two-clean-run byte reproducibility checks for generated figures, data and the exact atomic certificate.
 - Pinned MathJax to an exact version and audited remote documentation assets for immutable references.
