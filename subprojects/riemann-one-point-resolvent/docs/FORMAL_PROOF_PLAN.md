@@ -49,8 +49,14 @@ The order below minimizes circularity and API churn.
     in `[0,1]`, and places a uniformly one-point-bounded family in Mathlib's
     compact bounded-mass/support set; the weak closure of every indexed
     approximant family is therefore compact.
-17. Prove the compactified kernel integral identity, pass to a weak limit on
-    bounded continuous test functions, and package compact-open convergence
-    plus interval uniqueness in the exact shared-interface form.
+17. **Closed fixed-kernel weak-limit subgoal.**
+    `OnePointResolvent.CompactifiedKernelLimit` constructs a bounded continuous
+    extension of the compactified kernel, proves that its integral against each
+    finite compactified measure is exactly `S_j(z)`, and turns weak convergence
+    of measures into pointwise convergence for every fixed
+    `z ∈ Complex.slitPlane`.
+18. Prove a compact-uniform kernel modulus/equicontinuity estimate, upgrade the
+    pointwise weak-limit convergence to compact-open convergence, and package
+    interval uniqueness in the exact shared-interface form.
 
 Only after A–D should the companion repository import a released criterion theorem.
