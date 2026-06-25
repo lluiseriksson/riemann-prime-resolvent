@@ -43,7 +43,14 @@ The order below minimizes circularity and API churn.
     `OnePointResolvent.StieltjesResolventBridge` identifies each finite sum
     exactly with `MeasureTheory.resolventTransform` at the sign-changed
     argument `a = -z`.
-16. Package Montel extraction, compact-open subsequential convergence and
-    interval uniqueness in the exact shared-interface form.
+16. **Closed compactified finite-measure subgoal.**
+    `OnePointResolvent.CompactifiedMeasure` packages the normalized atoms as
+    `FiniteMeasure ℝ`, proves exact mass `μ_j.mass = S_j(x₀)`, proves support
+    in `[0,1]`, and places a uniformly one-point-bounded family in Mathlib's
+    compact bounded-mass/support set; the weak closure of every indexed
+    approximant family is therefore compact.
+17. Prove the compactified kernel integral identity, pass to a weak limit on
+    bounded continuous test functions, and package compact-open convergence
+    plus interval uniqueness in the exact shared-interface form.
 
 Only after A–D should the companion repository import a released criterion theorem.

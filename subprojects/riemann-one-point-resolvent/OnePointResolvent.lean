@@ -4,6 +4,7 @@ import OnePointResolvent.ResolventCompactification
 import OnePointResolvent.StieltjesLocalBound
 import OnePointResolvent.StieltjesCompactBound
 import OnePointResolvent.StieltjesResolventBridge
+import OnePointResolvent.CompactifiedMeasure
 import OnePointResolvent.FiniteCertificates
 import OnePointResolvent.ErrorBudget
 import OnePointResolvent.Examples
