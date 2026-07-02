@@ -10,6 +10,8 @@ import RiemannPrimeResolvent
 #print axioms RiemannPrimeResolvent.half_finitePairedTrace
 #print axioms RiemannPrimeResolvent.primeTailMajorant_nonneg
 #print axioms RiemannPrimeResolvent.resolventPrimeTailMajorant_nonneg
+#print axioms RiemannPrimeResolvent.beatsHalfThreshold_witness
+#print axioms RiemannPrimeResolvent.publicationGate_delivers
 #print axioms RiemannPrimeResolvent.rateExponent_pos
 #print axioms RiemannPrimeResolvent.rateExponent_le_two_thirds
 #print axioms RiemannPrimeResolvent.rateExponent_eq_two_thirds

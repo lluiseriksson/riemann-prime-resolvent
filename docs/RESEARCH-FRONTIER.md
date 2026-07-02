@@ -43,6 +43,11 @@ For the concrete model, prove a quantified defect rate `q > 1/2`, discharge the
 gap/tail hypotheses, and combine all error terms into the concrete
 prime-resolvent convergence endpoint. This item depends on RF-1 and RF-3.
 
+The typed `PublicationGate` in `RiemannPrimeResolvent.PublicationFrontier`
+is the machine-readable meeting point for this work: RF-3/RF-4 must eventually
+instantiate its `defect : ℕ → ℝ` and `budget : ℕ → ErrorBudget` fields with the
+certified construction data, not with standalone placeholder propositions.
+
 ## Dependency order
 
 ```text

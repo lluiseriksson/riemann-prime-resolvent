@@ -101,13 +101,14 @@
       "acceptance_criteria": [
         "Prove an explicit q > 1/2 defect rate with quantified constants and ranges.",
         "Verify the hypotheses of rayleighGapDefect or residualGapDefect for the concrete model.",
+        "Instantiate PublicationGate.defect and PublicationGate.budget with certified construction data.",
         "Combine spectral, prolate/model and prime-tail errors without hidden asymptotic assumptions.",
         "Prove the concrete PrimeResolventConvergence endpoint in Lean.",
         "Record the resulting rate through rateExponent and verify that no RH-equivalent input was used."
       ],
       "non_goals": [
         "Reporting a fitted numerical exponent without a rigorous error enclosure.",
-        "Treating the abstract PublicationGate structure as evidence that its fields hold."
+        "Treating a PublicationGate value as evidence for RH unless its defect, budget and Xi extension target have been independently constructed."
       ],
       "related_files": [
         "RiemannPrimeResolvent/Convergence.lean",
