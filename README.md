@@ -84,3 +84,10 @@ The image installs a versioned Elan release and both monorepo Python dependency 
 | `.github/workflows/` | Lean/static CI, composite Pages documentation, container validation and source releases |
 
 Start with [`docs/index.md`](docs/index.md) and [`docs/PROGRAMME_RELATION.md`](docs/PROGRAMME_RELATION.md).
+
+## Project closeout
+
+The `v0.3.0-docs-integrated` artifact is engineering-complete and maintenance-only.
+The unresolved mathematics is tracked explicitly in
+[`docs/RESEARCH-FRONTIER.md`](docs/RESEARCH-FRONTIER.md); it is not a hidden
+release blocker and is not claimed as proved.

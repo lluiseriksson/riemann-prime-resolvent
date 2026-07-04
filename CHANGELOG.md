@@ -2,6 +2,17 @@
 
 ## Unreleased
 
+- Tightened the Lean `PublicationGate` so it carries concrete defect and error-budget data, added an explicit consumer theorem, and added a nonempty witness for the spectral-rate predicate.
+- Added an exact compactified-kernel integral identity and a weak-measure-to-pointwise-Stieltjes limit bridge.
+- Added a compactified `FiniteMeasure ℝ` layer with exact one-point mass, `[0,1]` support, Mathlib-backed weak compactness and compact weak closure of uniformly bounded indexed families.
+- Added a compactification-based arbitrary-compact Stieltjes bound and an exact finite atomic bridge to Mathlib's `resolventTransform`.
+- Added the criterion subproject's complex finite-Stieltjes API and a factor-two disk bound uniform over varying atom counts, weights, spectra and cutoffs.
+- Declared the 0.3.x engineering phase complete, added a machine-checked four-item mathematical research frontier, issue drafts, maintenance policy and an explicit archive gate.
+- Parsed the actual Lean `#print axioms` output in CI and admitted only `Classical.choice`, `Quot.sound` and `propext`; direct `sorryAx` use and any new project axiom now fail verification.
+- Closed theorem-oracle coverage over every public Lean `theorem`/`lemma`, added all previously omitted declarations, and expanded placeholder scanning to the complete repository source tree.
+- Added a machine-checked one-to-one mapping between each Lean `#print axioms` oracle and its documented verified theorem ledger.
+- Added two-clean-run byte reproducibility checks for figures, CSV data and exact criterion certificates.
+- Pinned the MathJax documentation asset to an exact version and added a remote-asset immutability audit.
 - Added a cross-platform repository hygiene audit for CRLF drift, case-insensitive path collisions and generated cache files.
 - Scrubbed Graphviz SVG generator-version comments to prevent manifest churn across runner images.
 - Replaced regex-only Lean placeholder scans with a position-preserving scanner for nested comments, strings and interpolated expressions.

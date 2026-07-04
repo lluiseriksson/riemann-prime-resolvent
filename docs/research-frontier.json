@@ -1,0 +1,121 @@
+{
+  "schema_version": 1,
+  "project": "riemann-prime-resolvent",
+  "release_tag": "v0.3.0-docs-integrated",
+  "prepared_from_commit": "c57e4727c3ffd3dca43627c3a4c1494ada3af1d2",
+  "closure_state": "engineering-complete-research-open",
+  "archive_policy": {
+    "recommended_now": false,
+    "reason": "The four research-frontier issues should remain writable and discoverable.",
+    "gate": [
+      "The final release and its source archives have been published.",
+      "All research-frontier items have been solved, rejected, or migrated to a successor repository.",
+      "Open pull requests and issues have been triaged.",
+      "The repository has a durable citation and preservation target."
+    ]
+  },
+  "frontiers": [
+    {
+      "id": "RF-1",
+      "title": "Prove the integer-cutoff von Mangoldt prime-tail bound",
+      "status": "open-research",
+      "area": "analytic-number-theory",
+      "depends_on": [],
+      "summary": "Replace the current closed-form majorant interface by an unconditional theorem bounding the omitted prime/von Mangoldt contribution for an integer cutoff.",
+      "acceptance_criteria": [
+        "State the exact sum, normalization, integer cutoff and complete parameter range.",
+        "Derive an explicit bound compatible with primeTailMajorant and resolventPrimeTailMajorant.",
+        "Use no form of the Riemann hypothesis or an equivalent zero-free assertion.",
+        "Add a Lean theorem with no project axioms, sorryAx, sorry or admit.",
+        "Add numerical regression checks at boundary and representative parameter values."
+      ],
+      "non_goals": [
+        "Optimizing every numerical constant.",
+        "Using the desired spectral conclusion as an input."
+      ],
+      "related_files": [
+        "RiemannPrimeResolvent/PrimeTail.lean",
+        "docs/programme/arithmetic-side.md",
+        "figures/data/prime_tail_majorant.csv"
+      ]
+    },
+    {
+      "id": "RF-2",
+      "title": "Prove the slit-plane Stieltjes criterion for Xi zeros",
+      "status": "open-research",
+      "area": "complex-analysis",
+      "depends_on": [],
+      "summary": "Turn the abstract slit-plane extension target into a precise theorem implying that every zero of the critical-line Xi coordinate is real.",
+      "acceptance_criteria": [
+        "Specify the branch, domain, regularity and nonvanishing hypotheses used by the logarithmic derivative.",
+        "Handle zero multiplicities and possible singularities explicitly.",
+        "Prove XiStieltjesExtensionTarget → XiOnlyRealZeros in Lean.",
+        "Document the exact relationship with Mathlib's RiemannHypothesis without asserting an unproved equivalence.",
+        "Keep the theorem independent of the proposed concrete spectral model."
+      ],
+      "non_goals": [
+        "Claiming the extension exists.",
+        "Treating numerical zero verification as a proof of the criterion."
+      ],
+      "related_files": [
+        "RiemannPrimeResolvent/XiInterface.lean",
+        "subprojects/riemann-one-point-resolvent/docs/manuscript/02-slit-plane-criterion.md",
+        "subprojects/riemann-one-point-resolvent/docs/PUBLICATION_GATE.md"
+      ]
+    },
+    {
+      "id": "RF-3",
+      "title": "Construct and certify the concrete spectral model",
+      "status": "open-research",
+      "area": "spectral-analysis",
+      "depends_on": [],
+      "summary": "Define a concrete operator or Galerkin family and prove the structural properties needed by the prime-resolvent comparison without circular use of RH.",
+      "acceptance_criteria": [
+        "Define the Hilbert space, operator domain and finite approximants precisely.",
+        "Prove the required self-adjointness, compactness or resolvent properties actually used downstream.",
+        "Provide certified links between finite matrices and the infinite operator.",
+        "Expose constants and hypotheses through the existing resolvent interface contract.",
+        "Include a written no-circularity audit identifying every imported analytic result."
+      ],
+      "non_goals": [
+        "Naming a Hilbert–Pólya operator without proving its required properties.",
+        "Using observed agreement of eigenvalues as a substitute for convergence."
+      ],
+      "related_files": [
+        "RiemannPrimeResolvent/SpectralDefect.lean",
+        "docs/programme/spectral-construction.md",
+        "docs/OPERATOR-INTEGRATION.md",
+        "docs/contracts/resolvent-interface.json"
+      ]
+    },
+    {
+      "id": "RF-4",
+      "title": "Prove the spectral defect rate and operator convergence",
+      "status": "open-research",
+      "area": "quantitative-spectral-analysis",
+      "depends_on": [
+        "RF-1",
+        "RF-3"
+      ],
+      "summary": "Establish a concrete defect exponent above one half and combine all error components into the final prime-resolvent convergence theorem.",
+      "acceptance_criteria": [
+        "Prove an explicit q > 1/2 defect rate with quantified constants and ranges.",
+        "Verify the hypotheses of rayleighGapDefect or residualGapDefect for the concrete model.",
+        "Instantiate PublicationGate.defect and PublicationGate.budget with certified construction data.",
+        "Combine spectral, prolate/model and prime-tail errors without hidden asymptotic assumptions.",
+        "Prove the concrete PrimeResolventConvergence endpoint in Lean.",
+        "Record the resulting rate through rateExponent and verify that no RH-equivalent input was used."
+      ],
+      "non_goals": [
+        "Reporting a fitted numerical exponent without a rigorous error enclosure.",
+        "Treating a PublicationGate value as evidence for RH unless its defect, budget and Xi extension target have been independently constructed."
+      ],
+      "related_files": [
+        "RiemannPrimeResolvent/Convergence.lean",
+        "RiemannPrimeResolvent/RateOptimization.lean",
+        "RiemannPrimeResolvent/PublicationFrontier.lean",
+        "docs/programme/error-budget-and-rates.md"
+      ]
+    }
+  ]
+}

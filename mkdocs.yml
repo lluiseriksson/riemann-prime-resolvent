@@ -35,7 +35,7 @@ markdown_extensions:
   - pymdownx.superfences
   - tables
 extra_javascript:
-  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+  - https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js
 nav:
   - Home: index.md
   - Integrated programme:
@@ -53,6 +53,7 @@ nav:
   - Mathematical status: MATHEMATICAL-STATUS.md
   - Lean theorem ledger: THEOREM-LEDGER.md
   - Lean roadmap: LEAN-ROADMAP.md
+  - Programme consumption digest: PROGRAMME-CONSUMPTION-DIGEST.md
   - Operator integration: OPERATOR-INTEGRATION.md
   - Source audit: SOURCE-AUDIT-ARXIV-2511.22755.md
   - Numerical certification: NUMERICAL-CERTIFICATION.md

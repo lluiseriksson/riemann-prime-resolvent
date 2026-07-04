@@ -12,7 +12,7 @@ Check the \(\xi/\Xi\) conventions, the map \(-z^2\), connectivity after removing
 
 ## 3. Formal audit
 
-Run the pinned build and oracle. Confirm that finite theorem names match the documentation and that no project axiom or placeholder enters the imported root module. Treat the source scanner as a supplementary guard, not as kernel evidence.
+Run the pinned build, `OnePointResolvent/Oracle.lean` and `python3 scripts/check_oracle_coverage.py`. Confirm that the exact theorem ledger matches the oracle and that no project axiom or placeholder enters the imported root module. Treat the source scanner as a supplementary guard, not as kernel evidence.
 
 ## 4. Monorepo interface audit
 
@@ -20,4 +20,4 @@ Compare the interface contract and shared release/audit scripts byte-for-byte. V
 
 ## 5. Reproducibility audit
 
-Run `make audit`, inspect every manifest change, check VERSION/CFF/CodeMeta/Python-package coherence, and reproduce the criterion ZIP twice. Confirm the active root workflow publishes this site beneath `/criterion/` and attests the criterion source archive independently.
+Run `make audit` and `python3 scripts/check_generated_reproducibility.py`, inspect every manifest change, check VERSION/CFF/CodeMeta/Python-package coherence, and reproduce the criterion ZIP twice. Confirm the active root workflow publishes this site beneath `/criterion/` and attests the criterion source archive independently.

@@ -1,17 +1,31 @@
 # Lean theorem ledger
 
+The rows marked `verified` are machine-checked against the public theorem/lemma
+source inventory and `oracle_check.lean` by `scripts/check_oracle_coverage.py`.
+Each entry is exact, fully qualified and in the same order as its
+`#print axioms` command. The emitted Lean report is also checked: only
+`Classical.choice`, `Quot.sound` and `propext` are admitted.
+
 | Declaration | Status | Meaning |
 |---|---|---|
-| `ErrorBudget.total_nonneg` | verified | nonnegative components give nonnegative total |
-| `three_step_triangle` | verified | three-stage deterministic comparison |
-| `error_le_budget` | verified | component bounds imply a total bound |
-| `ErrorBudget.tendsto_total_zero` | verified | componentwise zero limits give total zero |
-| `finiteStieltjes_nonneg` | verified | positivity of finite Stieltjes sums |
-| `finiteSquaredResolvent_nonneg` | verified | positivity of finite squared resolvents |
-| `half_finitePairedTrace` | verified | removes paired-spectrum double counting |
-| `primeTailMajorant_nonneg` | verified | closed-form majorant is nonnegative |
-| `resolventPrimeTailMajorant_nonneg` | verified | scaled majorant is nonnegative |
-| `rateExponent_*` | verified | positivity, ceiling and branch formulas |
-| spectral defect nonnegativity lemmas | verified | finite scalar certification glue |
+| `RiemannPrimeResolvent.ErrorBudget.total_nonneg` | verified | nonnegative components give nonnegative total |
+| `RiemannPrimeResolvent.three_step_triangle` | verified | three-stage deterministic comparison |
+| `RiemannPrimeResolvent.error_le_budget` | verified | component bounds imply a total bound |
+| `RiemannPrimeResolvent.ErrorBudget.tendsto_total_zero` | verified | componentwise zero limits give total zero |
+| `RiemannPrimeResolvent.VanishingBudget.total` | verified | packaged componentwise convergence gives total convergence |
+| `RiemannPrimeResolvent.finiteStieltjes_nonneg` | verified | positivity of finite Stieltjes sums |
+| `RiemannPrimeResolvent.finiteSquaredResolvent_nonneg` | verified | positivity of finite squared resolvents |
+| `RiemannPrimeResolvent.half_finitePairedTrace` | verified | removes paired-spectrum double counting |
+| `RiemannPrimeResolvent.primeTailMajorant_nonneg` | verified | closed-form majorant is nonnegative |
+| `RiemannPrimeResolvent.resolventPrimeTailMajorant_nonneg` | verified | scaled majorant is nonnegative |
+| `RiemannPrimeResolvent.beatsHalfThreshold_witness` | verified | nonempty witness for the critical spectral-rate predicate |
+| `RiemannPrimeResolvent.publicationGate_delivers` | verified | typed publication gate consumes the Xi extension target through its bridge |
+| `RiemannPrimeResolvent.rateExponent_pos` | verified | positivity of the candidate rate exponent |
+| `RiemannPrimeResolvent.rateExponent_le_two_thirds` | verified | universal two-thirds ceiling |
+| `RiemannPrimeResolvent.rateExponent_eq_two_thirds` | verified | saturated branch formula |
+| `RiemannPrimeResolvent.rateExponent_eq_spectral` | verified | spectral branch formula |
+| `RiemannPrimeResolvent.rayleighGapDefect_nonneg` | verified | nonnegativity of the Rayleigh/gap scalar defect |
+| `RiemannPrimeResolvent.residualGapDefect_nonneg` | verified | nonnegativity of the residual/gap scalar defect |
 
-The full integer-cutoff prime-tail inequality, slit-plane criterion and concrete operator convergence are not present as verified declarations.
+The full integer-cutoff prime-tail inequality, slit-plane criterion and concrete
+operator convergence are not present as verified declarations.

@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+- Added the bounded compactified kernel, exact finite integral identity and weak-limit pointwise Stieltjes convergence.
+- Added compactified finite measures with exact Stieltjes mass, `[0,1]` support, weak compactness and compact weak closure of indexed approximant families.
+- Added arbitrary-compact Stieltjes domination through resolvent compactification and an exact finite atomic bridge to Mathlib's `resolventTransform`.
+- Split geometric denominator producers from the positive-sum consumer API so future operator models can reuse the same bound machinery.
+- Added a complex finite positive-Stieltjes API and a factor-two disk bound uniform over varying cutoffs, weights and spectra.
+- Parsed the emitted `#print axioms` evidence and admitted only Lean's standard classical kernel axioms; direct `sorryAx` use or any new project axiom now fails the criterion verification.
+- Closed theorem-oracle coverage over all 49 public finite/compact/measure/limit-layer `theorem`/`lemma` declarations and expanded placeholder scanning beyond the conventional library directory.
+- Added an exact theorem ledger synchronized automatically with `OnePointResolvent/Oracle.lean`.
+- Added two-clean-run byte reproducibility checks for generated figures, data and the exact atomic certificate.
+- Pinned MathJax to an exact version and audited remote documentation assets for immutable references.
 - Added a cross-platform repository hygiene audit for CRLF drift, case-insensitive path collisions and generated cache files.
 - Scrubbed Graphviz SVG generator-version comments to prevent manifest churn across runner images.
 - Replaced regex-only placeholder checks with a nested-comment/string-aware Lean source scanner.
