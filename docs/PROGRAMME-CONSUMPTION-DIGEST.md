@@ -43,6 +43,21 @@ the `PublicationGate` record: future work should fill its fields with certified
 construction data rather than restating the criterion or introducing standalone
 frontier propositions.
 
+## Handoff matrix
+
+| Item | Consume now? | Required evidence before stronger use |
+|---|---:|---|
+| `PublicationGate.xiBridge` | yes, as a field to supply | an independent proof of `XiStieltjesExtensionTarget -> XiOnlyRealZeros` |
+| `PublicationGate.defect` | yes, as a named input slot | a model-derived `defect : Nat -> Real`, not the witness sequence |
+| `PublicationGate.spectralRate` | yes, as a rate obligation | a proof of `BeatsHalfThreshold defect` for the model-derived sequence |
+| `PublicationGate.budget` | yes, as a named input slot | a model-derived `budget : Nat -> ErrorBudget` |
+| `PublicationGate.budgetVanishes` | yes, as a convergence obligation | a proof of `VanishingBudget budget` tied to the same budget sequence |
+| `publicationGate_delivers` | yes, as an eliminator | an explicit `XiStieltjesExtensionTarget` argument |
+
+The current `beatsHalfThreshold_witness` is only an existence check for the
+rate predicate. It is useful for API sanity, but it is not evidence that any
+future operator model satisfies the rate requirement.
+
 The unresolved work remains the four research-frontier items in
 `docs/RESEARCH-FRONTIER.md`. Those items are not release blockers and are not
 claims of completion.
