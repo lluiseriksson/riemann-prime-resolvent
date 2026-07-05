@@ -13,7 +13,7 @@ The static layer runs the repository hygiene audit, audits workflow/installer su
 
 ## Lean source audit
 
-`scripts/check_no_placeholders.py` masks nested Lean comments and ordinary string contents while retaining line positions. Interpolated expressions remain visible. It rejects `sorry`, `admit`, project `axiom` declarations and unsafe theorem/lemma declarations with file/line/column diagnostics. This is a policy guard in addition to—not a replacement for—the Lean build and `#print axioms` oracle.
+`scripts/check_no_placeholders.py` masks nested Lean comments and ordinary string contents while retaining line positions. Interpolated expressions remain visible. It rejects `sorry`, direct `sorryAx`, `admit`, project `axiom`/`constant` declarations and every `unsafe` declaration with file/line/column diagnostics. This is a policy guard in addition to—not a replacement for—the Lean build and runtime axiom report.
 
 ## Workflow and container policy
 
@@ -32,6 +32,20 @@ make audit
 ## Metadata coherence
 
 `python3 scripts/check_metadata.py` cross-checks VERSION, CFF, CodeMeta, changelog sections, Python package metadata, Lean toolchains and exact 40-character Mathlib revisions across both project roots. Tagged releases additionally require the exact tag `v$(cat VERSION)`.
+
+## Oracle/ledger traceability and axiom boundary
+
+`scripts/check_oracle_coverage.py` masks Lean comments and strings, derives every public project `theorem`/`lemma`, reads the exact `#print axioms` sequence from `oracle_check.lean`, and requires the verified rows in `docs/THEOREM-LEDGER.md` to match one-for-one and in order. Wildcards and prose-only verified entries are rejected.
+
+The Lean layer captures the actual oracle output and passes it back to the same checker with `--report`. Every declaration must appear exactly once and in oracle order. The only admitted dependencies are Lean's standard classical foundation—`Classical.choice`, `Quot.sound` and `propext`. A project axiom, `sorryAx`, missing report, reordered output or declaration-uses-sorry warning fails CI.
+
+## Generated-artifact reproducibility
+
+`scripts/check_generated_reproducibility.py` runs the project generators twice with fresh Matplotlib configuration directories and deterministic environment variables. Every generated SVG, PNG and CSV must be byte-identical between runs. The criterion check applies the same rule to its exact atomic certificate. The subsequent manifest check still proves that the reproducible output equals the committed output.
+
+## Documentation asset pinning
+
+`scripts/check_docs_assets.py` requires remote MkDocs assets to use HTTPS and exact jsDelivr npm semantic versions. MathJax is pinned to `3.2.2`; mutable major-only, `latest`, `main` and `master` references fail verification.
 
 ## Manifest workflow
 
@@ -60,7 +74,6 @@ The active root release workflow builds both the canonical monorepo archive and 
 ## Canonical Pages layout
 
 The Pages workflow regenerates and validates both documentation trees. The construction site is deployed at the repository root and the criterion manuscript beneath `/criterion/`, avoiding two competing Pages deployments for one monorepo.
-
 
 ## Cross-platform hygiene
 

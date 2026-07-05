@@ -4,11 +4,14 @@ import RiemannPrimeResolvent
 #print axioms RiemannPrimeResolvent.three_step_triangle
 #print axioms RiemannPrimeResolvent.error_le_budget
 #print axioms RiemannPrimeResolvent.ErrorBudget.tendsto_total_zero
+#print axioms RiemannPrimeResolvent.VanishingBudget.total
 #print axioms RiemannPrimeResolvent.finiteStieltjes_nonneg
 #print axioms RiemannPrimeResolvent.finiteSquaredResolvent_nonneg
 #print axioms RiemannPrimeResolvent.half_finitePairedTrace
 #print axioms RiemannPrimeResolvent.primeTailMajorant_nonneg
 #print axioms RiemannPrimeResolvent.resolventPrimeTailMajorant_nonneg
+#print axioms RiemannPrimeResolvent.beatsHalfThreshold_witness
+#print axioms RiemannPrimeResolvent.publicationGate_delivers
 #print axioms RiemannPrimeResolvent.rateExponent_pos
 #print axioms RiemannPrimeResolvent.rateExponent_le_two_thirds
 #print axioms RiemannPrimeResolvent.rateExponent_eq_two_thirds

@@ -1,4 +1,4 @@
-.PHONY: all lean figures certificates docs static verify metadata workflow-audit hygiene manifest manifest-check audit package clean
+.PHONY: all lean figures certificates docs static verify metadata workflow-audit hygiene docs-assets oracle-coverage generated-reproducibility manifest manifest-check audit package clean
 
 all: verify
 
@@ -29,13 +29,22 @@ workflow-audit:
 hygiene:
 	python3 scripts/check_repo_hygiene.py
 
+docs-assets:
+	python3 scripts/check_docs_assets.py
+
+oracle-coverage:
+	python3 scripts/check_oracle_coverage.py
+
+generated-reproducibility:
+	python3 scripts/check_generated_reproducibility.py
+
 manifest:
 	python3 scripts/generate_manifest.py
 
 manifest-check:
 	python3 scripts/generate_manifest.py --check
 
-audit: metadata workflow-audit hygiene manifest-check
+audit: metadata workflow-audit hygiene docs-assets oracle-coverage manifest-check
 	python3 scripts/check_release.py
 
 package: audit

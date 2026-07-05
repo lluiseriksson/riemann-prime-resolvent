@@ -12,15 +12,35 @@ LINK = re.compile(r'!?\[[^\]]*\]\(([^)]+)\)')
 SKIP_PREFIXES = ('http://', 'https://', 'mailto:', '#', 'data:')
 
 
-def main() -> int:
+def markdown_destination(raw: str) -> str:
+    """Extract a Markdown destination, preserving spaces inside ``<...>``.
+
+    CommonMark permits angle-bracket destinations specifically so paths may
+    contain spaces.  A title following a plain destination is ignored.
+    """
+
+    value = raw.strip()
+    if value.startswith('<'):
+        closing = value.find('>')
+        if closing >= 0:
+            return value[1:closing]
+    return value.split(maxsplit=1)[0] if value else ''
+
+
+def audit_markdown_links(root: Path) -> tuple[int, list[str]]:
+    """Return ``(checked_target_count, failures)`` for a repository root."""
+
+    root = root.resolve()
     failures: list[str] = []
     checked = 0
-    for path in sorted([ROOT / 'README.md', *ROOT.joinpath('docs').rglob('*.md')]):
+    paths = sorted([root / 'README.md', *root.joinpath('docs').rglob('*.md')])
+    for path in paths:
         if not path.exists():
             continue
+        display_path = path.relative_to(root).as_posix()
         text = path.read_text(encoding='utf-8')
         for raw in LINK.findall(text):
-            target = raw.split()[0].strip('<>')
+            target = markdown_destination(raw)
             if target.startswith(SKIP_PREFIXES):
                 continue
             target = unquote(target.split('#', 1)[0])
@@ -29,12 +49,17 @@ def main() -> int:
             checked += 1
             candidate = (path.parent / target).resolve()
             try:
-                candidate.relative_to(ROOT.resolve())
+                candidate.relative_to(root)
             except ValueError:
-                failures.append(f'{path.relative_to(ROOT)}: escapes repository: {raw}')
+                failures.append(f'{display_path}: escapes repository: {raw}')
                 continue
             if not candidate.exists():
-                failures.append(f'{path.relative_to(ROOT)}: missing {target}')
+                failures.append(f'{display_path}: missing {target}')
+    return checked, failures
+
+
+def main() -> int:
+    checked, failures = audit_markdown_links(ROOT)
     if failures:
         print('Markdown link audit FAILED:', file=sys.stderr)
         print('\n'.join(failures), file=sys.stderr)

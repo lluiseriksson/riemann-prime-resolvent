@@ -23,7 +23,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 45
     steps:
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           persist-credentials: false
       - uses: leanprover/lean-action@38fbc41a8c28c4cbaec22d7f7de508ec2e7c0dd9 # v1
@@ -34,22 +34,29 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          lake env lean oracle_check.lean
+          root_report="$(mktemp)"
+          criterion_report="$(mktemp)"
+          trap 'rm -f "$root_report" "$criterion_report"' EXIT
+
+          lake env lean oracle_check.lean 2>&1 | tee "$root_report"
+          python3 scripts/check_oracle_coverage.py --report "$root_report"
           python3 scripts/check_no_placeholders.py
+
           cd subprojects/riemann-one-point-resolvent
           lake exe cache get
           lake build
-          lake env lean OnePointResolvent/Oracle.lean
+          lake env lean OnePointResolvent/Oracle.lean 2>&1 | tee "$criterion_report"
+          python3 scripts/check_oracle_coverage.py --report "$criterion_report"
           python3 scripts/check_no_placeholders.py
 
   static:
     runs-on: ubuntu-24.04
     timeout-minutes: 25
     steps:
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           persist-credentials: false
-      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
         with:
           python-version: "3.12"
           cache: pip

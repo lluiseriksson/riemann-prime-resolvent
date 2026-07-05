@@ -52,8 +52,11 @@ WINDOWS_RESERVED_STEMS = frozenset(
     | {f"LPT{index}" for index in range(1, 10)}
 )
 MIRRORED_TOOLING_FILES = (
+    "scripts/check_docs_assets.py",
+    "scripts/check_generated_reproducibility.py",
     "scripts/check_metadata.py",
     "scripts/check_no_placeholders.py",
+    "scripts/check_oracle_coverage.py",
     "scripts/check_release.py",
     "scripts/check_workflows.py",
     "scripts/generate_manifest.py",

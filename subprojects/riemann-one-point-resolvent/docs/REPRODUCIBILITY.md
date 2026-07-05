@@ -24,6 +24,16 @@ The preserved subproject workflows remain SHA-pinned like the active root workfl
 
 `scripts/check_metadata.py` checks CFF, CodeMeta, VERSION, changelog, Python package version, Lean toolchain and exact Mathlib revision coherence. The criterion Python package uses the PEP 440 local version `0.3.0+docs.integrated` for repository VERSION `0.3.0-docs-integrated`.
 
+## Oracle/ledger traceability and axiom boundary
+
+`scripts/check_oracle_coverage.py` requires every public `OnePointResolvent` theorem/lemma, the exact ordered declarations in `OnePointResolvent/Oracle.lean` and the verified rows in `docs/THEOREM_LEDGER.md` to agree. Wildcards, duplicates, unqualified names and documentation/oracle drift fail the static layer.
+
+The Lean verification captures the emitted `#print axioms` messages and invokes the checker with `--report`. Only `Classical.choice`, `Quot.sound` and `propext` are admitted. A project axiom, direct `sorryAx`, a missing/reordered report or a declaration-uses-sorry warning fails verification.
+
+## Generated artifacts and documentation assets
+
+`scripts/check_generated_reproducibility.py` regenerates the exact atomic certificate, finite-difference data and all SVG/PNG figures twice with clean Matplotlib state, requiring byte-identical output. `scripts/check_docs_assets.py` additionally requires HTTPS and exact semantic versions for jsDelivr npm assets; MathJax is pinned to `3.2.2`.
+
 ## Lean layer
 
 ```bash
@@ -49,7 +59,6 @@ make package
 The archive is produced from a manifest-verified immutable byte snapshot with fixed timestamps, canonical permissions, sorted uncompressed entries and a versioned top-level directory. The active root release workflow builds this criterion archive twice, requires identical SHA-256 output, uploads it beside the monorepo archive and emits a provenance attestation.
 
 The canonical rendered criterion site is built by the active root Pages workflow beneath `https://lluiseriksson.github.io/riemann-prime-resolvent/criterion/`.
-
 
 ## Cross-platform hygiene
 

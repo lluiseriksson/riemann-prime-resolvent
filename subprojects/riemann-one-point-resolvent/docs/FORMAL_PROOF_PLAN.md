@@ -28,7 +28,35 @@ The order below minimizes circularity and API churn.
 ## Milestone D — arithmetic and compactness
 
 12. Formalize the integer-cutoff von Mangoldt tail.
-13. Formalize one-point local boundedness for positive Stieltjes transforms.
-14. Package the normal-family criterion in the exact shared-interface form.
+13. **Closed finite-disk subgoal.** `OnePointResolvent.StieltjesLocalBound`
+    proves the factor-two estimate on `‖z-x₀‖ ≤ x₀/2`, uniformly in all
+    cutoff data.
+14. **Closed compact-domination subgoal.**
+    `OnePointResolvent.StieltjesCompactBound` uses
+    \(u=x_0/(t+x_0)\in[0,1]\) and the exact identity
+    \[
+    u(t+z)=x_0+u(z-x_0)
+    \]
+    to prove that every compact `K ⊂ Complex.slitPlane` has a constant `C_K`
+    with `|S_j(z)| ≤ C_K M`, uniformly in `j`.
+15. **Closed finite Mathlib bridge.**
+    `OnePointResolvent.StieltjesResolventBridge` identifies each finite sum
+    exactly with `MeasureTheory.resolventTransform` at the sign-changed
+    argument `a = -z`.
+16. **Closed compactified finite-measure subgoal.**
+    `OnePointResolvent.CompactifiedMeasure` packages the normalized atoms as
+    `FiniteMeasure ℝ`, proves exact mass `μ_j.mass = S_j(x₀)`, proves support
+    in `[0,1]`, and places a uniformly one-point-bounded family in Mathlib's
+    compact bounded-mass/support set; the weak closure of every indexed
+    approximant family is therefore compact.
+17. **Closed fixed-kernel weak-limit subgoal.**
+    `OnePointResolvent.CompactifiedKernelLimit` constructs a bounded continuous
+    extension of the compactified kernel, proves that its integral against each
+    finite compactified measure is exactly `S_j(z)`, and turns weak convergence
+    of measures into pointwise convergence for every fixed
+    `z ∈ Complex.slitPlane`.
+18. Prove a compact-uniform kernel modulus/equicontinuity estimate, upgrade the
+    pointwise weak-limit convergence to compact-open convergence, and package
+    interval uniqueness in the exact shared-interface form.
 
 Only after A–D should the companion repository import a released criterion theorem.

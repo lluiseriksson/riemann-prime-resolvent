@@ -16,3 +16,9 @@ This site is the canonical scholarly record for the construction repository. It 
 
 !!! warning "No RH proof"
     The decisive construction-side convergence theorem is open. The documentation is designed to expose that frontier, not conceal it.
+
+## Final release and research frontier
+
+- [Final 0.3.x release closeout](FINAL-RELEASE.md)
+- [Research frontier](RESEARCH-FRONTIER.md)
+- [Maintenance and archive policy](https://github.com/lluiseriksson/riemann-prime-resolvent/blob/main/MAINTENANCE.md)
