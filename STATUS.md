@@ -13,25 +13,26 @@ Engineering status: complete for `v0.3.0-docs-integrated`. Research status: RF-1
 RF-4 remain open. Archive status: not recommended while those records need to
 remain writable. See `MAINTENANCE.md`.
 
-## Maintenance heartbeat 2026-07-05 09:43 UTC
+## Maintenance heartbeat 2026-07-05 18:18 UTC
 
 Default branch `main` is at
-`c38e40d02a17b36716afd3d794ca022d896d4549`. The latest default-branch
-`CI` run `28733378801` completed successfully on that commit, including both
-`lean` and `static` jobs. The latest default-branch `Documentation` run remains
-`28712686130`, which completed successfully on the previous
-documentation-affecting commit
-`369f34b1fdfbad7b8988e2610a4825ed1e96ebfe`.
+`cfb50a9db40b20d70c4fae950017e3aba8c24c24`. The latest default-branch
+`CI` run `28748985808` completed successfully on that commit, including both
+`lean` and `static` jobs. The latest default-branch `Documentation` run
+`28746945208` completed successfully on
+`61de51df156f5020bc8494be57d2eedb8a1e88a2`. The latest default-branch
+`Container` run `28745207243` completed successfully on
+`6344b351bb04fed0f23ebe09698f545a5ea2aa2a`.
 
 There is no open Codex-authored PR waiting for merge. The remaining open PRs
-are Dependabot maintenance branches: `#13`, `#26` and `#27` are clean and
-green, while older dependency PRs `#5`-`#12`, `#14`, `#15` and `#17` still
-need separate failure triage before they are consumable.
+are older Dependabot maintenance branches: `#5`, `#6`, `#7`, `#8`, `#10`,
+`#12`, `#14` and `#15`. Each is currently `UNSTABLE` because at least one
+required check failed on the dependency branch, so they need separate failure
+triage before they are consumable.
 
 No open issue currently has the `agent-task`, `blocked` or `interface-change`
-label. The next safe maintenance step is to merge one clean green Dependabot PR
-(`#13`, `#26` or `#27`) or triage one old red dependency PR without mixing it
-with research-frontier edits.
+label. The next safe maintenance step is to triage one old red dependency PR
+without mixing it with research-frontier edits.
 
 ## Programme consumption digest
 
