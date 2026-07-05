@@ -13,25 +13,26 @@ Engineering status: complete for `v0.3.0-docs-integrated`. Research status: RF-1
 RF-4 remain open. Archive status: not recommended while those records need to
 remain writable. See `MAINTENANCE.md`.
 
-## Maintenance heartbeat 2026-07-04 21:53 UTC
+## Maintenance heartbeat 2026-07-05 06:13 UTC
 
 Default branch `main` is at
-`88e305df5cfd8d6f99720378b205c4856d7db776`. The latest default-branch
-`CI` run `28716303083` completed successfully on that commit. The latest
-default-branch `Documentation` run remains `28712686130`, which completed
-successfully on the previous documentation-affecting commit
+`11d165997506e134b193fd8ab34674e4dfd0af84`. The latest default-branch
+`CI` run `28722534281` completed successfully on that commit, including both
+`lean` and `static` jobs. The latest default-branch `Documentation` run remains
+`28712686130`, which completed successfully on the previous
+documentation-affecting commit
 `369f34b1fdfbad7b8988e2610a4825ed1e96ebfe`.
 
 There is no open Codex-authored PR waiting for merge. The remaining open PRs
-are Dependabot maintenance branches: `#13` is clean and green, `#26` and `#27`
-are green but currently dirty against `main`, and older dependency PRs
+are Dependabot maintenance branches: `#13` and `#26` are clean and green,
+`#27` is green but currently dirty against `main`, and older dependency PRs
 `#5`-`#12`, `#14`, `#15` and `#17` still need separate failure triage before
 they are consumable.
 
 No open issue currently has the `agent-task`, `blocked` or `interface-change`
 label. The next safe maintenance step is either to merge clean green
-Dependabot PR `#13` or to resolve one dirty green Dependabot branch at a time,
-starting with `#26` or `#27`, without mixing it with research-frontier edits.
+Dependabot PR `#13` or `#26`, or to resolve dirty green Dependabot PR `#27`,
+without mixing it with research-frontier edits.
 
 ## Programme consumption digest
 
