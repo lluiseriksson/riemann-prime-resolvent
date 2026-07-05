@@ -18,6 +18,8 @@ Each entry is exact, fully qualified and in the same order as its
 | `RiemannPrimeResolvent.half_finitePairedTrace` | verified | removes paired-spectrum double counting |
 | `RiemannPrimeResolvent.primeTailMajorant_nonneg` | verified | closed-form majorant is nonnegative |
 | `RiemannPrimeResolvent.resolventPrimeTailMajorant_nonneg` | verified | scaled majorant is nonnegative |
+| `RiemannPrimeResolvent.beatsHalfThreshold_witness` | verified | nonempty witness for the critical spectral-rate predicate |
+| `RiemannPrimeResolvent.publicationGate_delivers` | verified | typed publication gate consumes the Xi extension target through its bridge |
 | `RiemannPrimeResolvent.rateExponent_pos` | verified | positivity of the candidate rate exponent |
 | `RiemannPrimeResolvent.rateExponent_le_two_thirds` | verified | universal two-thirds ceiling |
 | `RiemannPrimeResolvent.rateExponent_eq_two_thirds` | verified | saturated branch formula |

@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Tightened the Lean `PublicationGate` so it carries concrete defect and error-budget data, added an explicit consumer theorem, and added a nonempty witness for the spectral-rate predicate.
 - Added an exact compactified-kernel integral identity and a weak-measure-to-pointwise-Stieltjes limit bridge.
 - Added a compactified `FiniteMeasure ℝ` layer with exact one-point mass, `[0,1]` support, Mathlib-backed weak compactness and compact weak closure of uniformly bounded indexed families.
 - Added a compactification-based arbitrary-compact Stieltjes bound and an exact finite atomic bridge to Mathlib's `resolventTransform`.
