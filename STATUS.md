@@ -13,21 +13,23 @@ Engineering status: complete for `v0.3.0-docs-integrated`. Research status: RF-1
 RF-4 remain open. Archive status: not recommended while those records need to
 remain writable. See `MAINTENANCE.md`.
 
-## Maintenance heartbeat 2026-07-06 12:20 UTC
+## Maintenance heartbeat 2026-07-06 14:25 UTC
 
 Default branch `main` is at
-`7693022a5b8791799ce0583c9696ab058de38ba2`. The latest default-branch `CI`
-run `28780298611` completed successfully on that commit, including both `lean`
-and `static` jobs. The latest default-branch `Documentation` run `28765846942`
-completed successfully on `91a18d0ab936595e5450395570e2ca24c39ce9d8`. The
-latest default-branch `Container` run `28765846917` completed successfully on
-that same dependency-alignment commit.
+`fd12ed7ed347de49bdbc2ad211a6a72813ee3eee`, which merged heartbeat PR `#43`.
+The latest default-branch `CI` run `28797246016` completed successfully on that
+commit, including both `lean` and `static` jobs. The latest default-branch
+`Documentation` run `28765846942` completed successfully on
+`91a18d0ab936595e5450395570e2ca24c39ce9d8`. The latest default-branch
+`Container` run `28765846917` completed successfully on that same
+dependency-alignment commit.
 
-There is no open Codex-authored PR waiting for merge. The currently green
-Dependabot PRs are root dependency updates `#5`, `#7` and `#8`, plus
-subproject dependency update `#14`; they are ready for human review/merge
-subject to the usual dependency policy. The remaining red Dependabot PRs are
-subproject dependency updates `#10` and `#12`.
+The previous Codex-authored heartbeat PR `#43` is merged and no older
+Codex-authored PR remains open. The currently green Dependabot PRs are root
+dependency updates `#5`, `#7` and `#8`, plus subproject dependency update
+`#14`; they are ready for human review/merge subject to the usual dependency
+policy. The remaining red Dependabot PRs are subproject dependency updates
+`#10` and `#12`.
 Their observed blockers are exact dependency-resolution conflicts in the shared
 CI/container install environment:
 
