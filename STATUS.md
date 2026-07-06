@@ -13,19 +13,20 @@ Engineering status: complete for `v0.3.0-docs-integrated`. Research status: RF-1
 RF-4 remain open. Archive status: not recommended while those records need to
 remain writable. See `MAINTENANCE.md`.
 
-## Maintenance heartbeat 2026-07-06 16:20 UTC
+## Maintenance heartbeat 2026-07-06 17:41 UTC
 
 Default branch `main` is at
-`2af075cfa340ed6a74a218277c3321e5183b170c`, which merged consumption-digest PR
-`#45`. The latest default-branch `CI` run `28803768762` completed successfully
-on that commit, including both `lean` and `static` jobs. The latest
-default-branch `Documentation` run `28803768658` also completed successfully on
-that commit. The latest default-branch `Container` run `28765846917` remains
-green on `91a18d0ab936595e5450395570e2ca24c39ce9d8`; no container inputs
-changed in the digest merge.
+`93e34b19818b8772fdcf6eda137fc951a2b9c884`, which merged maintenance-heartbeat
+PR `#46`. The latest default-branch `CI` run `28807812080` completed
+successfully on that commit, including both `lean` and `static` jobs. The
+latest default-branch `Documentation` run remains `28803768658`, green on
+`2af075cfa340ed6a74a218277c3321e5183b170c`; `STATUS.md` edits do not match the
+documentation workflow path filter. The latest default-branch `Container` run
+`28765846917` remains green on `91a18d0ab936595e5450395570e2ca24c39ce9d8`; no
+container inputs changed in the heartbeat merge.
 
-The previous Codex-authored digest PR `#45` is merged and no Codex-authored PR
-remains open. The current mother-facing consumption route is
+The previous Codex-authored heartbeat PR `#46` is merged and no Codex-authored
+PR remains open. The current mother-facing consumption route is
 `docs/PROGRAMME-CONSUMPTION-DIGEST.md`, which names the construction-side
 `PublicationGate`, `publicationGate_delivers`, `XiStieltjesExtensionTarget`,
 `ErrorBudget`, `VanishingBudget` and `BeatsHalfThreshold` surfaces, plus the
