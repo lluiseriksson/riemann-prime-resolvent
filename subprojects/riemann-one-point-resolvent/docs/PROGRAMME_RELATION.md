@@ -1,8 +1,10 @@
-# Relationship to `riemann-prime-resolvent`
+# Relationship to the monorepo root
 
 ## This repository is the criterion layer
 
-It owns the abstract route
+The criterion layer now lives at
+`subprojects/riemann-one-point-resolvent` inside the public monorepo. It owns
+the abstract route
 
 \[
 \text{positive Stieltjes extension agreeing with }\mathcal S_\Xi
@@ -13,9 +15,10 @@ It owns the abstract route
 
 and the equivalent one-point Hausdorff formulation.
 
-## The companion is the construction layer
+## The monorepo root is the construction layer
 
-`riemann-prime-resolvent` must construct a concrete family of self-adjoint prime-built observables and prove:
+The root project must construct a concrete family of self-adjoint prime-built
+observables and prove:
 
 - positivity/Stieltjes structure;
 - a uniform bound at one positive point;
@@ -25,6 +28,11 @@ and the equivalent one-point Hausdorff formulation.
 
 ## Shared contract
 
-Both repositories contain the byte-identical file [`contracts/resolvent-interface.json`](contracts/resolvent-interface.json). A shared definition is changed only by synchronized pull requests.
+The byte-identical shared contract is kept at the monorepo-root path
+`docs/contracts/resolvent-interface.json` and mirrored here as
+[`contracts/resolvent-interface.json`](contracts/resolvent-interface.json).
+A shared definition is changed only by synchronized edits to both copies.
 
-The repositories should remain separate on GitHub: criterion work and construction work have different review surfaces and progress independently.
+Criterion work and construction work remain different review surfaces inside
+the monorepo. Documentation may summarize the other layer, but canonical
+definitions have one owner.
