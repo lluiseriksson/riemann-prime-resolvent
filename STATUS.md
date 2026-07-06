@@ -13,25 +13,30 @@ Engineering status: complete for `v0.3.0-docs-integrated`. Research status: RF-1
 RF-4 remain open. Archive status: not recommended while those records need to
 remain writable. See `MAINTENANCE.md`.
 
-## Maintenance heartbeat 2026-07-06 14:25 UTC
+## Maintenance heartbeat 2026-07-06 16:20 UTC
 
 Default branch `main` is at
-`fd12ed7ed347de49bdbc2ad211a6a72813ee3eee`, which merged heartbeat PR `#43`.
-The latest default-branch `CI` run `28797246016` completed successfully on that
-commit, including both `lean` and `static` jobs. The latest default-branch
-`Documentation` run `28765846942` completed successfully on
-`91a18d0ab936595e5450395570e2ca24c39ce9d8`. The latest default-branch
-`Container` run `28765846917` completed successfully on that same
-dependency-alignment commit.
+`2af075cfa340ed6a74a218277c3321e5183b170c`, which merged consumption-digest PR
+`#45`. The latest default-branch `CI` run `28803768762` completed successfully
+on that commit, including both `lean` and `static` jobs. The latest
+default-branch `Documentation` run `28803768658` also completed successfully on
+that commit. The latest default-branch `Container` run `28765846917` remains
+green on `91a18d0ab936595e5450395570e2ca24c39ce9d8`; no container inputs
+changed in the digest merge.
 
-The previous Codex-authored heartbeat PR `#43` is merged and no older
-Codex-authored PR remains open. The currently green Dependabot PRs are root
-dependency updates `#5`, `#7` and `#8`, plus subproject dependency update
-`#14`; they are ready for human review/merge subject to the usual dependency
-policy. The remaining red Dependabot PRs are subproject dependency updates
-`#10` and `#12`.
-Their observed blockers are exact dependency-resolution conflicts in the shared
-CI/container install environment:
+The previous Codex-authored digest PR `#45` is merged and no Codex-authored PR
+remains open. The current mother-facing consumption route is
+`docs/PROGRAMME-CONSUMPTION-DIGEST.md`, which names the construction-side
+`PublicationGate`, `publicationGate_delivers`, `XiStieltjesExtensionTarget`,
+`ErrorBudget`, `VanishingBudget` and `BeatsHalfThreshold` surfaces, plus the
+criterion-layer finite/compactness APIs imported from the subproject.
+
+The currently green Dependabot PRs are root dependency updates `#5`, `#7` and
+`#8`, plus subproject dependency update `#14`; they are ready for human
+review/merge subject to the usual dependency policy. The remaining red
+Dependabot PRs are subproject dependency updates `#10` and `#12`. Their observed
+blockers are exact dependency-resolution conflicts in the shared CI/container
+install environment:
 
 - `#10`: `mpmath==1.4.1` conflicts with `sympy==1.14.0`, which requires
   `mpmath<1.4`.
