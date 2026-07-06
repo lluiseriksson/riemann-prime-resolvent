@@ -13,19 +13,21 @@ Engineering status: complete for `v0.3.0-docs-integrated`. Research status: RF-1
 RF-4 remain open. Archive status: not recommended while those records need to
 remain writable. See `MAINTENANCE.md`.
 
-## Maintenance heartbeat 2026-07-06 07:48 UTC
+## Maintenance heartbeat 2026-07-06 12:20 UTC
 
 Default branch `main` is at
-`91a18d0ab936595e5450395570e2ca24c39ce9d8`. The latest default-branch `CI`
-run `28765846908` completed successfully on that commit, including both `lean`
+`7693022a5b8791799ce0583c9696ab058de38ba2`. The latest default-branch `CI`
+run `28780298611` completed successfully on that commit, including both `lean`
 and `static` jobs. The latest default-branch `Documentation` run `28765846942`
-completed successfully on the same commit. The latest default-branch
-`Container` run `28765846917` completed successfully on the same commit.
+completed successfully on `91a18d0ab936595e5450395570e2ca24c39ce9d8`. The
+latest default-branch `Container` run `28765846917` completed successfully on
+that same dependency-alignment commit.
 
 There is no open Codex-authored PR waiting for merge. The currently green
-Dependabot PRs are root dependency updates `#5`, `#7` and `#8`; they are ready
-for human review/merge subject to the usual dependency policy. The remaining
-red Dependabot PRs are subproject dependency updates `#10`, `#12` and `#14`.
+Dependabot PRs are root dependency updates `#5`, `#7` and `#8`, plus
+subproject dependency update `#14`; they are ready for human review/merge
+subject to the usual dependency policy. The remaining red Dependabot PRs are
+subproject dependency updates `#10` and `#12`.
 Their observed blockers are exact dependency-resolution conflicts in the shared
 CI/container install environment:
 
@@ -35,15 +37,11 @@ CI/container install environment:
   `matplotlib==3.10.8`; merging or otherwise incorporating the green root
   `matplotlib` update `#5` is the prerequisite before this branch is
   consumable.
-- `#14`: subproject `pytest==9.1.1` conflicts with root `pytest==9.0.2`;
-  merging or otherwise incorporating the green root `pytest` update `#8` is
-  the prerequisite before this branch is consumable.
 
 No open issue currently has the `agent-task`, `blocked` or `interface-change`
 label. The next safe maintenance step is to merge/review the green root
-dependency PRs first, then rebase or rerun the matching subproject dependency
-PRs; `#10` should stay blocked unless `sympy` also allows the newer `mpmath`
-range.
+dependency PRs first, then rebase or rerun `#12`; `#10` should stay blocked
+unless `sympy` also allows the newer `mpmath` range.
 
 ## Programme consumption digest
 
