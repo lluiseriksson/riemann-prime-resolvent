@@ -19,6 +19,23 @@ argument.
 | Spectral-rate predicate | `RiemannPrimeResolvent.BeatsHalfThreshold` | `RiemannPrimeResolvent/RateOptimization.lean` |
 | Machine-readable shared contract | `docs/contracts/resolvent-interface.json` | mirrored into `subprojects/riemann-one-point-resolvent/docs/contracts/resolvent-interface.json` |
 
+## Criterion subproject surface
+
+The imported criterion layer exposes these exact names for downstream routing.
+They are finite/compactness APIs only; they do not assert the open analytic
+endpoint.
+
+| Consumer need | Exact object | Owner |
+|---|---|---|
+| Hausdorff complete-monotonicity predicate | `OnePointResolvent.IsHausdorffCompletelyMonotone` | `subprojects/riemann-one-point-resolvent/OnePointResolvent/Basic.lean` |
+| Finite resolvent moment complete monotonicity | `OnePointResolvent.finiteResolventMoment_isHausdorffCompletelyMonotone` | `subprojects/riemann-one-point-resolvent/OnePointResolvent/ResolventCompactification.lean` |
+| One-point disk bound for finite Stieltjes families | `OnePointResolvent.finitePositiveStieltjes_family_norm_le_two` | `subprojects/riemann-one-point-resolvent/OnePointResolvent/StieltjesLocalBound.lean` |
+| Compact slit-plane Stieltjes family bound | `OnePointResolvent.exists_finitePositiveStieltjes_family_bound_on_compact` | `subprojects/riemann-one-point-resolvent/OnePointResolvent/StieltjesCompactBound.lean` |
+| Mathlib resolvent-transform bridge | `OnePointResolvent.resolventTransform_finitePositiveStieltjesMeasure` | `subprojects/riemann-one-point-resolvent/OnePointResolvent/StieltjesResolventBridge.lean` |
+| Compactified finite-measure mass identity | `OnePointResolvent.compactifiedStieltjesFiniteMeasure_mass_eq` | `subprojects/riemann-one-point-resolvent/OnePointResolvent/CompactifiedMeasure.lean` |
+| Compactified transform recovery | `OnePointResolvent.compactifiedStieltjesFiniteMeasure_transform_eq` | `subprojects/riemann-one-point-resolvent/OnePointResolvent/CompactifiedKernelLimit.lean` |
+| Pointwise weak-limit passage | `OnePointResolvent.tendsto_finitePositiveStieltjes_of_compactifiedMeasure_tendsto` | `subprojects/riemann-one-point-resolvent/OnePointResolvent/CompactifiedKernelLimit.lean` |
+
 ## Hypotheses still required
 
 A downstream construction has to supply all of the following before the gate is
@@ -34,6 +51,10 @@ usable as a real programme endpoint:
    trace normalization and finite approximation;
 5. a no-placeholder Lean audit through `scripts/verify_lean.sh` and
    `scripts/verify_static.sh`.
+6. for criterion-layer consumption, compact-open uniformization, interval
+   uniqueness, holomorphic target identification and the connection from the
+   resulting criterion statement to the target function; these remain documented
+   obligations rather than kernel-checked declarations.
 
 ## Safe consumption pattern
 
