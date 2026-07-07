@@ -19,6 +19,25 @@ argument.
 | Spectral-rate predicate | `RiemannPrimeResolvent.BeatsHalfThreshold` | `RiemannPrimeResolvent/RateOptimization.lean` |
 | Machine-readable shared contract | `docs/contracts/resolvent-interface.json` | mirrored into `subprojects/riemann-one-point-resolvent/docs/contracts/resolvent-interface.json` |
 
+## Interface contract routing
+
+The shared JSON contract is a vocabulary and status-policy handoff, not a proof
+object. Consumers can read these exact top-level fields when wiring another
+artifact to this repository:
+
+| Field | Current role | Safe consumer use |
+|---|---|---|
+| `contract_version` | interface version, currently `0.3.0` | pin a downstream parser or audit to this contract shape |
+| `canonical_target` | names the documented `S_Xi` target formula and domain | quote the target convention before supplying a separate criterion proof |
+| `construction_repository` | lists construction-side obligations owned by this repo | route spectral-model, positivity, trace/resolvent and prime-tail work to the root project |
+| `criterion_repository` | lists criterion-layer input requirements and the subproject path | route slit-plane/Stieltjes consumption to `subprojects/riemann-one-point-resolvent` |
+| `status_policy` | defines `verified`, `documented`, `open` and `numerical` meanings | reject downstream wording that upgrades documentation or regressions into theorem claims |
+
+Release tooling requires the root contract and the criterion-subproject mirror to
+be byte-identical. A consumer should therefore treat either copy as the same
+contract, but should edit only the root copy and regenerate the mirror through
+the release workflow when the interface actually changes.
+
 ## Criterion subproject surface
 
 The imported criterion layer exposes these exact names for downstream routing.
