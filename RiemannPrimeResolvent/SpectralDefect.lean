@@ -32,6 +32,21 @@ theorem rayleighGapDefect_nonneg
   exact add_nonneg (mul_nonneg hnorm (Real.sqrt_nonneg _))
     (mul_nonneg (by norm_num) htail)
 
+/-- A strictly positive indexed gap makes the distinguished ground index the
+unique index carrying its eigenvalue.  When indices enumerate an eigenbasis
+with multiplicity, this is the exact combinatorial guard against a degenerate
+ground eigenspace. -/
+theorem groundIndex_unique_of_positive_gap
+    {ι : Type*} (eigenvalue : ι → ℝ) (groundIndex : ι) (gap : ℝ)
+    (hgap_pos : 0 < gap)
+    (hgap : ∀ i, i ≠ groundIndex →
+      eigenvalue groundIndex + gap ≤ eigenvalue i) :
+    ∀ i, eigenvalue i = eigenvalue groundIndex → i = groundIndex := by
+  intro i hi
+  by_contra hne
+  have hsep := hgap i hne
+  linarith
+
 /-- In an orthonormal eigenbasis, a gap above a distinguished ground state
 forces the scalar Rayleigh/gap inequality.  This is the finite-dimensional
 spectral-decomposition step that turns an eigenvalue gap into `hspectral` for
@@ -124,6 +139,31 @@ theorem spectralGap_mul_one_sub_inner_sq_le_rayleighExcess_of_isSymmetric
   exact spectralGap_mul_one_sub_inner_sq_le_rayleighExcess_of_eigenbasis
     T (hT.eigenvectorBasis hn) (hT.eigenvalues hn)
     (hT.apply_eigenvectorBasis hn) groundIndex trial gap htrial hgap
+
+/-- For a finite-dimensional symmetric operator, the positive indexed gap
+hypothesis forces the selected ground eigenspace itself to have dimension one.
+This exposes, at statement level, the simplicity that the Rayleigh/gap bound
+needs and rules out an orthogonal trial vector at the same eigenvalue. -/
+theorem finrank_groundEigenspace_eq_one_of_positive_gap
+    {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
+    [FiniteDimensional ℝ E] {n : ℕ}
+    (T : E →ₗ[ℝ] E) (hT : T.IsSymmetric)
+    (hn : Module.finrank ℝ E = n) (groundIndex : Fin n) (gap : ℝ)
+    (hgap_pos : 0 < gap)
+    (hgap : ∀ i, i ≠ groundIndex →
+      hT.eigenvalues hn groundIndex + gap ≤ hT.eigenvalues hn i) :
+    Module.finrank ℝ
+      (Module.End.eigenspace T (hT.eigenvalues hn groundIndex)) = 1 := by
+  rw [← hT.card_filter_eigenvalues_eq hn]
+  refine Finset.card_eq_one.mpr ⟨groundIndex, ?_⟩
+  ext i
+  simp only [Finset.mem_filter, Finset.mem_univ, true_and, Finset.mem_singleton]
+  constructor
+  · exact groundIndex_unique_of_positive_gap
+      (hT.eigenvalues hn) groundIndex gap hgap_pos hgap i
+  · intro hi
+    subst i
+    rfl
 
 /-- A scalar spectral-gap estimate controls the distance between two aligned
 unit vectors.  In the intended application, `ground` is the normalized finite
@@ -286,6 +326,35 @@ theorem norm_scaled_eigenvectorBasis_sub_complete_le_rayleighGapDefect
   · exact norm_eigenvectorBasis_sub_trial_le_sqrt_rayleigh_div_gap
       T hT hn groundIndex trial gap htrial hoverlap_nonneg hgap_pos hgap
   · exact htail
+
+/-- Statement-level guarded version of the end-to-end estimate: the same
+positive indexed gap simultaneously certifies that the ground eigenspace is
+one-dimensional and proves the Galerkin approximation bound. -/
+theorem simpleGround_and_norm_scaled_eigenvectorBasis_sub_complete_le
+    {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
+    [FiniteDimensional ℝ E] {n : ℕ}
+    (T : E →ₗ[ℝ] E) (hT : T.IsSymmetric)
+    (hn : Module.finrank ℝ E = n) (groundIndex : Fin n)
+    (trial complete projected : E) (gap tail : ℝ)
+    (htrial : ‖trial‖ = 1)
+    (hoverlap_nonneg :
+      0 ≤ inner ℝ (hT.eigenvectorBasis hn groundIndex) trial)
+    (hgap_pos : 0 < gap)
+    (hgap : ∀ i, i ≠ groundIndex →
+      hT.eigenvalues hn groundIndex + gap ≤ hT.eigenvalues hn i)
+    (hprojected : projected = ‖projected‖ • trial)
+    (htail : ‖complete - projected‖ ≤ tail) :
+    Module.finrank ℝ
+        (Module.End.eigenspace T (hT.eigenvalues hn groundIndex)) = 1 ∧
+      ‖‖complete‖ • hT.eigenvectorBasis hn groundIndex - complete‖ ≤
+        rayleighGapDefect ‖complete‖
+          (inner ℝ (T trial) trial - hT.eigenvalues hn groundIndex) gap tail := by
+  constructor
+  · exact finrank_groundEigenspace_eq_one_of_positive_gap
+      T hT hn groundIndex gap hgap_pos hgap
+  · exact norm_scaled_eigenvectorBasis_sub_complete_le_rayleighGapDefect
+      T hT hn groundIndex trial complete projected gap tail htrial
+      hoverlap_nonneg hgap_pos hgap hprojected htail
 
 /-- Residual/separation version suitable for certified finite matrices. -/
 noncomputable def residualGapDefect
