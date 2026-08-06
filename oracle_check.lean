@@ -17,4 +17,7 @@ import RiemannPrimeResolvent
 #print axioms RiemannPrimeResolvent.rateExponent_eq_two_thirds
 #print axioms RiemannPrimeResolvent.rateExponent_eq_spectral
 #print axioms RiemannPrimeResolvent.rayleighGapDefect_nonneg
+#print axioms RiemannPrimeResolvent.norm_sub_le_sqrt_rayleigh_div_gap
+#print axioms RiemannPrimeResolvent.norm_scaled_ground_sub_complete_le
+#print axioms RiemannPrimeResolvent.norm_scaled_ground_sub_complete_le_rayleighGapDefect
 #print axioms RiemannPrimeResolvent.residualGapDefect_nonneg
