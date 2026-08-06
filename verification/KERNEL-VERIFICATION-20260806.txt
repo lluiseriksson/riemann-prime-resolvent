@@ -1,0 +1,68 @@
+FINITE SPECTRAL-GAP CERTIFICATES -- REPRODUCIBILITY CAPSULE
+Date: 2026-08-06
+
+CLAIM BOUNDARY
+This record verifies the finite Lean theorems and the build of the repository.
+It does not verify RATE_Sigma, construct the missing limiting operator, certify
+the numerical campaign from raw checkpoints, or prove the Riemann hypothesis.
+
+PUBLIC SOURCE ANCHORS
+Formalization and paper v1.0:
+  repository: https://github.com/lluiseriksson/riemann-prime-resolvent
+  branch:     galerkin/rayleigh-gap-bound
+  commit:     4b986b65232e32c69e5373cc9f6a4d4fd3383ed9
+
+Registered T3 verdict:
+  repository: https://github.com/lluiseriksson/riemann-resolvent-programme
+  branch:     campaign/t3-kill-test
+  PR:         47
+  commit:     382e1ab4aaecea8bcdc795b78b15ca3d9d9e950c
+
+Both remote branch heads, and PR 47 for the T3 record, resolved to the stated
+commits when checked on 2026-08-06.
+
+CHECKED ENVIRONMENT
+  OS:      Windows x86_64
+  Lean:    4.31.0, commit 68218e876d2a38b1985b8590fff244a83c321783
+  Lake:    5.0.0-src+68218e8
+  Mathlib: fabf563a7c95a166b8d7b6efca11c8b4dc9d911f
+
+COMMANDS AND RESULTS
+  lake build RiemannPrimeResolvent.SpectralDefect
+    exit 0; 8558/8558 jobs built
+
+  lake build
+    exit 0; 8567/8567 jobs built
+
+  lake env lean oracle_check.lean
+    exit 0
+    RiemannPrimeResolvent.antitone_gap_from_penultimate depends on:
+      [propext, Classical.choice, Quot.sound]
+    RiemannPrimeResolvent.simpleGround_and_norm_scaled_eigenvectorBasis_sub_complete_le_of_adjacentGap depends on:
+      [propext, Classical.choice, Quot.sound]
+
+  git diff --check
+    exit 0
+
+  rg -n "\b(sorry|admit|axiom)\b" RiemannPrimeResolvent/SpectralDefect.lean oracle_check.lean
+    no matches
+
+V1.1 ARTIFACT HASHES (SHA-256)
+  CA4585D23794787F756ACA3234C2BB7427272C48A2E03C669F3E9F256AC23815  paper/finite-spectral-gap-certificates.tex
+  277AA762BF5136ECC61B297EA076A65948827494A086FD5C46C4BA7E4EDACB35  output/pdf/finite-spectral-gap-certificates.pdf
+  9408AB8B4087A5CF4ABBFA0A7DABB5941B1AE3DA3709A1FA0412C51778DD5863  RiemannPrimeResolvent/SpectralDefect.lean
+  A1A6D525A4225FA6D435CA4C39A0906C14403E9AB94DD93E07D45D4773AC0A68  oracle_check.lean
+  417F205005AC9B8A8607BD66FDABC978A7B8065D55BBE8FCC398F32F4B7148BD  lake-manifest.json
+
+NUMERICAL-EVIDENCE PROVENANCE
+The registered verdict at 382e1ab states that the T3 table and A4/MC witness
+output are a verbatim screen transcription from a Colab runtime. The attempted
+zip containing 32 raw checkpoints did not reach the desktop and is not an
+archived artifact in that commit. The probe is deterministic and the records
+are reported reproducible, but the present capsule does not upgrade that
+transcription to independent custody or verification of the raw checkpoints.
+
+INTERPRETATION
+The kernel check establishes the finite adjacent-gap reduction, simplicity
+guard and Galerkin defect theorem in the stated environment. The registered T3
+campaign remains INCONCLUSIVE. RH remains open.

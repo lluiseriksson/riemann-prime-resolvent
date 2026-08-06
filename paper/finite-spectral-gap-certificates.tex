@@ -1,7 +1,6 @@
 \documentclass[11pt]{article}
 
 \usepackage[T1]{fontenc}
-\usepackage[utf8]{inputenc}
 \usepackage{lmodern}
 \usepackage[a4paper,margin=28mm]{geometry}
 \usepackage{microtype}
@@ -59,7 +58,7 @@ Riemann Prime-Resolvent Programme}\\[4pt]
 \author{Llu\'is Eriksson\\
 \small Independent researcher\\
 \small \url{https://github.com/lluiseriksson/riemann-prime-resolvent}}
-\date{Version 1.0 -- 6 August 2026}
+\date{Version 1.1 -- 6 August 2026}
 
 \begin{document}
 \maketitle
@@ -480,7 +479,8 @@ thirteen valid cells, the registered kill observables reported no low-energy
 spurious modes and zero low-energy mass under the specified threshold.  This
 is a non-kill result at finite scales, not evidence of the required limit.
 
-\subsection{Polynomial completeness witness at $(3,40)$}
+\subsection{Polynomial completeness witness at
+  \texorpdfstring{$(3,40)$}{(3,40)}}
 
 The A4 witness replaced sign-change scanning by the characteristic polynomial
 of the finite problem.  For $(\lambda,N)=(3,40)$, the reported certificate had
@@ -540,11 +540,39 @@ convergence and cancellation problem remains the central open step.
 
 \section*{Software, data and reproducibility}
 
-The Lean sources and programme documentation are maintained at
-\url{https://github.com/lluiseriksson/riemann-prime-resolvent}.  The campaign
-design and witness scripts are maintained in the associated
-\path{riemann-resolvent-programme} repository.  Exact source revisions and
-registered verdict logs should accompany any archival release of this paper.
+The formal source audited for this version is the public commit
+\path{4b986b65232e} on branch
+\path{galerkin/rayleigh-gap-bound} of
+\href{https://github.com/lluiseriksson/riemann-prime-resolvent}
+{\path{riemann-prime-resolvent}}.  That commit
+contains the Lean diff, this \TeX{} source and the version~1.0 PDF in one
+tree.  The present version~1.1 adds this reproducibility record; its archival
+release should again place source and rendered PDF in one commit.
+
+The checked environment was Lean~4.31.0 (commit \path{68218e876d2a}) with
+Lake~5.0.0 and Mathlib revision \path{fabf563a7c95}.  On 6 August 2026 the
+following commands completed with exit code zero:
+\begin{quote}\small\ttfamily
+lake build RiemannPrimeResolvent.SpectralDefect\quad[8558/8558]\par
+lake build\quad[8567/8567]\par
+lake env lean oracle\_check.lean
+\end{quote}
+For the two new declarations, the oracle reported only
+\path{propext}, \path{Classical.choice} and \path{Quot.sound}; it reported no
+\path{sorryAx}.  A plain-text verification capsule distributed beside the
+paper records the commands, revisions and output hashes.
+
+The campaign record is the public commit \path{382e1ab4aaec} on branch
+\path{campaign/t3-kill-test} of
+\href{https://github.com/lluiseriksson/riemann-resolvent-programme}
+{\path{riemann-resolvent-programme}}; it is also
+the head of pull request~47 at the time of audit.  Its registered-verdict file
+states an important provenance limitation: the table and witnesses are a
+verbatim screen transcription from the Colab runtime.  The attempted zip of
+the 32 raw checkpoints did not reach the desktop and is not an archived
+artifact in that commit.  The probe is deterministic and the checkpoints are
+reported reproducible, but this paper does not upgrade the transcription to
+independent raw-data custody.
 
 \section*{AI-assistance disclosure}
 
