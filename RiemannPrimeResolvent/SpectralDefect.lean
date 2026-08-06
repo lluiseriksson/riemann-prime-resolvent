@@ -32,6 +32,99 @@ theorem rayleighGapDefect_nonneg
   exact add_nonneg (mul_nonneg hnorm (Real.sqrt_nonneg _))
     (mul_nonneg (by norm_num) htail)
 
+/-- In an orthonormal eigenbasis, a gap above a distinguished ground state
+forces the scalar Rayleigh/gap inequality.  This is the finite-dimensional
+spectral-decomposition step that turns an eigenvalue gap into `hspectral` for
+`norm_sub_le_sqrt_rayleigh_div_gap`. -/
+theorem spectralGap_mul_one_sub_inner_sq_le_rayleighExcess_of_eigenbasis
+    {ι E : Type*} [Fintype ι] [DecidableEq ι]
+    [NormedAddCommGroup E] [InnerProductSpace ℝ E]
+    (T : E →ₗ[ℝ] E) (b : OrthonormalBasis ι ℝ E) (eigenvalue : ι → ℝ)
+    (heigen : ∀ i, T (b i) = eigenvalue i • b i)
+    (groundIndex : ι) (trial : E) (gap : ℝ)
+    (htrial : ‖trial‖ = 1)
+    (hgap : ∀ i, i ≠ groundIndex →
+      eigenvalue groundIndex + gap ≤ eigenvalue i) :
+    gap * (1 - inner ℝ (b groundIndex) trial ^ 2) ≤
+      inner ℝ (T trial) trial - eigenvalue groundIndex := by
+  let coefficient : ι → ℝ := fun i => inner ℝ (b i) trial
+  have hsum_sq : ∑ i, coefficient i ^ 2 = 1 := by
+    simpa [coefficient, htrial] using b.sum_sq_inner_right trial
+  have hrayleigh : inner ℝ (T trial) trial =
+      ∑ i, eigenvalue i * coefficient i ^ 2 := by
+    nth_rw 1 [← b.sum_repr' trial]
+    simp only [map_sum, map_smul, sum_inner, heigen, real_inner_smul_left,
+      smul_smul, coefficient]
+    apply Finset.sum_congr rfl
+    intro i _
+    ring
+  have hone_sub : 1 - coefficient groundIndex ^ 2 =
+      ∑ i ∈ Finset.univ.erase groundIndex, coefficient i ^ 2 := by
+    have hsplit := Finset.sum_erase_add (s := Finset.univ)
+      (f := fun i => coefficient i ^ 2) (Finset.mem_univ groundIndex)
+    rw [hsum_sq] at hsplit
+    linarith
+  have hlower :
+      ∑ i ∈ Finset.univ.erase groundIndex, gap * coefficient i ^ 2 ≤
+        ∑ i ∈ Finset.univ.erase groundIndex,
+          (eigenvalue i - eigenvalue groundIndex) * coefficient i ^ 2 := by
+    apply Finset.sum_le_sum
+    intro i hi
+    apply mul_le_mul_of_nonneg_right
+    · linarith [hgap i (Finset.ne_of_mem_erase hi)]
+    · positivity
+  have hweighted :
+      ∑ i, (eigenvalue i - eigenvalue groundIndex) * coefficient i ^ 2 =
+        (∑ i, eigenvalue i * coefficient i ^ 2) -
+          eigenvalue groundIndex * ∑ i, coefficient i ^ 2 := by
+    simp_rw [sub_mul]
+    rw [Finset.sum_sub_distrib, Finset.mul_sum]
+  have herase :
+      ∑ i, (eigenvalue i - eigenvalue groundIndex) * coefficient i ^ 2 =
+        ∑ i ∈ Finset.univ.erase groundIndex,
+          (eigenvalue i - eigenvalue groundIndex) * coefficient i ^ 2 := by
+    calc
+      ∑ i, (eigenvalue i - eigenvalue groundIndex) * coefficient i ^ 2 =
+          (∑ i ∈ Finset.univ.erase groundIndex,
+            (eigenvalue i - eigenvalue groundIndex) * coefficient i ^ 2) +
+            (eigenvalue groundIndex - eigenvalue groundIndex) *
+              coefficient groundIndex ^ 2 :=
+        (Finset.sum_erase_add (s := Finset.univ)
+          (f := fun i => (eigenvalue i - eigenvalue groundIndex) * coefficient i ^ 2)
+          (Finset.mem_univ groundIndex)).symm
+      _ = ∑ i ∈ Finset.univ.erase groundIndex,
+          (eigenvalue i - eigenvalue groundIndex) * coefficient i ^ 2 := by ring
+  calc
+    gap * (1 - inner ℝ (b groundIndex) trial ^ 2) =
+        ∑ i ∈ Finset.univ.erase groundIndex, gap * coefficient i ^ 2 := by
+      rw [show inner ℝ (b groundIndex) trial = coefficient groundIndex from rfl,
+        hone_sub, Finset.mul_sum]
+    _ ≤ ∑ i ∈ Finset.univ.erase groundIndex,
+          (eigenvalue i - eigenvalue groundIndex) * coefficient i ^ 2 := hlower
+    _ = ∑ i, (eigenvalue i - eigenvalue groundIndex) * coefficient i ^ 2 :=
+      herase.symm
+    _ = inner ℝ (T trial) trial - eigenvalue groundIndex := by
+      rw [hweighted, ← hrayleigh, hsum_sq]
+      ring
+
+/-- A finite-dimensional symmetric operator supplies the preceding diagonal
+data through Mathlib's spectral theorem.  Thus the only operator-specific
+input left here is the certified separation of every other eigenvalue from
+the selected ground eigenvalue. -/
+theorem spectralGap_mul_one_sub_inner_sq_le_rayleighExcess_of_isSymmetric
+    {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
+    [FiniteDimensional ℝ E] {n : ℕ}
+    (T : E →ₗ[ℝ] E) (hT : T.IsSymmetric)
+    (hn : Module.finrank ℝ E = n) (groundIndex : Fin n)
+    (trial : E) (gap : ℝ) (htrial : ‖trial‖ = 1)
+    (hgap : ∀ i, i ≠ groundIndex →
+      hT.eigenvalues hn groundIndex + gap ≤ hT.eigenvalues hn i) :
+    gap * (1 - inner ℝ (hT.eigenvectorBasis hn groundIndex) trial ^ 2) ≤
+      inner ℝ (T trial) trial - hT.eigenvalues hn groundIndex := by
+  exact spectralGap_mul_one_sub_inner_sq_le_rayleighExcess_of_eigenbasis
+    T (hT.eigenvectorBasis hn) (hT.eigenvalues hn)
+    (hT.apply_eigenvectorBasis hn) groundIndex trial gap htrial hgap
+
 /-- A scalar spectral-gap estimate controls the distance between two aligned
 unit vectors.  In the intended application, `ground` is the normalized finite
 ground state, `trial` is the normalized projected trial vector, and
@@ -69,6 +162,41 @@ theorem norm_sub_le_sqrt_rayleigh_div_gap
         mul_le_mul_of_nonneg_left hquot (by norm_num)
       _ = 2 * rayleighExcess / gap := by ring
   exact (Real.le_sqrt (norm_nonneg _) (by positivity)).2 hsquare
+
+/-- Operator-level Rayleigh/gap distance bound.  For a finite-dimensional
+symmetric operator, a positive certified eigenvalue gap and phase alignment
+imply the distance estimate without taking the scalar inequality as a separate
+hypothesis. -/
+theorem norm_eigenvectorBasis_sub_trial_le_sqrt_rayleigh_div_gap
+    {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
+    [FiniteDimensional ℝ E] {n : ℕ}
+    (T : E →ₗ[ℝ] E) (hT : T.IsSymmetric)
+    (hn : Module.finrank ℝ E = n) (groundIndex : Fin n)
+    (trial : E) (gap : ℝ) (htrial : ‖trial‖ = 1)
+    (hoverlap_nonneg :
+      0 ≤ inner ℝ (hT.eigenvectorBasis hn groundIndex) trial)
+    (hgap_pos : 0 < gap)
+    (hgap : ∀ i, i ≠ groundIndex →
+      hT.eigenvalues hn groundIndex + gap ≤ hT.eigenvalues hn i) :
+    ‖hT.eigenvectorBasis hn groundIndex - trial‖ ≤
+      Real.sqrt (2 *
+        (inner ℝ (T trial) trial - hT.eigenvalues hn groundIndex) / gap) := by
+  let ground := hT.eigenvectorBasis hn groundIndex
+  let overlap := inner ℝ ground trial
+  let rayleighExcess := inner ℝ (T trial) trial - hT.eigenvalues hn groundIndex
+  have hspectral : gap * (1 - overlap ^ 2) ≤ rayleighExcess := by
+    exact spectralGap_mul_one_sub_inner_sq_le_rayleighExcess_of_isSymmetric
+      T hT hn groundIndex trial gap htrial hgap
+  have hground : ‖ground‖ = 1 := (hT.eigenvectorBasis hn).norm_eq_one groundIndex
+  have hoverlap_le_one : overlap ≤ 1 := by
+    exact real_inner_le_one_of_norm_eq_one hground htrial
+  have hone_sq_nonneg : 0 ≤ 1 - overlap ^ 2 := by
+    dsimp [overlap, ground] at hoverlap_nonneg ⊢
+    nlinarith
+  have hr : 0 ≤ rayleighExcess :=
+    (mul_nonneg hgap_pos.le hone_sq_nonneg).trans hspectral
+  exact norm_sub_le_sqrt_rayleigh_div_gap hground htrial rfl
+    hoverlap_nonneg hr hgap_pos hspectral
 
 /-- Returning from a normalized projected trial vector to the complete trial
 costs at most twice the Galerkin tail.  The first tail controls `complete -
@@ -131,6 +259,32 @@ theorem norm_scaled_ground_sub_complete_le_rayleighGapDefect
   apply norm_scaled_ground_sub_complete_le htrial hprojected
   · exact norm_sub_le_sqrt_rayleigh_div_gap hground htrial hoverlap
       hoverlap_nonneg hr hgap hspectral
+  · exact htail
+
+/-- End-to-end finite Galerkin bound for a symmetric operator.  Mathlib's
+finite spectral theorem discharges the former scalar `hspectral` premise;
+the remaining concrete certificates are the positive eigenvalue separation,
+phase alignment, projection normalization, and tail bound. -/
+theorem norm_scaled_eigenvectorBasis_sub_complete_le_rayleighGapDefect
+    {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
+    [FiniteDimensional ℝ E] {n : ℕ}
+    (T : E →ₗ[ℝ] E) (hT : T.IsSymmetric)
+    (hn : Module.finrank ℝ E = n) (groundIndex : Fin n)
+    (trial complete projected : E) (gap tail : ℝ)
+    (htrial : ‖trial‖ = 1)
+    (hoverlap_nonneg :
+      0 ≤ inner ℝ (hT.eigenvectorBasis hn groundIndex) trial)
+    (hgap_pos : 0 < gap)
+    (hgap : ∀ i, i ≠ groundIndex →
+      hT.eigenvalues hn groundIndex + gap ≤ hT.eigenvalues hn i)
+    (hprojected : projected = ‖projected‖ • trial)
+    (htail : ‖complete - projected‖ ≤ tail) :
+    ‖‖complete‖ • hT.eigenvectorBasis hn groundIndex - complete‖ ≤
+      rayleighGapDefect ‖complete‖
+        (inner ℝ (T trial) trial - hT.eigenvalues hn groundIndex) gap tail := by
+  apply norm_scaled_ground_sub_complete_le htrial hprojected
+  · exact norm_eigenvectorBasis_sub_trial_le_sqrt_rayleigh_div_gap
+      T hT hn groundIndex trial gap htrial hoverlap_nonneg hgap_pos hgap
   · exact htail
 
 /-- Residual/separation version suitable for certified finite matrices. -/
