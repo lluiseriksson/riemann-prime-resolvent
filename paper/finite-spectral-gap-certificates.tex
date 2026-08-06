@@ -1,0 +1,612 @@
+\documentclass[11pt]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage[a4paper,margin=28mm]{geometry}
+\usepackage{microtype}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{fancyhdr}
+
+\definecolor{linkblue}{RGB}{26,78,130}
+\definecolor{statusred}{RGB}{135,25,35}
+\hypersetup{
+  colorlinks=true,
+  linkcolor=linkblue,
+  citecolor=linkblue,
+  urlcolor=linkblue,
+  pdftitle={Finite Spectral-Gap Certificates in a Riemann Prime-Resolvent Programme},
+  pdfauthor={Lluis Eriksson}
+}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{Finite spectral-gap certificates}
+\fancyhead[R]{L. Eriksson}
+\fancyfoot[C]{\thepage}
+\fancypagestyle{plain}{
+  \fancyhf{}
+  \fancyhead[L]{Finite spectral-gap certificates}
+  \fancyhead[R]{L. Eriksson}
+  \fancyfoot[C]{\thepage}
+}
+\setlength{\headheight}{14pt}
+\setlength{\emergencystretch}{3em}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+
+\newcommand{\RR}{\mathbb{R}}
+\newcommand{\CC}{\mathbb{C}}
+\newcommand{\XiR}{\mathcal{S}_{\Xi}}
+\newcommand{\ip}[2]{\left\langle #1,#2\right\rangle}
+\newcommand{\norm}[1]{\left\lVert #1\right\rVert}
+\newcommand{\defect}{\mathfrak d}
+
+\title{\textbf{Finite Spectral-Gap Certificates in a\\
+Riemann Prime-Resolvent Programme}\\[4pt]
+\large Lean verification, a subsequential criterion, and a falsification campaign}
+\author{Llu\'is Eriksson\\
+\small Independent researcher\\
+\small \url{https://github.com/lluiseriksson/riemann-prime-resolvent}}
+\date{Version 1.0 -- 6 August 2026}
+
+\begin{document}
+\maketitle
+\thispagestyle{empty}
+
+\begin{center}
+\fcolorbox{statusred}{white}{\parbox{0.91\textwidth}{
+\centering\textbf{Scope statement.}
+This article does not prove the Riemann hypothesis.  It proves finite
+Hilbert-space and spectral-gap estimates, reports their Lean 4 formalization,
+and records a conditional analytic route whose concrete asymptotic inputs
+remain open.}}
+\end{center}
+
+\begin{abstract}
+We isolate a finite-dimensional estimate used in a prime-resolvent research
+programme related to the Riemann $\Xi$-function.  Let $T$ be a real symmetric
+operator, let $g$ be a normalized ground eigenvector with eigenvalue $\lambda_0$,
+and let $u$ be a normalized trial vector.  If the ground state is separated
+from the rest of the spectrum by $\Delta>0$, then
+\[
+ \Delta\bigl(1-\ip{g}{u}^{2}\bigr)
+ \leq \ip{Tu}{u}-\lambda_0,
+ \qquad
+ \norm{g-u}\leq
+ \sqrt{\frac{2(\ip{Tu}{u}-\lambda_0)}{\Delta}}
+\]
+after sign alignment.  Returning from a normalized Galerkin projection to a
+complete trial vector costs at most twice the projection tail.  We formalize
+these statements in Lean 4, including a guard proving that a positive indexed
+gap forces a one-dimensional ground eigenspace.  Since Mathlib orders the
+finite eigenvalue list decreasingly, a single inequality between the final two
+entries suffices to certify the universal gap.
+
+We then state a repaired subsequential criterion: along a cofinal family of
+finite approximants, a defect
+\[
+ \defect_j=\norm{k_j}_2\sqrt{2r_j/\Delta_j}+2\,\mathrm{tail}_j
+\]
+with suitable polynomial decay, together with finite parity, non-vanishing and
+local analytic convergence hypotheses, would imply the Riemann hypothesis.
+Those hypotheses are not established here.  Finally, we report a registered
+finite falsification campaign.  Its global verdict was \textsc{inconclusive};
+an independent polynomial-root witness diagnosed one missing scan root at
+$(\lambda,N)=(3,40)$ as a base-resolution failure.  The numerical experiment
+is not used in any proof.
+\end{abstract}
+
+\noindent\textbf{Keywords:} Riemann hypothesis; spectral gap; Rayleigh
+quotient; Galerkin approximation; Stieltjes transform; Hausdorff moments;
+formal verification; Lean 4.
+
+\section{Introduction and claim boundary}
+
+Write
+\[
+ \Xi(z)=\xi\!\left(\frac12+iz\right),
+ \qquad
+ \XiR(x)=\frac{1}{2\sqrt{x}}
+ \frac{\xi'}{\xi}\!\left(\frac12+\sqrt{x}\right),
+ \quad x>0,
+\]
+where $\xi$ is the completed Riemann zeta function.  A companion criterion
+packages the real-zero question for $\Xi$ as a one-point Hausdorff moment
+problem.  The construction side of the programme asks whether positive finite
+spectral approximants can converge non-circularly to $\XiR$.
+
+The purpose of this paper is narrower.  It closes a finite spectral estimate
+that had previously appeared only as an informal obligation.  It also records
+exactly what the estimate does not provide.  In particular, it does not
+construct the required infinite operator family, prove the necessary
+prime-archimedean cancellation, or establish convergence to $\Xi$.
+
+The contributions are:
+\begin{enumerate}[label=(\roman*)]
+  \item an elementary finite spectral-gap inequality and its Galerkin-tail
+  completion;
+  \item a formal degeneracy guard: the positive indexed gap implies that the
+  ground eigenspace has dimension one;
+  \item a reduction of the universal gap certificate to the last adjacent gap
+  in Mathlib's decreasingly ordered eigenvalue list;
+  \item a Lean 4 implementation checked without project-specific axioms or
+  placeholders;
+  \item a precise statement of a conditional subsequential route and a
+  separately labelled numerical falsification campaign.
+\end{enumerate}
+
+Classical background on $\zeta$ and $\xi$ may be found in
+\cite{riemann1859,titchmarsh1986}.  The Hausdorff moment theorem is due to
+Hausdorff \cite{hausdorff1921}; standard references include
+\cite{shohat1943,akhiezer1965}.  The finite spectral estimates used below are
+in the family of standard Rayleigh, Temple and Kato arguments
+\cite{kato1995}.
+
+\section{The one-point criterion and the open construction arrow}
+
+Fix $x_0>0$ and define the normalized derivative jet
+\[
+ b_n(x_0)=x_0^n\frac{(-1)^n}{n!}\XiR^{(n)}(x_0).
+\]
+For a sequence $b$, define $D^0b_n=b_n$ and
+\[
+ D^{k+1}b_n=D^kb_n-D^kb_{n+1}.
+\]
+The documented analytic argument in the companion criterion layer has the
+following form.
+
+\begin{proposition}[Documented one-point criterion]\label{prop:hausdorff}
+For a fixed $x_0>0$, subject to the stated branch and logarithmic-derivative
+conventions, the following are equivalent:
+\begin{enumerate}[label=(\alph*)]
+  \item all nontrivial zeros of $\zeta$ lie on the critical line;
+  \item $(b_n(x_0))_{n\geq0}$ is a Hausdorff moment sequence on $[0,1]$;
+  \item $D^kb_n(x_0)\geq0$ for all $n,k\geq0$.
+\end{enumerate}
+\end{proposition}
+
+Under the Riemann hypothesis the representing atoms are obtained from the
+ordinates $\gamma_j$ by
+\[
+ v_j=\frac{x_0}{x_0+\gamma_j^2}\in(0,1),
+ \qquad
+ b_n(x_0)=\sum_j\frac{1}{x_0+\gamma_j^2}\,v_j^n.
+\]
+Conversely, a representing measure yields a Stieltjes transform holomorphic
+off the negative real axis and agreeing locally with $\XiR$.
+
+Proposition~\ref{prop:hausdorff} is a documented analytic theorem, not a fully
+closed Lean theorem in the present repository.  The difficult construction
+arrow is
+\[
+ \text{prime-built finite spectra}
+ \longrightarrow
+ \text{positive Stieltjes limit agreeing with }\XiR.
+\]
+The finite result below addresses one estimate inside that arrow.
+
+\section{Finite spectral-gap control}
+
+Let $E$ be a finite-dimensional real Hilbert space.  Let
+$T:E\to E$ be symmetric and choose an orthonormal eigenbasis
+$(e_i)_{i\in I}$ with eigenvalues $(\lambda_i)_{i\in I}$.  Fix an index
+$i_0$ and write
+\[
+ g=e_{i_0},\qquad \lambda_0=\lambda_{i_0}.
+\]
+Let $u\in E$ satisfy $\norm{u}=1$ and put
+\[
+ c_i=\ip{e_i}{u},
+ \qquad
+ r=\ip{Tu}{u}-\lambda_0.
+\]
+
+\begin{theorem}[Finite Rayleigh-gap inequality]\label{thm:gap}
+Suppose that for some $\Delta\in\RR$,
+\[
+ \lambda_0+\Delta\leq\lambda_i
+ \quad\text{for every }i\neq i_0.
+\]
+Then
+\[
+ \Delta\bigl(1-\ip{g}{u}^2\bigr)\leq r.
+\]
+\end{theorem}
+
+\begin{proof}
+Parseval's identity and diagonalization give
+\[
+ \sum_i c_i^2=1,
+ \qquad
+ \ip{Tu}{u}=\sum_i\lambda_i c_i^2.
+\]
+Consequently
+\begin{align*}
+ r
+ &=\sum_i(\lambda_i-\lambda_0)c_i^2\\
+ &=\sum_{i\neq i_0}(\lambda_i-\lambda_0)c_i^2\\
+ &\geq \Delta\sum_{i\neq i_0}c_i^2
+ =\Delta(1-c_{i_0}^2).
+\end{align*}
+\end{proof}
+
+\begin{corollary}[Distance bound]\label{cor:distance}
+Assume the hypotheses of Theorem~\ref{thm:gap}, $\Delta>0$, and choose the
+sign of $g$ so that $\ip{g}{u}\geq0$.  Then $r\geq0$ and
+\[
+ \norm{g-u}\leq\sqrt{\frac{2r}{\Delta}}.
+\]
+\end{corollary}
+
+\begin{proof}
+For $c=\ip{g}{u}\in[0,1]$,
+\[
+ \norm{g-u}^2=2(1-c)\leq2(1-c^2)\leq\frac{2r}{\Delta}.
+\]
+\end{proof}
+
+\subsection{Why the gap hypothesis encodes simplicity}
+
+The strict positivity of $\Delta$ is essential.  If the ground eigenvalue
+were degenerate, a normalized $u$ could lie in the same eigenspace while being
+orthogonal to a chosen $g$.  Then $r=0$ but $\norm{g-u}=\sqrt2$, contradicting
+the claimed distance estimate.
+
+The indexed gap rules out this counterexample because an eigenbasis enumerates
+multiplicity.
+
+\begin{corollary}[Degeneracy guard]\label{cor:simple}
+If $\Delta>0$ and
+$\lambda_0+\Delta\leq\lambda_i$ for every $i\neq i_0$, then $i_0$ is the
+unique index with eigenvalue $\lambda_0$.  For a symmetric operator this
+implies
+\[
+ \dim\ker(T-\lambda_0 I)=1.
+\]
+\end{corollary}
+
+In the formal proof the final statement is not inferred from informal
+language.  Mathlib identifies the cardinality of the filtered eigenvalue list
+with the finite dimension of the eigenspace.  The positive gap makes that
+filtered list the singleton $\{i_0\}$.
+
+\subsection{One adjacent inequality is sufficient}
+
+Mathlib's finite spectral theorem orders the eigenvalues of a symmetric
+operator decreasingly.  Thus, for a list
+\[
+ \lambda_0^{\downarrow}\geq\lambda_1^{\downarrow}\geq\cdots
+ \geq\lambda_{m-2}^{\downarrow}\geq\lambda_{m-1}^{\downarrow},
+\]
+the ground eigenvalue is the last entry.
+
+\begin{theorem}[Adjacent-gap reduction]\label{thm:adjacent}
+Let $m\geq2$ and suppose the finite eigenvalue list is antitone.  If
+\[
+ \lambda_{m-1}^{\downarrow}+\Delta
+ \leq\lambda_{m-2}^{\downarrow},
+\]
+then for every $i\neq m-1$,
+\[
+ \lambda_{m-1}^{\downarrow}+\Delta
+ \leq\lambda_i^{\downarrow}.
+\]
+If $\Delta>0$, the last eigenvalue is simple.
+\end{theorem}
+
+\begin{proof}
+Every index other than the last is at most the penultimate index.  Antitonicity
+therefore gives
+$\lambda_{m-2}^{\downarrow}\leq\lambda_i^{\downarrow}$, and the result follows
+by transitivity.  Simplicity follows from Corollary~\ref{cor:simple}.
+\end{proof}
+
+This reduction matters computationally: an interval certificate for the two
+lowest eigenvalues can supply the entire indexed-gap premise.
+
+\section{Galerkin projection and the exact defect}
+
+Let $k$ be a complete trial vector and $P_Nk$ its finite Galerkin projection.
+Assume $P_Nk\neq0$ and set
+\[
+ u=\frac{P_Nk}{\norm{P_Nk}},
+ \qquad
+ \mathrm{tail}=\norm{k-P_Nk}.
+\]
+Let $g_N$ be the aligned normalized ground eigenvector of the finite symmetric
+operator, let $\Delta_N>0$ be its spectral gap, and let
+\[
+ r_N=\ip{T_Nu}{u}-\lambda_{0,N}.
+\]
+
+\begin{theorem}[Finite Galerkin defect]\label{thm:galerkin}
+Under the preceding assumptions,
+\[
+ \norm{\norm{k}g_N-k}
+ \leq
+ \norm{k}\sqrt{\frac{2r_N}{\Delta_N}}
+ +2\,\mathrm{tail}.
+\]
+The same positive adjacent-gap certificate proves simultaneously that the
+finite ground eigenspace is one-dimensional.
+\end{theorem}
+
+\begin{proof}
+Corollary~\ref{cor:distance} gives
+\[
+ \norm{g_N-u}\leq\sqrt{2r_N/\Delta_N}.
+\]
+Insert $\norm{k}u$, $P_Nk=\norm{P_Nk}u$, and $k$ into a triangle inequality:
+\begin{align*}
+ \norm{\norm{k}g_N-k}
+ &\leq \norm{k}\norm{g_N-u}
+ +\bigl|\norm{k}-\norm{P_Nk}\bigr|
+ +\norm{P_Nk-k}\\
+ &\leq \norm{k}\sqrt{\frac{2r_N}{\Delta_N}}
+ +2\,\norm{k-P_Nk}.
+\end{align*}
+The second inequality uses the reverse triangle inequality.  No small-tail
+assumption such as $\mathrm{tail}\leq\norm{k}/2$ is needed.
+\end{proof}
+
+We therefore define the finite defect
+\begin{equation}\label{eq:defect}
+ \defect_N=\norm{k}\sqrt{\frac{2r_N}{\Delta_N}}
+ +2\,\mathrm{tail}.
+\end{equation}
+The factor $2$ is not decorative: one tail term changes the scale
+$\norm{P_Nk}$ to $\norm{k}$ and the other returns from $P_Nk$ to $k$.
+
+\section{A conditional subsequential route}
+
+The finite inequality is useful only if it is coupled to a concrete family.
+We record the current conditional route because it identifies the exact
+asymptotic obligation rather than hiding it in a generic convergence premise.
+
+Let $(\lambda_j,N_j)$ be a cofinal diagonal of finite approximants.  For the
+$j$th projected normalized trial vector define $r_j$, $\Delta_j$ and
+$\mathrm{tail}_j$ as above, and put
+\[
+ \defect_j=\norm{k_j}_2\sqrt{\frac{2r_j}{\Delta_j}}
+ +2\,\mathrm{tail}_j.
+\]
+
+\begin{proposition}[Conditional $\mathrm{RATE}_{\Sigma}$ criterion]
+Suppose there are $0<a_1<a_2<a_3<1/2$ such that:
+\begin{enumerate}[label=(P\arabic*)]
+  \item along the cofinal diagonal, the relevant finite ground states are
+  simple, have the required parity, and satisfy the non-vanishing condition
+  needed by the finite zero-identification theorem;
+  \item the transforms $\widehat{k}_j$ converge uniformly to $\Xi$ on a compact
+  two-dimensional neighborhood of the segment $i[a_1,a_2]$ contained in
+  $|\operatorname{Im}z|\leq a_3$;
+  \item the same approximants satisfy
+  \[
+   \lambda_j^{a_3}\sqrt{\log\lambda_j}\,\defect_j\longrightarrow0.
+  \]
+\end{enumerate}
+Then the documented Stieltjes and identity-theorem argument implies the
+Riemann hypothesis.
+\end{proposition}
+
+This proposition is not presently a kernel-checked end-to-end theorem.  The
+finite estimate~\eqref{eq:defect} is formalized, but the parity and
+non-vanishing family, the local convergence to $\Xi$, the infinite atomic
+compactness instantiation, and the decay in (P3) remain open.  In particular,
+the proposition must not be quoted as an unconditional theorem about a
+concrete operator.
+
+The subsequential form reduces the verification surface: it uses finite real
+zeros directly and requires decay only on a cofinal diagonal.  It does not
+remove the arithmetic content.  Any positive power decay in (P3) still
+requires signed cancellation not supplied by positive majorants alone.
+
+\section{Lean 4 formalization}
+
+The results of Sections 3 and 4 are implemented in the repository's
+\path{SpectralDefect.lean} module.  The implementation uses
+Mathlib's finite spectral theorem, orthonormal eigenvector basis, Parseval
+identity and eigenvalue multiplicity count.  Lean and Mathlib are described in
+\cite{demoura2015,mathlib2020}.
+
+The main declaration chain is:
+\begin{center}
+\begin{tabular}{>{\raggedright\arraybackslash}p{0.43\textwidth}
+                  >{\raggedright\arraybackslash}p{0.49\textwidth}}
+\toprule
+Declaration & Mathematical content\\
+\midrule
+\path{spectralGap_mul_one_sub_inner_sq_le_rayleighExcess_of_eigenbasis}
+& Theorem~\ref{thm:gap} in an arbitrary orthonormal eigenbasis.\\[3pt]
+\path{spectralGap_mul_one_sub_inner_sq_le_rayleighExcess_of_isSymmetric}
+& Instantiation with Mathlib's finite spectral theorem.\\[3pt]
+\path{finrank_groundEigenspace_eq_one_of_positive_gap}
+& The ground eigenspace has dimension one.\\[3pt]
+\path{antitone_gap_from_penultimate}
+& The adjacent-gap reduction of Theorem~\ref{thm:adjacent}.\\[3pt]
+\path{norm_scaled_eigenvectorBasis_sub_complete_le_rayleighGapDefect}
+& The finite Galerkin estimate~\eqref{eq:defect}.\\[3pt]
+\path{simpleGround_and_norm_scaled_eigenvectorBasis_sub_complete_le_of_adjacentGap}
+& Combined adjacent-gap, simplicity and Galerkin certificate.\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The project oracle prints the axioms of each public theorem.  For the
+declarations above it reports only the standard logical dependencies
+\path{propext}, \path{Classical.choice} and \path{Quot.sound}.  The checked
+source contains no \path{sorry}, \path{admit} or project-specific axiom.
+
+This verification claim concerns the finite theorems in this article.  It does
+not certify Proposition~\ref{prop:hausdorff}, the conditional
+$\mathrm{RATE}_{\Sigma}$ criterion as an end-to-end result, or the missing
+concrete operator construction.
+
+\section{Registered finite falsification campaign}
+
+A separate campaign tested a concrete finite spectral arm.  Its role was
+falsification: predetermined gates could kill that arm at the probed scales,
+but no finite outcome could prove the Riemann hypothesis or the asymptotic
+criterion.
+
+The registered grid was
+\[
+ \lambda\in\{2,\sqrt8,3,\sqrt{13}\},
+ \qquad
+ N\in\{20,40,80,120\},
+\]
+with a base and a high-resolution scan for each of the sixteen grid cells.
+The global output was
+\begin{quote}\small\ttfamily
+T3-VERDICT: INCONCLUSIVE conv=S-half;x0=1;\\
+grid=L\{2,sqrt8,3,sqrt13\}xN\{20,40,80,120\}\\
+detail=\{"invalid": ["3:40", "3:80", "3:120"], "missing": []\}
+\end{quote}
+The three invalid entries were base scans at $\lambda=3$ with a deficit of
+one detected positive root.  High-resolution replicas were valid.  Across the
+thirteen valid cells, the registered kill observables reported no low-energy
+spurious modes and zero low-energy mass under the specified threshold.  This
+is a non-kill result at finite scales, not evidence of the required limit.
+
+\subsection{Polynomial completeness witness at $(3,40)$}
+
+The A4 witness replaced sign-change scanning by the characteristic polynomial
+of the finite problem.  For $(\lambda,N)=(3,40)$, the reported certificate had
+degree $80$ and found $80$ real roots, split into $40$ positive and $40$
+negative roots, with $P(0)\neq0$.  The root missed by the base scan was
+\[
+ z=82.9103880394\ldots,
+\]
+whose nearest neighbor was approximately $1.8251$ away.  The high-resolution
+scan found it; the base scan did not.  The mechanical A4 classification was
+\textsc{base-resolution}, not a de-duplication merge, window failure or even
+multiplicity.
+
+This diagnosis is certified for $(3,40)$.  The matching deficit pattern at
+$(3,80)$ and $(3,120)$ is suggestive but is not promoted here to a certified
+cause without separate completeness witnesses.  Moreover, A4 was explicitly
+non-gating: it did not alter the registered \textsc{inconclusive} verdict.
+
+\section{What remains open}
+
+The finite theorem removes one informal step but leaves the decisive
+mathematics intact.  A complete argument would still require:
+\begin{enumerate}[label=(\arabic*)]
+  \item a concrete Hilbert space and operator family with domains and
+  self-adjointness proved non-circularly;
+  \item parity, non-vanishing and adjacent positive-gap certificates along an
+  infinite cofinal diagonal;
+  \item certified control of $r_j$, $\Delta_j$ and $\mathrm{tail}_j$ strong
+  enough for $\mathrm{RATE}_{\Sigma}$;
+  \item convergence of the transforms of the same trial vectors to $\Xi$ on
+  the required two-dimensional compact set;
+  \item completion of the infinite-measure Stieltjes compactness and
+  one-point criterion in Lean;
+  \item independent mathematical review of the analytic bridges and all
+  normalization conventions.
+\end{enumerate}
+
+Numerical agreement, a finite simple spectrum, or a green Lean build cannot
+replace these obligations.  The present result should therefore be read as a
+verified finite lemma and a sharper research interface.
+
+\section{Conclusion}
+
+We proved and formalized the finite estimate
+\[
+ \norm{\norm{k}g_N-k}
+ \leq \norm{k}\sqrt{2r_N/\Delta_N}+2\,\mathrm{tail}_N.
+\]
+The formal statement prevents a common degeneracy error: its positive gap
+forces the ground eigenspace to have dimension one.  Because the finite
+eigenvalue list is antitone, the full gap premise reduces to one certified
+inequality between the last two eigenvalues.  This is a genuine simplification
+of the finite verification task.
+
+It is not a proof of the Riemann hypothesis.  The asymptotic same-approximant
+convergence and cancellation problem remains the central open step.
+
+\section*{Software, data and reproducibility}
+
+The Lean sources and programme documentation are maintained at
+\url{https://github.com/lluiseriksson/riemann-prime-resolvent}.  The campaign
+design and witness scripts are maintained in the associated
+\path{riemann-resolvent-programme} repository.  Exact source revisions and
+registered verdict logs should accompany any archival release of this paper.
+
+\section*{AI-assistance disclosure}
+
+The author directed an AI-assisted drafting and formalization workflow.
+Mathematical claims included as Lean theorems were checked by the Lean kernel;
+the author remains responsible for the manuscript, its submission, and all
+unformalized analytic and numerical statements.
+
+\section*{License}
+
+This manuscript is released under the Creative Commons Attribution 4.0
+International license (CC BY 4.0).
+
+\clearpage
+\begin{thebibliography}{99}
+
+\bibitem{riemann1859}
+B. Riemann,
+\emph{Ueber die Anzahl der Primzahlen unter einer gegebenen Gr\"osse},
+Monatsberichte der Berliner Akademie, 1859.
+
+\bibitem{titchmarsh1986}
+E. C. Titchmarsh and D. R. Heath-Brown,
+\emph{The Theory of the Riemann Zeta-Function}, 2nd ed.,
+Oxford University Press, 1986.
+
+\bibitem{hausdorff1921}
+F. Hausdorff,
+Summationsmethoden und Momentfolgen. I,
+\emph{Mathematische Zeitschrift} \textbf{9} (1921), 74--109.
+
+\bibitem{shohat1943}
+J. A. Shohat and J. D. Tamarkin,
+\emph{The Problem of Moments},
+American Mathematical Society, 1943.
+
+\bibitem{akhiezer1965}
+N. I. Akhiezer,
+\emph{The Classical Moment Problem},
+Oliver and Boyd, 1965.
+
+\bibitem{kato1995}
+T. Kato,
+\emph{Perturbation Theory for Linear Operators},
+Springer, 1995 reprint of the 1980 edition.
+
+\bibitem{demoura2015}
+L. de Moura, S. Kong, J. Avigad, F. van Doorn and J. von Raumer,
+The Lean theorem prover (system description),
+in \emph{CADE-25}, Lecture Notes in Computer Science 9195,
+Springer, 2015, 378--388.
+
+\bibitem{mathlib2020}
+The Mathlib Community,
+The Lean mathematical library,
+in \emph{Proceedings of CPP 2020}, ACM, 2020, 367--381.
+
+\bibitem{connes2025}
+A. Connes, C. Consani and H. Moscovici,
+Zeta spectral triples,
+arXiv:2511.22755, 2025.
+
+\end{thebibliography}
+
+\end{document}

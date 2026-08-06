@@ -47,6 +47,30 @@ theorem groundIndex_unique_of_positive_gap
   have hsep := hgap i hne
   linarith
 
+/-- For an antitone finite eigenvalue list of length at least two, a gap
+between the last (ground) entry and the penultimate entry propagates to every
+other entry.  This reduces the universal indexed-gap certificate to one
+adjacent inequality. -/
+theorem antitone_gap_from_penultimate
+    {n : ℕ} (eigenvalue : Fin (n + 2) → ℝ) (hanti : Antitone eigenvalue)
+    (gap : ℝ)
+    (hadjacent :
+      eigenvalue (Fin.last (n + 1)) + gap ≤
+        eigenvalue (Fin.castSucc (Fin.last n))) :
+    ∀ i, i ≠ Fin.last (n + 1) →
+      eigenvalue (Fin.last (n + 1)) + gap ≤ eigenvalue i := by
+  intro i hi
+  have hi_le_penultimate : i ≤ Fin.castSucc (Fin.last n) := by
+    apply Fin.le_iff_val_le_val.mpr
+    have hi_val_ne : i.val ≠ n + 1 := by
+      intro hval
+      apply hi
+      apply Fin.ext
+      simpa using hval
+    change i.val ≤ n
+    omega
+  exact hadjacent.trans (hanti hi_le_penultimate)
+
 /-- In an orthonormal eigenbasis, a gap above a distinguished ground state
 forces the scalar Rayleigh/gap inequality.  This is the finite-dimensional
 spectral-decomposition step that turns an eigenvalue gap into `hspectral` for
@@ -355,6 +379,41 @@ theorem simpleGround_and_norm_scaled_eigenvectorBasis_sub_complete_le
   · exact norm_scaled_eigenvectorBasis_sub_complete_le_rayleighGapDefect
       T hT hn groundIndex trial complete projected gap tail htrial
       hoverlap_nonneg hgap_pos hgap hprojected htail
+
+/-- Adjacent-gap version of the guarded end-to-end theorem.  Because Mathlib
+sorts the eigenvalues of a finite symmetric operator in decreasing order, for
+dimension `n + 2` it is enough to separate the last eigenvalue from the
+penultimate one.  The conclusion still exposes both ground-state simplicity
+and the Galerkin approximation bound. -/
+theorem simpleGround_and_norm_scaled_eigenvectorBasis_sub_complete_le_of_adjacentGap
+    {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
+    [FiniteDimensional ℝ E] {n : ℕ}
+    (T : E →ₗ[ℝ] E) (hT : T.IsSymmetric)
+    (hn : Module.finrank ℝ E = n + 2)
+    (trial complete projected : E) (gap tail : ℝ)
+    (htrial : ‖trial‖ = 1)
+    (hoverlap_nonneg :
+      0 ≤ inner ℝ (hT.eigenvectorBasis hn (Fin.last (n + 1))) trial)
+    (hgap_pos : 0 < gap)
+    (hadjacent :
+      hT.eigenvalues hn (Fin.last (n + 1)) + gap ≤
+        hT.eigenvalues hn (Fin.castSucc (Fin.last n)))
+    (hprojected : projected = ‖projected‖ • trial)
+    (htail : ‖complete - projected‖ ≤ tail) :
+    Module.finrank ℝ
+        (Module.End.eigenspace T
+          (hT.eigenvalues hn (Fin.last (n + 1)))) = 1 ∧
+      ‖‖complete‖ • hT.eigenvectorBasis hn (Fin.last (n + 1)) - complete‖ ≤
+        rayleighGapDefect ‖complete‖
+          (inner ℝ (T trial) trial -
+            hT.eigenvalues hn (Fin.last (n + 1))) gap tail := by
+  have hgap : ∀ i, i ≠ Fin.last (n + 1) →
+      hT.eigenvalues hn (Fin.last (n + 1)) + gap ≤ hT.eigenvalues hn i :=
+    antitone_gap_from_penultimate (hT.eigenvalues hn)
+      (hT.eigenvalues_antitone hn) gap hadjacent
+  exact simpleGround_and_norm_scaled_eigenvectorBasis_sub_complete_le
+    T hT hn (Fin.last (n + 1)) trial complete projected gap tail htrial
+    hoverlap_nonneg hgap_pos hgap hprojected htail
 
 /-- Residual/separation version suitable for certified finite matrices. -/
 noncomputable def residualGapDefect
