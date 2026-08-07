@@ -2,11 +2,12 @@ import Mathlib.Probability.Distributions.Gamma
 import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
 
 /-!
-# Moments of the `Gamma(2, 1)` law
+# Moments of gamma laws
 
-This file proves directly from Mathlib's gamma density the real-power moment
-formula used in the mean-corrected gamma approximation to Riemann Xi.  It
-makes no statement about zeta zeros.
+This file proves directly from Mathlib's gamma density the general real-power
+moment formula.  The `Gamma(2, 1)` identities used in the mean-corrected gamma
+approximation to Riemann Xi are then immediate special cases.  It makes no
+statement about zeta zeros.
 -/
 
 open MeasureTheory Real Set
@@ -18,55 +19,141 @@ namespace RiemannPrimeResolvent
 
 open ProbabilityTheory
 
-/-- The `Gamma(2, 1)` density is `x * exp (-x)` on the positive half-line. -/
-theorem gammaPDFReal_two_one (x : ℝ) :
-    gammaPDFReal 2 1 x = if 0 ≤ x then x * exp (-x) else 0 := by
-  rw [gammaPDFReal]
-  have hGamma : Gamma (2 : ℝ) = 1 := by
-    have h := Real.Gamma_nat_eq_factorial 1
-    norm_num at h ⊢
-  rw [hGamma]
-  split_ifs with hx
-  · rw [show (1 : ℝ) ^ (2 : ℝ) = 1 by simp]
-    rw [show x ^ ((2 : ℝ) - 1) = x by norm_num [Real.rpow_one]]
-    ring_nf
-  · rfl
+/-- Every real-power moment of a gamma law above the integrability threshold.
 
-/-- Every real-power moment of `Gamma(2, 1)` above the integrability threshold. -/
-theorem gammaTwoOne_rpow_moment (q : ℝ) (hq : -2 < q) :
-    (∫ x : ℝ, x ^ q ∂gammaMeasure 2 1) = Gamma (q + 2) := by
-  have hpdf_meas : Measurable (gammaPDF 2 1) :=
-    (measurable_gammaPDFReal 2 1).ennreal_ofReal
-  have hpdf_top : ∀ᵐ x : ℝ ∂volume, gammaPDF 2 1 x < ∞ := by
+The distribution uses shape `a` and rate `r`, so the answer contains
+`r ^ (-q)`. -/
+theorem gamma_rpow_moment {a r q : ℝ} (ha : 0 < a) (hr : 0 < r)
+    (haq : 0 < a + q) :
+    (∫ x : ℝ, x ^ q ∂gammaMeasure a r) =
+      r ^ (-q) * Gamma (a + q) / Gamma a := by
+  have hpdf_meas : Measurable (gammaPDF a r) :=
+    (measurable_gammaPDFReal a r).ennreal_ofReal
+  have hpdf_top : ∀ᵐ x : ℝ ∂volume, gammaPDF a r x < ∞ := by
     filter_upwards with x
     simp [gammaPDF]
   rw [gammaMeasure,
     integral_withDensity_eq_integral_toReal_smul hpdf_meas hpdf_top]
-  have hpdf_nonneg : ∀ x : ℝ, 0 ≤ gammaPDFReal 2 1 x :=
-    gammaPDFReal_nonneg (by norm_num) (by norm_num)
+  have hpdf_nonneg : ∀ x : ℝ, 0 ≤ gammaPDFReal a r x :=
+    gammaPDFReal_nonneg ha hr
   simp_rw [gammaPDF, ENNReal.toReal_ofReal (hpdf_nonneg _)]
   simp only [smul_eq_mul]
   calc
-    (∫ x : ℝ, gammaPDFReal 2 1 x * x ^ q) =
-        ∫ x : ℝ in Ioi 0, x ^ (q + 1) * exp (-x) := by
-      rw [← integral_indicator measurableSet_Ioi]
+    (∫ x : ℝ, gammaPDFReal a r x * x ^ q) =
+        ∫ x : ℝ in Ici 0, gammaPDFReal a r x * x ^ q := by
+      rw [← integral_indicator measurableSet_Ici]
       apply integral_congr_ae
       filter_upwards with x
       rw [indicator_apply]
       split_ifs with hx
-      · rw [gammaPDFReal_two_one, if_pos hx.le]
-        rw [Real.rpow_add hx q 1, Real.rpow_one]
+      · rfl
+      · simp only [mem_Ici, not_le] at hx
+        simp [gammaPDFReal, not_le.mpr hx]
+    _ = ∫ x : ℝ in Ioi 0,
+          (r ^ a / Gamma a) * (x ^ (a + q - 1) * exp (-(r * x))) := by
+      rw [integral_Ici_eq_integral_Ioi]
+      apply setIntegral_congr_fun measurableSet_Ioi
+      intro x hx
+      change 0 < x at hx
+      simp only [gammaPDFReal, if_pos hx.le]
+      rw [show a + q - 1 = (a - 1) + q by ring,
+        Real.rpow_add hx (a - 1) q]
+      ring
+    _ = (r ^ a / Gamma a) * ((1 / r) ^ (a + q) * Gamma (a + q)) := by
+      rw [integral_const_mul, integral_rpow_mul_exp_neg_mul_Ioi haq hr]
+    _ = r ^ (-q) * Gamma (a + q) / Gamma a := by
+      rw [one_div, inv_rpow hr.le, ← Real.rpow_neg hr.le]
+      have hrpow : r ^ a * r ^ (-(a + q)) = r ^ (-q) := by
+        rw [← Real.rpow_add hr]
+        congr 1
         ring
-      · by_cases hx0 : x = 0
-        · simp [hx0, gammaPDFReal_two_one]
-        · have hxneg : x < 0 := lt_of_le_of_ne (not_lt.mp hx) hx0
-          rw [gammaPDFReal_two_one, if_neg (not_le.mpr hxneg)]
-          simp
-    _ = Gamma (q + 2) := by
-      have h := Real.integral_rpow_mul_exp_neg_mul_Ioi (a := q + 2) (r := 1)
-        (by linarith) (by norm_num)
-      convert h using 1 <;> ring_nf
+      rw [div_mul_eq_mul_div, ← mul_assoc, hrpow]
+
+/-- The mean of a gamma law with shape `a` and rate `r` is `a / r`. -/
+theorem gamma_firstMoment {a r : ℝ} (ha : 0 < a) (hr : 0 < r) :
+    (∫ x : ℝ, x ∂gammaMeasure a r) = a / r := by
+  have h := gamma_rpow_moment (a := a) (r := r) (q := 1)
+    ha hr (by linarith)
+  have hGamma : Gamma a ≠ 0 := (Gamma_pos_of_pos ha).ne'
+  have h' : (∫ x : ℝ, x ∂gammaMeasure a r) = r⁻¹ * a := by
+    simpa [Real.rpow_one, Real.rpow_neg_one, Gamma_add_one ha.ne', hGamma,
+      div_eq_mul_inv, mul_assoc] using h
+  calc
+    (∫ x : ℝ, x ∂gammaMeasure a r) = r⁻¹ * a := h'
+    _ = a / r := by field_simp
+
+/-- The second moment of a gamma law with shape `a` and rate `r`. -/
+theorem gamma_secondMoment {a r : ℝ} (ha : 0 < a) (hr : 0 < r) :
+    (∫ x : ℝ, x ^ (2 : ℕ) ∂gammaMeasure a r) = a * (a + 1) / r ^ 2 := by
+  have h := gamma_rpow_moment (a := a) (r := r) (q := 2)
+    ha hr (by linarith)
+  have ha1 : a + 1 ≠ 0 := by linarith
+  have hGamma : Gamma a ≠ 0 := (Gamma_pos_of_pos ha).ne'
+  rw [show a + (2 : ℝ) = (a + 1) + 1 by ring,
+    Gamma_add_one ha1, Gamma_add_one ha.ne'] at h
+  have h' : (∫ x : ℝ, x ^ (2 : ℕ) ∂gammaMeasure a r) =
+      r ^ (-2 : ℝ) * ((a + 1) * (a * Gamma a)) / Gamma a := by
+    simpa [Real.rpow_two] using h
+  calc
+    (∫ x : ℝ, x ^ (2 : ℕ) ∂gammaMeasure a r) =
+        r ^ (-2 : ℝ) * ((a + 1) * (a * Gamma a)) / Gamma a := h'
+    _ = a * (a + 1) / r ^ 2 := by
+      rw [show (-2 : ℝ) = -(2 : ℝ) by norm_num,
+        Real.rpow_neg hr.le, Real.rpow_two]
+      field_simp [hGamma, hr.ne']
+
+/-- The variance of a gamma law with shape `a` and rate `r` is `a / r ^ 2`. -/
+theorem gamma_centeredSecondMoment {a r : ℝ} (ha : 0 < a) (hr : 0 < r) :
+    (∫ x : ℝ, (x - a / r) ^ 2 ∂gammaMeasure a r) = a / r ^ 2 := by
+  letI : IsProbabilityMeasure (gammaMeasure a r) :=
+    isProbabilityMeasure_gammaMeasure ha hr
+  have hmean_pos : 0 < a / r := div_pos ha hr
+  have hsecond_pos : 0 < a * (a + 1) / r ^ 2 := by positivity
+  have hInt1 : Integrable (fun x : ℝ => x) (gammaMeasure a r) := by
+    by_contra h
+    have hz := integral_undef h
+    rw [gamma_firstMoment ha hr] at hz
+    exact hmean_pos.ne' hz
+  have hInt2 : Integrable (fun x : ℝ => x ^ 2) (gammaMeasure a r) := by
+    by_contra h
+    have hz := integral_undef h
+    rw [gamma_secondMoment ha hr] at hz
+    exact hsecond_pos.ne' hz
+  have hIntLinear : Integrable (fun x : ℝ => (2 * (a / r)) * x)
+      (gammaMeasure a r) := hInt1.const_mul _
+  calc
+    (∫ x : ℝ, (x - a / r) ^ 2 ∂gammaMeasure a r) =
+        ∫ x : ℝ, (x ^ 2 - (2 * (a / r)) * x) + (a / r) ^ 2
+          ∂gammaMeasure a r := by
+      apply integral_congr_ae
+      filter_upwards with x
+      ring
+    _ = (∫ x : ℝ, x ^ 2 ∂gammaMeasure a r) -
+          (2 * (a / r)) * (∫ x : ℝ, x ∂gammaMeasure a r) + (a / r) ^ 2 := by
+      have hConst : Integrable (fun _ : ℝ => (a / r) ^ 2)
+          (gammaMeasure a r) := integrable_const _
+      have hAdd := integral_add (hInt2.sub hIntLinear) hConst
+      change (∫ x : ℝ, (x ^ 2 - (2 * (a / r)) * x) + (a / r) ^ 2
+          ∂gammaMeasure a r) =
+        (∫ x : ℝ, x ^ 2 - (2 * (a / r)) * x ∂gammaMeasure a r) +
+          ∫ _x : ℝ, (a / r) ^ 2 ∂gammaMeasure a r at hAdd
+      have hSub := integral_sub hInt2 hIntLinear
+      change (∫ x : ℝ, x ^ 2 - (2 * (a / r)) * x ∂gammaMeasure a r) =
+        (∫ x : ℝ, x ^ 2 ∂gammaMeasure a r) -
+          ∫ x : ℝ, (2 * (a / r)) * x ∂gammaMeasure a r at hSub
+      rw [hAdd, hSub, integral_const_mul]
       simp
+    _ = a / r ^ 2 := by
+      rw [gamma_firstMoment ha hr, gamma_secondMoment ha hr]
+      field_simp [hr.ne']
+      ring
+
+/-- Every real-power moment of `Gamma(2, 1)` above the integrability threshold. -/
+theorem gammaTwoOne_rpow_moment (q : ℝ) (hq : -2 < q) :
+    (∫ x : ℝ, x ^ q ∂gammaMeasure 2 1) = Gamma (q + 2) := by
+  have h := gamma_rpow_moment (a := 2) (r := 1) (q := q)
+    (by norm_num) (by norm_num) (by linarith)
+  simpa [add_comm] using h
 
 /-- The inverse moment used in the corrected-tail Taylor estimate. -/
 theorem gammaTwoOne_inverseMoment (a : ℝ) (ha : 0 < a) :
@@ -76,67 +163,19 @@ theorem gammaTwoOne_inverseMoment (a : ℝ) (ha : 0 < a) :
 /-- The first real-power moment of `Gamma(2, 1)` is two. -/
 theorem gammaTwoOne_firstMoment :
     (∫ x : ℝ, x ∂gammaMeasure 2 1) = 2 := by
-  have hGamma : Gamma (3 : ℝ) = 2 := by
-    have h := Real.Gamma_nat_eq_factorial 2
-    norm_num at h ⊢
-  have h := gammaTwoOne_rpow_moment 1 (by norm_num)
-  norm_num at h
-  exact h
+  simpa using gamma_firstMoment (a := 2) (r := 1) (by norm_num) (by norm_num)
 
 /-- The second real-power moment of `Gamma(2, 1)` is six. -/
 theorem gammaTwoOne_secondMoment :
     (∫ x : ℝ, x ^ (2 : ℕ) ∂gammaMeasure 2 1) = 6 := by
-  have hGamma : Gamma (4 : ℝ) = 6 := by
-    have h := Real.Gamma_nat_eq_factorial 3
-    norm_num at h ⊢
-  have h := gammaTwoOne_rpow_moment 2 (by norm_num)
-  norm_num at h
+  have h := gamma_secondMoment (a := 2) (r := 1) (by norm_num) (by norm_num)
+  norm_num at h ⊢
   exact h
 
 /-- The centered second moment, hence the variance, of `Gamma(2, 1)` is two. -/
 theorem gammaTwoOne_centeredSecondMoment :
     (∫ x : ℝ, (x - 2) ^ 2 ∂gammaMeasure 2 1) = 2 := by
-  letI : IsProbabilityMeasure (gammaMeasure 2 1) :=
-    isProbabilityMeasure_gammaMeasure (by norm_num) (by norm_num)
-  have hInt1 : Integrable (fun x : ℝ => x) (gammaMeasure 2 1) := by
-    by_contra h
-    have hz := integral_undef h
-    rw [gammaTwoOne_firstMoment] at hz
-    norm_num at hz
-  have hInt2 : Integrable (fun x : ℝ => x ^ 2) (gammaMeasure 2 1) := by
-    by_contra h
-    have hz := integral_undef h
-    rw [gammaTwoOne_secondMoment] at hz
-    norm_num at hz
-  have hInt4x : Integrable (fun x : ℝ => 4 * x) (gammaMeasure 2 1) :=
-    hInt1.const_mul 4
-  calc
-    (∫ x : ℝ, (x - 2) ^ 2 ∂gammaMeasure 2 1) =
-        ∫ x : ℝ, (x ^ 2 - 4 * x) + 4 ∂gammaMeasure 2 1 := by
-      apply integral_congr_ae
-      filter_upwards with x
-      ring
-    _ = (∫ x : ℝ, x ^ 2 ∂gammaMeasure 2 1) -
-          (∫ x : ℝ, 4 * x ∂gammaMeasure 2 1) + 4 := by
-      have hAdd :
-          (∫ x : ℝ, (x ^ 2 - 4 * x) + 4 ∂gammaMeasure 2 1) =
-            (∫ x : ℝ, x ^ 2 - 4 * x ∂gammaMeasure 2 1) +
-              ∫ _x : ℝ, 4 ∂gammaMeasure 2 1 := by
-        have h := integral_add (hInt2.sub hInt4x) (integrable_const 4)
-        change (∫ x : ℝ, (x ^ 2 - 4 * x) + 4 ∂gammaMeasure 2 1) =
-          (∫ x : ℝ, x ^ 2 - 4 * x ∂gammaMeasure 2 1) +
-            ∫ _x : ℝ, 4 ∂gammaMeasure 2 1 at h
-        exact h
-      have hSub :
-          (∫ x : ℝ, x ^ 2 - 4 * x ∂gammaMeasure 2 1) =
-            (∫ x : ℝ, x ^ 2 ∂gammaMeasure 2 1) -
-              ∫ x : ℝ, 4 * x ∂gammaMeasure 2 1 := by
-        simpa only [Pi.sub_apply] using integral_sub hInt2 hInt4x
-      rw [hAdd, hSub]
-      simp
-    _ = 2 := by
-      rw [gammaTwoOne_secondMoment, integral_const_mul 4,
-        gammaTwoOne_firstMoment]
-      norm_num
+  simpa using gamma_centeredSecondMoment (a := 2) (r := 1)
+    (by norm_num) (by norm_num)
 
 end RiemannPrimeResolvent

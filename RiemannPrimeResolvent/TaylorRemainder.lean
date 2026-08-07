@@ -53,51 +53,81 @@ theorem firstOrderTaylorWithin_remainder_bound
     _ ≤ C * (t - a) ^ 2 / (Nat.factorial 1 : ℝ) := by simpa using h
     _ = C * (t - a) ^ 2 := by norm_num
 
+/-- A sharp, orientation-free Taylor remainder bound of arbitrary order.
+
+This is the norm estimate obtained from Mathlib's vector-valued integral
+remainder.  The endpoints may occur in either order and the exact factorial
+constant is retained. -/
+theorem taylor_remainder_bound_sharp
+    [CompleteSpace E] (n : ℕ) {f : ℝ → E} {x x₀ C : ℝ}
+    (hf : ContDiffOn ℝ (n + 1) f (uIcc x₀ x))
+    (hC : ∀ y ∈ uIcc x₀ x,
+      ‖iteratedDerivWithin (n + 1) f (uIcc x₀ x) y‖ ≤ C) :
+    ‖f x - taylorWithinEval f n (uIcc x₀ x) x₀ x‖ ≤
+      C * |x - x₀| ^ (n + 1) / (Nat.factorial (n + 1) : ℝ) := by
+  have hC0 : 0 ≤ C :=
+    (norm_nonneg (iteratedDerivWithin (n + 1) f (uIcc x₀ x) x₀)).trans
+      (hC x₀ left_mem_uIcc)
+  have hTaylor := taylor_integral_remainder (n := n) hf
+  have hpoint : ∀ᵐ t : ℝ ∂volume.restrict (Ι x₀ x),
+      ‖(((x - t) ^ n / (Nat.factorial n : ℝ)) •
+        iteratedDerivWithin (n + 1) f (uIcc x₀ x) t)‖ ≤
+        (C / (Nat.factorial n : ℝ)) * |x - t| ^ n := by
+    rw [ae_restrict_iff' measurableSet_uIoc]
+    filter_upwards with t
+    intro ht
+    have hfac : (0 : ℝ) ≤ (Nat.factorial n : ℝ) := Nat.cast_nonneg _
+    rw [norm_smul, Real.norm_eq_abs, abs_div, abs_pow]
+    rw [abs_of_nonneg hfac]
+    have hfactorial : 0 ≤ |x - t| ^ n / (Nat.factorial n : ℝ) := by positivity
+    calc
+      |x - t| ^ n / (Nat.factorial n : ℝ) *
+          ‖iteratedDerivWithin (n + 1) f (uIcc x₀ x) t‖ ≤
+          |x - t| ^ n / (Nat.factorial n : ℝ) * C :=
+        mul_le_mul_of_nonneg_left (hC t (uIoc_subset_uIcc ht)) hfactorial
+      _ = (C / (Nat.factorial n : ℝ)) * |x - t| ^ n := by ring
+  have hbound : IntervalIntegrable
+      (fun t : ℝ => (C / (Nat.factorial n : ℝ)) * |x - t| ^ n)
+      volume x₀ x :=
+    (continuous_const.mul
+      ((continuous_const.sub continuous_id).abs.pow n)).intervalIntegrable _ _
+  have hnorm := intervalIntegral.norm_integral_le_abs_of_norm_le
+    (μ := volume) hpoint hbound
+  have hcalc :
+      abs (∫ t : ℝ in x₀..x,
+        (C / (Nat.factorial n : ℝ)) * |x - t| ^ n) =
+        C * |x - x₀| ^ (n + 1) / (Nat.factorial (n + 1) : ℝ) := by
+    rw [intervalIntegral.abs_integral_eq_abs_integral_uIoc,
+      integral_const_mul, uIoc_comm x₀ x]
+    simp_rw [abs_sub_comm x]
+    rw [integral_pow_abs_sub_uIoc (a := x) (b := x₀) n]
+    rw [abs_mul, abs_of_nonneg (div_nonneg hC0 (Nat.cast_nonneg _)),
+      abs_of_nonneg (by positivity)]
+    rw [Nat.factorial_succ, Nat.cast_mul, Nat.cast_add, Nat.cast_one]
+    field_simp
+  calc
+    ‖f x - taylorWithinEval f n (uIcc x₀ x) x₀ x‖ =
+        ‖∫ t in x₀..x, ((x - t) ^ n / (Nat.factorial n : ℝ)) •
+          iteratedDerivWithin (n + 1) f (uIcc x₀ x) t‖ := congrArg norm hTaylor
+    _ ≤ abs (∫ t : ℝ in x₀..x,
+        (C / (Nat.factorial n : ℝ)) * |x - t| ^ n) := hnorm
+    _ = C * |x - x₀| ^ (n + 1) / (Nat.factorial (n + 1) : ℝ) := hcalc
+
 /-- The sharp, orientation-free first-order Taylor bound obtained from the
 integral remainder.  Unlike `firstOrderTaylorWithin_remainder_bound`, this
 handles either order of the endpoints and includes the factor `1/2`. -/
 theorem firstOrderTaylor_remainder_bound_sharp
-    [CompleteSpace E] {f : ℝ → E} {x x₀ C : ℝ} (hC0 : 0 ≤ C)
+    [CompleteSpace E] {f : ℝ → E} {x x₀ C : ℝ}
     (hf : ContDiffOn ℝ 2 f (uIcc x₀ x))
     (hC : ∀ y ∈ uIcc x₀ x,
       ‖iteratedDerivWithin 2 f (uIcc x₀ x) y‖ ≤ C) :
     ‖f x - f x₀ - (x - x₀) • derivWithin f (uIcc x₀ x) x₀‖ ≤
       C * |x - x₀| ^ 2 / 2 := by
-  have hTaylor := taylor_integral_remainder (n := 1) hf
-  rw [taylorWithinEval_one] at hTaylor
-  have hpoint : ∀ᵐ t : ℝ ∂volume.restrict (Ι x₀ x),
-      ‖(((x - t) ^ 1 / (Nat.factorial 1 : ℝ)) •
-        iteratedDerivWithin 2 f (uIcc x₀ x) t)‖ ≤ C * |x - t| := by
-    rw [ae_restrict_iff' measurableSet_uIoc]
-    filter_upwards with t
-    intro ht
-    simp only [pow_one, Nat.factorial_one, Nat.cast_one, div_one, norm_smul,
-      Real.norm_eq_abs]
-    simpa [mul_comm] using
-      mul_le_mul_of_nonneg_left (hC t (uIoc_subset_uIcc ht)) (abs_nonneg (x - t))
-  have hbound : IntervalIntegrable (fun t : ℝ => C * |x - t|) volume x₀ x :=
-    (continuous_const.mul (continuous_const.sub continuous_id).abs).intervalIntegrable _ _
-  have hnorm := intervalIntegral.norm_integral_le_abs_of_norm_le (μ := volume) hpoint hbound
-  have hcalc :
-      abs (∫ t : ℝ in x₀..x, C * |x - t|) = C * |x - x₀| ^ 2 / 2 := by
-    rw [intervalIntegral.abs_integral_eq_abs_integral_uIoc]
-    have hpow := integral_pow_abs_sub_uIoc (a := x) (b := x₀) (n := 1)
-    norm_num at hpow
-    rw [uIoc_comm x₀ x]
-    simp_rw [abs_sub_comm x]
-    rw [integral_const_mul, hpow]
-    rw [abs_mul, abs_of_nonneg hC0, abs_of_nonneg (by positivity)]
-    simp only [sq_abs]
-    ring_nf
-  calc
-    ‖f x - f x₀ - (x - x₀) • derivWithin f (uIcc x₀ x) x₀‖ =
-        ‖f x - (f x₀ + (x - x₀) • derivWithin f (uIcc x₀ x) x₀)‖ := by
-      congr 1
-      abel
-    _ = ‖∫ t in x₀..x, ((x - t) ^ 1 / (Nat.factorial 1 : ℝ)) •
-        iteratedDerivWithin 2 f (uIcc x₀ x) t‖ := congrArg norm hTaylor
-    _ ≤ abs (∫ t : ℝ in x₀..x, C * |x - t|) := hnorm
-    _ = C * |x - x₀| ^ 2 / 2 := hcalc
+  have h := taylor_remainder_bound_sharp (E := E) 1 hf hC
+  rw [taylorWithinEval_one] at h
+  convert h using 1 <;> norm_num
+  congr 1
+  abel
 
 /-- The second-derivative kernel of a shifted complex power is controlled by
 the left endpoint whenever the real part of the exponent is at most two. -/
@@ -227,8 +257,7 @@ theorem shiftedCpow_firstOrder_remainder_bound
         have hamin : min a b ≤ a := min_le_left _ _
         linarith) hp).hasDerivWithinAt.derivWithin (hu a ha)
     rw [← hderiv]
-    apply firstOrderTaylor_remainder_bound_sharp (by positivity)
-      (contDiffOn_shiftedCpow hpos)
+    apply firstOrderTaylor_remainder_bound_sharp (contDiffOn_shiftedCpow hpos)
     intro y hy
     rw [iteratedDerivWithin_two_shiftedCpow hab hpos hy hp hp1]
     have hymin : 0 ≤ y - min a b := sub_nonneg.mpr hy.1
