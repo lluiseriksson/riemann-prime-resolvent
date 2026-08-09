@@ -1,5 +1,15 @@
 # Research frontier after `v0.3.0-docs-integrated`
 
+## 2026-08 theta-pencil reboot
+
+A separate zero-based research track is documented under
+[`theta-reboot/`](theta-reboot/index.md). Its first audit starts from
+Hedenmalm's explicit theta-function differential pencil. Two obstructions rule
+out local weights and bounded global ambient metrics, so the active track has
+moved to the first source-faithful semilocal window carrying a finite-prime
+term, \(4<q\le5\) and \(S_q=\{\infty,2,3\}\). The reboot is exploratory and
+does not discharge RF-1--RF-4 or prove RH.
+
 The `v0.3.0-docs-integrated` release closes the repository's **engineering and
 reproducibility phase**. It does not claim the Riemann hypothesis, a
 Hilbert–Pólya construction, or the missing analytic implications.

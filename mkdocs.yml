@@ -47,6 +47,14 @@ nav:
       - Formalization boundary: programme/formalization-boundary.md
       - Publication gates: programme/publication-gates.md
       - References: programme/references.md
+  - Theta-pencil reboot:
+      - theta-reboot/index.md
+      - Primary-literature matrix: theta-reboot/literature-matrix.md
+      - Derivation and local no-go: theta-reboot/theta-pencil.md
+      - Scaling Hamiltonian extraction: theta-reboot/source-extraction-scaling-hamiltonian.md
+      - One-prime moment model: theta-reboot/one-prime-moments.md
+      - Semilocal Weil programme: theta-reboot/semilocal-weil.md
+      - Falsifiers: theta-reboot/falsifiers.md
   - Criterion layer site: https://lluiseriksson.github.io/riemann-prime-resolvent/criterion/
   - Programme contract: PROGRAMME_RELATION.md
   - Resumen en español: resumen-es.md
