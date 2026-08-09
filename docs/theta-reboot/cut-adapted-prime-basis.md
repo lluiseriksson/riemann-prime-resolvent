@@ -76,6 +76,21 @@ The executable module
 prime block and its orthogonal diagonalizing transform.  It is the active
 architecture for extending the localized theorem to \(a=1/2\).
 
+The source calculation is no longer quadrature based.  The module
+`arb_cut_dominant.py` evaluates every diagonal interval block from the closed
+Legendre matrix and every off-diagonal block from the exact moments
+
+\[
+ \int_0^A\!\int_0^B\frac{u^p v^q}{D+u+v}\,du\,dv.
+\]
+
+The companion `arb_cut_smooth.py` evaluates each retained power
+\(|x-y|^p\) by beta and multinomial identities.  Finally,
+`arb_cut_source.py` assembles the scalar and exact prime block and performs
+the reflection-parity reduction inside Arb.  No floating endpoint is fed
+back into the proof: all three interval lengths are reconstructed as Arb
+expressions in \(\log2/a\).
+
 ## Certified Temple half of the endpoint calculation
 
 The improved smooth action was evaluated in Arb by retaining all polynomial
@@ -92,3 +107,55 @@ remainder.  Conditional on parity second-eigenvalue floors \(0.3\) (odd) and
 These are certified conditional implications, not yet a positivity theorem
 at \(a=1/2\).  The cut-adapted Schur calculation must still prove the two
 displayed second-eigenvalue floors.
+
+## Endpoint comparison and two-vector cluster reduction
+
+At \(a=1/2\), pair the two translated edge points and put
+
+\[
+ V(x)=-\tfrac12\log(1-x^2),\qquad
+ m=V(\log2)-\frac{\log2}{\sqrt2}=-0.162730057875794\ldots .
+\]
+
+An interval proof verifies
+
+\[
+ \begin{pmatrix}V(x)&-\log2/\sqrt2\\
+ -\log2/\sqrt2&V(x+2\log2)\end{pmatrix}\succeq mI
+\]
+
+throughout the translated edge.  The shifted determinant is even about the
+midpoint.  Its second derivative is at least \(1.8035\) on
+\([0,3/10]\), while monotonicity supplies a determinant margin \(0.3221\)
+on the remaining endpoint interval.  This is implemented in
+`support_05_comparison.py`.
+
+The same module proves the smooth-kernel lower bound
+
+\[
+ S_{1/2}\succeq-0.057894445561 I.
+\]
+
+Here the constant power is positive semidefinite, the power-two kernel has
+least eigenvalue \(-4/3\), and the remaining powers use their exact Schur
+integrals.  Combining these estimates with the global Legendre spectrum
+of \(A_2\) gives unconditional third-eigenvalue floors
+
+\[
+ \lambda^{\rm even}_3\ge0.140763279145,
+ \qquad
+ \lambda^{\rm odd}_3\ge0.340763279145.
+\]
+
+Thus only a two-vector cluster remains in either parity sector.  Arb finite
+sections of local degree \(8,12,16,20\) have exactly one eigenvalue below
+the desired shifts \(0.01\) (even) and \(0.3\) (odd), with no unresolved
+interval eigenvalues.  For the degree-16 two-vector Ritz spaces, the
+partial residual through local degree 64 gives corrected positive margins
+approximately \(0.00778\) and \(0.05654\), respectively.
+
+This last statement is deliberately not yet a certificate: the norm of the
+dominant residual above degree 64 remains to be bounded.  The rectangular
+Arb source in `arb_cut_dominant_cross.py` isolates precisely that universal
+tail.  Prime, scalar and the retained smooth series contribute no modes
+beyond local degree 40.
