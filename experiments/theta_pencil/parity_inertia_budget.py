@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import argparse
 import math
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 import numpy as np
 from numpy.polynomial.legendre import leggauss
@@ -45,6 +45,7 @@ class ParityInertiaAudit:
     omitted_weighted_norm: float
     omitted_correction_bound: float
     floating_margin: float
+    jet_schur_matrix: np.ndarray = field(repr=False)
 
 
 def _harmonic_array(degrees: np.ndarray) -> np.ndarray:
@@ -156,6 +157,7 @@ def run_parity_inertia_audit(
         omitted_weighted_norm=omitted_weighted,
         omitted_correction_bound=omitted_correction,
         floating_margin=margin,
+        jet_schur_matrix=with_jets,
     )
 
 
@@ -169,4 +171,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

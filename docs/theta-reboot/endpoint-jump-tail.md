@@ -256,3 +256,48 @@ matrices, the polynomial Gauss rules, and the six-jet recurrence with outward
 rounding, then verify the two matrix inertias by interval \(LDL^*\).
 Until that calculation is deposited, \(0.00244145\) is a design margin, not a
 certified eigenvalue bound.
+
+## Kato--Temple ground-state budget
+
+The parity calculation supplies the intended floor
+\(\beta=0.005\) for the second spectral point. The remaining input to (KT) is
+an explicit approximate ground vector. A 512-mode even Legendre vector gives:
+
+| quantity | upper or computed value |
+|---|---:|
+| Rayleigh quotient \(\mu\) | \(1.8126573764\cdot10^{-4}\) |
+| residual in modes \(<512\) | \(1.66\cdot10^{-15}\) |
+| direct prime-plus-potential residual, modes 512--8191 | \(2.14205597\cdot10^{-4}\) |
+| prime jump tail beyond 8191 | \(1.39683094\cdot10^{-4}\) |
+| continuous prime remainder tail | \(3.45827586\cdot10^{-4}\) |
+| logarithmic-potential tail | \(2.44181434\cdot10^{-6}\) |
+| whole smooth-kernel tail from mode 512 | \(2.57967364\cdot10^{-5}\) |
+| **total residual bound \(\varepsilon\)** | **\(7.27954827\cdot10^{-4}\)** |
+
+Substitution in (KT) leaves
+
+\[
+ \boxed{
+ \mu-\frac{\varepsilon^2}{0.005-\mu}
+ =7.12953\cdot10^{-5}>0.
+ }
+\]
+
+The bound is deliberately wasteful: all residual pieces are combined by the
+triangle inequality, and the smooth tail is bounded from mode 512 rather than
+computed. It still has positive margin.
+
+Ball arithmetic has also been run on the two 44-by-44 midpoint Schur matrices
+with an independent radius \(10^{-6}\) on every entry. At 512-bit precision,
+Arb encloses all 44 odd eigenvalues in the positive half-plane and encloses
+exactly one of the 44 even eigenvalues in the negative half-plane. The lowest
+odd interval begins at \(0.00966528\); the first positive even interval begins
+at \(0.30130699\).
+
+This last statement is a **robustness certificate**, not yet a source
+certificate: it proves the required inertia for every matrix in the
+\(10^{-6}\) entrywise box around the computed midpoint. The remaining task is
+to prove that the exact matrix defined by Suzuki's formula lies in that box.
+The post-tail odd margin permits any entrywise source enclosure narrower than
+\(0.00244145/44=5.55\cdot10^{-5}\), so the chosen \(10^{-6}\) target carries a
+factor \(55\) of slack.
