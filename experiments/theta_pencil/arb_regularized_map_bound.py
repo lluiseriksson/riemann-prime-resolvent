@@ -1,4 +1,4 @@
-"""Arb proof of the regularized logarithmic-tail operator bound at a=1/2."""
+"""Arb proof of the regularized logarithmic-tail bound in the first window."""
 
 from __future__ import annotations
 
@@ -13,6 +13,7 @@ from experiments.theta_pencil.regularized_tail_gate import (
 
 @dataclass(frozen=True)
 class RegularizedMapBound:
+    half_width: float
     local_d_a2_upper: float
     local_vd_frobenius_upper: float
     local_polynomial_frobenius_upper: float
@@ -43,8 +44,10 @@ def _legendre_monomials(degree_count: int) -> list[list[Fraction]]:
 def certify_regularized_map_bound(
     degree_count: int = 16,
     precision: int = 256,
+    half_width: float = 0.5,
+    complement_floor: float = 1.4381589390415483,
 ) -> RegularizedMapBound:
-    """Prove ||f -> D(L f)|| < 2537 on the local polynomial space.
+    """Prove a geometry-dependent bound for ``f -> D(L f)``.
 
     The proof uses Green's identity after the six endpoint fluxes have been
     removed.  A touching cross block is transferred to the source Legendre
@@ -55,6 +58,10 @@ def certify_regularized_map_bound(
 
     if degree_count != 16:
         raise ValueError("the registered constants are for degree_count=16")
+    if not 0.5 <= half_width <= math.log(3.0) / 2.0:
+        raise ValueError("the registered geometry requires 1/2 <= a <= log(3)/2")
+    if complement_floor <= 0:
+        raise ValueError("complement_floor must be positive")
     try:
         from flint import arb, arb_mat, ctx
     except ImportError as error:  # pragma: no cover
@@ -158,9 +165,10 @@ def certify_regularized_map_bound(
         if not d_a2.upper() < 797:
             raise ArithmeticError("the D A2 bound did not close")
 
-        log_two = arb.const_log2()
-        edge = 2 - 2 * log_two
-        center = 4 * log_two - 2
+        a = arb(str(half_width))
+        displacement = arb.const_log2() / a
+        edge = 2 - displacement
+        center = 2 * displacement - 2
         lengths = ((edge, center), (center, edge))
         commutator = arb(0)
         boundary = arb(0)
@@ -183,7 +191,7 @@ def certify_regularized_map_bound(
                 boundary_function_square.sqrt() * arb(d) / arb(2).sqrt(),
             )
         touching = arb.pi() / 2 * (d - 1) * d + commutator + boundary
-        if not touching.upper() < 697:
+        if not touching.upper() < 720:
             raise ArithmeticError("the adjacent cross-block bound did not close")
 
         # Direct pointwise derivative bound for the separated edge--edge
@@ -192,7 +200,7 @@ def certify_regularized_map_bound(
             edge**2 / (4 * center**2) + edge**3 / (8 * center**3)
         )
         separated = 2 * separated_supremum
-        if not separated.upper() < 1:
+        if not separated.upper() < 2:
             raise ArithmeticError("the separated cross-block bound did not close")
 
         # For the final tail we only need Q_128 D(L f), not the full local
@@ -228,16 +236,21 @@ def certify_regularized_map_bound(
         if not local_regularized_tail.upper() < 14:
             raise ArithmeticError("the regularized self-tail bound did not close")
 
-        # The block-norm comparison matrix for Q_128 D L has diagonal <14,
-        # adjacent entries <697 and separated edge entry <1.
-        global_bound = arb(14) + arb(2).sqrt() * 697 + 1
-        if not global_bound.upper() < 1002:
+        # The symmetric three-by-three block comparison has diagonal bounded
+        # by the self tail, two adjacent edges, and one separated edge.  Its
+        # norm is at most self + sqrt(2)*adjacent + separated.  Use the
+        # certified geometry-dependent values themselves: fixed constants
+        # from a=1/2 would cease to be upper bounds near log(3)/2.
+        global_bound = (
+            local_regularized_tail + arb(2).sqrt() * touching + separated
+        )
+        if not global_bound.upper() < 1035:
             raise ArithmeticError("the global regularized map bound did not close")
 
         # Local degree bands are not reducing subspaces for the global A2.
         # Without a separate nested Schur theorem, all omitted degrees must
         # use the common degree-16 complement floor.
-        tail_floor = arb("1.4381589390415483")
+        tail_floor = arb(str(complement_floor))
     finally:
         ctx.prec = previous_precision
 
@@ -246,6 +259,7 @@ def certify_regularized_map_bound(
     )
     passes_even_gate = float(global_bound.upper()) < even_gate
     return RegularizedMapBound(
+        half_width=half_width,
         local_d_a2_upper=float(d_a2.upper()),
         local_vd_frobenius_upper=float(vd_frobenius.upper()),
         local_polynomial_frobenius_upper=float(polynomial_frobenius.upper()),

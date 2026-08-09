@@ -43,9 +43,9 @@ def build_arb_prime_two_matrix(
     precision: int = 8192,
 ) -> ArbPrimeMatrix:
     """Enclose rows ``m < low_dimension`` and columns ``n < maximum_degree``."""
-    if not math.log(2.0) / 2.0 < half_width <= 0.5:
+    if not math.log(2.0) / 2.0 < half_width <= math.log(3.0) / 2.0:
         raise ValueError(
-            "the prime-2-only formula requires log(2)/2 < a <= 1/2"
+            "the prime-2-only formula requires log(2)/2 < a <= log(3)/2"
         )
     if not 1 <= low_dimension <= maximum_degree:
         raise ValueError("require 1 <= low_dimension <= maximum_degree")
@@ -142,9 +142,9 @@ def build_arb_prime_two_action(
     """
     vector = np.asarray(coefficients, dtype=float)
     dimension = len(vector)
-    if not math.log(2.0) / 2.0 < half_width <= 0.5:
+    if not math.log(2.0) / 2.0 < half_width <= math.log(3.0) / 2.0:
         raise ValueError(
-            "the prime-2-only formula requires log(2)/2 < a <= 1/2"
+            "the prime-2-only formula requires log(2)/2 < a <= log(3)/2"
         )
     if dimension < 1 or maximum_degree < dimension:
         raise ValueError("require a nonempty vector and maximum_degree >= dimension")

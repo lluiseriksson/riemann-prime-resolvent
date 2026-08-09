@@ -73,6 +73,7 @@ certificate; `arb_regularized_map_bound.py` proves its last analytic tail;
 certificates.  A full run takes about twenty minutes on the registered
 Windows workstation, dominated by the 3072-bit degree-128 cross block.
 
-The next mathematical obstruction is no longer the first prime window.  For
-$a>\log3/2$, the prime-three translation becomes active and requires a new
-common refinement of the cuts for $2$ and $3$.
+The same architecture has now been extended to the strictly larger support
+$a=0.51$; see `support-051-certificate.md`.  The remaining part of the first
+prime window requires sharper spectral-gap control before the prime-three
+translation enters at $a=\log3/2$.

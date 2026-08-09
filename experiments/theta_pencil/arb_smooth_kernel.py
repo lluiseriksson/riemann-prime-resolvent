@@ -28,8 +28,8 @@ def build_arb_smooth_matrix(
     maximum_power: int = 23,
     precision: int = 256,
 ) -> ArbSmoothMatrix:
-    if not 0.0 < half_width <= 0.5:
-        raise ValueError("the exact Arb implementation applies for 0 < a <= 1/2")
+    if not 0.0 < half_width < 1.5:
+        raise ValueError("the exact Arb implementation requires 0 < a < 3/2")
     if not 1 <= row_dimension <= column_dimension:
         raise ValueError("require 1 <= row_dimension <= column_dimension")
     try:

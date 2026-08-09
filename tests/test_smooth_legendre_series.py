@@ -48,6 +48,10 @@ def test_half_width_one_half_has_a_certified_series_tail():
     assert smooth_kernel_series_remainder_bound(0.5, 23) < 1e-11
 
 
+def test_remainder_extends_through_first_prime_window():
+    assert smooth_kernel_series_remainder_bound(0.54, 23) < 3e-11
+
+
 def test_truncated_smooth_action_has_finite_polynomial_extent():
     trial_dimension = 8
     maximum_power = 5

@@ -132,9 +132,15 @@ def smooth_kernel_series_matrix(
 def smooth_kernel_series_remainder_bound(
     half_width: float, maximum_power: int = 23
 ) -> float:
-    """Certified Schur-norm bound for omitted powers when 2a <= 1."""
-    if not 0.0 < half_width <= 0.5:
-        raise ValueError("the registered rational tail bound applies for a <= 1/2")
+    """Certified Schur-norm bound for omitted powers when ``0 < a < 3/2``.
+
+    The Bernoulli-polynomial majorant is geometric with ratio ``2a/3``.
+    The older ``a <= 1/2`` restriction was sufficient but unnecessary; the
+    proof below only uses that this ratio is strictly smaller than one (and
+    the displayed cosh-tail ratio, which is then smaller still).
+    """
+    if not 0.0 < half_width < 1.5:
+        raise ValueError("the rational tail bound requires 0 < a < 3/2")
     if maximum_power < 1:
         raise ValueError("maximum_power must be positive")
     # Bernoulli-polynomial Fourier bound with pi > 3 and 2a/pi < 2a/3.

@@ -27,3 +27,8 @@ def test_prime_block_diagonalizes_without_a_tail():
     assert np.allclose(
         np.linalg.eigvalsh(result.matrix), np.sort(result.diagonal)
     )
+
+
+def test_first_prime_partition_reaches_point_54():
+    partition = first_prime_partition(0.54)
+    assert partition.center[1] > partition.center[0]

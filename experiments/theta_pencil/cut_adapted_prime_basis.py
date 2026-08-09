@@ -28,8 +28,13 @@ class CutAdaptedPrimeMatrix:
 
 
 def first_prime_partition(half_width: float) -> FirstPrimePartition:
-    """Partition [-1,1] into the two translated edges and their complement."""
-    if not math.log(2.0) / 2.0 < half_width <= 0.5:
+    """Partition the whole prime-2-only window into edges and complement.
+
+    At the upper endpoint the prime-3 translation touches only an endpoint,
+    hence is zero as an ``L^2`` operator.  Above it a second internal cut is
+    needed and this three-block architecture is no longer complete.
+    """
+    if not math.log(2.0) / 2.0 < half_width <= math.log(3.0) / 2.0:
         raise ValueError("the cut-adapted partition is for the first prime window")
     displacement = math.log(2.0) / half_width
     cut = 1.0 - displacement

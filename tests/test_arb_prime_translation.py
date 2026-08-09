@@ -50,7 +50,7 @@ def test_streamed_odd_action_matches_matrix_product_at_second_width():
     assert np.max(np.abs(action.midpoint - expected)) < 1.0e-13
 
 
-@pytest.mark.parametrize("half_width", [0.3, np.log(2.0) / 2.0, 0.51])
+@pytest.mark.parametrize("half_width", [0.3, np.log(2.0) / 2.0, 0.56])
 def test_prime_two_formula_rejects_widths_outside_first_prime_window(half_width):
     coefficients = np.zeros(4)
     coefficients[::2] = 1.0

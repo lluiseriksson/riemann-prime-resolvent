@@ -2,6 +2,7 @@ import pytest
 
 from experiments.theta_pencil.support_05_comparison import (
     _smooth_lower_loss,
+    certify_first_prime_comparison,
     certify_support_05_comparison,
 )
 
@@ -18,3 +19,13 @@ def test_support_05_comparison_closes_third_eigenvalue_floors():
     assert result.tail_determinant_lower > 0.3
     assert result.even_third_floor > 0.14
     assert result.odd_third_floor > 0.34
+
+
+def test_first_prime_comparison_extends_to_point_54():
+    pytest.importorskip("flint")
+    result = certify_first_prime_comparison(0.54, 192, 100)
+    assert result.half_width == 0.54
+    assert result.minimum_second_derivative > 1.5
+    assert result.tail_determinant_lower > 0
+    assert -0.014 < result.even_third_floor < -0.011
+    assert result.odd_third_floor > 0.18

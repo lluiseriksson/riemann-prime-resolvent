@@ -116,6 +116,7 @@ It does not authorize changing the success condition.
 - [Certified localized positivity at `a = 0.42`](support-042-certificate.md)
 - [Quantitative support continuity and its logarithmic barrier](support-parameter-continuity.md)
 - [Certified localized positivity at support one half](support-05-certificate.md)
+- [Certified localized positivity at support 0.51](support-051-certificate.md)
 - [Cut-adapted exact prime basis](cut-adapted-prime-basis.md)
 - [Support-extension audit](support-extension-audit.md)
 - [Falsifiers and abandonment conditions](falsifiers.md)

@@ -28,8 +28,10 @@ def certify_prime_operator_remainder_variation(
 ) -> ArbVariationBound:
     """Vector-valued version used by the parity Schur tail certificate."""
     degrees = np.asarray(low_degrees, dtype=int)
-    if not math.log(2.0) / 2.0 < half_width <= 0.5:
-        raise ValueError("the exact Arb implementation requires log(2)/2 < a <= 1/2")
+    if not math.log(2.0) / 2.0 < half_width <= math.log(3.0) / 2.0:
+        raise ValueError(
+            "the exact Arb implementation requires log(2)/2 < a <= log(3)/2"
+        )
     if len(degrees) < 1 or derivative_order < 1 or partitions < 1:
         raise ValueError("invalid degrees, derivative order, or partition count")
     try:
@@ -141,8 +143,10 @@ def certify_prime_remainder_variation(
     order integrates that polynomial exactly.
     """
     vector = np.asarray(coefficients, dtype=float)
-    if not math.log(2.0) / 2.0 < half_width <= 0.5:
-        raise ValueError("the exact Arb implementation requires log(2)/2 < a <= 1/2")
+    if not math.log(2.0) / 2.0 < half_width <= math.log(3.0) / 2.0:
+        raise ValueError(
+            "the exact Arb implementation requires log(2)/2 < a <= log(3)/2"
+        )
     if len(vector) < 3 or partitions < 1:
         raise ValueError("need at least three coefficients and one partition")
     if np.any(vector[::2] != 0.0) and np.any(vector[1::2] != 0.0):

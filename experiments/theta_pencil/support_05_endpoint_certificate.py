@@ -1,4 +1,4 @@
-"""Single-source interval certificate for the endpoint support a=1/2."""
+"""Single-source interval certificate in the prime-2-only support window."""
 
 from __future__ import annotations
 
@@ -19,7 +19,7 @@ from experiments.theta_pencil.arb_regularized_map_bound import (
 from experiments.theta_pencil.arb_source_schur import _roundtrip_ball
 from experiments.theta_pencil.interval_inertia import certify_interval_inertia
 from experiments.theta_pencil.support_05_comparison import (
-    certify_support_05_comparison,
+    certify_first_prime_comparison,
 )
 
 
@@ -36,6 +36,7 @@ class EndpointParityCertificate:
 
 @dataclass(frozen=True)
 class Support05EndpointCertificate:
+    half_width: float
     even: EndpointParityCertificate
     odd: EndpointParityCertificate
     complement_floor: float
@@ -69,11 +70,12 @@ def _arb_flux_upper(
     parity: int,
     first_degree: int,
     explicit_end: int,
+    half_width: float = 0.5,
 ):
     """Parity flux Gram: explicit rational sum plus PSD tail upper."""
 
-    log_two = arb.const_log2()
-    lengths = (2 - 2 * log_two, 4 * log_two - 2, 2 - 2 * log_two)
+    displacement = arb.const_log2() / arb(str(half_width))
+    lengths = (2 - displacement, 2 * displacement - 2, 2 - displacement)
     total = 3 * degree_count
     minus = []
     plus = []
@@ -162,6 +164,28 @@ def certify_support_05_endpoint(
 ) -> Support05EndpointCertificate:
     """Certify the two second-eigenvalue floors required by Kato--Temple."""
 
+    return certify_first_prime_endpoint(
+        0.5,
+        even_shift=0.01,
+        odd_shift=0.3,
+        precision=precision,
+        low_degree_count=low_degree_count,
+        explicit_degree_end=explicit_degree_end,
+        flux_explicit_end=flux_explicit_end,
+    )
+
+
+def certify_first_prime_endpoint(
+    half_width: float,
+    even_shift: float,
+    odd_shift: float,
+    precision: int = 3072,
+    low_degree_count: int = 16,
+    explicit_degree_end: int = 128,
+    flux_explicit_end: int = 4096,
+) -> Support05EndpointCertificate:
+    """Certify parity gap floors for ``1/2 <= a <= log(3)/2``."""
+
     if low_degree_count != 16 or explicit_degree_end != 128:
         raise ValueError("the registered endpoint certificate uses degrees 16 and 128")
     try:
@@ -169,13 +193,12 @@ def certify_support_05_endpoint(
     except ImportError as error:  # pragma: no cover
         raise RuntimeError("python-flint is required") from error
 
-    source = build_arb_cut_finite_source(0.5, low_degree_count, 23, 768)
-    smooth = build_arb_cut_smooth_matrix(0.5, 40, 23, 768)
+    source = build_arb_cut_finite_source(half_width, low_degree_count, 23, 768)
+    smooth = build_arb_cut_smooth_matrix(half_width, 40, 23, 768)
     cross = build_arb_cut_dominant_cross(
-        0.5, low_degree_count, explicit_degree_end, precision
+        half_width, low_degree_count, explicit_degree_end, precision
     )
-    comparison = certify_support_05_comparison(256, 300)
-    regularized = certify_regularized_map_bound(16, 256)
+    comparison = certify_first_prime_comparison(half_width, 256, 300)
 
     previous_precision = ctx.prec
     results = []
@@ -221,13 +244,19 @@ def certify_support_05_endpoint(
         )
         complement_floor_ball = harmonic_16 + arb(str(perturbation_lower))
         complement_floor = float(complement_floor_ball.lower())
+        regularized = certify_regularized_map_bound(
+            16, 256, half_width, complement_floor
+        )
         smooth_remainder = math.nextafter(source.smooth_remainder, math.inf)
         regularized_upper = math.nextafter(regularized.global_upper, math.inf)
         regularized_tail_norm = regularized_upper / (
             explicit_degree_end * (explicit_degree_end + 1)
         )
 
-        for parity, name, shift in ((0, "even", 0.01), (1, "odd", 0.3)):
+        for parity, name, shift in (
+            (0, "even", even_shift),
+            (1, "odd", odd_shift),
+        ):
             transform = _arb_parity_transform(arb, arb_mat, d, parity)
             projected_coupling = transform.transpose() * coupling
             flux_upper = _arb_flux_upper(
@@ -237,6 +266,7 @@ def certify_support_05_endpoint(
                 parity,
                 explicit_degree_end,
                 flux_explicit_end,
+                half_width,
             )
             size = transform.ncols()
             source_midpoint = getattr(source, f"{name}_midpoint")
@@ -278,7 +308,13 @@ def certify_support_05_endpoint(
                 or inertia.positive_count != size - 1
                 or inertia.unresolved_count != 0
             ):
-                raise ArithmeticError(f"the {name} endpoint inertia did not close")
+                raise ArithmeticError(
+                    f"the {name} endpoint inertia did not close: "
+                    f"negative={inertia.negative_count}, "
+                    f"positive={inertia.positive_count}, "
+                    f"unresolved={inertia.unresolved_count}, "
+                    f"intervals={inertia.real_intervals[:4]}"
+                )
             results.append(
                 EndpointParityCertificate(
                     parity=parity,
@@ -294,6 +330,7 @@ def certify_support_05_endpoint(
         ctx.prec = previous_precision
 
     return Support05EndpointCertificate(
+        half_width=half_width,
         even=results[0],
         odd=results[1],
         complement_floor=complement_floor,

@@ -40,8 +40,10 @@ def build_arb_prime_jet_correction(
     transcendental constant and every recurrence operation is evaluated in
     Arb.  ``last_degree`` is exclusive, as in ``prime_jet_weighted_correction``.
     """
-    if not math.log(2.0) / 2.0 < half_width <= 0.5:
-        raise ValueError("the exact Arb jet implementation requires log(2)/2 < a <= 1/2")
+    if not math.log(2.0) / 2.0 < half_width <= math.log(3.0) / 2.0:
+        raise ValueError(
+            "the exact Arb jet implementation requires log(2)/2 < a <= log(3)/2"
+        )
     low = np.asarray(low_degrees, dtype=int)
     if low.ndim != 1 or len(low) == 0:
         raise ValueError("low_degrees must be a nonempty vector")
