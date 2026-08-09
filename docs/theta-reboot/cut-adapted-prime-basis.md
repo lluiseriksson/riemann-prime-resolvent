@@ -207,3 +207,63 @@ respectively, but those figures are not substituted for the missing global
 upper bound.  The gate calculation is implemented in
 `regularized_tail_gate.py`; proving, for example, the common bound $2400$
 would close the endpoint Schur obligation.
+
+## Closing the regularized tail gate
+
+The common bound can in fact be proved without quadrature.  On one local
+interval, write (D=-\partial_t(1-t^2)\partial_t).  For polynomials of degree
+below 16, Arb certifies
+
+\[
+ \|D A_2\|<797,qquad
+ \|V D\|_{\rm HS}<506,qquad
+ \|-2t\partial_t-I\|_{\rm HS}<246.
+\]
+
+The middle estimate uses the exact beta-derivative moments
+
+\[
+ \int_{-1}^1t^{2k}\log^2(1-t^2)\,dt
+ =\left.\partial_b^2B(k+\tfrac12,b)\right|_{b=1};
+\]
+
+thus the cancellation between the two endpoint logarithms is retained.
+Since
+
+\[
+ D(Vf)=V(Df)-2tf'-f,
+\]
+
+the diagonal interval block is bounded by 1549.
+
+For touching intervals of lengths (A,B), put
+(r=[A(1-t)+B(1+s)]/2).  Direct differentiation gives
+
+\[
+ (D_t-D_s)r^{-1}
+ =-4(A+B)\,\partial_v\frac{v}{(Au+Bv)^2},
+ \quad u=1-t,\ v=1+s.
+\]
+
+After integration by parts, the first term is the source Legendre operator,
+the shared-endpoint term is exactly the flux already retained, and the
+regular commutator has Mellin norm at most
+((A+B)\pi/(2B)).  Arb certifies
+(|\partial_t\|<87), the remaining endpoint trace costs less than 10, and
+the entire adjacent block is below (695.084<697).  The separated edge
+block has Hilbert--Schmidt norm below (0.441<1).
+
+The scalar three-interval comparison matrix therefore yields
+
+\[
+ \|f\mapsto D(\mathcal Lf)\|
+ <1549+\sqrt2\,697+1
+ <2535.707<2577.355.
+\]
+
+This closes the registered degree-128 regularized-tail gate.  The proof and
+all outward-rounded constants are implemented in
+`arb_regularized_map_bound.py`.  What remains before claiming positivity at
+(a=1/2) is mechanical but essential: assemble the degree-128 source,
+finite Schur bands, infinite flux Gram and this final bound in a single Arb
+inertia certificate.
