@@ -34,6 +34,7 @@ from experiments.theta_pencil.prime_jet_tail import (
     prime_jet_weighted_correction,
 )
 from experiments.theta_pencil.semilocal_weil_matrix import EULER_GAMMA
+from experiments.theta_pencil.smooth_legendre_series import smooth_kernel_series_matrix
 
 
 @dataclass(frozen=True)
@@ -72,7 +73,16 @@ def run_parity_inertia_audit(
     low_components = build_legendre_weil_components(
         half_width, low_dimension, max(512, 2 * low_dimension)
     )
-    low_matrix = low_components.total - spectral_floor * np.eye(low_dimension)
+    smooth_series = smooth_kernel_series_matrix(
+        half_width, smooth_dimension, maximum_power=23
+    )
+    low_matrix = (
+        low_components.dominant
+        + low_components.scalar
+        + low_components.prime
+        + smooth_series[:low_dimension, :low_dimension]
+        - spectral_floor * np.eye(low_dimension)
+    )
 
     quadrature_order = (finite_dimension + low_dimension + 2) // 2 + 2
     nodes, weights = leggauss(quadrature_order)
@@ -91,10 +101,7 @@ def run_parity_inertia_audit(
         @ at_shift[low_dimension:].T
     )
 
-    smooth_components = build_legendre_weil_components(
-        half_width, smooth_dimension, max(512, 2 * smooth_dimension)
-    )
-    cross[:, : smooth_dimension - low_dimension] += smooth_components.smooth[
+    cross[:, : smooth_dimension - low_dimension] += smooth_series[
         :low_dimension, low_dimension:smooth_dimension
     ]
 

@@ -205,6 +205,24 @@ mode 8191 less than \(4.1\cdot10^{-7}\). Direct high-precision evaluation,
 used only as a check, gives the much tighter range
 \(0.5623<|r''''(t)|<0.5790\).
 
+For the finite matrix, even that derivative quadrature is unnecessary. The
+Bernoulli expansion
+\[
+ r''(t)=-2\cosh(t/2)+
+ \sum_{n\ge1}\frac{B_n(3/4)2^{n-1}}{n!}t^{n-1}
+\]
+reduces the kernel to powers \(|x-y|^k\). Every even power is a finite-rank
+polynomial kernel. For odd \(k\), applying the definite Legendre integration
+operator \(k+1\) times gives the exact banded matrix, followed by an explicit
+degree-\(k\) polynomial correction. Truncation at \(k=23\) has certified
+operator-norm remainder
+\[
+ 1.21604\cdot10^{-14}.
+\]
+At dimension 512, the resulting matrix differs from the former 1024-node
+tensor quadrature by at most \(3.49\cdot10^{-9}\); the latter number is only a
+regression check.
+
 Even the triangle sum of these deliberately inflated terms remains below the
 Kato--Temple positivity budget
 
@@ -265,21 +283,21 @@ an explicit approximate ground vector. A 512-mode even Legendre vector gives:
 
 | quantity | upper or computed value |
 |---|---:|
-| Rayleigh quotient \(\mu\) | \(1.8126573764\cdot10^{-4}\) |
+| Rayleigh quotient \(\mu\) | \(1.8126826201\cdot10^{-4}\) |
 | residual in modes \(<512\) | \(1.66\cdot10^{-15}\) |
 | direct prime-plus-potential residual, modes 512--8191 | \(2.14205597\cdot10^{-4}\) |
 | prime jump tail beyond 8191 | \(1.39683094\cdot10^{-4}\) |
 | continuous prime remainder tail | \(3.45827586\cdot10^{-4}\) |
 | logarithmic-potential tail | \(2.44181434\cdot10^{-6}\) |
 | whole smooth-kernel tail from mode 512 | \(2.57967364\cdot10^{-5}\) |
-| **total residual bound \(\varepsilon\)** | **\(7.27954827\cdot10^{-4}\)** |
+| **total residual bound \(\varepsilon\)** | **\(7.27954927\cdot10^{-4}\)** |
 
 Substitution in (KT) leaves
 
 \[
  \boxed{
  \mu-\frac{\varepsilon^2}{0.005-\mu}
- =7.12953\cdot10^{-5}>0.
+ =7.12978\cdot10^{-5}>0.
  }
 \]
 
@@ -301,3 +319,26 @@ to prove that the exact matrix defined by Suzuki's formula lies in that box.
 The post-tail odd margin permits any entrywise source enclosure narrower than
 \(0.00244145/44=5.55\cdot10^{-5}\), so the chosen \(10^{-6}\) target carries a
 factor \(55\) of slack.
+
+The finite prime block has now been independently evaluated without Gaussian
+quadrature as well. At \(a=2/5\), expand every low Legendre polynomial in all
+of its endpoint jets; multiply those jets by the exact recurrence for
+\((x-b)^j1_{[-1,b]}\); and perform the cancellation in Arb at 8192-bit
+precision. The full \(88\times4096\) ball matrix took 65 seconds. Its midpoint
+differs from the polynomial-exact double Gauss implementation by at most
+\(2.96\cdot10^{-13}\). The Arb radii are far below the \(10^{-6}\) source-box
+target. Thus the prime translation is no longer an unverified contributor to
+that box.
+
+The smooth finite block has an independent source enclosure as well. The
+Bernoulli coefficients, monomial multiplication, and repeated Legendre
+integration described above were evaluated directly in Arb, without tensor
+quadrature. For the full \(88\times512\) cross block at 256-bit precision,
+the largest entry radius was \(4.99\cdot10^{-76}\). Its midpoint agreed with
+the independent double exact-power implementation to
+\(6.67\cdot10^{-16}\), while the omitted power-series tail remains bounded
+by \(1.217\cdot10^{-14}\) in operator norm. Consequently neither the prime
+finite block nor the smooth finite block is responsible for the outstanding
+\(10^{-6}\) source-box obligation. The remaining nontrivial finite source is
+the six-jet correction from degrees 4096 through \(10^6\); the dominant and
+scalar blocks have closed elementary formulas.

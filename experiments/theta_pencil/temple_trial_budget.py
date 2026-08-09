@@ -21,6 +21,7 @@ from experiments.theta_pencil.legendre_jump_tail import (
     temple_lower_bound,
     wang_normalized_tail_bound,
 )
+from experiments.theta_pencil.smooth_legendre_series import smooth_kernel_series_matrix
 
 
 @dataclass(frozen=True)
@@ -151,7 +152,12 @@ def run_temple_trial_audit(
     components = build_legendre_weil_components(
         half_width, trial_dimension, max(1400, 2 * trial_dimension)
     )
-    matrix = components.total
+    matrix = (
+        components.dominant
+        + components.scalar
+        + components.prime
+        + smooth_kernel_series_matrix(half_width, trial_dimension, 23)
+    )
     eigenvalue, eigenvector = eigh(matrix, subset_by_index=[0, 0])
     coefficients = eigenvector[:, 0]
     center = coefficients @ normalized_legendre_values(
