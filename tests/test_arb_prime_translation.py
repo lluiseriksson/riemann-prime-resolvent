@@ -3,6 +3,7 @@ import pytest
 from numpy.polynomial.legendre import leggauss
 
 from experiments.theta_pencil.arb_prime_translation import (
+    build_arb_prime_two_action,
     build_arb_prime_two_matrix,
 )
 from experiments.theta_pencil.legendre_feshbach import normalized_legendre_values
@@ -28,3 +29,12 @@ def test_arb_prime_matrix_encloses_independent_gauss_values():
     assert np.max(error) < 2e-13
     assert np.max(result.radius) < 1e-40
 
+
+def test_streamed_arb_action_matches_matrix_product():
+    coefficients = np.zeros(12)
+    coefficients[::2] = np.linspace(0.1, 0.6, 6)
+    action = build_arb_prime_two_action(0.4, coefficients, 80, precision=1024)
+    matrix = build_arb_prime_two_matrix(0.4, 12, 80, precision=1024)
+    expected = coefficients @ matrix.midpoint
+    assert np.max(action.radius) < 1.0e-100
+    assert np.max(np.abs(action.midpoint - expected)) < 1.0e-13

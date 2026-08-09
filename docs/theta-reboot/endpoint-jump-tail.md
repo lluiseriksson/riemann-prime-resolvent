@@ -252,8 +252,8 @@ tails use only the proved Wang, potential-moment, and smooth-kernel bounds.
 
 | parity | first three Schur eigenvalues after explicit jets | omitted-tail correction | safe floating margin |
 |:---:|:---|---:|---:|
-| even | \(-0.00481952,\ 0.30131077,\ 0.90142760\) | \(0.00686116\) | \(0.2944496\) on the second eigenvalue |
-| odd | \(0.00966744,\ 0.89305309,\ 1.30022835\) | \(0.00722599\) | **\(0.00244145\)** on the first eigenvalue |
+| even | \(-0.00481950,\ 0.30131078,\ 0.90142762\) | \(0.00686083\) | \(0.29444995\) on the second eigenvalue |
+| odd | \(0.00966745,\ 0.89305310,\ 1.30022932\) | \(0.00722603\) | **\(0.00244142\)** on the first eigenvalue |
 
 The omitted-tail correction already includes cross terms. If \(J\) is the
 explicit jet tail and \(E\) is the sum of all remaining weighted tails, then
@@ -263,9 +263,9 @@ explicit jet tail and \(E\) is the sum of all remaining weighted tails, then
  \le2\|J\|\,\|E\|+\|E\|^2.
 \]
 
-For the odd block, the explicit jet correction has norm \(0.01008323\), while
+For the odd block, the explicit jet correction has norm \(0.01008338\), while
 the combined omitted weighted norm is \(0.03114922\). These figures produce
-the displayed \(0.00722599\) inflation.
+the displayed \(0.00722603\) inflation.
 
 Thus every *analytic* infinite-tail obligation needed for
 \(\lambda_2(A_{0.4})\ge0.005\) now fits inside a positive margin. What remains
@@ -342,3 +342,32 @@ finite block nor the smooth finite block is responsible for the outstanding
 \(10^{-6}\) source-box obligation. The remaining nontrivial finite source is
 the six-jet correction from degrees 4096 through \(10^6\); the dominant and
 scalar blocks have closed elementary formulas.
+
+That last correction has now also been accumulated directly in Arb. The key
+stable recurrence is
+\[
+ p_{j,n}=-\frac{jN_n}{2n+1}
+ \left(\frac{p_{j-1,n+1}}{N_{n+1}}
+       -\frac{p_{j-1,n-1}}{N_{n-1}}\right),
+\]
+obtained from \((2n+1)P_n=P'_{n+1}-P'_{n-1}\). It exposed and repaired a
+loss of significance in the former repeated-\((X-c)\) recurrence. At 192-bit
+precision the correction radii are below \(1.23\cdot10^{-55}\); the repaired
+double implementation agrees with the Arb midpoint at test scales and gives
+the updated inertia table above.
+
+Finally, all finite ingredients were assembled in Arb into the actual parity
+Schur sources. Their maximum distances from the registered floating
+midpoints are respectively
+\[
+ 5.29\cdot10^{-13}\quad\text{(odd)},\qquad
+ 5.20\cdot10^{-13}\quad\text{(even)}.
+\]
+Both are far inside the pre-registered \(10^{-6}\) entrywise box. Combining
+this source enclosure with the existing interval-eigenvalue computation and
+the analytic omitted-tail corrections certifies positivity of the odd block
+of \(A_{0.4}-0.005I\) and at most one negative direction in its even block.
+Equivalently, the second spectral point is at least \(0.005\), subject only to
+the operator-domain reduction stated earlier in this note. The remaining
+positivity obligation is the interval version of the Kato--Temple ground-state
+test.

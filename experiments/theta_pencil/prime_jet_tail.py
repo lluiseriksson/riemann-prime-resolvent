@@ -61,8 +61,29 @@ def truncated_power_coefficients(
         raise ValueError("jet_count must be positive")
     padded_degree = maximum_degree + jet_count
     rows = [left_step_coefficients(cut, padded_degree)]
-    for _ in range(1, jet_count):
-        rows.append(multiply_legendre_coefficients_by_x(rows[-1]) - cut * rows[-1])
+    degrees = np.arange(1, padded_degree - 1)
+    normalizations = np.sqrt((2.0 * np.arange(padded_degree) + 1.0) / 2.0)
+    for jet in range(1, jet_count):
+        previous = rows[-1]
+        following = np.zeros_like(previous)
+        # From (2n+1)P_n=P'_{n+1}-P'_{n-1}, integration by parts gives
+        # p_{j,n}=-j*N_n/(2n+1)*(p_{j-1,n+1}/N_{n+1}
+        #                         -p_{j-1,n-1}/N_{n-1}).
+        # Unlike repeated application of X-cut, this form does not lose the
+        # high-mode jets to cancellation.
+        following[1:-1] = (
+            -jet
+            * normalizations[1:-1]
+            / (2.0 * degrees + 1.0)
+            * (
+                previous[2:] / normalizations[2:]
+                - previous[:-2] / normalizations[:-2]
+            )
+        )
+        following[0] = -(-1.0 - cut) ** (jet + 1) / (
+            (jet + 1) * math.sqrt(2.0)
+        )
+        rows.append(following)
     return np.asarray(rows)[:, :maximum_degree]
 
 
