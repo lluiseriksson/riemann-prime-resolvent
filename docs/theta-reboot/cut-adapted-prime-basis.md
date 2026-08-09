@@ -291,3 +291,35 @@ regularized-tail gate.  No nested-band denominator is used.  What remains
 before claiming positivity at $a=1/2$ is to assemble the degree-128 finite
 source, the infinite flux Gram and this tail correction in one interval
 inertia computation.
+
+## Beyond one half: the second Green gate
+
+The same cut architecture and analytic remainder are now valid throughout
+the prime-two-only window.  They prove $A_{0.51}>0$, but the common-floor
+certificate becomes too lossy near $a=0.54$.  A 1024-bit component diagnostic
+at that point gives, in the even sector,
+
+| component | effect relevant to the low Schur matrix |
+|---|---:|
+| raw second finite eigenvalue | $0.002192746$ |
+| explicit degrees 16--127 plus endpoint flux | leaves about $0.002187$ |
+| regularized scalar correction | $0.00568798 I$ |
+
+Thus the finite middle band is not the obstruction.  The loss comes from
+using the norm of the *whole* touching-interval map to control only
+$Q_{128}D\mathcal LP_{16}$.  With the common floor $1.285048$, a target shift
+$0.0011$ requires the regularized map bound to fall from the present value
+about $998.3$ to below roughly $435$.
+
+The first explicit coefficients after subtracting the six Green fluxes are
+small and decay numerically like $n^{-3/2}$: for one edge block their row
+norms are $2.176$ at $n=128$, $1.560$ at $n=160$, and $1.118$ at $n=200$.
+These are diagnostics, not interval bounds.  Past degree 200 the direct
+moment recurrence loses cancellation at 1024 bits and its midpoints must not
+be used.
+
+The next analytic obligation is therefore precise: apply Green once more to
+the regularized adjacent-block image, retain its endpoint trace as another
+finite-rank flux Gram, and bound the twice-regular remainder.  This targets
+the measured loss directly and avoids treating local degree bands as reducing
+subspaces.

@@ -59,8 +59,9 @@ through degree 16383.  The odd certificate needs only degree 8191.
 At $a=0.54$ the finite lowest eigenvalue is still positive, about
 $1.06\cdot10^{-7}$, but the common-floor Schur bound is too lossy: after a
 shift of $0.0011$ it has two negative directions.  This is not evidence of a
-negative eigenvalue.  It identifies the next proof obligation: a nested Schur
-estimate which uses the substantially larger floor on $Q_{128}$ while keeping
-the coupling between the degree bands.
+negative eigenvalue.  Component diagnostics locate the loss in the
+regularized adjacent-block tail, whose whole-operator bound is being used for
+$Q_{128}$.  The next proof obligation is a second Green decomposition of that
+tail, including its new finite-rank endpoint flux.
 
 The top-level reproducer is `support_051_certificate.py`.
