@@ -162,10 +162,10 @@ This makes the correct object a full finite-dimensional Schur complement,
 not a heuristic two-vector inclusion.  Eliminating degrees 16--39 with that
 floor and degrees 40--63 with their stronger harmonic floor leaves exactly
 one negative direction.  The first positive Schur values are approximately
-(0.0079936) (even) and (0.0627477) (odd).
+$0.0079936$ (even) and $0.0627477$ (odd).
 
-Above degree 64 the leading term is explicit and low rank.  If (g=\mathcal
-Lf\) on a local interval and
+Above degree 64 the leading term is explicit and low rank.  If
+$g=\mathcal Lf$ on a local interval and
 
 \[
  F_\pm=\lim_{t\to\pm1}(1-t^2)g'(t),
@@ -182,10 +182,28 @@ then integration by parts gives
 
 The six fluxes are just endpoint values and jumps of the degree-16 trial
 space.  Adding their infinite Gram matrix still leaves one negative
-direction, with positive margins (0.0079925) and (0.0627366).  This is
+direction, with positive margins $0.0079925$ and $0.0627366$.  This is
 not yet the endpoint theorem: the remaining regularized tail
 \(\widehat{Dg}_n/[n(n+1)]\) must be bounded.  The current Schur margins allow
-operator-norm bounds about (0.149) (even) and (0.396) (odd) on that final
+operator-norm bounds about $0.149$ (even) and $0.396$ (odd) on that final
 tail.  The rectangular Arb source in `arb_cut_dominant_cross.py` isolates
 precisely this universal obligation.  Prime, scalar and the retained smooth
 series contribute no modes beyond local degree 40.
+
+The rectangular source through degree 128 was independently evaluated at
+3072-bit precision; all exported radii were below floating-point underflow.
+At that cutoff the comparison floor is $3.4905770$.  Reserving the smaller
+Schur margins $0.007$ and $0.06$, Green's identity reduces the remaining
+proof to
+
+\[
+ \|f\mapsto D(\mathcal Lf)\|<2577.3\quad\hbox{(even)},
+ \qquad
+ \|f\mapsto D(\mathcal Lf)\|<7224.5\quad\hbox{(odd)}.
+\]
+
+The diagnostic partial norms through degree 128 are $206.1$ and $216.9$,
+respectively, but those figures are not substituted for the missing global
+upper bound.  The gate calculation is implemented in
+`regularized_tail_gate.py`; proving, for example, the common bound $2400$
+would close the endpoint Schur obligation.
