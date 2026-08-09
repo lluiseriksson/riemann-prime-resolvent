@@ -112,4 +112,5 @@ It does not authorize changing the success condition.
 - [Explicit unconditional small-support bound](explicit-small-support.md)
 - [Legendre tail coercivity and finite reduction](legendre-tail.md)
 - [Exact Legendre matrix and mode-resolved Feshbach diagnostic](legendre-feshbach.md)
+- [Endpoint-jump tail and Kato--Temple route](endpoint-jump-tail.md)
 - [Falsifiers and abandonment conditions](falsifiers.md)
