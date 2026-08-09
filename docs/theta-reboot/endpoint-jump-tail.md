@@ -217,3 +217,42 @@ the second eigenvalue and all finite quantities must be outward-rounded. It is
 nevertheless a viable
 certificate design with a factor-of-order-one margin. The previous uniform
 Schur estimate had the wrong structure and a margin of the wrong sign.
+
+## Parity-resolved inertia budget
+
+The operator commutes with reflection. Numerically, its ground state is even
+and its second state is odd. For the shifted operator \(A_{0.4}-0.005I\), it
+therefore suffices to prove:
+
+1. the odd block is positive;
+2. the even block has at most one negative direction.
+
+The diagonal tail majorant was recomputed with 88 low Legendre modes, all
+potential and prime coefficients through mode 4095, the smooth coefficients
+through mode 511, and six endpoint jets through mode \(10^6\). The remaining
+tails use only the proved Wang, potential-moment, and smooth-kernel bounds.
+
+| parity | first three Schur eigenvalues after explicit jets | omitted-tail correction | safe floating margin |
+|:---:|:---|---:|---:|
+| even | \(-0.00481952,\ 0.30131077,\ 0.90142760\) | \(0.00686116\) | \(0.2944496\) on the second eigenvalue |
+| odd | \(0.00966744,\ 0.89305309,\ 1.30022835\) | \(0.00722599\) | **\(0.00244145\)** on the first eigenvalue |
+
+The omitted-tail correction already includes cross terms. If \(J\) is the
+explicit jet tail and \(E\) is the sum of all remaining weighted tails, then
+
+\[
+ \|(J+E)(J+E)^*-JJ^*\|
+ \le2\|J\|\,\|E\|+\|E\|^2.
+\]
+
+For the odd block, the explicit jet correction has norm \(0.01008323\), while
+the combined omitted weighted norm is \(0.03114922\). These figures produce
+the displayed \(0.00722599\) inflation.
+
+Thus every *analytic* infinite-tail obligation needed for
+\(\lambda_2(A_{0.4})\ge0.005\) now fits inside a positive margin. What remains
+is finite and mechanical but indispensable: recompute the 44-by-44 parity
+matrices, the polynomial Gauss rules, and the six-jet recurrence with outward
+rounding, then verify the two matrix inertias by interval \(LDL^*\).
+Until that calculation is deposited, \(0.00244145\) is a design margin, not a
+certified eigenvalue bound.

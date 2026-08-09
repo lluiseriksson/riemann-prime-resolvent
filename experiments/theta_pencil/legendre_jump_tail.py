@@ -171,6 +171,44 @@ def potential_tail_bound(
     return bound
 
 
+def potential_operator_tail_bound(
+    degrees: np.ndarray, first_degree: int, expansion_order: int = 2
+) -> float:
+    """Uniform version of ``potential_tail_bound`` on a coordinate block."""
+    selected = np.asarray(degrees, dtype=float)
+    if len(selected) < 1:
+        raise ValueError("degrees must be nonempty")
+    if first_degree <= int(selected[-1]):
+        raise ValueError("first_degree must exceed every selected degree")
+    if expansion_order < 1:
+        raise ValueError("expansion_order must be positive")
+    eigenvalues = selected * (selected + 1.0)
+    weights = np.sqrt(2.0 * selected + 1.0)
+    bound = 0.0
+    for order in range(expansion_order):
+        moment_norm = float(np.linalg.norm(weights * eigenvalues**order))
+        bound += (
+            math.sqrt(3.0)
+            * moment_norm
+            / math.sqrt(4.0 * order + 2.0)
+            * (first_degree - 1.0) ** (-(2.0 * order + 1.0))
+        )
+    largest = float(eigenvalues[-1])
+    ratio = largest / (first_degree * first_degree)
+    remainder_norm = float(
+        np.linalg.norm(weights * eigenvalues**expansion_order)
+    )
+    order = expansion_order
+    bound += (
+        math.sqrt(3.0)
+        * remainder_norm
+        / (1.0 - ratio)
+        / math.sqrt(4.0 * order + 2.0)
+        * (first_degree - 1.0) ** (-(2.0 * order + 1.0))
+    )
+    return bound
+
+
 def temple_lower_bound(rayleigh: float, residual: float, second_floor: float) -> float:
     """Kato--Temple lower bound assuming the next spectral point is >= floor."""
     if residual < 0.0:

@@ -8,6 +8,7 @@ from experiments.theta_pencil.legendre_jump_tail import (
     bernstein_jump_tail_bound,
     normalized_step_coefficient,
     potential_tail_bound,
+    potential_operator_tail_bound,
     smooth_kernel_variation_bound,
     temple_lower_bound,
     wang_normalized_coefficient_bound,
@@ -78,6 +79,7 @@ def test_potential_tail_uses_small_signed_endpoint_moment():
     vector = np.zeros(16)
     vector[0] = 1.0
     assert potential_tail_bound(vector, 128, 2) < 1e-2
+    assert potential_operator_tail_bound(np.arange(0, 16, 2), 128, 2) > 0.0
 
 
 def test_temple_bound_and_guards():
