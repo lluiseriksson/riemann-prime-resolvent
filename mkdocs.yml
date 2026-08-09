@@ -56,6 +56,7 @@ nav:
       - First-window falsifier: theta-reboot/first-window-falsifier.md
       - Semilocal Weil programme: theta-reboot/semilocal-weil.md
       - Continuous Weil--Suzuki operator: theta-reboot/screw-operator.md
+      - Explicit small-support bound: theta-reboot/explicit-small-support.md
       - Falsifiers: theta-reboot/falsifiers.md
   - Criterion layer site: https://lluiseriksson.github.io/riemann-prime-resolvent/criterion/
   - Programme contract: PROGRAMME_RELATION.md

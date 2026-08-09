@@ -4,7 +4,7 @@
 
 The first-window matrix is a useful falsifier, but it only samples one compact
 test space. Suzuki's continuous realization packages the full localized Weil
-quadratic form into a self-adjoint operator (A_a) on (L^2(-a,a)). Its
+quadratic form into a self-adjoint operator \(A_a\) on \(L^2(-a,a)\). Its
 lowest eigenvalue is
 
 \[
@@ -12,9 +12,9 @@ lowest eigenvalue is
   \frac{Q_W^a(v)}{\lVert v\rVert_2^2}.
 \]
 
-The source proves unconditionally that (a\mapsto\lambda_a) is continuous,
-that it is positive for sufficiently small (a), and that RH fails exactly
-when (lambda_a<0) for some (a). Thus the operative target is a coercive
+The source proves unconditionally that \(a\mapsto\lambda_a\) is continuous,
+that it is positive for sufficiently small \(a\), and that RH fails exactly
+when \(\lambda_a<0\) for some \(a\). Thus the operative target is a coercive
 estimate preventing this eigenvalue branch from reaching zero.
 
 Primary source: M. Suzuki, [*Weil's quadratic form via the screw
@@ -25,7 +25,7 @@ and Theorems 1, 3, and 4.
 
 ### Proposition
 
-If (0<a<b), then
+If \(0<a<b\), then
 
 \[
   \boxed{\lambda_b\leq\lambda_a.}
@@ -33,11 +33,11 @@ If (0<a<b), then
 
 ### Proof
 
-Extend every (v\in C_c^\infty(-a,a)) by zero to ((-b,b)). Its norm and
-the cutoff-free Weil value (Q_W(v)) do not change. Hence the Rayleigh
-quotients used for (a) form a subset of those used for (b). Taking the
-infimum and using Suzuki's identification of (lambda_a) with the infimum on
-(C_c^\infty(-a,a)) gives the claim. No zero of zeta and no instance of RH is
+Extend every \(v\in C_c^\infty(-a,a)\) by zero to \((-b,b)\). Its norm and
+the cutoff-free Weil value \(Q_W(v)\) do not change. Hence the Rayleigh
+quotients used for \(a\) form a subset of those used for \(b\). Taking the
+infimum and using Suzuki's identification of \(\lambda_a\) with the infimum on
+\(C_c^\infty(-a,a)\) gives the claim. No zero of zeta and no instance of RH is
 used. ∎
 
 Together with Suzuki's continuity theorem this gives a precise crossing
@@ -53,8 +53,8 @@ the target but does not prove its sign.
 
 ## Source-normalized discretization
 
-`experiments/theta_pencil/screw_weil_operator.py` implements the defining Weil
-functional directly. For (f=v*\widetilde v),
+<code>experiments/theta_pencil/screw_weil_operator.py</code> implements the
+defining Weil functional directly. For \(f=v*\widetilde v\),
 
 \[
 \begin{aligned}
@@ -69,8 +69,8 @@ Q_W(v)={}&
 \end{aligned}
 \]
 
-The tail beyond (2a) is integrated exactly as
-(-2\operatorname{atanh}(e^{-2a})f(0)). Omitting this term creates a false
+The tail beyond \(2a\) is integrated exactly as
+\(-2\operatorname{atanh}(e^{-2a})f(0)\). Omitting this term creates a false
 sign, so it is part of the registered judge. The basis consists of exact
 orthonormal Dirichlet modes
 
@@ -78,24 +78,24 @@ orthonormal Dirichlet modes
   a^{-1/2}\sin\!\left(\frac{n\pi(x+a)}{2a}\right),\qquad n\ge1.
 \]
 
-This eliminates the (10^8)-scale Gram conditioning seen in a raw
+This eliminates the \(10^8\)-scale Gram conditioning seen in a raw
 polynomial-times-bump basis.
 
 ## Reproducible audit
 
 With 8193 grid points the following lowest Ritz values are obtained:
 
-| (a) | dimension | prime powers | Gram condition | lowest Ritz value |
+| \(a\) | dimension | prime powers | Gram condition | lowest Ritz value |
 |---:|---:|:---|---:|---:|
-| 0.3000 | 16 | none | 1.000000000000006 | (9.05724\times10^{-3}) |
-| 0.3465 | 16 | none | 1.000000000000006 | (1.51147\times10^{-3}) |
-| 0.4000 | 24 | (2) | 1.000000000000010 | (2.14778\times10^{-4}) |
-| 0.5000 | 24 | (2) | 1.000000000000008 | (1.07955\times10^{-6}) |
-| 0.5500 | 32 | (2,3) | 1.000000000000011 | (5.95049\times10^{-8}) |
+| 0.3000 | 16 | none | 1.000000000000006 | \(9.05724\times10^{-3}\) |
+| 0.3465 | 16 | none | 1.000000000000006 | \(1.51147\times10^{-3}\) |
+| 0.4000 | 24 | \(2\) | 1.000000000000010 | \(2.14778\times10^{-4}\) |
+| 0.5000 | 24 | \(2\) | 1.000000000000008 | \(1.07955\times10^{-6}\) |
+| 0.5500 | 32 | \(2,3\) | 1.000000000000011 | \(5.95049\times10^{-8}\) |
 
-At (a=0.55), dimension 32, the values at 4097, 8193, and 16385 grid
-points are respectively (6.26670\times10^{-8}),
-(5.95049\times10^{-8}), and (5.90549\times10^{-8}). The last
+At \(a=0.55\), dimension 32, the values at 4097, 8193, and 16385 grid
+points are respectively \(6.26670\times10^{-8}\),
+\(5.95049\times10^{-8}\), and \(5.90549\times10^{-8}\). The last
 eigenvector has the component balance
 
 \[
@@ -106,8 +106,8 @@ eigenvector has the component balance
 where the terms are polar, archimedean, and prime contributions.
 
 As an independent conditional cross-check, summing
-(2|\widehat v(\gamma_j)|^2) over the first 100 tabulated critical-line zeros
-gives (5.80626\times10^{-8}), or 98.32% of the explicit-formula value. This
+\(2|\widehat v(\gamma_j)|^2\) over the first 100 tabulated critical-line zeros
+gives \(5.80626\times10^{-8}\), or 98.32% of the explicit-formula value. This
 uses known critical-line zeros only to validate the implementation; it is not
 part of any proof.
 

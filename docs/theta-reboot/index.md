@@ -109,4 +109,5 @@ It does not authorize changing the success condition.
 - [First arithmetic-window falsifier](first-window-falsifier.md)
 - [Semilocal Weil programme](semilocal-weil.md)
 - [Continuous Weil--Suzuki operator](screw-operator.md)
+- [Explicit unconditional small-support bound](explicit-small-support.md)
 - [Falsifiers and abandonment conditions](falsifiers.md)
