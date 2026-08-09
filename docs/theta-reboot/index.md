@@ -110,4 +110,5 @@ It does not authorize changing the success condition.
 - [Semilocal Weil programme](semilocal-weil.md)
 - [Continuous Weil--Suzuki operator](screw-operator.md)
 - [Explicit unconditional small-support bound](explicit-small-support.md)
+- [Legendre tail coercivity and finite reduction](legendre-tail.md)
 - [Falsifiers and abandonment conditions](falsifiers.md)

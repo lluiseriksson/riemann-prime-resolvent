@@ -3,26 +3,27 @@
 ## Statement
 
 Let \(Q_W^a\) be the localized Weil quadratic form in the normalization of
-Suzuki, and let \(0<a\le 1/16\). Then, unconditionally,
+Suzuki, and let \(0<a\le 1/14\). Then, unconditionally,
 
 \[
 \boxed{
   Q_W^a(v)\ge
-  \bigl[-\log a-\log(2\pi)-\gamma-4a\bigr]\lVert v\rVert_2^2
+  \left[-\log a-\log(2\pi)-\gamma+
+  \frac{5-\sqrt{19}}6-4a\right]\lVert v\rVert_2^2
 }
 \]
 
 on the form domain. In particular,
 
 \[
-  Q_W^a(v)>0\qquad(0\ne v,\;0<a\le1/16),
+  Q_W^a(v)>0\qquad(0\ne v,\;0<a\le1/14),
 \]
 
 because the coefficient at the right endpoint is
 
 \[
-  \log16-\log(2\pi)-\gamma-\frac14
-  =0.1074959909\ldots>0.
+  \log14-\log(2\pi)-\gamma+\frac{5-\sqrt{19}}6-\frac27
+  =0.0451004886\ldots>0.
 \]
 
 This makes the phrase “positive for sufficiently small \(a\)” effective. It is
@@ -51,9 +52,40 @@ The Beurling--Deny part immediately gives
 \mathcal L_a(v)
 &=\frac14\iint\frac{|v(x)-v(y)|^2}{|x-y|}\,dx\,dy
 -\frac12\int\log(a^2-x^2)|v(x)|^2\,dx\\
-&\ge -\log a\,\lVert v\rVert_2^2.
+&\ge \left(-\log a+\frac{5-\sqrt{19}}6\right)
+\lVert v\rVert_2^2.
 \end{aligned}
 \]
+
+Here is an elementary proof of the positive constant. On \((-1,1)\), write
+\(w=me_0+q\), where \(e_0=1/\sqrt2\), \(q\perp e_0\), and
+\(|m|^2+\lVert q\rVert^2=1\). The regional logarithmic Laplacian
+
+\[
+  A_2w(x)=\frac12\int_{-1}^1\frac{w(x)-w(y)}{|x-y|}\,dy
+\]
+
+diagonalizes in the Legendre basis with eigenvalues \(H_n\). Consequently its
+quadratic form is at least \(\lVert q\rVert^2\). Also
+\(-\tfrac12\log(1-x^2)\ge x^2/2\), and the reverse triangle inequality gives
+
+\[
+\mathcal L(w)\ge r^2+
+\frac12\max\!\left(\frac{\sqrt{1-r^2}}{\sqrt3}-r,0\right)^2,
+\qquad r=\lVert q\rVert.
+\]
+
+If the maximum vanishes, \(r^2\ge1/4\). Otherwise the smallest eigenvalue of
+
+\[
+\begin{pmatrix}
+1/6&-1/(2\sqrt3)\\
+-1/(2\sqrt3)&3/2
+\end{pmatrix}
+\]
+
+is \((5-\sqrt{19})/6\). This proves the claimed lower bound for
+\(\mathcal L\).
 
 For \(t>0\) below the first prime, differentiating the exact archimedean
 formula and subtracting the second derivative of
@@ -67,7 +99,7 @@ r''(t)=
 \qquad r''(0)=-\frac74.
 \]
 
-On \(0\le t\le1/8\), elementary exponential bounds give
+On \(0\le t\le1/7\), elementary exponential bounds give
 
 \[
   -2\le r''(t)\le0.
@@ -86,20 +118,20 @@ For the lower estimate use
 \qquad e^{-t/2}\ge1-\frac t2,
 \]
 
-to obtain \(h(t)\ge-1/4+(1-t/2)/2\ge7/32\). Moreover,
+to obtain \(h(t)\ge-1/4+(1-t/2)/2\ge3/14\). Moreover,
 \(e^x\le(1-x)^{-1}\) for \(0\le x<1\), hence
 
 \[
-e^{t/2}+e^{-t/2}\le2e^{1/16}\le\frac{32}{15}.
+e^{t/2}+e^{-t/2}\le2e^{1/14}\le\frac{28}{13}.
 \]
 
-Thus \(r''(t)\ge7/32-32/15=-919/480>-2\). For the upper
+Thus \(r''(t)\ge3/14-28/13=-353/182>-2\). For the upper
 estimate, \(1/(1-e^{-2t})\le1/(2t)+1\) gives \(h(t)\le1\), so
 \(r''(t)\le-2\cosh(t/2)+1\le-1\). No floating-point statement enters
 the proof.
 
 For fixed \(x\in(-a,a)\), the \(y\)-interval has length \(2a\), and
-\(|x-y|\le2a\le1/8\). Schur's test therefore yields
+\(|x-y|\le2a\le1/7\). Schur's test therefore yields
 
 \[
   \left|\iint r''(x-y)v(y)\overline{v(x)}\,dx\,dy\right|
@@ -108,8 +140,19 @@ For fixed \(x\in(-a,a)\), the \(y\)-interval has length \(2a\), and
 
 Combining the three estimates proves the displayed bound first on
 \(H_0^1(-a,a)\), hence on the closed form domain by density and lower
-semicontinuity. The coefficient is decreasing in \(a\), so checking \(a=1/16\)
+semicontinuity. The coefficient is decreasing in \(a\), so checking \(a=1/14\)
 proves strict positivity throughout the registered interval.
+
+The endpoint sign can be certified with rational bounds only:
+\(\pi<22/7\), \(\gamma<289/500\),
+\(\sqrt{19}<4359/1000\), and
+\(e^{4/5}<2.226<49/22\). They imply
+
+\[
+\log(7/\pi)-\gamma+\frac{5-\sqrt{19}}6-\frac27
+>\frac45-\frac{289}{500}+\frac{641}{6000}-\frac27
+=\frac{1811}{42000}>0.
+\]
 
 ## Why this matters and where it stops
 
