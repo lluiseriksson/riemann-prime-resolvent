@@ -77,3 +77,31 @@ def endpoint_flux_tail_psd_upper(
             np.outer(plus, plus) + np.outer(minus, minus)
         ) / first_degree**2
     return 0.5 * (gram + gram.T)
+
+
+def refined_endpoint_flux_tail_psd_upper(
+    half_width: float,
+    degree_count: int,
+    first_degree: int,
+    explicit_end: int = 4096,
+) -> np.ndarray:
+    """Parity-resolved finite sum plus a telescopic PSD remainder bound."""
+
+    if explicit_end <= first_degree:
+        raise ValueError("explicit_end must exceed first_degree")
+    flux = endpoint_flux_maps(half_width, degree_count)
+    gram = np.zeros((3 * degree_count, 3 * degree_count))
+    for degree in range(first_degree, explicit_end):
+        weight_square = (2 * degree + 1) / (
+            2.0 * degree**2 * (degree + 1) ** 2
+        )
+        for plus, minus in flux:
+            row = plus - (-1.0) ** degree * minus
+            gram += weight_square * np.outer(row, row)
+    # The exact remaining scalar weight is 1/(2 explicit_end^2).  The
+    # elementary two-vector inequality turns it into this Loewner upper.
+    for plus, minus in flux:
+        gram += (
+            np.outer(plus, plus) + np.outer(minus, minus)
+        ) / explicit_end**2
+    return 0.5 * (gram + gram.T)

@@ -3,6 +3,7 @@ import numpy as np
 from experiments.theta_pencil.cut_endpoint_flux import (
     endpoint_flux_maps,
     endpoint_flux_tail_psd_upper,
+    refined_endpoint_flux_tail_psd_upper,
 )
 
 
@@ -28,3 +29,27 @@ def test_endpoint_flux_tail_matrix_bounds_direct_partial_sums():
 def test_endpoint_flux_maps_have_rank_at_most_six():
     flux = endpoint_flux_maps(0.5, 16)
     assert np.linalg.matrix_rank(flux.reshape(6, -1), tol=1e-12) <= 6
+
+
+def test_refined_flux_bound_is_stronger_and_still_dominates():
+    degree_count = 4
+    first_degree = 13
+    crude = endpoint_flux_tail_psd_upper(0.5, degree_count, first_degree)
+    refined = refined_endpoint_flux_tail_psd_upper(
+        0.5, degree_count, first_degree, 300
+    )
+    assert np.linalg.eigvalsh(crude - refined)[0] > -2e-14
+
+    flux = endpoint_flux_maps(0.5, degree_count)
+    rng = np.random.default_rng(314159)
+    for _ in range(10):
+        vector = rng.normal(size=3 * degree_count)
+        direct = 0.0
+        for degree in range(first_degree, 100_000):
+            weight_square = (2 * degree + 1) / (
+                2.0 * degree**2 * (degree + 1) ** 2
+            )
+            for plus, minus in flux:
+                value = (plus - (-1.0) ** degree * minus) @ vector
+                direct += weight_square * value * value
+        assert direct <= vector @ refined @ vector + 2e-14
