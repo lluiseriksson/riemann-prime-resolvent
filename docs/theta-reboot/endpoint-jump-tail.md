@@ -238,6 +238,36 @@ Schur estimate had the wrong structure and a margin of the wrong sign.
 
 ## Parity-resolved inertia budget
 
+The operator step used below is the following quadratic-form Schur lemma.
+Let \(\mathcal H=U\oplus V\), with \(U\) finite dimensional, and suppose a
+closed semibounded form has block representation
+\[
+ q(u+v)=\langle Au,u\rangle+2\operatorname{Re}\langle B^*u,v\rangle
+        +q_C(v),
+ \qquad q_C(v)\ge\langle Dv,v\rangle,
+\]
+where \(D>0\) and \(D^{-1/2}B^*\) is bounded. Completing the square gives
+\[
+ q(u+v)\ge
+ \|D^{1/2}v+D^{-1/2}B^*u\|^2
+ +\langle(A-BD^{-1}B^*)u,u\rangle.
+\]
+Consequently the negative index of the full form is at most that of the
+finite Schur matrix. If \(B=B_0+R\), then
+\[
+ \|BD^{-1}B^*-B_0D^{-1}B_0^*\|
+ \le 2\|B_0D^{-1/2}\|\,\|RD^{-1/2}\|
+      +\|RD^{-1/2}\|^2.                 \tag{S}
+\]
+These statements follow first for finite-support vectors and then by form
+closure. In the present application, \(A_2e_n=H_ne_n\), the logarithmic
+boundary potential is nonnegative, and all remaining terms are bounded.
+Thus the high form is bounded below by
+\(D_ne_n=(H_n-\text{loss}-\beta)e_n\). Since \(H_n\to\infty\), the same form
+comparison also gives compact resolvent. This supplies the domain and
+negative-index reduction used by the interval calculation; it is not an
+extra spectral hypothesis.
+
 The operator commutes with reflection. Numerically, its ground state is even
 and its second state is odd. For the shifted operator \(A_{0.4}-0.005I\), it
 therefore suffices to prove:
@@ -250,10 +280,10 @@ potential and prime coefficients through mode 4095, the smooth coefficients
 through mode 511, and six endpoint jets through mode \(10^6\). The remaining
 tails use only the proved Wang, potential-moment, and smooth-kernel bounds.
 
-| parity | first three Schur eigenvalues after explicit jets | omitted-tail correction | safe floating margin |
+| parity | first three Schur eigenvalues after explicit jets | certified omitted-tail correction | certified margin |
 |:---:|:---|---:|---:|
-| even | \(-0.00481950,\ 0.30131078,\ 0.90142762\) | \(0.00686083\) | \(0.29444995\) on the second eigenvalue |
-| odd | \(0.00966745,\ 0.89305310,\ 1.30022932\) | \(0.00722603\) | **\(0.00244142\)** on the first eigenvalue |
+| even | \(-0.00481950,\ 0.30131078,\ 0.90142762\) | \(0.00674913\) | \(0.29456165\) on the second eigenvalue |
+| odd | \(0.00966745,\ 0.89305310,\ 1.30022932\) | \(0.00700254\) | **\(0.00266492\)** on the first eigenvalue |
 
 The omitted-tail correction already includes cross terms. If \(J\) is the
 explicit jet tail and \(E\) is the sum of all remaining weighted tails, then
@@ -263,9 +293,14 @@ explicit jet tail and \(E\) is the sum of all remaining weighted tails, then
  \le2\|J\|\,\|E\|+\|E\|^2.
 \]
 
-For the odd block, the explicit jet correction has norm \(0.01008338\), while
-the combined omitted weighted norm is \(0.03114922\). These figures produce
-the displayed \(0.00722603\) inflation.
+For the tail calculation, both explicit jet corrections are bounded by the
+rational value \(0.0103\). The outward-rounded combined omitted weighted norms
+are \(0.02908340\) in the even block and \(0.03005017\) in the odd block.
+These figures produce the displayed \(0.00674913\) and \(0.00700254\)
+inflations. The prime continuous-remainder variations were independently
+enclosed in Arb as \(1.280\cdot10^{20}\) and \(1.486\cdot10^{20}\); all other
+tail constants and harmonic denominators were evaluated in the same ball
+arithmetic pass.
 
 Thus every *analytic* infinite-tail obligation needed for
 \(\lambda_2(A_{0.4})\ge0.005\) now fits inside a positive margin. What remains
@@ -367,7 +402,51 @@ Both are far inside the pre-registered \(10^{-6}\) entrywise box. Combining
 this source enclosure with the existing interval-eigenvalue computation and
 the analytic omitted-tail corrections certifies positivity of the odd block
 of \(A_{0.4}-0.005I\) and at most one negative direction in its even block.
-Equivalently, the second spectral point is at least \(0.005\), subject only to
-the operator-domain reduction stated earlier in this note. The remaining
+Equivalently, the second spectral point is at least \(0.005\), by the
+quadratic-form Schur lemma stated earlier in this note. The remaining
 positivity obligation is the interval version of the Kato--Temple ground-state
 test.
+
+## Certified localized result at \(a=2/5\)
+
+The Temple obligation has now been evaluated with outward rounding as well.
+The trial vector is the exact dyadic vector obtained by rounding the even
+256-mode Ritz vector; its norm is not assumed to be one, but is enclosed and
+divided out in Arb.  The prime action through mode 8191 is generated from one
+collapsed endpoint-jet row at 10240-bit precision.  The former non-rigorous
+absolute-value quadrature in the prime remainder is replaced by 32
+Cauchy--Schwarz pieces.  On each piece, Arb Gauss--Legendre integrates
+\((\phi'')^2\) exactly, while the singular weight has the exact arcsine mass.
+
+The resulting outward-rounded data are
+
+| quantity | certified enclosure or upper bound |
+|---|---:|
+| Rayleigh quotient \(\mu\) | \([1.812796052112823,1.812796052359446]\cdot10^{-4}\) |
+| finite residual through mode 8191 | \(3.26505414188212\cdot10^{-4}\) |
+| jump tail | \(1.49089143110320\cdot10^{-4}\) |
+| continuous prime tail | \(3.38966348389474\cdot10^{-4}\) |
+| logarithmic-potential tail | \(2.60601125616175\cdot10^{-6}\) |
+| smooth-kernel tail | \(7.31788946192498\cdot10^{-5}\) |
+| total residual \(\varepsilon\) | \(8.90345811587737\cdot10^{-4}\) |
+
+The continuous-prime entry uses the independently certified variation
+\(V_1\le192.857950011541\), not the smaller descriptive quadrature value.
+With the certified second floor \(\beta=0.005\), Kato--Temple gives
+
+\[
+ \boxed{
+ \lambda_1(A_{2/5})
+ \ge \mu-\frac{\varepsilon^2}{\beta-\mu}
+ >1.67721012\cdot10^{-5}>0.
+ }
+\]
+
+Thus, after the standard self-adjoint form and Schur-complement reductions
+spelled out in this note, the localized Weil--Suzuki operator is positive for
+the first prime-active support window \(a=2/5\).  This is an unconditional
+localized theorem, not RH: Weil's criterion requires positivity for every
+support size.  Its value is that the programme has crossed the first prime
+threshold \(a=\log(2)/2\) with a complete source-and-tail certificate.  The
+next mathematical question is whether the same architecture survives at
+\(a=1/2\) and then across the next threshold \(a=\log(3)/2\).
