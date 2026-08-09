@@ -53,7 +53,9 @@ nav:
       - Derivation and local no-go: theta-reboot/theta-pencil.md
       - Scaling Hamiltonian extraction: theta-reboot/source-extraction-scaling-hamiltonian.md
       - One-prime moment model: theta-reboot/one-prime-moments.md
+      - First-window falsifier: theta-reboot/first-window-falsifier.md
       - Semilocal Weil programme: theta-reboot/semilocal-weil.md
+      - Continuous Weil--Suzuki operator: theta-reboot/screw-operator.md
       - Falsifiers: theta-reboot/falsifiers.md
   - Criterion layer site: https://lluiseriksson.github.io/riemann-prime-resolvent/criterion/
   - Programme contract: PROGRAMME_RELATION.md

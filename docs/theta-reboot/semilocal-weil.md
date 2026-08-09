@@ -76,6 +76,10 @@ The exact one-prime moment and Jacobi model is recorded in
 [One-prime moment model](one-prime-moments.md). It supplies structured blocks
 for the places (2) and (3), not the missing sign theorem.
 
+The first direct and Fourier-side compressions of the exact signed form are
+recorded in
+[First arithmetic window: exact quadratic form and falsifier](first-window-falsifier.md).
+
 ## W2: why the sibling repositories are relevant
 
 - `lean-os-positivity` supplies reusable algebra for reflection-positive

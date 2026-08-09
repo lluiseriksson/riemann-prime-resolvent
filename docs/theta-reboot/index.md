@@ -106,5 +106,7 @@ It does not authorize changing the success condition.
 - [Theta-pencil derivation and local no-go](theta-pencil.md)
 - [Scaling Hamiltonian source extraction](source-extraction-scaling-hamiltonian.md)
 - [One-prime moment model](one-prime-moments.md)
+- [First arithmetic-window falsifier](first-window-falsifier.md)
 - [Semilocal Weil programme](semilocal-weil.md)
+- [Continuous Weil--Suzuki operator](screw-operator.md)
 - [Falsifiers and abandonment conditions](falsifiers.md)
