@@ -192,30 +192,29 @@ series contribute no modes beyond local degree 40.
 
 The rectangular source through degree 128 was independently evaluated at
 3072-bit precision; all exported radii were below floating-point underflow.
-At that cutoff the comparison floor is $3.4905770$.  Reserving the smaller
-Schur margins $0.007$ and $0.06$, Green's identity reduces the remaining
-proof to
+This does **not** by itself permit the degree-128 harmonic floor in the final
+Schur denominator: local degree bands are not reducing subspaces for the
+global operator $A_2$.  Without a separately proved nested Schur estimate,
+the common complement floor remains $1.4381589$.  Reserving an even Schur
+margin $0.007$, Green's identity therefore requires
 
 \[
- \|f\mapsto D(\mathcal Lf)\|<2577.3\quad\hbox{(even)},
- \qquad
- \|f\mapsto D(\mathcal Lf)\|<7224.5\quad\hbox{(odd)}.
+ \|f\mapsto D(\mathcal Lf)\|<1650.97.
 \]
 
 The diagnostic partial norms through degree 128 are $206.1$ and $216.9$,
 respectively, but those figures are not substituted for the missing global
 upper bound.  The gate calculation is implemented in
-`regularized_tail_gate.py`; proving, for example, the common bound $2400$
-would close the endpoint Schur obligation.
+`regularized_tail_gate.py`.
 
-## Closing the regularized tail gate
+## A first regularized-tail bound
 
 The common bound can in fact be proved without quadrature.  On one local
-interval, write (D=-\partial_t(1-t^2)\partial_t).  For polynomials of degree
+interval, write $D=-\partial_t(1-t^2)\partial_t$.  For polynomials of degree
 below 16, Arb certifies
 
 \[
- \|D A_2\|<797,qquad
+ \|D A_2\|<797,\qquad
  \|V D\|_{\rm HS}<506,qquad
  \|-2t\partial_t-I\|_{\rm HS}<246.
 \]
@@ -236,8 +235,8 @@ Since
 
 the diagonal interval block is bounded by 1549.
 
-For touching intervals of lengths (A,B), put
-(r=[A(1-t)+B(1+s)]/2).  Direct differentiation gives
+For touching intervals of lengths $A,B$, put
+$r=[A(1-t)+B(1+s)]/2$.  Direct differentiation gives
 
 \[
  (D_t-D_s)r^{-1}
@@ -248,10 +247,10 @@ For touching intervals of lengths (A,B), put
 After integration by parts, the first term is the source Legendre operator,
 the shared-endpoint term is exactly the flux already retained, and the
 regular commutator has Mellin norm at most
-((A+B)\pi/(2B)).  Arb certifies
-(|\partial_t\|<87), the remaining endpoint trace costs less than 10, and
-the entire adjacent block is below (695.084<697).  The separated edge
-block has Hilbert--Schmidt norm below (0.441<1).
+$(A+B)\pi/(2B)$.  Arb certifies
+$\|\partial_t\|<87$, the remaining endpoint trace costs less than 10, and
+the entire adjacent block is below $695.084<697$.  The separated edge
+block has Hilbert--Schmidt norm below $0.441<1$.
 
 The scalar three-interval comparison matrix therefore yields
 
@@ -261,9 +260,9 @@ The scalar three-interval comparison matrix therefore yields
  <2535.707<2577.355.
 \]
 
-This closes the registered degree-128 regularized-tail gate.  The proof and
-all outward-rounded constants are implemented in
-`arb_regularized_map_bound.py`.  What remains before claiming positivity at
-(a=1/2) is mechanical but essential: assemble the degree-128 source,
-finite Schur bands, infinite flux Gram and this final bound in a single Arb
-inertia certificate.
+The proof and all outward-rounded constants are implemented in
+`arb_regularized_map_bound.py`.  The resulting $2535.707$ does **not** close
+the corrected common-floor gate $1650.97$.  The remaining analytic task is
+now precise: either sharpen the touching-block estimate by about 35 percent,
+or prove a valid nested Schur comparison that earns the stronger harmonic
+denominator for degrees above 128.  No endpoint positivity claim is made.

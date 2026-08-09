@@ -5,7 +5,7 @@ from experiments.theta_pencil.arb_regularized_map_bound import (
 )
 
 
-def test_regularized_map_bound_passes_degree_128_gate():
+def test_regularized_map_bound_records_uniform_floor_gap_honestly():
     pytest.importorskip("flint")
     result = certify_regularized_map_bound(16, 192)
     assert result.local_d_a2_upper < 797
@@ -15,4 +15,6 @@ def test_regularized_map_bound_passes_degree_128_gate():
     assert result.adjacent_upper < 697
     assert result.distant_upper < 1
     assert result.global_upper < 2537
-    assert result.global_upper < result.even_gate
+    assert 1650 < result.even_gate < 1652
+    assert result.global_upper > result.even_gate
+    assert not result.passes_even_gate

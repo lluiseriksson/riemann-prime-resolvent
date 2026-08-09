@@ -21,6 +21,7 @@ class RegularizedMapBound:
     distant_upper: float
     global_upper: float
     even_gate: float
+    passes_even_gate: bool
     precision: int
 
 
@@ -200,19 +201,17 @@ def certify_regularized_map_bound(
         if not global_bound.upper() < 2537:
             raise ArithmeticError("the global regularized map bound did not close")
 
-        perturbation_floor = arb("0.14076327914588865") - arb(25) / 12
-        harmonic_128 = sum(
-            (arb(1) / degree for degree in range(1, 129)), arb(0)
-        )
-        tail_floor = harmonic_128 + perturbation_floor
+        # Local degree bands are not reducing subspaces for the global A2.
+        # Without a separate nested Schur theorem, all omitted degrees must
+        # use the common degree-16 complement floor.
+        tail_floor = arb("1.4381589390415483")
     finally:
         ctx.prec = previous_precision
 
     even_gate = maximum_regularized_map_bound(
         128, 0.007, float(tail_floor.lower()), 0.01
     )
-    if not float(global_bound.upper()) < even_gate:
-        raise ArithmeticError("the regularized bound does not pass the even gate")
+    passes_even_gate = float(global_bound.upper()) < even_gate
     return RegularizedMapBound(
         local_d_a2_upper=float(d_a2.upper()),
         local_vd_frobenius_upper=float(vd_frobenius.upper()),
@@ -222,5 +221,6 @@ def certify_regularized_map_bound(
         distant_upper=float(separated.upper()),
         global_upper=float(global_bound.upper()),
         even_gate=even_gate,
+        passes_even_gate=passes_even_gate,
         precision=precision,
     )
