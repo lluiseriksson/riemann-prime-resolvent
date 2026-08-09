@@ -16,6 +16,7 @@ class RegularizedMapBound:
     local_d_a2_upper: float
     local_vd_frobenius_upper: float
     local_polynomial_frobenius_upper: float
+    local_regularized_tail_upper: float
     derivative_upper: float
     adjacent_upper: float
     distant_upper: float
@@ -194,11 +195,43 @@ def certify_regularized_map_bound(
         if not separated.upper() < 1:
             raise ArithmeticError("the separated cross-block bound did not close")
 
-        # The block-norm comparison matrix has diagonal <1549, adjacent
-        # entries <697 and the separated edge entry <1.  Its norm is at most
-        # diagonal + sqrt(2)*adjacent + separated.
-        global_bound = arb(1549) + arb(2).sqrt() * 697 + 1
-        if not global_bound.upper() < 2537:
+        # For the final tail we only need Q_128 D(L f), not the full local
+        # D(L f).  After subtracting endpoint fluxes its exact self-block
+        # coefficient, for n>m of equal parity, is
+        #
+        # sqrt((2n+1)(2m+1)) lambda_m/(lambda_n-lambda_m).
+        # Sum it explicitly through 4095 and use an n^-3 tail afterwards.
+        first_tail_degree = 128
+        explicit_end = 4096
+        self_tail_square = arb(0)
+        for source in range(d):
+            source_eigenvalue = source * (source + 1)
+            for target in range(first_tail_degree, explicit_end):
+                if (target - source) % 2:
+                    continue
+                target_eigenvalue = target * (target + 1)
+                value = (
+                    arb((2 * target + 1) * (2 * source + 1)).sqrt()
+                    * source_eigenvalue
+                    / (target_eigenvalue - source_eigenvalue)
+                )
+                self_tail_square += value**2
+            ratio = arb(source_eigenvalue) / explicit_end**2
+            self_tail_square += (
+                arb(3)
+                * (2 * source + 1)
+                * source_eigenvalue**2
+                / (1 - ratio) ** 2
+                / (2 * (explicit_end - 1) ** 2)
+            )
+        local_regularized_tail = self_tail_square.sqrt()
+        if not local_regularized_tail.upper() < 14:
+            raise ArithmeticError("the regularized self-tail bound did not close")
+
+        # The block-norm comparison matrix for Q_128 D L has diagonal <14,
+        # adjacent entries <697 and separated edge entry <1.
+        global_bound = arb(14) + arb(2).sqrt() * 697 + 1
+        if not global_bound.upper() < 1002:
             raise ArithmeticError("the global regularized map bound did not close")
 
         # Local degree bands are not reducing subspaces for the global A2.
@@ -216,6 +249,7 @@ def certify_regularized_map_bound(
         local_d_a2_upper=float(d_a2.upper()),
         local_vd_frobenius_upper=float(vd_frobenius.upper()),
         local_polynomial_frobenius_upper=float(polynomial_frobenius.upper()),
+        local_regularized_tail_upper=float(local_regularized_tail.upper()),
         derivative_upper=float(derivative_upper.upper()),
         adjacent_upper=float(touching.upper()),
         distant_upper=float(separated.upper()),

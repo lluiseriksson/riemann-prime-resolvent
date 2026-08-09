@@ -260,9 +260,34 @@ The scalar three-interval comparison matrix therefore yields
  <2535.707<2577.355.
 \]
 
-The proof and all outward-rounded constants are implemented in
-`arb_regularized_map_bound.py`.  The resulting $2535.707$ does **not** close
-the corrected common-floor gate $1650.97$.  The remaining analytic task is
-now precise: either sharpen the touching-block estimate by about 35 percent,
-or prove a valid nested Schur comparison that earns the stronger harmonic
-denominator for degrees above 128.  No endpoint positivity claim is made.
+For the final Green remainder, however, the required map is
+$Q_{128}D\mathcal LP_{16}$ rather than the full $D\mathcal LP_{16}$.  After
+subtracting the endpoint fluxes, the self-interval coefficients are exactly
+
+\[
+ d_{nm}=\sqrt{(2n+1)(2m+1)}
+ \frac{m(m+1)}{n(n+1)-m(m+1)},
+ \qquad n>m,\quad n\equiv m\pmod2.
+\]
+
+An explicit Arb sum through degree 4095 followed by an elementary
+$n^{-3}$ square-tail bound gives
+
+\[
+ \|Q_{128}D\mathcal L_{\rm self}P_{16}\|<13.093<14.
+\]
+
+Keeping the deliberately unsharpened adjacent and separated estimates then
+yields
+
+\[
+ \|Q_{128}D\mathcal LP_{16}\|
+ <14+\sqrt2\,697+1
+ <1000.707<1650.962.
+\]
+
+Thus `arb_regularized_map_bound.py` now closes the corrected common-floor
+regularized-tail gate.  No nested-band denominator is used.  What remains
+before claiming positivity at $a=1/2$ is to assemble the degree-128 finite
+source, the infinite flux Gram and this tail correction in one interval
+inertia computation.

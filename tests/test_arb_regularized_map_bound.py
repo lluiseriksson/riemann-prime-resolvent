@@ -14,7 +14,8 @@ def test_regularized_map_bound_records_uniform_floor_gap_honestly():
     assert result.derivative_upper < 87
     assert result.adjacent_upper < 697
     assert result.distant_upper < 1
-    assert result.global_upper < 2537
+    assert result.local_regularized_tail_upper < 14
+    assert result.global_upper < 1002
     assert 1650 < result.even_gate < 1652
-    assert result.global_upper > result.even_gate
-    assert not result.passes_even_gate
+    assert result.global_upper < result.even_gate
+    assert result.passes_even_gate
