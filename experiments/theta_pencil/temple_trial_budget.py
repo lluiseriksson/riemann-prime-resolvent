@@ -195,16 +195,17 @@ def run_temple_trial_audit(
         variation, residual_end, 1
     )
     potential_tail = potential_tail_bound(coefficients, residual_end, 2)
+    smooth_r4_bound = 1.0 if half_width <= 0.4 else 1.1
     smooth_tail = wang_normalized_tail_bound(
-        smooth_kernel_variation_bound(half_width), trial_dimension, 1
+        smooth_kernel_variation_bound(half_width, smooth_r4_bound),
+        trial_dimension,
+        1,
     )
-    total = (
-        low_residual
-        + finite_high
-        + jump_tail
-        + prime_remainder_tail
-        + potential_tail
-        + smooth_tail
+    prime_potential_tail = jump_tail + prime_remainder_tail + potential_tail
+    prime_potential_high = math.hypot(finite_high, prime_potential_tail)
+    total = math.hypot(
+        low_residual,
+        prime_potential_high + smooth_tail,
     )
     lower = temple_lower_bound(rayleigh, total, second_floor)
     return TempleTrialAudit(

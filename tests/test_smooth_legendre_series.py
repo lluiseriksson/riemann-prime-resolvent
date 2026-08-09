@@ -42,3 +42,7 @@ def test_smooth_series_matches_direct_kernel_matrix():
     series = smooth_kernel_series_matrix(0.4, size, 23)
     assert series == pytest.approx(direct, abs=3e-7)
     assert smooth_kernel_series_remainder_bound(0.4, 23) < 1e-13
+
+
+def test_half_width_one_half_has_a_certified_series_tail():
+    assert smooth_kernel_series_remainder_bound(0.5, 23) < 1e-11

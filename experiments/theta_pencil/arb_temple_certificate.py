@@ -24,6 +24,8 @@ class ArbTempleCertificate:
     residual_end: int
     rayleigh_lower: float
     rayleigh_upper: float
+    low_residual_upper: float
+    finite_high_residual_upper: float
     finite_residual_upper: float
     jump_tail_upper: float
     prime_remainder_tail_upper: float
@@ -129,16 +131,17 @@ def certify_temple_trial(
         rayleigh_lower = _float_lower(rayleigh_truncated - series_tail)
         rayleigh_upper = _float_upper(rayleigh_truncated + series_tail)
 
-        residual_square = arb(0)
+        low_residual_square = arb(0)
         for degree in range(dimension):
             residual = low_action[degree] - rayleigh_truncated * vector[degree]
-            residual_square += residual * residual
+            low_residual_square += residual * residual
 
         weighted = [
             vector[degree] * arb(2 * degree + 1).sqrt()
             for degree in range(dimension)
         ]
         eigenvalues = [arb(degree * (degree + 1)) for degree in range(dimension)]
+        high_residual_square = arb(0)
         for high in range(dimension + dimension % 2, residual_end, 2):
             potential = arb(2 * high + 1).sqrt() * sum(
                 (
@@ -151,7 +154,8 @@ def certify_temple_trial(
             prime_value = _ball_from_export(
                 arb, prime.midpoint[high], prime.radius[high]
             )
-            residual_square += (prime_value + potential) ** 2
+            high_residual_square += (prime_value + potential) ** 2
+        residual_square = low_residual_square + high_residual_square
         finite_residual = residual_square.sqrt() / norm_squared.sqrt()
         finite_residual_upper = _float_upper(finite_residual)
 
@@ -227,13 +231,31 @@ def certify_temple_trial(
 
         # Two copies of the smooth power-series error cover both the operator
         # action and the shift from the truncated to the exact Rayleigh value.
-        total_upper = (
-            finite_residual_upper
-            + _float_upper(jump_tail)
+        prime_potential_tail_upper = math.nextafter(
+            _float_upper(jump_tail)
             + _float_upper(prime_remainder_tail)
-            + _float_upper(potential_tail)
-            + _float_upper(smooth_tail)
-            + 2.0 * math.nextafter(smooth.analytic_remainder, math.inf)
+            + _float_upper(potential_tail),
+            math.inf,
+        )
+        low_residual_upper = _float_upper(
+            low_residual_square.sqrt() / norm_squared.sqrt()
+        )
+        finite_high_upper = _float_upper(
+            high_residual_square.sqrt() / norm_squared.sqrt()
+        )
+        prime_potential_high_upper = math.nextafter(
+            math.hypot(finite_high_upper, prime_potential_tail_upper), math.inf
+        )
+        total_upper = math.nextafter(
+            math.hypot(
+                low_residual_upper,
+                math.nextafter(
+                    prime_potential_high_upper + _float_upper(smooth_tail),
+                    math.inf,
+                ),
+            )
+            + 2.0 * math.nextafter(smooth.analytic_remainder, math.inf),
+            math.inf,
         )
         if rayleigh_upper >= second_floor:
             raise ArithmeticError("the Rayleigh interval reaches the gap floor")
@@ -252,6 +274,8 @@ def certify_temple_trial(
         residual_end=residual_end,
         rayleigh_lower=rayleigh_lower,
         rayleigh_upper=rayleigh_upper,
+        low_residual_upper=low_residual_upper,
+        finite_high_residual_upper=finite_high_upper,
         finite_residual_upper=finite_residual_upper,
         jump_tail_upper=_float_upper(jump_tail),
         prime_remainder_tail_upper=_float_upper(prime_remainder_tail),

@@ -428,17 +428,21 @@ The resulting outward-rounded data are
 | continuous prime tail | \(3.38966348389474\cdot10^{-4}\) |
 | logarithmic-potential tail | \(2.60601125616175\cdot10^{-6}\) |
 | smooth-kernel tail | \(7.31788946192498\cdot10^{-5}\) |
-| total residual \(\varepsilon\) | \(8.90345811587737\cdot10^{-4}\) |
+| total residual \(\varepsilon\) | \(6.62546772781621\cdot10^{-4}\) |
 
 The continuous-prime entry uses the independently certified variation
 \(V_1\le192.857950011541\), not the smaller descriptive quadrature value.
-With the certified second floor \(\beta=0.005\), Kato--Temple gives
+Here the finite block \([256,8192)\) and the tail \([8192,\infty)\)
+are combined by Pythagoras before the smooth high-mode bound is added; their
+Legendre supports are disjoint, so summing all six rows by a triangle
+inequality would discard a genuine orthogonality. With the certified second
+floor \(\beta=0.005\), Kato--Temple gives
 
 \[
  \boxed{
  \lambda_1(A_{2/5})
  \ge \mu-\frac{\varepsilon^2}{\beta-\mu}
- >1.67721012\cdot10^{-5}>0.
+ >9.01831750\cdot10^{-5}>0.
  }
 \]
 

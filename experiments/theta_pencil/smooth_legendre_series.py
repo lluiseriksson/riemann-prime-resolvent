@@ -132,22 +132,22 @@ def smooth_kernel_series_matrix(
 def smooth_kernel_series_remainder_bound(
     half_width: float, maximum_power: int = 23
 ) -> float:
-    """Certified Schur-norm bound for omitted powers when 2a <= 4/5."""
-    if not 0.0 < half_width <= 0.4:
-        raise ValueError("the registered rational tail bound applies for a <= 2/5")
+    """Certified Schur-norm bound for omitted powers when 2a <= 1."""
+    if not 0.0 < half_width <= 0.5:
+        raise ValueError("the registered rational tail bound applies for a <= 1/2")
     if maximum_power < 1:
         raise ValueError("maximum_power must be positive")
-    # Bernoulli-polynomial Fourier bound with pi > 3 and 2a/pi <= 4/15.
-    ratio = Fraction(4, 15)
+    # Bernoulli-polynomial Fourier bound with pi > 3 and 2a/pi < 2a/3.
+    exact_half_width = Fraction(str(half_width))
+    ratio = 2 * exact_half_width / 3
     h_tail = Fraction(2, 3) * ratio ** (maximum_power + 1) / (1 - ratio)
 
     first_even = maximum_power + 1
     if first_even % 2:
         first_even += 1
-    z = Fraction(2, 5)  # upper bound for t/2
+    z = exact_half_width  # upper bound for t/2
     first_term = Fraction(2) * z**first_even / math.factorial(first_even)
     next_ratio = z * z / ((first_even + 1) * (first_even + 2))
     cosh_tail = first_term / (1 - next_ratio)
     kernel_supremum = half_width * float(h_tail + cosh_tail)
     return 2.0 * kernel_supremum
-

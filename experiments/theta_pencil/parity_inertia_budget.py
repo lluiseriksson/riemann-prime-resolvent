@@ -144,7 +144,10 @@ def run_parity_inertia_audit(
     potential = potential_operator_tail_bound(
         low_degrees, finite_dimension, 3
     ) / math.sqrt(float(_harmonic_array(np.array([finite_dimension]))[0] - loss - spectral_floor))
-    smooth_variation = smooth_kernel_variation_bound(half_width)
+    smooth_r4_bound = 1.0 if half_width <= 0.4 else 1.1
+    smooth_variation = smooth_kernel_variation_bound(
+        half_width, smooth_r4_bound
+    )
     smooth = wang_normalized_tail_bound(
         smooth_variation, smooth_dimension, 1
     ) / math.sqrt(
