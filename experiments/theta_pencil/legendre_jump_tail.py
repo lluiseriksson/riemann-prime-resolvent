@@ -7,6 +7,9 @@ import math
 import numpy as np
 from scipy.special import eval_legendre
 
+CERTIFIED_R4_BOUND = 1.0
+MAX_CERTIFIED_R4_HALF_WIDTH = 0.4
+
 
 def normalized_step_coefficient(cut: float, degree: int) -> float:
     """Coefficient of 1_{[-1, cut]} in the normalized Legendre basis."""
@@ -46,33 +49,77 @@ def bernstein_jump_tail_bound(
     )
 
 
-def wang_normalized_coefficient_bound(variation: float, degree: int) -> float:
-    """Wang's m=1 bound converted to normalized Legendre coefficients."""
+def wang_normalized_coefficient_bound(
+    variation: float, degree: int, derivative_order: int = 1
+) -> float:
+    """Wang's order-m bound converted to normalized Legendre coefficients."""
     if variation < 0.0:
         raise ValueError("variation must be nonnegative")
-    if degree < 2:
-        raise ValueError("degree must be at least two")
+    if derivative_order < 0:
+        raise ValueError("derivative_order must be nonnegative")
+    if degree < derivative_order + 1:
+        raise ValueError("degree must exceed derivative_order")
+    product = math.prod(
+        1.0 / (degree - offset + 0.5)
+        for offset in range(1, derivative_order + 1)
+    )
     return (
         math.sqrt(2.0 / (2 * degree + 1))
         * 2.0
         * variation
+        / math.sqrt(math.pi * (2 * degree - 2 * derivative_order - 1))
+        * product
+    )
+
+
+def wang_normalized_tail_bound(
+    variation: float, first_degree: int, derivative_order: int = 1
+) -> float:
+    """Elementary l2 tail consequence of Wang's coefficient estimate."""
+    if variation < 0.0:
+        raise ValueError("variation must be nonnegative")
+    if derivative_order < 0:
+        raise ValueError("derivative_order must be nonnegative")
+    if first_degree < max(3, 2 * derivative_order + 1):
+        raise ValueError("first_degree is too small for the simplified tail bound")
+    return (
+        2.0 ** (derivative_order + 1)
+        * variation
         / (
-            math.sqrt(math.pi * (2 * degree - 3))
-            * (degree - 0.5)
+            math.sqrt(math.pi * (2 * derivative_order + 1))
+            * (first_degree - 1.0) ** (derivative_order + 0.5)
         )
     )
 
 
-def wang_normalized_tail_bound(variation: float, first_degree: int) -> float:
-    """Elementary l2 tail consequence of Wang's coefficient estimate."""
-    if variation < 0.0:
-        raise ValueError("variation must be nonnegative")
-    if first_degree < 3:
-        raise ValueError("first_degree must be at least three")
+def smooth_kernel_variation_bound(
+    half_width: float, fourth_derivative_bound: float = CERTIFIED_R4_BOUND
+) -> float:
+    """Bound V_1 of the smooth-kernel image of a unit L2 vector.
+
+    This uses the distributional cusp of r'' at zero and assumes
+    |r''''(t)| <= ``fourth_derivative_bound`` for |t| <= 2a.
+    """
+    if half_width <= 0.0:
+        raise ValueError("half_width must be positive")
+    if (
+        fourth_derivative_bound == CERTIFIED_R4_BOUND
+        and half_width > MAX_CERTIFIED_R4_HALF_WIDTH
+    ):
+        raise ValueError("the certified unit r'''' bound applies only for a <= 0.4")
+    if fourth_derivative_bound < 0.0:
+        raise ValueError("fourth_derivative_bound must be nonnegative")
+    weighted_l1 = (
+        math.sqrt(math.pi)
+        * math.gamma(0.75)
+        / math.gamma(1.25)
+    )
     return (
-        4.0
-        * variation
-        / (math.sqrt(3.0 * math.pi) * (first_degree - 1.0) ** 1.5)
+        half_width**2 * math.sqrt(math.pi) / 24.0
+        + half_width**3
+        * fourth_derivative_bound
+        * math.sqrt(2.0)
+        * weighted_l1
     )
 
 
@@ -131,4 +178,3 @@ def temple_lower_bound(rayleigh: float, residual: float, second_floor: float) ->
     if second_floor <= rayleigh:
         raise ValueError("second_floor must exceed the Rayleigh quotient")
     return rayleigh - residual * residual / (second_floor - rayleigh)
-
