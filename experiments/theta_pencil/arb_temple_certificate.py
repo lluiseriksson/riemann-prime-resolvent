@@ -20,6 +20,8 @@ from experiments.theta_pencil.temple_trial_budget import run_temple_trial_audit
 
 @dataclass(frozen=True)
 class ArbTempleCertificate:
+    half_width: float
+    trial_parity: int
     dimension: int
     residual_end: int
     rayleigh_lower: float
@@ -54,6 +56,8 @@ def _float_lower(value) -> float:
 
 
 def certify_temple_trial(
+    half_width: float = 0.4,
+    trial_parity: int = 0,
     dimension: int = 256,
     residual_end: int = 8192,
     second_floor: float = 0.005,
@@ -62,6 +66,8 @@ def certify_temple_trial(
     prime_precision: int = 10240,
 ) -> ArbTempleCertificate:
     """Certify positivity of the lowest point assuming the supplied gap floor."""
+    if trial_parity not in (0, 1):
+        raise ValueError("trial_parity must be zero or one")
     if dimension < 4 or residual_end <= dimension:
         raise ValueError("require 4 <= dimension < residual_end")
     try:
@@ -70,24 +76,28 @@ def certify_temple_trial(
         raise RuntimeError("python-flint is required") from error
 
     floating = run_temple_trial_audit(
+        half_width=half_width,
         trial_dimension=dimension,
         residual_end=residual_end,
         second_floor=second_floor,
+        trial_parity=trial_parity,
     )
     coefficients = floating.coefficients.copy()
-    coefficients[1::2] = 0.0
+    coefficients[1 - trial_parity :: 2] = 0.0
     prime = build_arb_prime_two_action(
-        0.4, coefficients, residual_end, prime_precision
+        half_width, coefficients, residual_end, prime_precision
     )
-    smooth = build_arb_smooth_matrix(0.4, dimension, dimension, 23, precision)
+    smooth = build_arb_smooth_matrix(
+        half_width, dimension, dimension, 23, precision
+    )
     variation = certify_prime_remainder_variation(
-        0.4, coefficients, variation_partitions, precision
+        half_width, coefficients, variation_partitions, precision
     )
 
     previous_precision = ctx.prec
     try:
         ctx.prec = precision
-        a = arb(2) / 5
+        a = arb(str(half_width))
         vector = [arb(float(value)) for value in coefficients]
         norm_squared = sum((value * value for value in vector), arb(0))
         scalar = -a.log() - (arb(2) * arb.pi()).log() - arb.const_euler()
@@ -111,10 +121,10 @@ def certify_temple_trial(
             )
 
         low_action = [arb(0) for _ in range(dimension)]
-        for left in range(0, dimension, 2):
+        for left in range(trial_parity, dimension, 2):
             value = (harmonic[left] + scalar) * vector[left]
             value += _ball_from_export(arb, prime.midpoint[left], prime.radius[left])
-            for right in range(0, dimension, 2):
+            for right in range(trial_parity, dimension, 2):
                 value += boundary(left, right) * vector[right]
                 smooth_entry = _ball_from_export(
                     arb, smooth.midpoint[left, right], smooth.radius[left, right]
@@ -142,12 +152,13 @@ def certify_temple_trial(
         ]
         eigenvalues = [arb(degree * (degree + 1)) for degree in range(dimension)]
         high_residual_square = arb(0)
-        for high in range(dimension + dimension % 2, residual_end, 2):
+        first_high = dimension + ((dimension - trial_parity) % 2)
+        for high in range(first_high, residual_end, 2):
             potential = arb(2 * high + 1).sqrt() * sum(
                 (
                     weighted[low]
                     / (arb(high * (high + 1)) - eigenvalues[low])
-                    for low in range(0, dimension, 2)
+                    for low in range(trial_parity, dimension, 2)
                 ),
                 arb(0),
             )
@@ -162,7 +173,7 @@ def certify_temple_trial(
         endpoint = sum(
             (
                 vector[degree] * (arb(2 * degree + 1) / 2).sqrt()
-                for degree in range(0, dimension, 2)
+                for degree in range(trial_parity, dimension, 2)
             ),
             arb(0),
         )
@@ -190,7 +201,7 @@ def certify_temple_trial(
                 sum(
                     (
                         weighted[degree] * eigenvalues[degree] ** order
-                        for degree in range(0, dimension, 2)
+                        for degree in range(trial_parity, dimension, 2)
                     ),
                     arb(0),
                 )
@@ -204,11 +215,12 @@ def certify_temple_trial(
         absolute_moment = sum(
             (
                 abs(weighted[degree]) * eigenvalues[degree] ** 2
-                for degree in range(0, dimension, 2)
+                for degree in range(trial_parity, dimension, 2)
             ),
             arb(0),
         )
-        largest = eigenvalues[dimension - 2]
+        last_active = dimension - 1 - ((dimension - 1 - trial_parity) % 2)
+        largest = eigenvalues[last_active]
         ratio = largest / (residual_end * residual_end)
         potential_tail += (
             arb(3).sqrt()
@@ -219,9 +231,10 @@ def certify_temple_trial(
         )
 
         weighted_l1 = arb.pi().sqrt() * arb("0.75").gamma() / arb("1.25").gamma()
+        smooth_r4 = arb(1) if half_width <= 0.4 else arb("1.1")
         smooth_variation = (
             a * a * arb.pi().sqrt() / 24
-            + a**3 * arb(2).sqrt() * weighted_l1
+            + a**3 * smooth_r4 * arb(2).sqrt() * weighted_l1
         )
         smooth_tail = (
             arb(4)
@@ -270,6 +283,8 @@ def certify_temple_trial(
         ctx.prec = previous_precision
 
     return ArbTempleCertificate(
+        half_width=half_width,
+        trial_parity=trial_parity,
         dimension=dimension,
         residual_end=residual_end,
         rayleigh_lower=rayleigh_lower,

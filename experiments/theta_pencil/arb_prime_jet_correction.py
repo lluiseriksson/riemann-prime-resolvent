@@ -40,8 +40,8 @@ def build_arb_prime_jet_correction(
     transcendental constant and every recurrence operation is evaluated in
     Arb.  ``last_degree`` is exclusive, as in ``prime_jet_weighted_correction``.
     """
-    if half_width != 0.4:
-        raise ValueError("the exact Arb implementation currently registers a = 2/5")
+    if not math.log(2.0) / 2.0 < half_width <= 0.5:
+        raise ValueError("the exact Arb jet implementation requires log(2)/2 < a <= 1/2")
     low = np.asarray(low_degrees, dtype=int)
     if low.ndim != 1 or len(low) == 0:
         raise ValueError("low_degrees must be a nonempty vector")
@@ -59,7 +59,7 @@ def build_arb_prime_jet_correction(
     previous_precision = ctx.prec
     try:
         ctx.prec = precision
-        a = arb(2) / 5
+        a = arb(str(half_width))
         cut = arb(1) - arb.const_log2() / a
         sqrt_two = arb(2).sqrt()
         prime_factor = -arb(2) * arb.const_log2() / sqrt_two
@@ -67,7 +67,7 @@ def build_arb_prime_jet_correction(
         scalar = -a.log() - (arb(2) * arb.pi()).log() - arb.const_euler()
         if not scalar.upper() < 0:
             raise ArithmeticError("could not certify the sign of the scalar term")
-        loss = -scalar + arb(2) * arb.const_log2() / sqrt_two + arb(12) / 5
+        loss = -scalar + arb(2) * arb.const_log2() / sqrt_two + arb(6) * a
         shift = arb(str(spectral_shift))
 
         normalizations = {

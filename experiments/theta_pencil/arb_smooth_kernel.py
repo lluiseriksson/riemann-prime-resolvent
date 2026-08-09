@@ -28,8 +28,8 @@ def build_arb_smooth_matrix(
     maximum_power: int = 23,
     precision: int = 256,
 ) -> ArbSmoothMatrix:
-    if half_width != 0.4:
-        raise ValueError("the exact Arb implementation currently registers a = 2/5")
+    if not 0.0 < half_width <= 0.5:
+        raise ValueError("the exact Arb implementation applies for 0 < a <= 1/2")
     if not 1 <= row_dimension <= column_dimension:
         raise ValueError("require 1 <= row_dimension <= column_dimension")
     try:
@@ -62,7 +62,7 @@ def build_arb_smooth_matrix(
 
         total = [[arb(0) for _ in range(columns)] for _ in range(rows)]
         series = smooth_remainder_series_coefficients(maximum_power)
-        a = arb(2) / 5
+        a = arb(str(half_width))
         for power, rational_coefficient in enumerate(series):
             polynomial = [[arb(0) for _ in range(columns)] for _ in range(rows)]
             for left_power in range(power + 1):
@@ -132,4 +132,3 @@ def build_arb_smooth_matrix(
         ),
         precision=precision,
     )
-

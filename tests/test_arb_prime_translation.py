@@ -38,3 +38,23 @@ def test_streamed_arb_action_matches_matrix_product():
     expected = coefficients @ matrix.midpoint
     assert np.max(action.radius) < 1.0e-100
     assert np.max(np.abs(action.midpoint - expected)) < 1.0e-13
+
+
+def test_streamed_odd_action_matches_matrix_product_at_second_width():
+    coefficients = np.zeros(12)
+    coefficients[1::2] = np.linspace(0.1, 0.6, 6)
+    action = build_arb_prime_two_action(0.42, coefficients, 80, precision=1024)
+    matrix = build_arb_prime_two_matrix(0.42, 12, 80, precision=1024)
+    expected = coefficients @ matrix.midpoint
+    assert np.max(action.radius) < 1.0e-100
+    assert np.max(np.abs(action.midpoint - expected)) < 1.0e-13
+
+
+@pytest.mark.parametrize("half_width", [0.3, np.log(2.0) / 2.0, 0.51])
+def test_prime_two_formula_rejects_widths_outside_first_prime_window(half_width):
+    coefficients = np.zeros(4)
+    coefficients[::2] = 1.0
+    with pytest.raises(ValueError, match="prime-2-only"):
+        build_arb_prime_two_matrix(half_width, 4, 8)
+    with pytest.raises(ValueError, match="prime-2-only"):
+        build_arb_prime_two_action(half_width, coefficients, 8)

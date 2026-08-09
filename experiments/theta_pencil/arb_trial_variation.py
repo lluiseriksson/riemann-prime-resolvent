@@ -28,8 +28,8 @@ def certify_prime_operator_remainder_variation(
 ) -> ArbVariationBound:
     """Vector-valued version used by the parity Schur tail certificate."""
     degrees = np.asarray(low_degrees, dtype=int)
-    if half_width != 0.4:
-        raise ValueError("the exact Arb implementation currently registers a = 2/5")
+    if not math.log(2.0) / 2.0 < half_width <= 0.5:
+        raise ValueError("the exact Arb implementation requires log(2)/2 < a <= 1/2")
     if len(degrees) < 1 or derivative_order < 1 or partitions < 1:
         raise ValueError("invalid degrees, derivative order, or partition count")
     try:
@@ -60,7 +60,7 @@ def certify_prime_operator_remainder_variation(
         maximum_derivative_degree = max(len(row) - 1 for row in derivative_rows)
         order = maximum_derivative_degree + 1
         nodes_weights = [arb.legendre_p_root(order, k, weight=True) for k in range(order)]
-        a = arb(2) / 5
+        a = arb(str(half_width))
         translation = arb.const_log2() / a
         cut = arb(1) - translation
         length = cut + 1
@@ -141,12 +141,12 @@ def certify_prime_remainder_variation(
     order integrates that polynomial exactly.
     """
     vector = np.asarray(coefficients, dtype=float)
-    if half_width != 0.4:
-        raise ValueError("the exact Arb implementation currently registers a = 2/5")
+    if not math.log(2.0) / 2.0 < half_width <= 0.5:
+        raise ValueError("the exact Arb implementation requires log(2)/2 < a <= 1/2")
     if len(vector) < 3 or partitions < 1:
         raise ValueError("need at least three coefficients and one partition")
-    if np.any(vector[1::2] != 0.0):
-        raise ValueError("the registered trial variation requires an even vector")
+    if np.any(vector[::2] != 0.0) and np.any(vector[1::2] != 0.0):
+        raise ValueError("the registered trial variation requires one parity")
     try:
         from flint import arb, ctx
     except ImportError as error:  # pragma: no cover
@@ -164,7 +164,7 @@ def certify_prime_remainder_variation(
         order = len(vector) - 2
         nodes_weights = [arb.legendre_p_root(order, k, weight=True) for k in range(order)]
 
-        a = arb(2) / 5
+        a = arb(str(half_width))
         translation = arb.const_log2() / a
         cut = arb(1) - translation
         length = cut + 1

@@ -14,3 +14,8 @@ def test_arb_smooth_matrix_encloses_series_midpoint():
     assert np.max(np.abs(result.midpoint - direct)) < 2e-14
     assert np.max(result.radius) < 1e-40
 
+
+def test_arb_smooth_matrix_supports_second_width():
+    result = build_arb_smooth_matrix(0.42, 8, 16, 9, 192)
+    direct = smooth_kernel_series_matrix(0.42, 16, 9)[:8]
+    assert np.max(np.abs(result.midpoint - direct)) < 2e-14

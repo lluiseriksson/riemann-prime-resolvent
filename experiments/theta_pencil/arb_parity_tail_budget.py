@@ -31,6 +31,7 @@ def _upper(value) -> float:
 
 def certify_parity_tail_budget(
     parity: int,
+    half_width: float = 0.4,
     low_dimension: int = 88,
     finite_dimension: int = 4096,
     smooth_dimension: int = 512,
@@ -45,7 +46,7 @@ def certify_parity_tail_budget(
         raise ValueError("parity must be zero or one")
     degrees = np.arange(parity, low_dimension, 2)
     variation = certify_prime_operator_remainder_variation(
-        0.4, degrees, jet_count, partitions, precision
+        half_width, degrees, jet_count, partitions, precision
     )
     try:
         from flint import arb, ctx
@@ -55,11 +56,15 @@ def certify_parity_tail_budget(
     previous_precision = ctx.prec
     try:
         ctx.prec = precision
-        a = arb(2) / 5
+        a = arb(str(half_width))
         scalar = -a.log() - (arb(2) * arb.pi()).log() - arb.const_euler()
         if not scalar.upper() < 0:
             raise ArithmeticError("could not certify the scalar sign")
-        loss = -scalar + arb(2) * arb.const_log2() / arb(2).sqrt() + arb(12) / 5
+        loss = (
+            -scalar
+            + arb(2) * arb.const_log2() / arb(2).sqrt()
+            + arb(6) * a
+        )
         shift = arb(str(spectral_shift))
 
         def denominator(index: int):
@@ -139,9 +144,10 @@ def certify_parity_tail_budget(
         potential /= denominator(finite_dimension).sqrt()
 
         weighted_l1 = arb.pi().sqrt() * arb("0.75").gamma() / arb("1.25").gamma()
+        smooth_r4 = arb(1) if half_width <= 0.4 else arb("1.1")
         smooth_variation = (
             a * a * arb.pi().sqrt() / 24
-            + a**3 * arb(2).sqrt() * weighted_l1
+            + a**3 * smooth_r4 * arb(2).sqrt() * weighted_l1
         )
         smooth = (
             arb(4)
@@ -170,4 +176,3 @@ def certify_parity_tail_budget(
         variation_upper=variation.upper,
         jet_correction_norm_upper=jet_correction_norm_upper,
     )
-

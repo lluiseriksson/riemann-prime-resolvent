@@ -27,6 +27,7 @@ from experiments.theta_pencil.smooth_legendre_series import smooth_kernel_series
 @dataclass(frozen=True)
 class TempleTrialAudit:
     half_width: float
+    trial_parity: int
     trial_dimension: int
     residual_end: int
     rayleigh: float
@@ -148,7 +149,10 @@ def run_temple_trial_audit(
     trial_dimension: int = 512,
     residual_end: int = 8192,
     second_floor: float = 0.005,
+    trial_parity: int = 0,
 ) -> TempleTrialAudit:
+    if trial_parity not in (0, 1):
+        raise ValueError("trial_parity must be zero or one")
     components = build_legendre_weil_components(
         half_width, trial_dimension, max(1400, 2 * trial_dimension)
     )
@@ -158,8 +162,12 @@ def run_temple_trial_audit(
         + components.prime
         + smooth_kernel_series_matrix(half_width, trial_dimension, 23)
     )
-    eigenvalue, eigenvector = eigh(matrix, subset_by_index=[0, 0])
-    coefficients = eigenvector[:, 0]
+    selected = np.arange(trial_parity, trial_dimension, 2)
+    _, eigenvector = eigh(
+        matrix[np.ix_(selected, selected)], subset_by_index=[0, 0]
+    )
+    coefficients = np.zeros(trial_dimension)
+    coefficients[selected] = eigenvector[:, 0]
     center = coefficients @ normalized_legendre_values(
         np.array([0.0]), trial_dimension
     )[:, 0]
@@ -210,6 +218,7 @@ def run_temple_trial_audit(
     lower = temple_lower_bound(rayleigh, total, second_floor)
     return TempleTrialAudit(
         half_width=half_width,
+        trial_parity=trial_parity,
         trial_dimension=trial_dimension,
         residual_end=residual_end,
         rayleigh=rayleigh,

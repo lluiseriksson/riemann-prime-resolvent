@@ -113,5 +113,6 @@ It does not authorize changing the success condition.
 - [Legendre tail coercivity and finite reduction](legendre-tail.md)
 - [Exact Legendre matrix and mode-resolved Feshbach diagnostic](legendre-feshbach.md)
 - [Endpoint-jump tail and Kato--Temple route](endpoint-jump-tail.md)
+- [Certified localized positivity at `a = 0.42`](support-042-certificate.md)
 - [Support-extension audit](support-extension-audit.md)
 - [Falsifiers and abandonment conditions](falsifiers.md)

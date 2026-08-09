@@ -43,8 +43,10 @@ def build_arb_prime_two_matrix(
     precision: int = 8192,
 ) -> ArbPrimeMatrix:
     """Enclose rows ``m < low_dimension`` and columns ``n < maximum_degree``."""
-    if half_width != 0.4:
-        raise ValueError("the exact Arb implementation currently registers a = 2/5")
+    if not math.log(2.0) / 2.0 < half_width <= 0.5:
+        raise ValueError(
+            "the prime-2-only formula requires log(2)/2 < a <= 1/2"
+        )
     if not 1 <= low_dimension <= maximum_degree:
         raise ValueError("require 1 <= low_dimension <= maximum_degree")
     try:
@@ -56,7 +58,8 @@ def build_arb_prime_two_matrix(
     try:
         ctx.prec = precision
         two = arb(2)
-        cut = 1 - arb(5) * two.log() / 2
+        a = arb(str(half_width))
+        cut = 1 - two.log() / a
         jet_count = low_dimension
         padded = maximum_degree + jet_count
 
@@ -139,12 +142,17 @@ def build_arb_prime_two_action(
     """
     vector = np.asarray(coefficients, dtype=float)
     dimension = len(vector)
-    if half_width != 0.4:
-        raise ValueError("the exact Arb implementation currently registers a = 2/5")
+    if not math.log(2.0) / 2.0 < half_width <= 0.5:
+        raise ValueError(
+            "the prime-2-only formula requires log(2)/2 < a <= 1/2"
+        )
     if dimension < 1 or maximum_degree < dimension:
         raise ValueError("require a nonempty vector and maximum_degree >= dimension")
-    if np.any(vector[1::2] != 0.0):
-        raise ValueError("the registered trial action requires an even vector")
+    even_active = np.any(vector[::2] != 0.0)
+    odd_active = np.any(vector[1::2] != 0.0)
+    if even_active and odd_active:
+        raise ValueError("the trial vector must have one parity")
+    parity = 1 if odd_active else 0
     try:
         from flint import arb, ctx
     except ImportError as error:  # pragma: no cover
@@ -154,7 +162,8 @@ def build_arb_prime_two_action(
     try:
         ctx.prec = precision
         two = arb(2)
-        cut = 1 - arb(5) * two.log() / 2
+        a = arb(str(half_width))
+        cut = 1 - two.log() / a
         padded = maximum_degree + dimension
         legendre = [arb(0)] * (padded + 2)
         legendre[0] = 1
@@ -168,8 +177,8 @@ def build_arb_prime_two_action(
         endpoint_action = []
         for jet in range(dimension):
             value = arb(0)
-            first_even = jet if jet % 2 == 0 else jet + 1
-            for degree in range(first_even, dimension, 2):
+            first_degree = jet + ((jet - parity) % 2)
+            for degree in range(first_degree, dimension, 2):
                 derivative = arb(1)
                 for factor in range(degree - jet + 1, degree + jet + 1):
                     derivative *= factor
@@ -203,7 +212,7 @@ def build_arb_prime_two_action(
         coefficient = -2 * two.log() / two.sqrt()
         midpoint = np.zeros(maximum_degree, dtype=float)
         radius = np.zeros_like(midpoint)
-        for degree in range(0, maximum_degree, 2):
+        for degree in range(parity, maximum_degree, 2):
             value = coefficient * action[degree]
             midpoint[degree] = float(value.mid())
             radius[degree] = _arb_radius_as_float(value)

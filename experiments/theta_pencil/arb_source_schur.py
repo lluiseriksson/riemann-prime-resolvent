@@ -84,12 +84,16 @@ def certify_source_schur_box(
     previous_precision = ctx.prec
     try:
         ctx.prec = precision
-        a = arb(2) / 5
+        a = arb(str(half_width))
         shift = arb(str(spectral_shift))
         scalar = -a.log() - (arb(2) * arb.pi()).log() - arb.const_euler()
         if not scalar.upper() < 0:
             raise ArithmeticError("could not certify the scalar sign")
-        loss = -scalar + arb(2) * arb.const_log2() / arb(2).sqrt() + arb(12) / 5
+        loss = (
+            -scalar
+            + arb(2) * arb.const_log2() / arb(2).sqrt()
+            + arb(6) * a
+        )
 
         harmonic = [arb(0)]
         for degree in range(1, finite_dimension + 1):

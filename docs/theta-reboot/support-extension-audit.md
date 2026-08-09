@@ -79,3 +79,17 @@ uniform in support. A genuine next step must replace at least one of:
 Repeating the \(a=0.4\) calculation at denser grids without one of these
 changes is not an RH strategy.
 
+## Update: the staircase certificate at \(a=0.42\)
+
+The first two obstructions above can nevertheless be overcome at the single
+support \(a=0.42\) by using parity-specific floors and larger low blocks.
+An odd Schur certificate at shift \(0.5\), followed by an odd Temple bound,
+gives \(\lambda_1^{\rm odd}>0.0075459987\).  An independent even Schur
+certificate at shift \(0.1\), followed by an even Temple bound, gives
+\(\lambda_1^{\rm even}>0.0000711722\).  See the
+[full certificate](support-042-certificate.md).
+
+This repairs the particular \(a=0.42\) failure recorded above, but not the
+uniform-support objection: the dimensions, number of endpoint jets, spectral
+floors, and residual tolerances were all changed for this support.  The three
+structural alternatives remain the next proof targets.

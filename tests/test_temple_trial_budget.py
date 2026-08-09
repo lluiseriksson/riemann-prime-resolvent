@@ -22,3 +22,13 @@ def test_small_temple_audit_has_consistent_nonnegative_components():
     assert audit.jump_tail > 0.0
     assert len(audit.coefficients) == 24
 
+
+def test_odd_trial_stays_in_the_odd_block():
+    audit = run_temple_trial_audit(
+        trial_dimension=24,
+        residual_end=128,
+        second_floor=0.5,
+        trial_parity=1,
+    )
+    assert audit.trial_parity == 1
+    assert (audit.coefficients[::2] == 0.0).all()
