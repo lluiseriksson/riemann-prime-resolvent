@@ -108,7 +108,7 @@ These are certified conditional implications, not yet a positivity theorem
 at \(a=1/2\).  The cut-adapted Schur calculation must still prove the two
 displayed second-eigenvalue floors.
 
-## Endpoint comparison and two-vector cluster reduction
+## Endpoint comparison and cut-basis Schur reduction
 
 At \(a=1/2\), pair the two translated edge points and put
 
@@ -147,15 +147,45 @@ of \(A_2\) gives unconditional third-eigenvalue floors
  \lambda^{\rm odd}_3\ge0.340763279145.
 \]
 
-Thus only a two-vector cluster remains in either parity sector.  Arb finite
-sections of local degree \(8,12,16,20\) have exactly one eigenvalue below
+Arb finite sections of local degree \(8,12,16,20\) have exactly one eigenvalue below
 the desired shifts \(0.01\) (even) and \(0.3\) (odd), with no unresolved
-interval eigenvalues.  For the degree-16 two-vector Ritz spaces, the
-partial residual through local degree 64 gives corrected positive margins
-approximately \(0.00778\) and \(0.05654\), respectively.
+interval eigenvalues.  More importantly, the complement of the local
+degree-16 space is orthogonal to every *global* Legendre polynomial of degree
+below 16.  The comparison above therefore gives the genuine complement
+floor
 
-This last statement is deliberately not yet a certificate: the norm of the
-dominant residual above degree 64 remains to be bounded.  The rectangular
-Arb source in `arb_cut_dominant_cross.py` isolates precisely that universal
-tail.  Prime, scalar and the retained smooth series contribute no modes
-beyond local degree 40.
+\[
+ Q_{16}A_{1/2}Q_{16}\succeq1.438158939041\,Q_{16}.
+\]
+
+This makes the correct object a full finite-dimensional Schur complement,
+not a heuristic two-vector inclusion.  Eliminating degrees 16--39 with that
+floor and degrees 40--63 with their stronger harmonic floor leaves exactly
+one negative direction.  The first positive Schur values are approximately
+(0.0079936) (even) and (0.0627477) (odd).
+
+Above degree 64 the leading term is explicit and low rank.  If (g=\mathcal
+Lf\) on a local interval and
+
+\[
+ F_\pm=\lim_{t\to\pm1}(1-t^2)g'(t),
+\]
+
+then integration by parts gives
+
+\[
+ \widehat g_n=
+ \frac{\sqrt{(2n+1)/2}}{n(n+1)}
+ \bigl(F_+-(-1)^nF_-\bigr)
+ +\frac{\widehat{Dg}_n}{n(n+1)}.
+\]
+
+The six fluxes are just endpoint values and jumps of the degree-16 trial
+space.  Adding their infinite Gram matrix still leaves one negative
+direction, with positive margins (0.0079925) and (0.0627366).  This is
+not yet the endpoint theorem: the remaining regularized tail
+\(\widehat{Dg}_n/[n(n+1)]\) must be bounded.  The current Schur margins allow
+operator-norm bounds about (0.149) (even) and (0.396) (odd) on that final
+tail.  The rectangular Arb source in `arb_cut_dominant_cross.py` isolates
+precisely this universal obligation.  Prime, scalar and the retained smooth
+series contribute no modes beyond local degree 40.
