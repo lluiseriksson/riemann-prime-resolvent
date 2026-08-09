@@ -104,18 +104,18 @@ perturbation budget gives
 
 Thus \(E_{\log}(f)\le10.907804484363336\).  The prime-2 coefficient is
 \(c_2=\log2/\sqrt2\).  Asking the prime modulus alone to stay below the
-certified global margin \(m=7.117220758560887\cdot10^{-5}\) requires
+certified global margin \(m=7.211155226933824\cdot10^{-5}\) requires
 
 \[
  \log(1+\delta^{-2})>
  \frac{(4c_2)^2E_{\log}}{m^2}
- =8.276703173296081\cdot10^9.
+ =8.062478424204898\cdot10^9.
 \]
 
 Equivalently,
 
 \[
- \delta<10^{-1.797263258\cdot10^9}.
+ \delta<10^{-1.750744945\cdot10^9}.
 \]
 
 The scalar and smooth terms are better behaved, so omitting them only makes

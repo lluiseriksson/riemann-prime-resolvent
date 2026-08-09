@@ -10,7 +10,7 @@ machinery at the rational input \(a=21/50\) gives the unconditional bound
 
 \[
  \boxed{\lambda_1(A_{21/50})
-        \ge 7.117220758560887\cdot 10^{-5}>0.}
+        \ge 7.211155226933824\cdot 10^{-5}>0.}
 \]
 
 This is a localized theorem.  It is **not** the Riemann hypothesis: Weil's
@@ -27,15 +27,15 @@ separate Kato--Temple trial vector in that same sector:
 
 | sector | shift \(\beta\) | low modes | source inertia | first positive source interval begins | omitted Schur correction |
 |---|---:|---:|---:|---:|---:|
-| odd | \(0.5\) | 176 | 1 negative, 87 positive | \(0.3979686224758113\) | \(0.09545418273526979\) |
-| even | \(0.1\) | 128 | 1 negative, 63 positive | \(0.09900347540822979\) | \(0.04396964770977490\) |
+| odd | \(0.5\) | 176 | 1 negative, 87 positive | \(0.3979686224758113\) | \(0.09543134541323693\) |
+| even | \(0.1\) | 128 | 1 negative, 63 positive | \(0.09900347540822979\) | \(0.04395591186151331\) |
 
 The post-tail margins are respectively
 
 \[
- 0.3025144397405415>0,
+ 0.3025372770625744>0,
  \qquad
- 0.0550338276984549>0.
+ 0.0550475635467165>0.
 \]
 
 The high block of \(A_a-\beta I\) is positive by the harmonic-number lower
@@ -69,8 +69,8 @@ tails are bounded analytically.  The resulting interval budgets are:
 
 | sector | Rayleigh interval | residual upper bound | second floor | Temple lower bound |
 |---|---:|---:|---:|---:|
-| odd | \([0.007572693700178843,0.007572693700262811]\) | \(0.003625650725897315\) | \(0.5\) | \(0.007545998707805297\) |
-| even | \([0.00007423736086014931,0.00007423736094437140]\) | \(0.0005534327227082892\) | \(0.1\) | \(0.00007117220758560887\) |
+| odd | \([0.007572693700178843,0.007572693700262811]\) | \(0.003533111748750577\) | \(0.5\) | \(0.007547344012073694\) |
+| even | \([0.00007423736086014931,0.00007423736094437140]\) | \(0.0004608937455223618\) | \(0.1\) | \(0.00007211155226933824\) |
 
 Taking the smaller parity lower bound proves the boxed claim.
 

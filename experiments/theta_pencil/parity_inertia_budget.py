@@ -34,7 +34,10 @@ from experiments.theta_pencil.prime_jet_tail import (
     prime_jet_weighted_correction,
 )
 from experiments.theta_pencil.semilocal_weil_matrix import EULER_GAMMA
-from experiments.theta_pencil.smooth_legendre_series import smooth_kernel_series_matrix
+from experiments.theta_pencil.smooth_legendre_series import (
+    smooth_kernel_series_matrix,
+    smooth_kernel_series_remainder_bound,
+)
 
 
 @dataclass(frozen=True)
@@ -144,15 +147,24 @@ def run_parity_inertia_audit(
     potential = potential_operator_tail_bound(
         low_degrees, finite_dimension, 3
     ) / math.sqrt(float(_harmonic_array(np.array([finite_dimension]))[0] - loss - spectral_floor))
-    smooth_r4_bound = 1.0 if half_width <= 0.4 else 1.1
-    smooth_variation = smooth_kernel_variation_bound(
-        half_width, smooth_r4_bound
+    smooth_denominator = math.sqrt(
+        float(
+            _harmonic_array(np.array([smooth_dimension]))[0]
+            - loss
+            - spectral_floor
+        )
     )
-    smooth = wang_normalized_tail_bound(
-        smooth_variation, smooth_dimension, 1
-    ) / math.sqrt(
-        float(_harmonic_array(np.array([smooth_dimension]))[0] - loss - spectral_floor)
-    )
+    if low_dimension + 24 < smooth_dimension:
+        smooth = smooth_kernel_series_remainder_bound(
+            half_width, 23
+        ) / smooth_denominator
+    else:
+        smooth_r4_bound = 1.0 if half_width <= 0.4 else 1.1
+        smooth = wang_normalized_tail_bound(
+            smooth_kernel_variation_bound(half_width, smooth_r4_bound),
+            smooth_dimension,
+            1,
+        ) / smooth_denominator
     omitted_weighted = jet_tail + prime_remainder + potential + smooth
     omitted_correction = (
         2.0 * math.sqrt(jet_norm) * omitted_weighted + omitted_weighted**2

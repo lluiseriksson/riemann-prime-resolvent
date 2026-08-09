@@ -28,10 +28,10 @@ def test_registered_support_modulus_is_quantitatively_too_weak():
     assert abs(energy - 10.907804484363336) < 1e-14
     coefficient = np.log(2.0) / np.sqrt(2.0)
     required = required_logarithmic_resolution(
-        coefficient, energy, 7.117220758560887e-5
+        coefficient, energy, 7.211155226933824e-5
     )
-    assert 8.27e9 < required < 8.28e9
-    assert log10_displacement_for_resolution(required) < -1.79e9
+    assert 8.06e9 < required < 8.07e9
+    assert log10_displacement_for_resolution(required) < -1.75e9
 
 
 def test_translation_modulus_vanishes_only_logarithmically():

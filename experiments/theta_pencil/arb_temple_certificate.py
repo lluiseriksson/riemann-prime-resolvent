@@ -87,8 +87,14 @@ def certify_temple_trial(
     prime = build_arb_prime_two_action(
         half_width, coefficients, residual_end, prime_precision
     )
+    smooth_power = 23
+    # The kernel |x-y|^p maps an input polynomial of degree < dimension to
+    # a polynomial of degree at most dimension+p.  Hence the truncated smooth
+    # series has a finite action; only its analytic remainder has an infinite
+    # Legendre tail.
+    smooth_extent = min(residual_end, dimension + smooth_power + 2)
     smooth = build_arb_smooth_matrix(
-        half_width, dimension, dimension, 23, precision
+        half_width, smooth_extent, smooth_extent, smooth_power, precision
     )
     variation = certify_prime_remainder_variation(
         half_width, coefficients, variation_partitions, precision
@@ -120,16 +126,28 @@ def certify_temple_trial(
                 abs(left - right) * (left + right + 1)
             )
 
+        smooth_action = [arb(0) for _ in range(smooth_extent)]
+        for left in range(trial_parity, smooth_extent, 2):
+            smooth_action[left] = sum(
+                (
+                    _ball_from_export(
+                        arb,
+                        smooth.midpoint[left, right],
+                        smooth.radius[left, right],
+                    )
+                    * vector[right]
+                    for right in range(trial_parity, dimension, 2)
+                ),
+                arb(0),
+            )
+
         low_action = [arb(0) for _ in range(dimension)]
         for left in range(trial_parity, dimension, 2):
             value = (harmonic[left] + scalar) * vector[left]
             value += _ball_from_export(arb, prime.midpoint[left], prime.radius[left])
             for right in range(trial_parity, dimension, 2):
                 value += boundary(left, right) * vector[right]
-                smooth_entry = _ball_from_export(
-                    arb, smooth.midpoint[left, right], smooth.radius[left, right]
-                )
-                value += smooth_entry * vector[right]
+            value += smooth_action[left]
             low_action[left] = value
 
         energy = sum(
@@ -165,7 +183,8 @@ def certify_temple_trial(
             prime_value = _ball_from_export(
                 arb, prime.midpoint[high], prime.radius[high]
             )
-            high_residual_square += (prime_value + potential) ** 2
+            smooth_value = smooth_action[high] if high < smooth_extent else arb(0)
+            high_residual_square += (prime_value + potential + smooth_value) ** 2
         residual_square = low_residual_square + high_residual_square
         finite_residual = residual_square.sqrt() / norm_squared.sqrt()
         finite_residual_upper = _float_upper(finite_residual)
@@ -230,17 +249,7 @@ def certify_temple_trial(
             * arb(residual_end - 1) ** (-5)
         )
 
-        weighted_l1 = arb.pi().sqrt() * arb("0.75").gamma() / arb("1.25").gamma()
-        smooth_r4 = arb(1) if half_width <= 0.4 else arb("1.1")
-        smooth_variation = (
-            a * a * arb.pi().sqrt() / 24
-            + a**3 * smooth_r4 * arb(2).sqrt() * weighted_l1
-        )
-        smooth_tail = (
-            arb(4)
-            * smooth_variation
-            / ((arb(3) * arb.pi()).sqrt() * arb(dimension - 1) ** arb("1.5"))
-        )
+        smooth_tail = arb(0)
 
         # Two copies of the smooth power-series error cover both the operator
         # action and the shift from the truncated to the exact Rayleigh value.

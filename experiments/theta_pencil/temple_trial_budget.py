@@ -17,11 +17,13 @@ from experiments.theta_pencil.legendre_feshbach import (
 from experiments.theta_pencil.legendre_jump_tail import (
     bernstein_jump_tail_bound,
     potential_tail_bound,
-    smooth_kernel_variation_bound,
     temple_lower_bound,
     wang_normalized_tail_bound,
 )
-from experiments.theta_pencil.smooth_legendre_series import smooth_kernel_series_matrix
+from experiments.theta_pencil.smooth_legendre_series import (
+    smooth_kernel_series_matrix,
+    smooth_kernel_series_remainder_bound,
+)
 
 
 @dataclass(frozen=True)
@@ -180,11 +182,20 @@ def run_temple_trial_audit(
         half_width, coefficients, residual_end
     )
     potential = _potential_coefficients_for_trial(coefficients, residual_end)
+    smooth_power = 23
+    smooth_extent = min(residual_end, trial_dimension + smooth_power + 2)
+    padded = np.zeros(smooth_extent)
+    padded[:trial_dimension] = coefficients
+    smooth_action = (
+        smooth_kernel_series_matrix(half_width, smooth_extent, smooth_power)
+        @ padded
+    )
+    finite_vector = prime + potential
+    finite_vector[trial_dimension:smooth_extent] += smooth_action[
+        trial_dimension:smooth_extent
+    ]
     finite_high = float(
-        np.linalg.norm(
-            prime[trial_dimension:residual_end]
-            + potential[trial_dimension:residual_end]
-        )
+        np.linalg.norm(finite_vector[trial_dimension:residual_end])
     )
 
     polynomial = coefficients * np.sqrt(
@@ -203,11 +214,8 @@ def run_temple_trial_audit(
         variation, residual_end, 1
     )
     potential_tail = potential_tail_bound(coefficients, residual_end, 2)
-    smooth_r4_bound = 1.0 if half_width <= 0.4 else 1.1
-    smooth_tail = wang_normalized_tail_bound(
-        smooth_kernel_variation_bound(half_width, smooth_r4_bound),
-        trial_dimension,
-        1,
+    smooth_tail = 2.0 * smooth_kernel_series_remainder_bound(
+        half_width, smooth_power
     )
     prime_potential_tail = jump_tail + prime_remainder_tail + potential_tail
     prime_potential_high = math.hypot(finite_high, prime_potential_tail)

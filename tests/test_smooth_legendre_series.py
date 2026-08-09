@@ -46,3 +46,14 @@ def test_smooth_series_matches_direct_kernel_matrix():
 
 def test_half_width_one_half_has_a_certified_series_tail():
     assert smooth_kernel_series_remainder_bound(0.5, 23) < 1e-11
+
+
+def test_truncated_smooth_action_has_finite_polynomial_extent():
+    trial_dimension = 8
+    maximum_power = 5
+    size = trial_dimension + maximum_power + 6
+    coefficients = np.zeros(size)
+    coefficients[:trial_dimension] = np.linspace(0.1, 0.8, trial_dimension)
+    action = smooth_kernel_series_matrix(0.5, size, maximum_power) @ coefficients
+    # |x-y|^p maps degree < d into degree at most d+p.
+    assert np.max(np.abs(action[trial_dimension + maximum_power + 1 :])) < 1e-13

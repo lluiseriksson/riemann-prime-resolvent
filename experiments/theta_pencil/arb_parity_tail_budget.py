@@ -10,6 +10,9 @@ import numpy as np
 from experiments.theta_pencil.arb_trial_variation import (
     certify_prime_operator_remainder_variation,
 )
+from experiments.theta_pencil.smooth_legendre_series import (
+    smooth_kernel_series_remainder_bound,
+)
 
 
 @dataclass(frozen=True)
@@ -143,19 +146,29 @@ def certify_parity_tail_budget(
         )
         potential /= denominator(finite_dimension).sqrt()
 
-        weighted_l1 = arb.pi().sqrt() * arb("0.75").gamma() / arb("1.25").gamma()
-        smooth_r4 = arb(1) if half_width <= 0.4 else arb("1.1")
-        smooth_variation = (
-            a * a * arb.pi().sqrt() / 24
-            + a**3 * smooth_r4 * arb(2).sqrt() * weighted_l1
-        )
-        smooth = (
-            arb(4)
-            * smooth_variation
-            / (arb(3) * arb.pi()).sqrt()
-            / arb(smooth_dimension - 1) ** arb("1.5")
-            / denominator(smooth_dimension).sqrt()
-        )
+        if low_dimension + 24 < smooth_dimension:
+            smooth_remainder = math.nextafter(
+                smooth_kernel_series_remainder_bound(half_width, 23), math.inf
+            )
+            smooth = arb(str(smooth_remainder)) / denominator(
+                smooth_dimension
+            ).sqrt()
+        else:
+            weighted_l1 = (
+                arb.pi().sqrt() * arb("0.75").gamma() / arb("1.25").gamma()
+            )
+            smooth_r4 = arb(1) if half_width <= 0.4 else arb("1.1")
+            smooth_variation = (
+                a * a * arb.pi().sqrt() / 24
+                + a**3 * smooth_r4 * arb(2).sqrt() * weighted_l1
+            )
+            smooth = (
+                arb(4)
+                * smooth_variation
+                / (arb(3) * arb.pi()).sqrt()
+                / arb(smooth_dimension - 1) ** arb("1.5")
+                / denominator(smooth_dimension).sqrt()
+            )
 
         omitted = jet_tail + prime_remainder + potential + smooth
         correction = (
