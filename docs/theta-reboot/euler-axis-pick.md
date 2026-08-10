@@ -577,8 +577,60 @@ By (E31), every \(3\times3\) principal Pick matrix on the Euler axis is
 therefore positive semidefinite, unconditionally. This closes order three,
 not RH: matrices of order four and higher remain uncontrolled.
 
+### The first genuinely new gate is order four
+
+The rapidity argument cannot be iterated without new information. A clean
+counterexample already exists inside its hypotheses. Take four equally spaced
+nodes with spacing \(h=0.6\), let \(g=\operatorname{artanh}v'\) be linear on
+each interval, and prescribe
+
+\[
+ (g_0,g_1,g_2,g_3)=(0.7,0.01,1.1,2.2).
+\]
+
+The three slopes are \(-1.15\), \(1.8166\ldots\), and
+\(1.8333\ldots\), so \(|g'|<2\) and hence every triple obeys (E34). The image
+increments are available without quadrature:
+
+\[
+ u_j=\frac{\log\cosh g_{j+1}-\log\cosh g_j}
+ {(g_{j+1}-g_j)/h}
+ =(0.1975828\ldots,0.2817722\ldots,0.5493378\ldots).
+\]
+
+Nevertheless the normalized \(4\times4\) determinant is
+
+\[
+ \det R=-1.6277632\ldots\cdot10^{-4},
+\]
+
+while its four principal \(3\times3\) determinants are positive. The exact
+new scalar obstruction can be written as an endpoint partial correlation.
+With \(B=R_{\{2,3\},\{2,3\}}\), \(a=R_{1,\{2,3\}}\), and
+\(b=R_{\{2,3\},4}\), put
+
+\[
+ \kappa_{14\mid23}=
+ \frac{R_{14}-aB^{-1}b}
+ {\sqrt{(1-aB^{-1}a^T)(1-b^TB^{-1}b)}}.              \tag{E35}
+\]
+
+Schur complementation gives
+
+\[
+ \boxed{R\succeq0\quad\Longleftrightarrow\quad
+ |\kappa_{14\mid23}|\le1}                            \tag{E36}
+\]
+
+once the order-three minors are known. In the displayed counterexample,
+\(\kappa_{14\mid23}=1.23385\ldots\). Thus the next proof obligation is not
+another bound on \(g'\); it is a genuinely third-order conditional-correlation
+constraint. For the Riemann kernel this must be derived from the zero-orbit
+mixture or directly from the Euler formula.
+
 The module `euler_axis_pick.py` implements the orbit algebra and the exact
 interval-rapidity form (E30)--(E31), while `zero_band_variance.py` audits the
-constants in (E26)--(E28). These
+constants in (E26)--(E28), and `order_four_rapidity_counterexample.py`
+records the first open gate (E35). These
 floating-point checks are not used in place of the displayed analytic
 inequalities. Global claims still require all separated principal minors.
