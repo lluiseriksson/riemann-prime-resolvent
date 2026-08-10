@@ -58,8 +58,25 @@ After adding the scalar term, subtracting the order-47 smooth loss and adding
 \]
 
 This is the first rigorous component of the programme beyond
-\(a=\log2\).  It is not a proof that \(A_{0.7}>0\): the thirteen-block low
-source and its directional infinite-tail Schur correction remain open.
+\(a=\log2\).  It is not a proof that \(A_{0.7}>0\): the directional
+infinite-tail Schur correction remains open.
+
+## Exact finite source
+
+`arb_third_window_source.py` now assembles the thirteen-block dominant
+logarithmic form, scalar, order-controlled smooth kernel and exact
+prime-power graph entry by entry in Arb.  Reflection pairs the blocks
+
+\[
+ (0,12),(1,11),(2,10),(3,9),(4,8),(5,7)
+\]
+
+and leaves block 6 as the centre; the two parity spectra reconstruct the full
+finite spectrum in an independent regression test.  A degree-four,
+order-23 diagnostic has smallest finite-source Ritz values approximately
+`4.0063e-7` (even) and `1.3232e-5` (odd), with smooth remainder
+`1.9916e-8`.  These are design data, not lower bounds for the infinite
+operator.
 
 ## Global-basis diagnostic
 
@@ -74,4 +91,5 @@ basis, as was necessary in the seven-block window.
 
 Executable components are `third_prime_partition`,
 `build_third_window_prime_matrix` and
-`certify_third_window_pointwise_floor`.
+`certify_third_window_pointwise_floor`; the finite source is
+`build_arb_third_window_source`.
