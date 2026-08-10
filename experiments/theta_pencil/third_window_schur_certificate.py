@@ -98,6 +98,7 @@ def certify_third_window_schur(
     precision: int = 512,
     expected_negative_count: int = 0,
     component_cache_path: str | None = None,
+    self_component_cache_path: str | None = None,
 ) -> ThirdWindowSchurCertificate:
     """Build or load every rigorous component and adjudicate both parities."""
 
@@ -174,6 +175,7 @@ def certify_third_window_schur(
             explicit_end,
             self_remainder_end,
             precision,
+            self_component_cache_path,
         )
         other = certify_third_window_other_tail(
             half_width,

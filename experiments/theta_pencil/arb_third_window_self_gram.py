@@ -2,8 +2,10 @@
 
 from __future__ import annotations
 
+import json
 import math
 from dataclasses import dataclass
+from pathlib import Path
 
 import numpy as np
 
@@ -30,6 +32,78 @@ class ArbThirdWindowSelfGram:
     precision: int
 
 
+def _self_cache_metadata(
+    edge_degree: int,
+    bridge_degree: int,
+    center_degree: int,
+    first_degree: int,
+    explicit_end: int,
+    remainder_end: int,
+    precision: int,
+) -> dict[str, int | str]:
+    """Proof metadata, deliberately independent of the support parameter."""
+
+    return {
+        "format": 1,
+        "architecture": "third-window-self-tail",
+        "edge_degree": edge_degree,
+        "bridge_degree": bridge_degree,
+        "center_degree": center_degree,
+        "first_degree": first_degree,
+        "explicit_end": explicit_end,
+        "remainder_end": remainder_end,
+        "precision": precision,
+    }
+
+
+def save_third_window_self_gram(
+    path: str | Path,
+    component: ArbThirdWindowSelfGram,
+    metadata: dict[str, int | str],
+) -> None:
+    """Atomically persist the support-independent exported Arb balls."""
+
+    target = Path(path)
+    target.parent.mkdir(parents=True, exist_ok=True)
+    temporary = target.with_suffix(target.suffix + ".tmp")
+    with temporary.open("wb") as stream:
+        np.savez_compressed(
+            stream,
+            metadata=np.array(json.dumps(metadata, sort_keys=True)),
+            even_midpoint=component.even_midpoint,
+            even_radius=component.even_radius,
+            odd_midpoint=component.odd_midpoint,
+            odd_radius=component.odd_radius,
+            remainder_norm_upper=np.array(component.remainder_norm_upper),
+        )
+    temporary.replace(target)
+
+
+def load_third_window_self_gram(
+    path: str | Path,
+    expected_metadata: dict[str, int | str],
+) -> ArbThirdWindowSelfGram | None:
+    """Load the component only when every proof parameter agrees."""
+
+    target = Path(path)
+    if not target.exists():
+        return None
+    with np.load(target, allow_pickle=False) as payload:
+        metadata = json.loads(str(payload["metadata"].item()))
+        if metadata != expected_metadata:
+            raise ValueError("the self-tail cache metadata do not match")
+        return ArbThirdWindowSelfGram(
+            even_midpoint=payload["even_midpoint"].copy(),
+            even_radius=payload["even_radius"].copy(),
+            odd_midpoint=payload["odd_midpoint"].copy(),
+            odd_radius=payload["odd_radius"].copy(),
+            first_degree=int(metadata["first_degree"]),
+            explicit_end=int(metadata["explicit_end"]),
+            remainder_norm_upper=float(payload["remainder_norm_upper"]),
+            precision=int(metadata["precision"]),
+        )
+
+
 def _export(matrix):
     midpoint = np.empty((matrix.nrows(), matrix.ncols()), dtype=float)
     radius = np.empty_like(midpoint)
@@ -48,6 +122,7 @@ def build_arb_third_window_self_gram(
     explicit_end: int = 4096,
     remainder_end: int = 16384,
     precision: int = 512,
+    cache_path: str | Path | None = None,
 ) -> ArbThirdWindowSelfGram:
     """Retain one exact self-tail Gram per interval and then reduce parity."""
 
@@ -56,6 +131,19 @@ def build_arb_third_window_self_gram(
         raise ValueError("first_degree must exceed every local degree count")
     if explicit_end <= first_degree or remainder_end <= explicit_end:
         raise ValueError("invalid explicit or remainder end")
+    metadata = _self_cache_metadata(
+        edge_degree,
+        bridge_degree,
+        center_degree,
+        first_degree,
+        explicit_end,
+        remainder_end,
+        precision,
+    )
+    if cache_path is not None:
+        cached = load_third_window_self_gram(cache_path, metadata)
+        if cached is not None:
+            return cached
     try:
         from flint import arb, arb_mat, ctx
     except ImportError as error:  # pragma: no cover
@@ -120,7 +208,7 @@ def build_arb_third_window_self_gram(
     finally:
         ctx.prec = previous_precision
 
-    return ArbThirdWindowSelfGram(
+    result = ArbThirdWindowSelfGram(
         even_midpoint=even_midpoint,
         even_radius=even_radius,
         odd_midpoint=odd_midpoint,
@@ -130,3 +218,6 @@ def build_arb_third_window_self_gram(
         remainder_norm_upper=remainder_norm,
         precision=precision,
     )
+    if cache_path is not None:
+        save_third_window_self_gram(cache_path, result, metadata)
+    return result

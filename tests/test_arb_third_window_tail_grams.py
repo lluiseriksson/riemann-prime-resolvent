@@ -5,7 +5,9 @@ from experiments.theta_pencil.arb_third_window_flux_gram import (
     build_arb_third_window_flux_gram,
 )
 from experiments.theta_pencil.arb_third_window_self_gram import (
+    _self_cache_metadata,
     build_arb_third_window_self_gram,
+    load_third_window_self_gram,
 )
 from experiments.theta_pencil.arb_third_window_singular_gram import (
     build_arb_third_window_singular_gram,
@@ -110,3 +112,20 @@ def test_third_window_other_tail_is_finite_after_directional_extraction():
     assert result.comparison_matrix.shape == (13, 13)
     assert np.all(result.comparison_matrix >= 0)
     assert 0 <= result.spectral_norm_upper <= result.row_column_upper
+
+
+def test_third_window_self_gram_cache_round_trip(tmp_path):
+    pytest.importorskip("flint")
+    cache = tmp_path / "self-tail.npz"
+    first = build_arb_third_window_self_gram(
+        2, 2, 2, 8, 16, 32, 192, cache
+    )
+    metadata = _self_cache_metadata(2, 2, 2, 8, 16, 32, 192)
+    loaded = load_third_window_self_gram(cache, metadata)
+    assert loaded is not None
+    assert loaded.remainder_norm_upper == first.remainder_norm_upper
+    assert np.array_equal(loaded.even_midpoint, first.even_midpoint)
+    second = build_arb_third_window_self_gram(
+        2, 2, 2, 8, 16, 32, 192, cache
+    )
+    assert np.array_equal(second.odd_radius, first.odd_radius)
