@@ -5,6 +5,109 @@ from __future__ import annotations
 import numpy as np
 
 
+def off_line_orbit_defect_ceiling(verified_height: float) -> float:
+    """Return the uniform defect ceiling above a verified RH height.
+
+    If every zero with ``abs(gamma) <= T`` is on the critical line, then every
+    hypothetical off-line zero orbit satisfies
+
+    ``delta <= T^2 / (T^2 - 1/4)^2``.
+    """
+
+    height = float(verified_height)
+    if height <= 0.5:
+        raise ValueError("verified_height must exceed 1/2")
+    square = height * height
+    return square / ((square - 0.25) * (square - 0.25))
+
+
+def centered_zero_orbit_profile(
+    centered_real_part: float,
+    zero_height: float,
+    imaginary_height: float,
+) -> tuple[float, float, float, float]:
+    """Return mass, slope, curvature, and lower slack of one zero orbit.
+
+    The orbit is grouped with its conjugate when ``alpha != 0``.  With
+    ``t=log(eta)/2``, the returned quantities are
+
+    ``T, p=d(log T)/d(log eta), q=dp/dt, q+2*(1-p^2)``.
+
+    The last entry is zero on the critical line and strictly negative away
+    from it.
+    """
+
+    alpha = float(centered_real_part)
+    gamma = abs(float(zero_height))
+    eta = float(imaginary_height)
+    if abs(alpha) >= 0.5:
+        raise ValueError("centered_real_part must lie in (-1/2,1/2)")
+    if gamma <= 0.0 or eta <= 0.0:
+        raise ValueError("zero_height and imaginary_height must be positive")
+    radius = eta * eta
+    offset = gamma * gamma - alpha * alpha
+    real_part = radius + offset
+    imaginary_square = 4.0 * alpha * alpha * gamma * gamma
+    denominator = real_part * real_part + imaginary_square
+    orbit_factor = 2.0 if alpha == 0.0 else 4.0
+    mass = orbit_factor * eta * real_part / denominator
+    slope = (
+        1.0
+        + 2.0 * radius / real_part
+        - 4.0 * radius * real_part / denominator
+    )
+    slope_radius_derivative = (
+        2.0 * offset / (real_part * real_part)
+        - 4.0
+        * (
+            (real_part + radius) / denominator
+            - 2.0
+            * radius
+            * real_part
+            * real_part
+            / (denominator * denominator)
+        )
+    )
+    curvature = 4.0 * radius * slope_radius_derivative
+    lower_slack = (
+        -16.0
+        * radius
+        * radius
+        * imaginary_square
+        / (real_part * real_part * denominator)
+    )
+    return mass, slope, curvature, lower_slack
+
+
+def zero_orbit_mixture_lower_slack(
+    orbit_masses: tuple[float, ...],
+    orbit_slopes: tuple[float, ...],
+    orbit_curvatures: tuple[float, ...],
+) -> tuple[float, float]:
+    """Return direct and variance-decomposed lower curvature slack.
+
+    For a positive sum of orbit profiles, the exact identity is
+
+    ``q+2*(1-p^2) = E[q_j+2*(1-p_j^2)] + 4*Var(p_j)``.
+    """
+
+    masses = np.asarray(orbit_masses, dtype=float)
+    slopes = np.asarray(orbit_slopes, dtype=float)
+    curvatures = np.asarray(orbit_curvatures, dtype=float)
+    if masses.shape != slopes.shape or masses.shape != curvatures.shape:
+        raise ValueError("orbit vectors must have equal shape")
+    if masses.ndim != 1 or len(masses) == 0 or np.any(masses <= 0.0):
+        raise ValueError("orbit masses must form a nonempty positive vector")
+    weights = masses / np.sum(masses)
+    slope = float(weights @ slopes)
+    variance = float(weights @ (slopes * slopes) - slope * slope)
+    curvature = float(2.0 * variance + weights @ curvatures)
+    direct = curvature + 2.0 * (1.0 - slope * slope)
+    component_slacks = curvatures + 2.0 * (1.0 - slopes * slopes)
+    decomposed = float(weights @ component_slacks + 4.0 * variance)
+    return direct, decomposed
+
+
 def euler_axis_pick_entry(
     eta_left: float,
     value_left: float,

@@ -2,14 +2,17 @@ import numpy as np
 import pytest
 
 from experiments.theta_pencil.euler_axis_pick import (
+    centered_zero_orbit_profile,
     centered_zero_orbit_gate_margin,
     euler_axis_log_derivative_kernel,
     euler_axis_pick_matrix,
+    off_line_orbit_defect_ceiling,
     local_three_point_curvature_gate,
     normalized_log_derivative_correlation,
     reciprocal_log_derivative_congruence_residual,
     two_point_log_derivative_gate,
     two_point_pick_determinant,
+    zero_orbit_mixture_lower_slack,
 )
 
 
@@ -81,3 +84,36 @@ def test_local_three_point_gate_is_the_h6_determinant_coefficient():
         assert np.linalg.det(correlation) / step**6 == pytest.approx(
             target, rel=5.0e-4
         )
+
+
+def test_off_line_orbit_has_the_exact_negative_lower_curvature_slack():
+    mass, slope, curvature, slack = centered_zero_orbit_profile(
+        0.25, 14.0, 3.0
+    )
+    assert mass > 0.0
+    assert -1.0 < slope < 1.0
+    assert slack < 0.0
+    assert curvature + 2.0 * (1.0 - slope * slope) == pytest.approx(slack)
+    _, _, _, on_line_slack = centered_zero_orbit_profile(0.0, 14.0, 3.0)
+    assert on_line_slack == 0.0
+
+
+def test_verified_height_makes_each_off_line_defect_tiny():
+    ceiling = off_line_orbit_defect_ceiling(3.0e12)
+    assert ceiling == pytest.approx(1.0 / (3.0e12) ** 2)
+    assert ceiling < 1.12e-25
+
+
+def test_orbit_mixture_slack_is_component_defect_plus_four_variances():
+    profiles = (
+        centered_zero_orbit_profile(0.0, 14.0, 3.0),
+        centered_zero_orbit_profile(0.2, 3.0e12, 3.0),
+        centered_zero_orbit_profile(0.0, 21.0, 3.0),
+    )
+    direct, decomposed = zero_orbit_mixture_lower_slack(
+        tuple(row[0] for row in profiles),
+        tuple(row[1] for row in profiles),
+        tuple(row[2] for row in profiles),
+    )
+    assert direct == pytest.approx(decomposed)
+    assert direct > 0.0

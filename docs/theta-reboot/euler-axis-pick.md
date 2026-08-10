@@ -260,6 +260,113 @@ theorem, but still not global \(3\times3\) positivity. The next audit must
 therefore separate the local curvature gate from the remaining three-point
 geometry.
 
-The module `euler_axis_pick.py` implements (EP)--(E16) as exact floating-point
+### Exact zero-orbit defect and variance compensation
+
+The local gate does not hold term by term for an off-line zero, but its failure
+has a closed form. For \(a=\alpha+i\gamma\), group the conjugate orbit and put
+
+\[
+ A=\eta^2-\alpha^2+\gamma^2,\qquad
+ B^2=4\alpha^2\gamma^2,qquad
+ T_{\alpha,\gamma}(\eta)=\frac{4\eta A}{A^2+B^2}.       \tag{E17}
+\]
+
+The on-line case has the same logarithmic derivatives, with the orbit mass
+halved to avoid double-counting the class \(a\sim-a\). Define
+
+\[
+ p_{\alpha,\gamma}=\eta\frac{T'_{\alpha,\gamma}}
+ {T_{\alpha,\gamma}},qquad
+ q_{\alpha,\gamma}=2\eta\,p'_{\alpha,\gamma}.
+\]
+
+Direct rational differentiation and cancellation give
+
+\[
+ \boxed{
+ q_{\alpha,\gamma}+2(1-p_{\alpha,\gamma}^2)
+ =-\delta_{\alpha,\gamma}(\eta),}                      \tag{E18}
+\]
+
+where
+
+\[
+ \boxed{
+ \delta_{\alpha,\gamma}(\eta)=
+ \frac{64\eta^4\alpha^2\gamma^2}
+ {A^2(A^2+4\alpha^2\gamma^2)}\ge0.}                   \tag{E19}
+\]
+
+Thus on-line orbits saturate the lower curvature boundary, while off-line
+orbits miss it by an explicitly quadratic penalty in \(\alpha\).
+
+There is also an exact compensation law for positive sums. If
+\(L=\sum_j T_j\), let \(w_j=T_j/L\), \(p_j=\eta T'_j/T_j\), and let
+\(p=\sum_jw_jp_j\). Differentiating the weights in the logarithmic coordinate
+gives
+
+\[
+ q=2\operatorname{Var}_w(p_j)+\sum_jw_jq_j.
+\]
+
+Combining this identity with (E18) yields
+
+\[
+ \boxed{
+ q+2(1-p^2)=
+ 4\operatorname{Var}_w(p_j)
+ -\sum_{j\,\mathrm{off}}w_j\delta_j.}                 \tag{E20}
+\]
+
+Therefore the lower half of the local order-three gate is reduced to the
+quantitative and non-circular inequality
+
+\[
+ \boxed{
+ 4\operatorname{Var}_w(p_j)
+ \ge\sum_{j\,\mathrm{off}}w_j\delta_j.}                \tag{E21}
+\]
+
+This is sharper than assuming RH: the right side vanishes under RH, but (E21)
+could in principle hold even with off-line zeros. Platt--Trudgian forces every
+such penalty to begin above height \(T=3\cdot10^{12}\). This also gives a
+uniform numerical ceiling. Indeed, writing \(r=\eta^2\),
+\(a=\alpha^2\le1/4\), \(g=\gamma^2\), and \(c=g-a\), one has
+
+\[
+ \delta_{\alpha,\gamma}(\eta)
+ \le \frac{16r^2g}{(r+c)^4}
+ \le \frac{g}{c^2}.
+\]
+
+The second inequality uses
+\(\max_{r>0}r^2/(r+c)^4=1/(16c^2)\). Since
+\(g/(g-1/4)^2\) decreases for \(g>1/4\), every hypothetical off-line orbit
+satisfies
+
+\[
+ \boxed{
+ 0\le\delta_{\alpha,\gamma}(\eta)
+ \le \varepsilon_T:=
+ \frac{T^2}{(T^2-1/4)^2}
+ <1.12\cdot10^{-25}.}                                \tag{E22}
+\]
+
+Because the \(w_j\) sum to one, (E21) therefore follows from the still-open
+but zero-free sufficient bound
+
+\[
+ \boxed{
+ \operatorname{Var}_w(p_j)\ge\frac{\varepsilon_T}{4}
+ <2.8\cdot10^{-26}.}                                  \tag{E23}
+\]
+
+The tiny constant is not itself a proof: a uniform positive lower bound for
+this variance has not been established, and replacing it by numerical
+evidence would be circular. A sharper route may compare its decay directly
+with the \(\eta\)-dependent off-line penalty using unconditional zero-counting
+bounds.
+
+The module `euler_axis_pick.py` implements (EP)--(E23) as floating-point
 algebra for falsification and cross-checking. Rigorous claims require interval
 evaluation of (E1) and all relevant principal minors.
