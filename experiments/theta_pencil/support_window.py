@@ -45,3 +45,10 @@ def at_most_prime_three_boundary(half_width: float) -> bool:
     """Exact-decimal test for ``a <= log(3)/2``."""
 
     return 2 * _decimal(half_width) <= LOG_THREE
+
+
+def in_prime_two_comparison_window(half_width: float) -> bool:
+    """Exact-decimal test for ``1/2 <= a < log(2)``."""
+
+    value = _decimal(half_width)
+    return Decimal(1) / 2 <= value < LOG_TWO

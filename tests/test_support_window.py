@@ -3,6 +3,7 @@ import math
 from experiments.theta_pencil.support_window import (
     at_most_prime_three_boundary,
     in_first_prime_window,
+    in_prime_two_comparison_window,
     in_second_prime_window,
     prime_overlap_positive,
 )
@@ -18,3 +19,11 @@ def test_rounded_log_three_boundary_is_classified_by_its_exact_decimal():
     assert at_most_prime_three_boundary(below)
     assert in_first_prime_window(below)
     assert not prime_overlap_positive(below, 3)
+
+
+def test_prime_two_comparison_geometry_extends_across_prime_three_boundary():
+    assert in_prime_two_comparison_window(0.551)
+    assert in_prime_two_comparison_window(math.log(2.0))
+    assert not in_prime_two_comparison_window(
+        math.nextafter(math.log(2.0), math.inf)
+    )

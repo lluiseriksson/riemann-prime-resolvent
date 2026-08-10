@@ -3,6 +3,8 @@ import pytest
 from experiments.theta_pencil.support_05_comparison import (
     _smooth_lower_loss,
     certify_first_prime_comparison,
+    certify_prime_two_comparison,
+    certify_second_window_complement_floor,
     certify_support_05_comparison,
 )
 
@@ -29,3 +31,19 @@ def test_first_prime_comparison_extends_to_point_54():
     assert result.tail_determinant_lower > 0
     assert -0.014 < result.even_third_floor < -0.011
     assert result.odd_third_floor > 0.18
+
+
+def test_first_prime_wrapper_still_rejects_the_second_window():
+    pytest.importorskip("flint")
+    with pytest.raises(ValueError, match=r"log\(3\)/2"):
+        certify_first_prime_comparison(0.551, 192, 80)
+
+
+def test_prime_two_comparison_and_prime_three_loss_leave_a_positive_floor():
+    pytest.importorskip("flint")
+    prime_two = certify_prime_two_comparison(0.551, 192, 80)
+    result = certify_second_window_complement_floor(0.551, 16, 192, 80)
+    assert prime_two.minimum_second_derivative > 0
+    assert prime_two.tail_determinant_lower > 0
+    assert result.prime_three_norm_upper > 0
+    assert result.complement_floor > 0.61

@@ -146,3 +146,34 @@ registered tests.  At the current near-threshold parameters it is still too
 large by itself (`0.2194` for the worst 16-mode oriented block), so a final
 Schur proof must retain its signed low-rank Gram structure instead of taking
 one Frobenius norm.
+
+## A common complement floor after activating prime three
+
+The pointwise comparison used in the first window actually concerns the
+prime-two part alone.  Its determinant-convexity proof remains valid on
+$1/2\le a<\log2$; the old entry point remains restricted to
+$a\le\log(3)/2$ so it cannot accidentally certify the full operator after a
+new prime becomes active.
+
+In the second window, treat the prime-three translation by its exact norm
+$\log3/\sqrt3$.  If every local source block retains at least 16 polynomial
+modes, its orthogonal complement is orthogonal to every global polynomial of
+degree below 16.  Hence the dominant form contributes $H_{16}$ and
+
+\[
+ A_a\big|_{P^\perp}
+ \ge H_{16}+c_2(a)-\frac{\log3}{\sqrt3}.
+\]
+
+At $a=0.551$, a 512-bit calculation gives
+
+| component | certified bound |
+|---|---:|
+| $H_{16}$ | $3.3807289932289932$ |
+| prime-two perturbation $c_2$ | $-2.1337789144695964$ |
+| prime-three norm | $0.6342841005975641$ |
+| common complement floor | **$0.6126659781618331$** |
+
+Thus both proposed spectral shifts, $10^{-3}$ and $5\,10^{-2}$, have a
+strict common denominator.  What remains is not a missing floor but the
+matrix-valued Schur correction from the 16-mode source to the complement.

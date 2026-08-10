@@ -10,7 +10,11 @@ from experiments.theta_pencil.smooth_legendre_series import (
     smooth_kernel_series_remainder_bound,
     smooth_remainder_series_coefficients,
 )
-from experiments.theta_pencil.support_window import at_most_prime_three_boundary
+from experiments.theta_pencil.support_window import (
+    at_most_prime_three_boundary,
+    in_prime_two_comparison_window,
+    in_second_prime_window,
+)
 
 
 @dataclass(frozen=True)
@@ -22,6 +26,17 @@ class Support05Comparison:
     odd_third_floor: float
     minimum_second_derivative: float
     tail_determinant_lower: float
+    precision: int
+
+
+@dataclass(frozen=True)
+class SecondWindowComplementFloor:
+    half_width: float
+    local_degree: int
+    harmonic_floor: float
+    prime_two_perturbation_lower: float
+    prime_three_norm_upper: float
+    complement_floor: float
     precision: int
 
 
@@ -60,22 +75,26 @@ def _smooth_lower_loss(
     return math.nextafter(float(loss) + remainder, math.inf)
 
 
-def certify_first_prime_comparison(
+def certify_prime_two_comparison(
     half_width: float,
     precision: int = 256,
     subdivisions: int = 300,
 ) -> Support05Comparison:
-    """Certify comparison floors for ``1/2 <= a <= log(3)/2``.
+    """Certify the prime-two comparison for ``1/2 <= a < log(2)``.
 
     The translated edge points are ``z-t`` and ``z+t`` with
     ``t=log(2)/(2a)``.  The determinant after shifting by
     ``V(t)-log(2)/sqrt(2)`` is even, vanishes at zero, and is convex on the
     central interval.  The remaining short endpoint interval is handled by
     monotonicity exactly as in the original ``a=1/2`` certificate.
+
+    This comparison intentionally omits every prime other than two.  In the
+    second prime window it is a lower comparison for the prime-two part, not
+    a certificate for the full operator.
     """
 
-    if not 0.5 <= half_width or not at_most_prime_three_boundary(half_width):
-        raise ValueError("the comparison certificate requires 1/2 <= a <= log(3)/2")
+    if not in_prime_two_comparison_window(half_width):
+        raise ValueError("the prime-two comparison requires 1/2 <= a < log(2)")
     if subdivisions < 1:
         raise ValueError("subdivisions must be positive")
     try:
@@ -145,6 +164,69 @@ def certify_first_prime_comparison(
         odd_third_floor=float(odd_floor.lower()),
         minimum_second_derivative=minimum_second,
         tail_determinant_lower=float(tail_determinant.lower()),
+        precision=precision,
+    )
+
+
+def certify_first_prime_comparison(
+    half_width: float,
+    precision: int = 256,
+    subdivisions: int = 300,
+) -> Support05Comparison:
+    """Certify comparison floors in the prime-two-only support window."""
+
+    if not 0.5 <= half_width or not at_most_prime_three_boundary(half_width):
+        raise ValueError("the comparison certificate requires 1/2 <= a <= log(3)/2")
+    return certify_prime_two_comparison(half_width, precision, subdivisions)
+
+
+def certify_second_window_complement_floor(
+    half_width: float,
+    local_degree: int = 16,
+    precision: int = 256,
+    subdivisions: int = 300,
+) -> SecondWindowComplementFloor:
+    """Lower-bound the common complement after activating prime three.
+
+    A complement orthogonal to every local polynomial of degree below ``d``
+    is orthogonal to the global polynomials of those degrees, so the dominant
+    form contributes at least ``H_d``.  The prime-two comparison supplies the
+    remaining lower perturbation.  The new prime-three translation has norm
+    at most ``log(3)/sqrt(3)`` and is subtracted once.
+    """
+
+    if not in_second_prime_window(half_width):
+        raise ValueError("the complement floor is for the second prime window")
+    if local_degree < 4:
+        raise ValueError("local_degree must be at least four")
+    comparison = certify_prime_two_comparison(
+        half_width, precision, subdivisions
+    )
+    try:
+        from flint import arb, ctx
+    except ImportError as error:  # pragma: no cover
+        raise RuntimeError("python-flint is required") from error
+
+    previous_precision = ctx.prec
+    try:
+        ctx.prec = precision
+        harmonic = sum((arb(1) / k for k in range(1, local_degree + 1)), arb(0))
+        harmonic_four = sum((arb(1) / k for k in range(1, 5)), arb(0))
+        perturbation = arb(str(comparison.even_third_floor)) - harmonic_four
+        prime_three = arb(3).log() / arb(3).sqrt()
+        floor = harmonic + perturbation - prime_three
+        if not floor.lower() > 0:
+            raise ArithmeticError("the second-window complement floor is unresolved")
+    finally:
+        ctx.prec = previous_precision
+
+    return SecondWindowComplementFloor(
+        half_width=half_width,
+        local_degree=local_degree,
+        harmonic_floor=float(harmonic.lower()),
+        prime_two_perturbation_lower=float(perturbation.lower()),
+        prime_three_norm_upper=math.nextafter(float(prime_three.upper()), math.inf),
+        complement_floor=float(floor.lower()),
         precision=precision,
     )
 
