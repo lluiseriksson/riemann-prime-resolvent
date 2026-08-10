@@ -6,6 +6,7 @@ from experiments.theta_pencil.parity_weyl_derivative import (
     parity_ratio_from_target_derivative,
     parity_weyl_derivative_audit,
     schwarz_pick_excess_from_second_schur_parameter,
+    schwarz_pick_extremal_weyl,
     schwarz_pick_parity_interval,
     second_schur_parameter_from_parity_ratio,
 )
@@ -98,3 +99,21 @@ def test_second_schur_parameter_exactly_reconstructs_the_parity_excess():
 def test_second_schur_coordinate_rejects_the_basepoint():
     with pytest.raises(ValueError):
         second_schur_parameter_from_parity_ratio(-0.5, 1.0, -1.0 / 3.0)
+
+
+def test_extremal_weyl_is_the_calibrated_parity_endpoint_mixture():
+    derivative = -0.9968019520324009
+    kappa = parity_ratio_from_target_derivative(derivative)
+    assert schwarz_pick_extremal_weyl(derivative, 1j) == pytest.approx(1j)
+    step = 1.0e-6
+    numerical_derivative = (
+        schwarz_pick_extremal_weyl(derivative, 1j + step)
+        - schwarz_pick_extremal_weyl(derivative, 1j - step)
+    ) / (2.0 * step)
+    assert numerical_derivative == pytest.approx(derivative)
+    for eta in (1.5, 3.0, 10.0):
+        value = schwarz_pick_extremal_weyl(derivative, 1j * eta)
+        ratio = (1.0 + 1j * eta * value) / (
+            1j * (value - 1j * eta)
+        )
+        assert ratio == pytest.approx(-eta * kappa)

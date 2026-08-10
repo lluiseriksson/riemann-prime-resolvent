@@ -117,6 +117,31 @@ def schwarz_pick_excess_from_second_schur_parameter(
     return kappa * (eta - 1.0) * (1.0 - q_value) / denominator
 
 
+def schwarz_pick_extremal_weyl(
+    target_derivative: float,
+    spectral_parameter: complex,
+) -> complex:
+    """Return the unique lower-endpoint extremal after calibration at ``i``.
+
+    Equality in Schwarz--Pick at one further imaginary point forces
+
+    ``m_*(z)=((1+d)z^2+d-1)/(2z)``.
+
+    In terms of ``kappa=(1+d)/(1-d)``, this is the convex Herglotz mixture
+
+    ``m_*(z) = (kappa*z - 1/z)/(1+kappa)``
+
+    of the two universal parity endpoints ``z`` and ``-1/z``.
+    """
+
+    derivative = float(target_derivative)
+    kappa = parity_ratio_from_target_derivative(derivative)
+    z = complex(spectral_parameter)
+    if z == 0.0:
+        raise ZeroDivisionError("the extremal Weyl function has a pole at zero")
+    return (kappa * z - 1.0 / z) / (1.0 + kappa)
+
+
 def parity_weyl_derivative_audit(
     operator: np.ndarray,
     metric: np.ndarray,

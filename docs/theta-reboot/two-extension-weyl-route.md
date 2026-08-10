@@ -892,6 +892,24 @@ hence the unique real disk automorphism
  h_*(w)=\frac{d+w}{1+dw},\qquad g_*(w)=w h_*(w).          \tag{SE}
 \]
 
+Transforming back to the upper half-plane makes the geometry explicit:
+
+\[
+ \boxed{
+ m_*(z)=\frac{(1+d)z^2+d-1}{2z}
+ =\frac{\kappa}{1+\kappa}z
+  +\frac1{1+\kappa}\left(-\frac1z\right).}              \tag{SM}
+\]
+
+The extremal is exactly the convex Herglotz mixture of the two universal
+parity endpoints in (UE). It contains no intermediate spectral information.
+Moreover, if a sequence of calibrated Schur functions has
+\(q_a(w_0)\to1\) at just one \(w_0\in(0,1)\), normality and the
+maximum-modulus principle force \(q_a\to1\) locally uniformly. Consequently
+\(m_a\to m_*\) locally uniformly throughout the upper half-plane. Thus a
+single-point proof of second-Schur collapse would close the entire calibrated
+route, rather than only one numerical probe.
+
 Thus the quantity with actual discriminatory content is the nonnegative
 Schwarz--Pick excess
 
