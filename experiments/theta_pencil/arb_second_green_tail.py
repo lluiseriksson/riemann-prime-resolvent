@@ -35,6 +35,29 @@ class SecondGreenAdjacentTail:
 
 
 @dataclass(frozen=True)
+class SecondGreenSeparatedTail:
+    target_length: float
+    source_length: float
+    gap: float
+    first_degree: int
+    degree_count: int
+    derivative_order: int
+    total_upper: float
+    maximum_variation_upper: float
+    precision: int
+    subdivisions: int
+
+
+@dataclass(frozen=True)
+class SecondGreenSelfTail:
+    degree_count: int
+    first_degree: int
+    explicit_end: int
+    total_upper: float
+    precision: int
+
+
+@dataclass(frozen=True)
 class FirstWindowSecondGreenTails:
     half_width: float
     edge_to_center: SecondGreenAdjacentTail
@@ -216,6 +239,237 @@ def _regular_jet(
         arb,
     )
     return _add(d_smooth, regular_from_log, output_order + 1, arb)
+
+
+def _separated_jet(
+    polynomial,
+    reflected,
+    target_length,
+    source_length,
+    gap,
+    point,
+    output_order,
+    arb,
+):
+    """Taylor jet of ``D_target L f`` for a strictly separated block."""
+
+    work = output_order + 3
+    variable = [point, arb(1)] + [arb(0) for _ in range(work - 2)]
+    shifted = _add(variable, [gap], work, arb)
+    a_minus_u = _add(
+        [target_length], _scale(variable, -1, work, arb), work, arb
+    )
+    a_minus_two_u = _add(
+        [target_length], _scale(variable, -2, work, arb), work, arb
+    )
+    u_a_minus_u = _multiply(variable, a_minus_u, work, arb)
+    reflected_jet = _polynomial_jet(reflected, shifted, work, arb)
+    polynomial_jet = _polynomial_jet(polynomial, shifted, work, arb)
+    log_ratio = _add(
+        _logarithm(
+            _add(shifted, [source_length], work, arb), work, arb
+        ),
+        _scale(_logarithm(shifted, work, arb), -1, work, arb),
+        work,
+        arb,
+    )
+    potential = _scale(
+        _add(
+            polynomial_jet,
+            _multiply(reflected_jet, log_ratio, work, arb),
+            work,
+            arb,
+        ),
+        -arb(1) / 2,
+        work,
+        arb,
+    )
+    first = _derivative(potential, work, arb)
+    second = _derivative(first, work, arb)
+    return _scale(
+        _add(
+            _multiply(a_minus_two_u, first, work, arb),
+            _multiply(u_a_minus_u, second, work, arb),
+            work,
+            arb,
+        ),
+        -1,
+        output_order + 1,
+        arb,
+    )
+
+
+def certify_second_green_separated_tail(
+    target_length: float,
+    source_length: float,
+    gap: float,
+    degree_count: int = 16,
+    first_degree: int = 128,
+    derivative_order: int = 12,
+    subdivisions: int = 192,
+    precision: int = 512,
+) -> SecondGreenSeparatedTail:
+    """Certify ``Q_N D_target L P_d`` for one separated block.
+
+    Unlike a touching block, a positive gap makes the potential regular at
+    both target endpoints.  Green's identity therefore has no endpoint flux,
+    and Wang's Legendre coefficient estimate applies directly to
+    ``D_target L f``.
+    """
+
+    if isinstance(target_length, (int, float)) and target_length <= 0:
+        raise ValueError("interval lengths must be positive")
+    if isinstance(source_length, (int, float)) and source_length <= 0:
+        raise ValueError("interval lengths must be positive")
+    if isinstance(gap, (int, float)) and gap <= 0:
+        raise ValueError("the separation gap must be positive")
+    if degree_count < 1 or first_degree <= degree_count:
+        raise ValueError("first_degree must exceed the source degree count")
+    if derivative_order < 1 or subdivisions < 1:
+        raise ValueError("invalid derivative order or subdivision count")
+    try:
+        from flint import arb, ctx
+    except ImportError as error:  # pragma: no cover
+        raise RuntimeError("python-flint is required") from error
+
+    previous_precision = ctx.prec
+    try:
+        ctx.prec = precision
+        a = (
+            arb(str(target_length))
+            if isinstance(target_length, (int, float))
+            else arb(target_length)
+        )
+        b = (
+            arb(str(source_length))
+            if isinstance(source_length, (int, float))
+            else arb(source_length)
+        )
+        separation = (
+            arb(str(gap)) if isinstance(gap, (int, float)) else arb(gap)
+        )
+        if not a.lower() > 0 or not b.lower() > 0 or not separation.lower() > 0:
+            raise ValueError("length and gap balls must be strictly positive")
+        source_rows = _local_legendre_coefficients(
+            arb, b, degree_count, reversed_=False
+        )
+        decompositions = [
+            _source_decomposition(row, b, arb) for row in source_rows
+        ]
+        variations = []
+        requested_derivative = derivative_order + 1
+        scale = (a / 2) ** requested_derivative * (a / 2).sqrt()
+        for polynomial, reflected in decompositions:
+            derivative_supremum = arb(0)
+            for part in range(subdivisions):
+                lower = a * part / subdivisions
+                upper = a * (part + 1) / subdivisions
+                midpoint = (lower + upper) / 2
+                point = midpoint + arb(0, (upper - lower) / 2)
+                jet = _separated_jet(
+                    polynomial,
+                    reflected,
+                    a,
+                    b,
+                    separation,
+                    point,
+                    requested_derivative,
+                    arb,
+                )
+                derivative = (
+                    math.factorial(requested_derivative)
+                    * jet[requested_derivative]
+                    * scale
+                )
+                derivative_supremum = max(
+                    derivative_supremum, derivative.abs_upper()
+                )
+            variations.append(2 * derivative_supremum)
+
+        wang_constant = (
+            2 ** (derivative_order + 1)
+            / (
+                arb.pi().sqrt()
+                * arb(2 * derivative_order + 1).sqrt()
+                * arb(first_degree - 1) ** (derivative_order + arb("0.5"))
+            )
+        )
+        total = sum(
+            (
+                (wang_constant * variation).abs_upper() ** 2
+                for variation in variations
+            ),
+            arb(0),
+        ).sqrt()
+    finally:
+        ctx.prec = previous_precision
+
+    return SecondGreenSeparatedTail(
+        target_length=float(a.mid()),
+        source_length=float(b.mid()),
+        gap=float(separation.mid()),
+        first_degree=first_degree,
+        degree_count=degree_count,
+        derivative_order=derivative_order,
+        total_upper=_float_upper(total),
+        maximum_variation_upper=_float_upper(max(variations)),
+        precision=precision,
+        subdivisions=subdivisions,
+    )
+
+
+def certify_second_green_self_tail(
+    degree_count: int = 16,
+    first_degree: int = 128,
+    explicit_end: int = 4096,
+    precision: int = 256,
+) -> SecondGreenSelfTail:
+    """Certify the self-block tail after removal of both endpoint fluxes."""
+
+    if degree_count < 1 or first_degree <= degree_count:
+        raise ValueError("first_degree must exceed the source degree count")
+    if explicit_end <= first_degree:
+        raise ValueError("explicit_end must exceed first_degree")
+    try:
+        from flint import arb, ctx
+    except ImportError as error:  # pragma: no cover
+        raise RuntimeError("python-flint is required") from error
+
+    previous_precision = ctx.prec
+    try:
+        ctx.prec = precision
+        total_square = arb(0)
+        for source in range(degree_count):
+            source_eigenvalue = source * (source + 1)
+            for target in range(first_degree, explicit_end):
+                if (target - source) % 2:
+                    continue
+                target_eigenvalue = target * (target + 1)
+                value = (
+                    arb((2 * target + 1) * (2 * source + 1)).sqrt()
+                    * source_eigenvalue
+                    / (target_eigenvalue - source_eigenvalue)
+                )
+                total_square += value**2
+            ratio = arb(source_eigenvalue) / explicit_end**2
+            total_square += (
+                arb(3)
+                * (2 * source + 1)
+                * source_eigenvalue**2
+                / (1 - ratio) ** 2
+                / (2 * (explicit_end - 1) ** 2)
+            )
+        total = total_square.sqrt()
+    finally:
+        ctx.prec = previous_precision
+
+    return SecondGreenSelfTail(
+        degree_count=degree_count,
+        first_degree=first_degree,
+        explicit_end=explicit_end,
+        total_upper=_float_upper(total),
+        precision=precision,
+    )
 
 
 def certify_second_green_adjacent_tail(

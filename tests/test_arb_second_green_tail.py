@@ -1,9 +1,12 @@
+import numpy as np
 import pytest
 
+from experiments.theta_pencil.arb_cut_dominant import _cross_block_rectangular
 from experiments.theta_pencil.arb_second_green_tail import (
     _source_decomposition,
     certify_first_window_second_green_tails,
     certify_second_green_adjacent_tail,
+    certify_second_green_separated_tail,
 )
 
 
@@ -65,3 +68,43 @@ def test_first_window_wrapper_keeps_exact_logarithmic_geometry():
         result.edge_to_center.total_upper,
         result.center_to_edge.total_upper,
     )
+
+
+def test_separated_second_green_tail_dominates_explicit_coefficients():
+    flint = pytest.importorskip("flint")
+    first_degree = 16
+    explicit_end = 64
+    result = certify_second_green_separated_tail(
+        0.7,
+        0.6,
+        0.2,
+        degree_count=3,
+        first_degree=first_degree,
+        derivative_order=5,
+        subdivisions=32,
+        precision=256,
+    )
+    previous_precision = flint.ctx.prec
+    try:
+        flint.ctx.prec = 512
+        block = _cross_block_rectangular(
+            flint.arb,
+            flint.arb_mat,
+            flint.arb("0.7"),
+            flint.arb("0.6"),
+            flint.arb("0.2"),
+            first_degree,
+            explicit_end,
+            0,
+            3,
+        )
+        explicit_square = 0.0
+        for row, degree in enumerate(range(first_degree, explicit_end)):
+            eigenvalue = degree * (degree + 1)
+            for column in range(3):
+                explicit_square += (
+                    eigenvalue * float(block[row, column].abs_upper())
+                ) ** 2
+    finally:
+        flint.ctx.prec = previous_precision
+    assert np.sqrt(explicit_square) < result.total_upper
