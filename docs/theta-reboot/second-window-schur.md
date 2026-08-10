@@ -225,14 +225,45 @@ print(
 )
 ```
 
+## Joint two-prime frontier at support 0.675
+
+The earlier common complement bound kept the prime-two comparison and paid
+the prime-three operator by its full norm.  At \(a=0.675\) that split creates
+three artificial negative Schur directions.  Keeping boundary potential and
+both active prime translations in the same pointwise fiber replaces the old
+floor `0.250182716428273` by the rigorous bound
+
+\[
+ D\succeq0.6936865091909813I.
+\]
+
+The corrected source and tail components, tail balance `0.05`, residual
+balance `0.01` and 512-bit Arb arithmetic then give
+
+| sector | negative | positive | unresolved | Schur lower | full coercive lower |
+|---|---:|---:|---:|---:|---:|
+| even | 0 | 56 | 0 | `3.3725139852259157e-12` | `1.5531308365921327e-13` |
+| odd | 0 | 56 | 0 | `2.4017941599485156e-9` | `1.1008427768841639e-10` |
+
+Hence the current unconditional endpoint and interval theorems are
+
+\[
+ \boxed{A_{0.675}\succeq
+ 1.5531308365921327\cdot10^{-13}I>0},
+ \qquad
+ \boxed{\lambda_a>0\quad(0<a\le0.675)}.
+\]
+
+The proof is detailed in [the joint two-prime floor note](joint-two-prime-floor.md)
+and exposed by `support_0675_certificate.py`.  This remains below
+\(a=\log2\), where the prime-power-four translation first acquires nonempty
+overlap.
+
 ## Scope
 
-This proves positivity at one support value after the prime-three translation
-becomes active.  It does **not** prove positivity for every support, and hence
-does not prove RH.  The attempted polynomial Feshbach/Temple trial is no
-longer needed for this point; its failure remains useful evidence about that
-trial architecture.  The point has now also been continued to a certified
-open interval in `support-0551-interval.md`.  The remaining obligation is to
-find a continuation mechanism with non-negligible radius and determine
-whether it can cross successive prime thresholds without losing its Schur
-margin.
+This proves positivity only through a bounded support interval.  It does
+**not** prove positivity for every support, and hence does not prove RH.  The
+next mathematical obligation is to construct the closed cut partition after
+prime power four enters at \(a=\log2\), then determine whether the joint-fiber
+mechanism can cross successive arithmetic thresholds without losing its
+Schur margin.

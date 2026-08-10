@@ -77,21 +77,21 @@ is now the active numerical-analytic track: Suzuki's localized Weil operator
 reconstruction prove
 
 \[
- A_{0.65}\succeq4.3679506990984787\cdot10^{-13}I>0.
+ A_{0.675}\succeq1.5531308365921327\cdot10^{-13}I>0.
 \]
 
 Domain monotonicity then gives the unconditional interval theorem
 
 \[
- \lambda_a>0\qquad(0<a\le0.65).
+ \lambda_a>0\qquad(0<a\le0.675).
 \]
 
 This does not prove RH: Suzuki's criterion requires nonnegativity for every
-support.  The registered attempt at \(a=0.675\) leaves three negative
-directions in the conservative Schur lower matrix.  The immediate gate is to
-retain cross directions among the endpoint-flux, adjacent-singular and
-self-regularized tails.  Beyond \(a=\log2\), the prime-power 4 translation
-also requires a new closed cut partition.
+support.  A joint pointwise treatment of boundary potential and the active
+prime-two/prime-three graph removes the three artificial directions left by
+the old split estimate at \(a=0.675\).  The immediate gate is now structural:
+at \(a=\log2\), the prime-power-four translation enters and requires a new
+closed cut partition and a larger joint fiber graph.
 
 ## Why this track is different
 
@@ -141,9 +141,10 @@ It does not authorize changing the success condition.
 - [Quantitative support continuity and its logarithmic barrier](support-parameter-continuity.md)
 - [Certified localized positivity at support one half](support-05-certificate.md)
 - [Certified localized positivity at support 0.51](support-051-certificate.md)
-- [Certified second-window Schur frontier through support 0.65](second-window-schur.md)
+- [Certified second-window Schur frontier through support 0.675](second-window-schur.md)
 - [Directional self-tail Gram](directional-self-tail.md)
-- [Registered non-closure at support 0.675](support-0675-no-close.md)
+- [Joint pointwise two-prime complement floor](joint-two-prime-floor.md)
+- [Historical non-closure and resolution at support 0.675](support-0675-no-close.md)
 - [Cut-adapted exact prime basis](cut-adapted-prime-basis.md)
 - [Support-extension audit](support-extension-audit.md)
 - [Falsifiers and abandonment conditions](falsifiers.md)

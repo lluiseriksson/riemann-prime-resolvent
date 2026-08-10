@@ -3,7 +3,10 @@
 from __future__ import annotations
 
 import math
+import json
 from dataclasses import dataclass
+from pathlib import Path
+from types import SimpleNamespace
 
 import numpy as np
 
@@ -30,6 +33,9 @@ from experiments.theta_pencil.arb_source_schur import _roundtrip_ball
 from experiments.theta_pencil.interval_inertia import certify_interval_inertia
 from experiments.theta_pencil.support_05_comparison import (
     certify_second_window_complement_floor,
+)
+from experiments.theta_pencil.second_window_pointwise_floor import (
+    certify_second_window_pointwise_floor,
 )
 
 
@@ -61,7 +67,122 @@ class SecondWindowSchurCertificate:
     explicit_end: int
     retain_self_tail: bool
     residual_balance: float
+    component_cache_hit: bool
+    complement_floor_method: str
     precision: int
+
+
+def _component_metadata(
+    half_width,
+    low_degree_count,
+    tail_start,
+    explicit_end,
+    maximum_smooth_power,
+    retain_self_tail,
+    self_remainder_end,
+    precision,
+    comparison_subdivisions,
+):
+    return {
+        "format": 1,
+        "smooth_target_rule": "maximum_power+source_degree_count+2",
+        "half_width": repr(half_width),
+        "low_degree_count": low_degree_count,
+        "tail_start": tail_start,
+        "explicit_end": explicit_end,
+        "maximum_smooth_power": maximum_smooth_power,
+        "retain_self_tail": retain_self_tail,
+        "self_remainder_end": self_remainder_end,
+        "precision": precision,
+        "comparison_subdivisions": comparison_subdivisions,
+        "singular_moment_order": 8,
+    }
+
+
+def _save_component_cache(
+    path,
+    metadata,
+    source,
+    band,
+    flux,
+    singular,
+    other,
+    self_tail,
+    floor,
+):
+    """Persist exported interval components without weakening their balls."""
+
+    target = Path(path)
+    target.parent.mkdir(parents=True, exist_ok=True)
+    arrays = {"metadata": np.array(json.dumps(metadata, sort_keys=True))}
+    for prefix, component in (
+        ("source", source),
+        ("band", band),
+        ("flux", flux),
+        ("singular", singular),
+    ):
+        for parity in ("even", "odd"):
+            arrays[f"{prefix}_{parity}_midpoint"] = getattr(
+                component, f"{parity}_midpoint"
+            )
+            arrays[f"{prefix}_{parity}_radius"] = getattr(
+                component, f"{parity}_radius"
+            )
+    if self_tail is not None:
+        for parity in ("even", "odd"):
+            arrays[f"self_{parity}_midpoint"] = getattr(
+                self_tail, f"{parity}_midpoint"
+            )
+            arrays[f"self_{parity}_radius"] = getattr(
+                self_tail, f"{parity}_radius"
+            )
+    arrays["smooth_remainder"] = np.array(source.smooth_remainder)
+    arrays["other_tail_norm"] = np.array(other.spectral_norm_upper)
+    arrays["complement_floor"] = np.array(floor.complement_floor)
+    temporary = target.with_suffix(target.suffix + ".tmp")
+    with temporary.open("wb") as stream:
+        np.savez_compressed(stream, **arrays)
+    temporary.replace(target)
+
+
+def _load_component_cache(path, expected_metadata):
+    """Load a cache only when every proof-relevant parameter agrees."""
+
+    target = Path(path)
+    if not target.exists():
+        return None
+    with np.load(target, allow_pickle=False) as payload:
+        metadata = json.loads(str(payload["metadata"].item()))
+        if metadata != expected_metadata:
+            raise ValueError("the Schur component cache metadata do not match")
+
+        def component(prefix, *, smooth=False):
+            values = {}
+            for parity in ("even", "odd"):
+                values[f"{parity}_midpoint"] = payload[
+                    f"{prefix}_{parity}_midpoint"
+                ].copy()
+                values[f"{parity}_radius"] = payload[
+                    f"{prefix}_{parity}_radius"
+                ].copy()
+            if smooth:
+                values["smooth_remainder"] = float(payload["smooth_remainder"])
+            return SimpleNamespace(**values)
+
+        source = component("source", smooth=True)
+        band = component("band")
+        flux = component("flux")
+        singular = component("singular")
+        self_tail = (
+            component("self") if expected_metadata["retain_self_tail"] else None
+        )
+        other = SimpleNamespace(
+            spectral_norm_upper=float(payload["other_tail_norm"])
+        )
+        floor = SimpleNamespace(
+            complement_floor=float(payload["complement_floor"])
+        )
+    return source, band, flux, singular, other, self_tail, floor
 
 
 def _matrix_from_export(arb, arb_mat, midpoint, radius):
@@ -203,6 +324,9 @@ def certify_second_window_schur(
     precision: int = 512,
     comparison_subdivisions: int = 80,
     expected_negative_count: int = 1,
+    component_cache_path: str | None = None,
+    joint_pointwise_floor: bool = False,
+    pointwise_subdivisions: int = 1024,
 ) -> SecondWindowSchurCertificate:
     """Certify that at most one eigenvalue lies below each shift.
 
@@ -216,6 +340,8 @@ def certify_second_window_schur(
         raise ValueError("tail_balance must be positive")
     if residual_balance <= 0:
         raise ValueError("residual_balance must be positive")
+    if pointwise_subdivisions < 1:
+        raise ValueError("pointwise_subdivisions must be positive")
     if expected_negative_count not in (0, 1):
         raise ValueError("expected_negative_count must be zero or one")
     if tail_start <= low_degree_count or explicit_end <= tail_start:
@@ -225,68 +351,109 @@ def certify_second_window_schur(
     except ImportError as error:  # pragma: no cover
         raise RuntimeError("python-flint is required") from error
 
-    source = build_arb_second_window_source(
+    metadata = _component_metadata(
         half_width,
         low_degree_count,
-        low_degree_count,
-        low_degree_count,
+        tail_start,
+        explicit_end,
         maximum_smooth_power,
+        retain_self_tail,
+        self_remainder_end,
         precision,
+        comparison_subdivisions,
     )
-    band = build_arb_second_window_near_tail_gram(
-        half_width,
-        low_degree_count,
-        low_degree_count,
-        low_degree_count,
-        low_degree_count,
-        tail_start,
-        precision,
-        maximum_smooth_power,
+    cached = (
+        _load_component_cache(component_cache_path, metadata)
+        if component_cache_path is not None
+        else None
     )
-    flux = build_arb_second_window_flux_gram(
-        half_width,
-        low_degree_count,
-        low_degree_count,
-        low_degree_count,
-        tail_start,
-        explicit_end,
-        precision,
-    )
-    singular = build_arb_second_window_singular_gram(
-        half_width,
-        low_degree_count,
-        low_degree_count,
-        low_degree_count,
-        tail_start,
-        explicit_end,
-        8,
-        precision,
-    )
-    other = certify_second_window_other_tail(
-        half_width,
-        low_degree_count,
-        low_degree_count,
-        low_degree_count,
-        tail_start,
-        explicit_end,
-        precision,
-        include_self_blocks=not retain_self_tail,
-    )
-    self_tail = None
-    if retain_self_tail:
-        self_tail = build_arb_second_window_self_gram(
+    cache_hit = cached is not None
+    if cached is None:
+        source = build_arb_second_window_source(
+            half_width,
+            low_degree_count,
+            low_degree_count,
+            low_degree_count,
+            maximum_smooth_power,
+            precision,
+        )
+        band = build_arb_second_window_near_tail_gram(
+            half_width,
+            low_degree_count,
+            low_degree_count,
+            low_degree_count,
+            low_degree_count,
+            tail_start,
+            precision,
+            maximum_smooth_power,
+        )
+        flux = build_arb_second_window_flux_gram(
+            half_width,
+            low_degree_count,
+            low_degree_count,
             low_degree_count,
             tail_start,
             explicit_end,
-            self_remainder_end,
             precision,
         )
-    floor = certify_second_window_complement_floor(
-        half_width,
-        low_degree_count,
-        min(precision, 512),
-        comparison_subdivisions,
-    )
+        singular = build_arb_second_window_singular_gram(
+            half_width,
+            low_degree_count,
+            low_degree_count,
+            low_degree_count,
+            tail_start,
+            explicit_end,
+            8,
+            precision,
+        )
+        other = certify_second_window_other_tail(
+            half_width,
+            low_degree_count,
+            low_degree_count,
+            low_degree_count,
+            tail_start,
+            explicit_end,
+            precision,
+            include_self_blocks=not retain_self_tail,
+        )
+        self_tail = None
+        if retain_self_tail:
+            self_tail = build_arb_second_window_self_gram(
+                low_degree_count,
+                tail_start,
+                explicit_end,
+                self_remainder_end,
+                precision,
+            )
+        floor = certify_second_window_complement_floor(
+            half_width,
+            low_degree_count,
+            min(precision, 512),
+            comparison_subdivisions,
+        )
+        if component_cache_path is not None:
+            _save_component_cache(
+                component_cache_path,
+                metadata,
+                source,
+                band,
+                flux,
+                singular,
+                other,
+                self_tail,
+                floor,
+            )
+    else:
+        source, band, flux, singular, other, self_tail, floor = cached
+    if joint_pointwise_floor:
+        pointwise = certify_second_window_pointwise_floor(
+            half_width,
+            low_degree_count,
+            maximum_smooth_power,
+            pointwise_subdivisions,
+            min(precision, 512),
+        )
+        floor = SimpleNamespace(complement_floor=pointwise.complement_floor)
     smooth_remainder = math.nextafter(source.smooth_remainder, math.inf)
 
     previous_precision = ctx.prec
@@ -427,5 +594,9 @@ def certify_second_window_schur(
         explicit_end=explicit_end,
         retain_self_tail=retain_self_tail,
         residual_balance=residual_balance,
+        component_cache_hit=cache_hit,
+        complement_floor_method=(
+            "joint-two-prime-pointwise" if joint_pointwise_floor else "prime-two-minus-norm"
+        ),
         precision=precision,
     )

@@ -1,9 +1,12 @@
 import numpy as np
 import pytest
+from types import SimpleNamespace
 
 from experiments.theta_pencil.second_window_schur_certificate import (
     _assemble_parity_schur,
     _coercive_lower_from_schur,
+    _load_component_cache,
+    _save_component_cache,
 )
 
 
@@ -48,3 +51,36 @@ def test_schur_reconstruction_returns_conservative_full_lower():
     assert complement <= 3.0
     assert coupling >= 2.0
     assert 0.0 < lower <= np.linalg.eigvalsh(full)[0]
+
+
+def test_component_cache_requires_exact_metadata(tmp_path):
+    matrix = np.eye(2)
+    radius = np.full((2, 2), 1e-30)
+
+    def component(**extra):
+        return SimpleNamespace(
+            even_midpoint=matrix,
+            even_radius=radius,
+            odd_midpoint=matrix,
+            odd_radius=radius,
+            **extra,
+        )
+
+    metadata = {"format": 1, "retain_self_tail": True, "parameter": "exact"}
+    path = tmp_path / "components.npz"
+    _save_component_cache(
+        path,
+        metadata,
+        component(smooth_remainder=1e-12),
+        component(),
+        component(),
+        component(),
+        SimpleNamespace(spectral_norm_upper=2e-9),
+        component(),
+        SimpleNamespace(complement_floor=0.4),
+    )
+    loaded = _load_component_cache(path, metadata)
+    assert np.array_equal(loaded[0].even_midpoint, matrix)
+    assert loaded[4].spectral_norm_upper == 2e-9
+    with pytest.raises(ValueError, match="metadata"):
+        _load_component_cache(path, metadata | {"parameter": "changed"})
