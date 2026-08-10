@@ -38,6 +38,9 @@ class SecondWindowSchurParity:
     positive_count: int
     unresolved_count: int
     first_positive_lower: float
+    complement_lower: float
+    coupling_norm_upper: float
+    coercive_lower: float
     entry_radius: float
 
 
@@ -90,15 +93,80 @@ def _assemble_parity_schur(
     result = arb_mat(source)
     for index in range(size):
         result[index, index] -= shift + smooth
+    coupling_upper = _coupling_gram_upper(
+        arb,
+        band_gram,
+        flux_gram,
+        singular_gram,
+        other_tail_norm,
+        tail_balance,
+    )
+    result -= coupling_upper / denominator
+    return result
+
+
+def _coupling_gram_upper(
+    arb,
+    band_gram,
+    flux_gram,
+    singular_gram,
+    other_tail_norm,
+    tail_balance,
+):
+    """Return the positive Gram majorant used in the Schur correction."""
+
     structured = 2 * (flux_gram + singular_gram)
     balance = arb(str(tail_balance))
     other = arb(str(other_tail_norm))
-    tail_upper = (1 + balance) * structured
+    result = band_gram + (1 + balance) * structured
     scalar_tail = (1 + 1 / balance) * other**2
-    for index in range(size):
-        tail_upper[index, index] += scalar_tail
-    result -= (band_gram + tail_upper) / denominator
+    for index in range(result.nrows()):
+        result[index, index] += scalar_tail
     return result
+
+
+def _coercive_lower_from_schur(
+    arb,
+    schur_lower: float,
+    complement_lower,
+    coupling_gram_upper,
+) -> tuple[float, float, float]:
+    """Turn a positive Schur complement into a full operator lower bound.
+
+    If ``D >= d I``, ``S >= s I`` and ``B B* <= G``, block Gaussian
+    elimination gives
+
+        q(u,v) >= s ||u||^2 + d ||v + D^-1 B* u||^2.
+
+    Since ``||B||^2 <= tr G``, weighted Cauchy--Schwarz then proves the
+    conservative lower bound returned here.  Only outward endpoints of Arb
+    balls are exported.
+    """
+
+    s = arb(str(math.nextafter(schur_lower, -math.inf)))
+    d = complement_lower
+    if not s.lower() > 0 or not d.lower() > 0:
+        raise ArithmeticError("the Schur coercivity inputs were not positive")
+    trace = sum(
+        (
+            coupling_gram_upper[index, index]
+            for index in range(coupling_gram_upper.nrows())
+        ),
+        arb(0),
+    )
+    if not trace.lower() >= 0:
+        raise ArithmeticError("the coupling Gram trace was not nonnegative")
+    coupling_norm = trace.sqrt()
+    kappa = coupling_norm / d
+    inverse_lower = (1 + kappa) ** 2 / s + 1 / d
+    coercive = 1 / inverse_lower
+    if not coercive.lower() > 0:
+        raise ArithmeticError("the full coercive lower bound was unresolved")
+    return (
+        math.nextafter(float(d.lower()), -math.inf),
+        math.nextafter(float(coupling_norm.upper()), math.inf),
+        math.nextafter(float(coercive.lower()), -math.inf),
+    )
 
 
 def certify_second_window_schur(
@@ -232,6 +300,19 @@ def certify_second_window_schur(
                 other.spectral_norm_upper,
                 tail_balance,
             )
+            complement_lower = (
+                arb(str(floor.complement_floor))
+                - arb(str(shift))
+                - 2 * arb(str(smooth_remainder))
+            )
+            coupling_upper = _coupling_gram_upper(
+                arb,
+                band_ball,
+                flux_ball,
+                singular_ball,
+                other.spectral_norm_upper,
+                tail_balance,
+            )
             midpoint = np.empty((schur.nrows(), schur.ncols()), dtype=float)
             radius = np.empty_like(midpoint)
             for row in range(schur.nrows()):
@@ -259,6 +340,17 @@ def certify_second_window_schur(
                     f"positive={inertia.positive_count}, "
                     f"unresolved={inertia.unresolved_count}"
                 )
+            first_positive_lower = min(positive_lowers)
+            (
+                complement_lower_float,
+                coupling_norm_upper,
+                coercive_lower,
+            ) = _coercive_lower_from_schur(
+                arb,
+                first_positive_lower,
+                complement_lower,
+                coupling_upper,
+            )
             results.append(
                 SecondWindowSchurParity(
                     parity=parity,
@@ -266,7 +358,10 @@ def certify_second_window_schur(
                     negative_count=inertia.negative_count,
                     positive_count=inertia.positive_count,
                     unresolved_count=inertia.unresolved_count,
-                    first_positive_lower=min(positive_lowers),
+                    first_positive_lower=first_positive_lower,
+                    complement_lower=complement_lower_float,
+                    coupling_norm_upper=coupling_norm_upper,
+                    coercive_lower=coercive_lower,
                     entry_radius=entry_radius,
                 )
             )

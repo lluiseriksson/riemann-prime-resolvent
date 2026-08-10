@@ -106,6 +106,56 @@ Schur lemma therefore proves, unconditionally,
 This is the first certified point in this programme strictly beyond
 $\log(3)/2$, where the prime-three translation has nonempty overlap.
 
+## A full coercive constant
+
+Positivity of the finite Schur matrix alone does not license using its first
+eigenvalue as a lower bound for the full operator.  The certificate now keeps
+the two additional quantities needed for the block reconstruction.  In the
+even sector they are
+
+\[
+ d>0.6126659780772284,
+ \qquad \|B\|<2.9615412211684524,
+\]
+
+and in the odd sector the coupling bound is
+`2.9590237355557947`.  The norm bounds use
+\(\|B\|^2\le\operatorname{tr}G\), where \(G\) is the same positive Gram
+majorant already charged in the Schur correction.
+
+For a block vector \((u,v)\), set \(w=v+D^{-1}B^*u\).  Exact block Gaussian
+elimination and the certified bounds \(S\succeq sI\), \(D\succeq dI\) give
+
+\[
+ q(u,v)\ge s\|u\|^2+d\|w\|^2.
+\]
+
+Writing \(\kappa=\|B\|/d\), weighted Cauchy--Schwarz yields
+
+\[
+ \|u\|^2+\|v\|^2
+ \le\left(\frac{(1+\kappa)^2}{s}+\frac1d\right)
+       \left(s\|u\|^2+d\|w\|^2\right).
+\]
+
+Consequently the full infinite-dimensional operator has the rigorous sector
+lower bounds
+
+| sector | full coercive lower |
+|---|---:|
+| even | `1.3163321231312722e-9` |
+| odd | `3.956665645298885e-7` |
+
+and hence
+
+\[
+ \boxed{A_{0.551}\succeq
+ 1.3163321231312722\cdot10^{-9}I}.
+\]
+
+This reconstruction is deliberately conservative but supplies the correct
+currency for support-parameter continuation.
+
 The certificate is reproduced by
 
 ```python
@@ -128,6 +178,8 @@ This proves positivity at one support value after the prime-three translation
 becomes active.  It does **not** prove positivity for every support, and hence
 does not prove RH.  The attempted polynomial Feshbach/Temple trial is no
 longer needed for this point; its failure remains useful evidence about that
-trial architecture.  The next obligation is to turn the point into a
-certified interval and determine whether such intervals can cross successive
-prime thresholds without losing their Schur margin.
+trial architecture.  The point has now also been continued to a certified
+open interval in `support-0551-interval.md`.  The remaining obligation is to
+find a continuation mechanism with non-negligible radius and determine
+whether it can cross successive prime thresholds without losing its Schur
+margin.

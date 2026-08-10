@@ -3,6 +3,7 @@ import pytest
 
 from experiments.theta_pencil.second_window_schur_certificate import (
     _assemble_parity_schur,
+    _coercive_lower_from_schur,
 )
 
 
@@ -35,3 +36,15 @@ def test_synthetic_schur_assembly_matches_scalar_formula():
     assert np.max(
         np.abs(actual - np.diag(expected))
     ) < 1e-14
+
+
+def test_schur_reconstruction_returns_conservative_full_lower():
+    flint = pytest.importorskip("flint")
+    gram = flint.arb_mat([[4]])
+    complement, coupling, lower = _coercive_lower_from_schur(
+        flint.arb, 2.0, flint.arb(3), gram
+    )
+    full = np.array([[2.0 + 4.0 / 3.0, 2.0], [2.0, 3.0]])
+    assert complement <= 3.0
+    assert coupling >= 2.0
+    assert 0.0 < lower <= np.linalg.eigvalsh(full)[0]

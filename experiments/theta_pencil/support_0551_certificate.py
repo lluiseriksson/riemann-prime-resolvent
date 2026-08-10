@@ -15,6 +15,9 @@ class Support0551Certificate:
     schur: SecondWindowSchurCertificate
     even_schur_lower: float
     odd_schur_lower: float
+    even_coercive_lower: float
+    odd_coercive_lower: float
+    global_coercive_lower: float
 
 
 def certify_support_0551() -> Support0551Certificate:
@@ -33,10 +36,17 @@ def certify_support_0551() -> Support0551Certificate:
         or schur.odd.unresolved_count != 0
         or schur.even.first_positive_lower <= 0
         or schur.odd.first_positive_lower <= 0
+        or schur.even.coercive_lower <= 0
+        or schur.odd.coercive_lower <= 0
     ):
         raise ArithmeticError("the a=0.551 Schur positivity did not close")
     return Support0551Certificate(
         schur=schur,
         even_schur_lower=schur.even.first_positive_lower,
         odd_schur_lower=schur.odd.first_positive_lower,
+        even_coercive_lower=schur.even.coercive_lower,
+        odd_coercive_lower=schur.odd.coercive_lower,
+        global_coercive_lower=min(
+            schur.even.coercive_lower, schur.odd.coercive_lower
+        ),
     )
