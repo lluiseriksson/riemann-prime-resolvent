@@ -65,3 +65,8 @@ with its parameter tuple and SHA-256 hash of the trial vector before assembling
 the final certificate.
 
 The top-level from-scratch reproducer is `support_054_certificate.py`.
+
+The relative-form argument in `support-054-interval.md` turns this point into
+a nonzero certified neighbourhood. Its radius is extremely small because
+zero-extended translations are only logarithmically continuous on the form
+domain; no numerically visible interval is claimed.
