@@ -6,10 +6,12 @@ from experiments.theta_pencil.finite_weyl_ratio import (
     audit_resolvent_shift,
     audit_two_channel_shift,
     canonical_weyl_from_channels,
+    canonical_weyl_from_fourier_parity_ratio,
     canonically_normalized_shifted_value,
     exact_normalized_unshift_error,
     exact_unshift_error,
     finite_weyl_function,
+    fourier_parity_ratio_from_canonical_weyl,
     large_negative_shift_channel_expansion,
     normalized_unshift_error_bound,
     projective_cross_ratio,
@@ -106,6 +108,31 @@ def test_cross_ratio_is_invariant_under_constant_mobius_map():
 def test_canonical_channel_weyl_value_has_basepoint_normalization():
     value = canonical_weyl_from_channels(3.0 - 2.0j, 0.7 + 0.1j, 1j)
     assert value == pytest.approx(1j)
+
+
+def test_fourier_parity_ratio_is_the_exact_two_channel_reduction():
+    z = 0.6 + 0.9j
+    even_transform = 1.2 - 0.4j
+    odd_transform = -0.15 + 0.3j
+    ratio = odd_transform / even_transform
+    plus_transform = even_transform + odd_transform
+    reflected_transform = even_transform - odd_transform
+    direct = canonical_weyl_from_channels(
+        plus_transform, reflected_transform, z
+    )
+    reduced = canonical_weyl_from_fourier_parity_ratio(ratio, z)
+    assert reduced == pytest.approx(direct)
+    assert fourier_parity_ratio_from_canonical_weyl(
+        reduced, z
+    ) == pytest.approx(ratio)
+    assert canonical_weyl_from_fourier_parity_ratio(0.0, z) == pytest.approx(
+        -1.0 / z
+    )
+
+
+def test_fourier_parity_inverse_detects_the_basepoint_indeterminacy():
+    with pytest.raises(ZeroDivisionError):
+        fourier_parity_ratio_from_canonical_weyl(1j, 1j)
 
 
 def test_large_negative_shift_expansion_has_second_order_remainder():

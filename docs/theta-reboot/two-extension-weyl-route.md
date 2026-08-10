@@ -714,6 +714,60 @@ possible limit, but no convergence to (M_\Xi) follows from Suzuki's Fourier
 multiplier formula.  In particular, the estimate (BE) below is a conditional
 renormalization lemma, not yet the boundary estimate of the actual quotient.
 
+### Exact projective reduction to one parity ratio
+
+The bilateral problem can be reduced further without factoring the common
+scalar multiplier. The localized Weil operator is real and commutes with
+reflection. With compatible normalizations of the deficiency vectors,
+
+\[
+ v_{a,-}(x)=v_{a,+}(-x),\qquad
+ V_a(z):=\widehat v_{a,+}(z),\qquad
+ \widehat v_{a,-}(z)=V_a(-z).
+\]
+
+Split the single entire function into its even and odd parts,
+
+\[
+ C_a(z)=\frac{V_a(z)+V_a(-z)}2,\qquad
+ S_a(z)=\frac{V_a(z)-V_a(-z)}2,\qquad
+ r_a(z)=\frac{S_a(z)}{C_a(z)}.
+\]
+
+For the extension pair \(\theta=0,\pi\), direct algebra in Suzuki's
+characteristic formula gives
+
+\[
+ W_0=2C_a(z)(z-ir_a(z)),\qquad
+ W_\pi=2C_a(z)(zr_a(z)-i).
+\]
+
+Hence the canonically normalized Weyl function is exactly
+
+\[
+ \boxed{
+ \mathfrak m_a(z)=-i\frac{W_\pi}{W_0}
+ =-\frac{1+izr_a(z)}{z-ir_a(z)}.}                       \tag{PF}
+\]
+
+Away from its removable normalization degeneracy, the inverse map is
+
+\[
+ \boxed{
+ r_a(z)=\frac{1+z\mathfrak m_a(z)}
+ {i(\mathfrak m_a(z)-z)}.}                             \tag{PI}
+\]
+
+This identifies exactly what a bilateral glue must control: the single
+odd/even transform ratio \(r_a\), not a scalar factorization of
+\(\Xi'/\Xi-\lambda\). Any scalar Wiener--Hopf factor multiplies \(C_a\) and
+\(S_a\) equally and cancels from (PF), so its index cannot determine the
+missing projective limit. A useful factorization must instead control the
+finite-section boundary transfer that changes \(S_a/C_a\). The functions
+\`canonical_weyl_from_fourier_parity_ratio\` and
+\`fourier_parity_ratio_from_canonical_weyl\` verify (PF)--(PI) independently
+against the original two-channel formula.
+
 ## Conditional shifted Herglotz target
 
 There is nevertheless a better route than exact invariance. Let

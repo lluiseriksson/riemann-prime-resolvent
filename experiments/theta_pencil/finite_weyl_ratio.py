@@ -56,6 +56,43 @@ def canonical_weyl_from_channels(
     return 1j * (b_value - a_value) / denominator
 
 
+def canonical_weyl_from_fourier_parity_ratio(
+    odd_even_ratio: complex,
+    z: complex,
+) -> complex:
+    """Return the canonical Weyl value from one channel's Fourier parity ratio.
+
+    Reflection gives ``V_-(z)=V_+(-z)``. If
+    ``C=(V_+(z)+V_+(-z))/2``, ``S=(V_+(z)-V_+(-z))/2`` and ``r=S/C``, then
+    ``m(z)=-(1+i*z*r)/(z-i*r)``.
+    """
+
+    ratio = complex(odd_even_ratio)
+    point = complex(z)
+    denominator = point - 1j * ratio
+    if abs(denominator) == 0.0:
+        raise ZeroDivisionError("the reference extension has an eigenvalue")
+    return -(1.0 + 1j * point * ratio) / denominator
+
+
+def fourier_parity_ratio_from_canonical_weyl(
+    canonical_weyl: complex,
+    z: complex,
+) -> complex:
+    """Invert :func:`canonical_weyl_from_fourier_parity_ratio`.
+
+    At ``z=i, m=i`` numerator and denominator both vanish; the parity ratio
+    there is recovered from derivatives instead.
+    """
+
+    value = complex(canonical_weyl)
+    point = complex(z)
+    denominator = 1j * (value - point)
+    if abs(denominator) == 0.0:
+        raise ZeroDivisionError("the projective inverse is indeterminate")
+    return (1.0 + value * point) / denominator
+
+
 @dataclass(frozen=True)
 class ComponentChannelResponse:
     """Exact two-channel response to an additive operator component.
