@@ -9,6 +9,7 @@ from dataclasses import asdict, dataclass
 import numpy as np
 
 from experiments.theta_pencil.finite_weyl_ratio import (
+    audit_component_channel_response,
     canonical_weyl_from_channels,
     large_negative_shift_channel_expansion,
 )
@@ -49,6 +50,16 @@ class SafeShiftSignalRow:
     total_second_coefficient_abs: float
     scaled_total_second_signal_abs: float
     scaled_prime_sensitive_second_signal_abs: float
+    exact_no_prime_canonical_real: float
+    exact_no_prime_canonical_imag: float
+    exact_arithmetic_weyl_difference_abs: float
+    exact_arithmetic_characteristic_difference_abs: float
+    exact_projective_numerator_abs: float
+    exact_component_identity_residual: float
+    exact_completed_weyl_difference_abs: float
+    exact_completed_characteristic_difference_abs: float
+    exact_completed_projective_numerator_abs: float
+    exact_completed_identity_residual: float
 
 
 def safe_shift_signal_row(
@@ -78,6 +89,27 @@ def safe_shift_signal_row(
     plus_value = complex(observation @ np.linalg.solve(pencil, plus))
     minus_value = complex(observation @ np.linalg.solve(pencil, minus))
     exact = canonical_weyl_from_channels(plus_value, minus_value, z)
+    component_response = audit_component_channel_response(
+        components.polar - components.archimedean,
+        -components.prime,
+        plus,
+        minus,
+        observation,
+        shift,
+        z,
+        metric=gram,
+    )
+    completed_response = audit_component_channel_response(
+        np.zeros_like(operator),
+        operator,
+        plus,
+        minus,
+        observation,
+        shift,
+        z,
+        metric=gram,
+    )
+    exact_no_prime = exact - component_response.canonical_weyl_difference
 
     def expansion(matrix: np.ndarray):
         return large_negative_shift_channel_expansion(
@@ -154,6 +186,32 @@ def safe_shift_signal_row(
                 - without_prime.canonical_second_coefficient
             )
             / scale**2
+        ),
+        exact_no_prime_canonical_real=float(exact_no_prime.real),
+        exact_no_prime_canonical_imag=float(exact_no_prime.imag),
+        exact_arithmetic_weyl_difference_abs=float(
+            abs(component_response.canonical_weyl_difference)
+        ),
+        exact_arithmetic_characteristic_difference_abs=float(
+            abs(component_response.characteristic_difference)
+        ),
+        exact_projective_numerator_abs=float(
+            abs(component_response.projective_numerator)
+        ),
+        exact_component_identity_residual=float(
+            component_response.resolvent_identity_residual
+        ),
+        exact_completed_weyl_difference_abs=float(
+            abs(completed_response.canonical_weyl_difference)
+        ),
+        exact_completed_characteristic_difference_abs=float(
+            abs(completed_response.characteristic_difference)
+        ),
+        exact_completed_projective_numerator_abs=float(
+            abs(completed_response.projective_numerator)
+        ),
+        exact_completed_identity_residual=float(
+            completed_response.resolvent_identity_residual
         ),
     )
 

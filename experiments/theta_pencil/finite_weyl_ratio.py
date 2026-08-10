@@ -56,6 +56,149 @@ def canonical_weyl_from_channels(
     return 1j * (b_value - a_value) / denominator
 
 
+@dataclass(frozen=True)
+class ComponentChannelResponse:
+    """Exact two-channel response to an additive operator component.
+
+    If ``R = (A0 + P - shift*G)^-1`` and
+    ``R0 = (A0 - shift*G)^-1``, the second resolvent identity gives
+
+    ``R - R0 = -R P R0``.
+
+    The projective numerator below is therefore exact at finite dimension;
+    unlike a large-shift expansion it contains every order in ``P``.
+    """
+
+    full_ratio: complex
+    reference_ratio: complex
+    projective_numerator: complex
+    predicted_projective_numerator: complex
+    resolvent_identity_residual: float
+    characteristic_difference: complex
+    canonical_weyl_difference: complex
+
+
+def rank_one_channel_weyl_limit(
+    eigenvector: np.ndarray,
+    plus_vector: np.ndarray,
+    minus_vector: np.ndarray,
+    z: complex,
+) -> complex:
+    """Return the Weyl limit when one real eigenvector dominates.
+
+    As a real shift approaches a simple eigenvalue from below, the resolvent
+    is its rank-one spectral projection divided by the spectral margin. The
+    observation overlap cancels from the two-channel quotient, leaving only
+    ``<g,f+>/<g,f->``. For reflection-symmetric channels and a parity-pure
+    vector this specializes to ``-1/z`` (even) or ``z`` (odd).
+    """
+
+    vector = np.asarray(eigenvector, dtype=float)
+    plus = np.asarray(plus_vector, dtype=float)
+    minus = np.asarray(minus_vector, dtype=float)
+    if (
+        vector.ndim != 1
+        or plus.shape != vector.shape
+        or minus.shape != vector.shape
+    ):
+        raise ValueError(
+            "the vector and channels must have the same one-dimensional shape"
+        )
+    plus_overlap = float(vector @ plus)
+    minus_overlap = float(vector @ minus)
+    if abs(minus_overlap) == 0.0:
+        raise ZeroDivisionError("the dominant eigenvector misses the minus channel")
+    return canonical_weyl_from_channels(plus_overlap / minus_overlap, 1.0, z)
+
+
+def audit_component_channel_response(
+    reference_operator: np.ndarray,
+    perturbation: np.ndarray,
+    plus_vector: np.ndarray,
+    minus_vector: np.ndarray,
+    observation: np.ndarray,
+    shift: float,
+    z: complex,
+    metric: np.ndarray | None = None,
+) -> ComponentChannelResponse:
+    """Isolate the exact projective signal of one operator component.
+
+    The returned identity is
+
+    ``N*D0 - N0*D = N0*ell(R P R0 f-) - D0*ell(R P R0 f+)``.
+
+    Dividing by ``D*D0`` gives the change of the resolvent-channel ratio.
+    Thus a non-vanishing normalized projective numerator is a necessary
+    condition for an additive component (the prime block in the intended
+    application) to remain visible in a limiting Weyl function.
+    """
+
+    base = np.asarray(reference_operator, dtype=float)
+    component = np.asarray(perturbation, dtype=float)
+    if base.ndim != 2 or base.shape[0] != base.shape[1]:
+        raise ValueError("reference_operator must be square")
+    if component.shape != base.shape:
+        raise ValueError("perturbation has the wrong shape")
+    dimension = base.shape[0]
+    plus = np.asarray(plus_vector, dtype=float)
+    minus = np.asarray(minus_vector, dtype=float)
+    functional = np.asarray(observation, dtype=complex)
+    if plus.shape != (dimension,) or minus.shape != (dimension,):
+        raise ValueError("channel vectors have the wrong shape")
+    if functional.shape != (dimension,):
+        raise ValueError("observation has the wrong shape")
+    gram = np.eye(dimension) if metric is None else np.asarray(metric, dtype=float)
+    if gram.shape != base.shape:
+        raise ValueError("metric has the wrong shape")
+
+    reference_pencil = base - shift * gram
+    full_pencil = base + component - shift * gram
+    reference_plus = np.linalg.solve(reference_pencil, plus)
+    reference_minus = np.linalg.solve(reference_pencil, minus)
+    full_plus = np.linalg.solve(full_pencil, plus)
+    full_minus = np.linalg.solve(full_pencil, minus)
+
+    reference_numerator = complex(functional @ reference_plus)
+    reference_denominator = complex(functional @ reference_minus)
+    full_numerator = complex(functional @ full_plus)
+    full_denominator = complex(functional @ full_minus)
+    if abs(reference_denominator) == 0.0 or abs(full_denominator) == 0.0:
+        raise ZeroDivisionError("a denominator channel vanishes")
+
+    plus_response = complex(
+        functional @ np.linalg.solve(full_pencil, component @ reference_plus)
+    )
+    minus_response = complex(
+        functional @ np.linalg.solve(full_pencil, component @ reference_minus)
+    )
+    projective = (
+        full_numerator * reference_denominator
+        - reference_numerator * full_denominator
+    )
+    predicted = (
+        reference_numerator * minus_response
+        - reference_denominator * plus_response
+    )
+    full_ratio = full_numerator / full_denominator
+    reference_ratio = reference_numerator / reference_denominator
+    prefactor = -((z - 1j) / (z + 1j))
+    full_characteristic = prefactor * full_ratio
+    reference_characteristic = prefactor * reference_ratio
+    full_weyl = canonical_weyl_from_channels(full_numerator, full_denominator, z)
+    reference_weyl = canonical_weyl_from_channels(
+        reference_numerator, reference_denominator, z
+    )
+    return ComponentChannelResponse(
+        full_ratio=full_ratio,
+        reference_ratio=reference_ratio,
+        projective_numerator=projective,
+        predicted_projective_numerator=predicted,
+        resolvent_identity_residual=float(abs(projective - predicted)),
+        characteristic_difference=full_characteristic - reference_characteristic,
+        canonical_weyl_difference=full_weyl - reference_weyl,
+    )
+
+
 def shifted_herglotz_value(value: complex, shift: float) -> complex:
     """Apply the real Möbius shift ``m -> m/(1-shift*m)``."""
 

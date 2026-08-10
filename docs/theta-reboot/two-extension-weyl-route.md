@@ -337,6 +337,75 @@ coefficient identity (LS)--(LC) is implemented in
 <code>large_negative_shift_channel_expansion</code>; the component audit is
 <code>safe_shift_signal_diagnostic.py</code>.
 
+### An all-orders projective response identity
+
+The preceding cancellation is not restricted to an expansion in the safe
+shift. Let $A=A_0+P$, where $P$ is any additive component, and put
+
+\[
+ R=(A-\lambda G)^{-1},\qquad R_0=(A_0-\lambda G)^{-1}.
+\]
+
+For the two sources $f_\pm$ and an observation functional $\ell_z$, write
+
+\[
+ N=\ell_z(Rf_+),\quad D=\ell_z(Rf_-),\qquad
+ N_0=\ell_z(R_0f_+),\quad D_0=\ell_z(R_0f_-).
+\]
+
+The second resolvent identity $R-R_0=-RPR_0$ gives the exact wedge formula
+
+\[
+ \boxed{
+ ND_0-N_0D
+ =N_0\,\ell_z(RPR_0f_-)-D_0\,\ell_z(RPR_0f_+).}       \tag{PW}
+\]
+
+No smallness assumption and no truncation in powers of $P$ occurs here.
+If $q=N/D$, $q_0=N_0/D_0$, and
+$p(z)=-(z-i)/(z+i)$, then
+
+\[
+ q-q_0=\frac{ND_0-N_0D}{DD_0},\qquad
+ \Theta-\Theta_0=p(z)\frac{ND_0-N_0D}{DD_0},          \tag{PR}
+\]
+
+and the Cayley transform gives
+
+\[
+ \mathfrak m-\mathfrak m_0
+ =\frac{2i(\Theta-\Theta_0)}
+ {(1-\Theta)(1-\Theta_0)}.                            \tag{PC}
+\]
+
+Equations (PW)--(PC) are a pointwise necessary-and-sufficient visibility
+test whenever the displayed denominators do not vanish.  With
+$A_0=A_{\rm polar}-A_{\rm arch}$ and $P=-A_{\rm prime}$, they isolate the
+prime contribution to all orders. With $A_0=0$ and $P=A$, they isolate
+the *completed* operator signal from the universal source geometry.  The
+latter is the relevant gate: since the zero-operator Weyl function tends to
+$i$, a nonconstant Riemann limit requires its completed projective response
+in (PR)--(PC) to survive on at least one point of an open set.
+
+The distinction is visible already in the reproducible finite model at
+$z=0.7+0.8i$:
+
+| $a$ | exact prime-only Weyl change | exact completed Weyl change | resolvent-identity residual |
+|---:|---:|---:|---:|
+| 0.40 | $2.7790\cdot10^{-3}$ | $1.7803\cdot10^{-3}$ | $2.8\cdot10^{-18}$ |
+| 0.72 | $2.0758\cdot10^{-2}$ | $1.2823\cdot10^{-3}$ | $8.9\cdot10^{-19}$ |
+| 1.50 | $4.2394\cdot10^{-2}$ | $1.1527\cdot10^{-4}$ | $1.9\cdot10^{-18}$ |
+| 3.00 | $5.1059\cdot10^{-2}$ | $5.0059\cdot10^{-5}$ | $1.1\cdot10^{-17}$ |
+
+Thus the prime channel remains plainly visible relative to the
+prime-deleted operator, while the *completed* response is three orders of
+magnitude smaller at $a=3$. The cancellation is therefore an exact
+projective phenomenon, not an artefact of stopping the large-shift series at
+first or second order.  The table remains numerical evidence, not a proof
+that the completed response tends to zero.  The function
+<code>audit_component_channel_response</code> implements (PW), and the same
+production diagnostic reports both choices of $A_0$.
+
 There is a geometric restriction on any attempted repair. Automorphisms of
 \(\mathbb C_+\) are hyperbolic isometries. After fixing the canonical
 basepoint value \(m(i)=i\) (or \(ic\) after unshifting), the remaining
@@ -347,6 +416,128 @@ positivity-preserving Möbius renormalization can recover a nonconstant
 Riemann target from its vanishing Euclidean residual. One must either prove
 that the arithmetic term prevents this collapse or choose a substantially
 less dominant admissible shift.
+
+### The opposite endpoint is universal too
+
+Choosing the shift just below the ground state avoids large-shift domination,
+but taking it *too* close creates a different collapse. Let
+$\mu_0<\mu_1$ be the first two generalized eigenvalues of $(A,G)$, let
+$g_0$ be a $G$-normalized ground state, and put
+$\lambda=\mu_0-\delta$, $\delta>0$. The spectral resolution gives
+
+\[
+ (A-\lambda G)^{-1}f
+ =\frac{\langle g_0,f\rangle}{\delta}g_0
+  +\sum_{j\ge1}\frac{\langle g_j,f\rangle}
+  {\mu_j-\mu_0+\delta}g_j.                            \tag{GE}
+\]
+
+Consequently, provided the relevant ground-state and observation overlaps do
+not vanish, $\delta/(\mu_1-\mu_0)\to0$ implies
+
+\[
+ \frac{\ell_z((A-\lambda G)^{-1}f_+)}
+ {\ell_z((A-\lambda G)^{-1}f_-)}
+ \longrightarrow
+ \frac{\langle g_0,f_+\rangle}{\langle g_0,f_-\rangle}. \tag{GR}
+\]
+
+The localized Weil operator commutes with reflection. A simple ground state
+therefore has definite parity. Since $f_+(x)=e^x$ and
+$f_-(x)=e^{-x}$, reflection gives
+
+\[
+ q_{\rm edge}\to
+ \begin{cases}1,&g_0\text{ even},\\-1,&g_0\text{ odd}.
+ \end{cases}
+\]
+
+Substitution into the characteristic prefactor and Cayley transform is
+elementary and yields the second universal endpoint
+
+\[
+ \boxed{
+ \mathfrak m_{\rm edge}(z)=
+ \begin{cases}-1/z,&g_0\text{ even},\\ z,&g_0\text{ odd}.
+ \end{cases}}                                      \tag{UE}
+\]
+
+For the Galerkin ground states at $a=0.4,0.72,1.5,3$, the channel ratio is
+$1$ to at least eight digits, so the observed endpoint is $-1/z$. At
+$z=0.7+0.8i$, it equals
+$-0.6194690265+0.7079646018i$. The canonically normalized Riemann target is
+$-0.6173555008+0.7081174133i$, only $2.1190\cdot10^{-3}$ away. This close
+agreement is universal rank-one geometry, not recovered zeta information.
+
+The shift problem is therefore narrowed to a genuine intermediate regime:
+
+\[
+ \boxed{
+ |\lambda(a)|\ \text{must not dominate the observed operator channels, and}
+ \quad
+ \frac{\lambda_a-\lambda(a)}{\mu_1(a)-\lambda_a}
+ \not\longrightarrow0.}                            \tag{IG}
+\]
+
+The first exclusion avoids the limit $i$; the second avoids $z$ or
+$-1/z$. A successful construction must keep more than one spectral mode
+alive while remaining unconditionally below the spectrum. The helper
+<code>rank_one_channel_weyl_limit</code> implements (UE).
+
+### A canonical intermediate family
+
+There is one scale-free way to remain between the two universal endpoints.
+For any fixed $c>0$, define
+
+\[
+ d_a=\mu_1(a)-\mu_0(a),\qquad
+ \lambda_a^{(c)}=\mu_0(a)-c d_a.                    \tag{GS}
+\]
+
+This choice is unconditionally admissible whenever the ground state is
+simple, because $\lambda_a^{(c)}<\mu_0(a)$. Moreover,
+
+\[
+ A_a-\lambda_a^{(c)}M_a
+ =d_a\left(
+ \frac{A_a-\mu_0(a)M_a}{d_a}+cM_a\right).           \tag{GN}
+\]
+
+The scalar $d_a^{-1}$ in the inverse cancels from the two-channel quotient.
+Thus the Weyl function depends only on the dimensionless pencil
+
+\[
+ B_a=\frac{A_a-\mu_0(a)M_a}{d_a},\qquad
+ \operatorname{spec}_{M_a}(B_a)=\{0,1,\ldots\}.      \tag{BO}
+\]
+
+This construction is invariant under every positive affine change
+$A_a\mapsto\alpha A_a+\beta M_a$ with $\alpha>0$. Here $M_a$ is the
+mass metric in a weak discretization (the identity in the abstract Hilbert
+space). The construction neither assumes positivity of $A_a$ nor imports a
+zero of zeta. It gives a concrete new operator-theoretic obligation:
+
+> Prove compact/strong-resolvent convergence of the gap-normalized pencils
+> $B_a$ together with their two source and observation channels, and identify
+> the resulting Weyl function on one Euler-product open set.
+
+That statement would genuinely advance the route; merely knowing the first
+two eigenvalues does not. The present Galerkin model cannot yet test it
+reliably. The computed first gaps change substantially under refinement:
+
+| $a$ | grid/basis | computed $d_a$ | grid/basis | computed $d_a$ |
+|---:|---:|---:|---:|---:|
+| 0.40 | 4097/32 | $1.623\cdot10^{-2}$ | 8193/40 | $1.592\cdot10^{-2}$ |
+| 0.72 | 4097/32 | $7.256\cdot10^{-8}$ | 8193/40 | $1.733\cdot10^{-8}$ |
+| 1.50 | 4097/32 | $2.678\cdot10^{-7}$ | 8193/40 | $3.812\cdot10^{-8}$ |
+| 3.00 | 4097/32 | $6.440\cdot10^{-7}$ | 8193/40 | $5.899\cdot10^{-7}$ |
+
+The attractive three-point fits obtained by tuning $c$ are therefore not
+evidence: for $a\ge0.72$ they use a gap at or below the discretization scale,
+and the fitted $c$ drifts toward the already universal rank-one endpoint.
+The module <code>gap_normalized_weyl.py</code> records only the exact
+construction and its affine invariance; it deliberately makes no convergence
+claim.
 
 ## Common-factor cancellation: the full-line multiplier is not the Weyl ratio
 

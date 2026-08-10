@@ -13,3 +13,11 @@ def test_first_coefficient_splits_over_operator_components():
     ) * (1.0 + 1.0e-15)
     assert row.first_approximation_error >= 0.0
     assert row.second_approximation_error < row.first_approximation_error
+    assert row.exact_arithmetic_weyl_difference_abs > 0.0
+    assert row.exact_arithmetic_characteristic_difference_abs > 0.0
+    assert row.exact_projective_numerator_abs > 0.0
+    assert row.exact_component_identity_residual < 1.0e-12
+    assert row.exact_completed_weyl_difference_abs > 0.0
+    assert row.exact_completed_characteristic_difference_abs > 0.0
+    assert row.exact_completed_projective_numerator_abs > 0.0
+    assert row.exact_completed_identity_residual < 1.0e-12

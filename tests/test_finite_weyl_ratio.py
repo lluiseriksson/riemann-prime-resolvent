@@ -2,6 +2,7 @@ import numpy as np
 import pytest
 
 from experiments.theta_pencil.finite_weyl_ratio import (
+    audit_component_channel_response,
     audit_resolvent_shift,
     audit_two_channel_shift,
     canonical_weyl_from_channels,
@@ -12,11 +13,49 @@ from experiments.theta_pencil.finite_weyl_ratio import (
     large_negative_shift_channel_expansion,
     normalized_unshift_error_bound,
     projective_cross_ratio,
+    rank_one_channel_weyl_limit,
     shifted_herglotz_value,
     undo_canonically_normalized_shift,
     unshift_error_bound,
     unshift_herglotz_value,
 )
+
+
+def test_rank_one_parity_limits_are_universal():
+    z = 0.7 + 0.8j
+    even = np.array([1.0, 1.0])
+    odd = np.array([1.0, -1.0])
+    plus = np.array([2.0, 1.0])
+    minus = np.array([1.0, 2.0])
+    assert rank_one_channel_weyl_limit(even, plus, minus, z) == pytest.approx(
+        -1.0 / z
+    )
+    assert rank_one_channel_weyl_limit(odd, plus, minus, z) == pytest.approx(z)
+
+
+def test_component_channel_response_is_exact_to_all_orders():
+    reference = np.array([[2.0, 0.3], [0.3, 1.5]])
+    perturbation = np.array([[0.2, -0.1], [-0.1, 0.4]])
+    plus = np.array([1.0, 0.2])
+    minus = np.array([-0.3, 0.8])
+    observation = np.array([0.7 + 0.4j, -0.2 + 0.9j])
+    audit = audit_component_channel_response(
+        reference,
+        perturbation,
+        plus,
+        minus,
+        observation,
+        shift=-1.3,
+        z=0.6 + 0.7j,
+    )
+    assert audit.resolvent_identity_residual < 1.0e-15
+    assert audit.full_ratio - audit.reference_ratio == pytest.approx(
+        audit.projective_numerator
+        / (
+            complex(observation @ np.linalg.solve(reference + perturbation + 1.3 * np.eye(2), minus))
+            * complex(observation @ np.linalg.solve(reference + 1.3 * np.eye(2), minus))
+        )
+    )
 
 
 def test_finite_self_adjoint_weyl_function_is_herglotz():
