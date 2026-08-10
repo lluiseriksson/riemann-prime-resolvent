@@ -112,6 +112,7 @@ def certify_second_window_schur(
     tail_balance: float = 0.1,
     precision: int = 512,
     comparison_subdivisions: int = 80,
+    expected_negative_count: int = 1,
 ) -> SecondWindowSchurCertificate:
     """Certify that at most one eigenvalue lies below each shift.
 
@@ -123,6 +124,8 @@ def certify_second_window_schur(
 
     if tail_balance <= 0:
         raise ValueError("tail_balance must be positive")
+    if expected_negative_count not in (0, 1):
+        raise ValueError("expected_negative_count must be zero or one")
     if tail_start <= low_degree_count or explicit_end <= tail_start:
         raise ValueError("invalid Schur degree ranges")
     try:
@@ -245,8 +248,9 @@ def certify_second_window_schur(
                 lower for lower, _ in inertia.real_intervals if lower > 0
             ]
             if (
-                inertia.negative_count != 1
-                or inertia.positive_count != schur.nrows() - 1
+                inertia.negative_count != expected_negative_count
+                or inertia.positive_count
+                != schur.nrows() - expected_negative_count
                 or inertia.unresolved_count != 0
             ):
                 raise ArithmeticError(

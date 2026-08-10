@@ -65,6 +65,15 @@ second-window point certificate still requires two independent ingredients:
 
 Neither ingredient is equivalent to RH, but neither is complete yet.
 
+## Subsequent direct Schur closure
+
+The signed seven-block calculation in `second-window-schur.md` later retained
+the complete dominant low--high Gram, including the analytic/singular
+Legendre-Q cancellation.  At $a=0.551$ its zero-shift Schur matrix is strictly
+positive in both parity sectors.  Thus Kato--Temple is no longer needed to
+prove this particular point.  The diagnostics in this note remain an honest
+record of why the earlier scalar-tail architecture did not close.
+
 ## Higher jets and the first Feshbach response
 
 The variation certificate and Temple tail now accept any retained jet order

@@ -1,4 +1,4 @@
-# Certified second-mode floors after prime three enters
+# Certified localized positivity after prime three enters
 
 ## The cancellation that must not be split
 
@@ -88,6 +88,24 @@ the even sector and at most one below `0.05` in the odd sector.  Equivalently,
 these are rigorous lower floors for the second spectral point in the two
 sectors.
 
+The stronger zero-shift run uses the same components and changes only the
+registered inertia target.  It gives:
+
+| sector | shift | negative | positive | unresolved | first positive Schur lower |
+|---|---:|---:|---:|---:|---:|
+| even | $0$ | 0 | 56 | 0 | `4.4799936944614257e-8` |
+| odd | $0$ | 0 | 56 | 0 | `1.344712835248042e-5` |
+
+The common complement is strictly positive as above.  The quadratic-form
+Schur lemma therefore proves, unconditionally,
+
+\[
+ \boxed{A_{0.551}>0}.
+\]
+
+This is the first certified point in this programme strictly beyond
+$\log(3)/2$, where the prime-three translation has nonempty overlap.
+
 The certificate is reproduced by
 
 ```python
@@ -95,15 +113,21 @@ from experiments.theta_pencil.second_window_schur_certificate import (
     certify_second_window_schur,
 )
 
-print(certify_second_window_schur(tail_start=640))
+print(
+    certify_second_window_schur(
+        even_shift=0.0,
+        odd_shift=0.0,
+        expected_negative_count=0,
+    )
+)
 ```
 
 ## Scope
 
-This closes the seven-block spectral-gap premise at one point after the
-prime-three translation becomes active.  It does **not** yet prove positivity
-of the lowest even eigenvalue.  The ordinary polynomial Kato--Temple trial
-has a best measured even residual of about `2.42e-5`, while the certified
-gap and Rayleigh quotient require about `7.05e-6`.  A certified tail-corrected
-or Feshbach trial remains the next obligation.  No claim about RH follows
-from this second-mode certificate alone.
+This proves positivity at one support value after the prime-three translation
+becomes active.  It does **not** prove positivity for every support, and hence
+does not prove RH.  The attempted polynomial Feshbach/Temple trial is no
+longer needed for this point; its failure remains useful evidence about that
+trial architecture.  The next obligation is to turn the point into a
+certified interval and determine whether such intervals can cross successive
+prime thresholds without losing their Schur margin.
