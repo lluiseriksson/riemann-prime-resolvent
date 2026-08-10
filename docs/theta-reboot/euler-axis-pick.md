@@ -1368,6 +1368,56 @@ Yang--Mills, Ward, transfer-matrix, or involution mechanism must reproduce
 this precise centering constant and this precise signed test, rather than a
 positive majorant of them.
 
+There is a useful operator form of the same gate.  Define
+
+\[
+ g_c(s)=\sum_i c_i e^{-x_is}\quad(s\ge0),
+ \qquad (S_tg)(s)=g(s+t).
+\]
+
+Fubini and the Cauchy integral immediately give
+
+\[
+ \boxed{
+ \phi_c(t)=\int_0^\infty g_c(s)g_c(s+t)\,ds
+ =\langle g_c,S_tg_c\rangle,qquad
+ \phi_c(0)=\|g_c\|_2^2.}                            \tag{E83}
+\]
+
+Consequently the prime block in (E76) is exactly the weighted shift form
+
+\[
+ 2\sum_{r\ge2}\frac{\Lambda(r)}{\sqrt r}
+ \langle g_c,S_{\log r}g_c\rangle.                 \tag{E84}
+\]
+
+After the change of variables \(u=e^t\), put
+
+\[
+ k_c(t)=(R(e^t)-C_c)e^{-t/2},\qquad
+ (V_{k_c}g)(u)=\int_0^u k_c(u-s)g(s)\,ds.
+\]
+
+Because
+\(\phi_c'(t)-\phi_c(t)/2
+ =\int_0^\infty g_c(s)(g_c'(s+t)-g_c(s+t)/2)\,ds\),
+equation (E82) becomes
+
+\[
+ \boxed{
+ \frac12c^THc
+ =\left\langle
+ \left(\frac d{ds}-\frac12\right)g_c,
+ V_{k_c}g_c\right\rangle_{L^2(0,\infty)}.}          \tag{E85}
+\]
+
+The span of the exponentials \(e^{-xs}\), \(x>1/2\), is the precise trial
+space.  Thus an OS/transfer-matrix route would have to prove accretivity of
+(E85), with the nonlinear Rayleigh centering \(C_c\), on all of these finite
+spans.  Positivity of an unrelated transfer kernel does not imply this
+statement.  Conversely, accretivity here for every finite span is already
+the Pick criterion, so it may not be imported as an assumption.
+
 Thus no finite verification height can make this particular absolute-value
 argument uniform in \(n\). Raising \(T\) only moves the finite cutoff.  The
 column-sum argument removes the \(n^5\) loss of (E55), but its
