@@ -39,6 +39,49 @@ def euler_axis_pick_matrix(
     )
 
 
+def euler_axis_log_derivative_kernel(
+    imaginary_heights: tuple[float, ...],
+    completed_log_derivatives: tuple[float, ...],
+) -> np.ndarray:
+    """Build ``H_jk=(L_j+L_k)/(eta_j+eta_k)``.
+
+    If ``f_j=1/(c*L_j)``, the corresponding reciprocal-log-derivative Pick
+    matrix is ``K=(1/c) D_L^{-1} H D_L^{-1}``.  Hence the two matrices have
+    the same inertia whenever every ``L_j`` and ``c`` are positive.
+    """
+
+    return euler_axis_pick_matrix(
+        imaginary_heights, completed_log_derivatives
+    )
+
+
+def reciprocal_log_derivative_congruence_residual(
+    imaginary_heights: tuple[float, ...],
+    completed_log_derivatives: tuple[float, ...],
+    positive_normalization: float,
+) -> float:
+    """Audit the exact diagonal congruence between the two Pick kernels."""
+
+    scale = float(positive_normalization)
+    if scale <= 0.0:
+        raise ValueError("positive_normalization must be positive")
+    log_derivatives = np.asarray(completed_log_derivatives, dtype=float)
+    if np.any(log_derivatives == 0.0):
+        raise ZeroDivisionError("completed log derivatives must be nonzero")
+    reciprocal_values = tuple(1.0 / (scale * log_derivatives))
+    reciprocal_pick = euler_axis_pick_matrix(
+        imaginary_heights, reciprocal_values
+    )
+    log_kernel = euler_axis_log_derivative_kernel(
+        imaginary_heights, completed_log_derivatives
+    )
+    inverse_diagonal = np.diag(1.0 / log_derivatives)
+    reconstructed = (
+        inverse_diagonal @ log_kernel @ inverse_diagonal / scale
+    )
+    return float(np.max(np.abs(reciprocal_pick - reconstructed)))
+
+
 def two_point_pick_determinant(
     eta_left: float,
     value_left: float,
@@ -80,3 +123,36 @@ def two_point_log_derivative_gate(
     return float(completed_log_derivative) - eta * float(
         completed_log_derivative_derivative
     )
+
+
+def centered_zero_orbit_gate_margin(
+    centered_real_part: float,
+    zero_height: float,
+    imaginary_height: float,
+) -> float:
+    """Return the numerator proving positivity of a conjugate zero orbit.
+
+    For ``a=alpha+i*gamma`` and ``D=eta^2-a^2``, one has
+
+    ``Re(1/D^2) = margin / |D|^4``
+
+    with
+
+    ``margin=(eta^2-alpha^2+gamma^2)^2-(2*alpha*gamma)^2``.
+
+    In the zeta critical strip, ``|alpha|<1/2``. If ``eta>1/2`` and
+    ``|gamma|>1``, both factors of the difference of squares are positive.
+    """
+
+    alpha = float(centered_real_part)
+    gamma = float(zero_height)
+    eta = float(imaginary_height)
+    if abs(alpha) >= 0.5:
+        raise ValueError("centered_real_part must lie in (-1/2,1/2)")
+    if abs(gamma) <= 1.0:
+        raise ValueError("zero_height must have absolute value greater than one")
+    if eta <= 0.5:
+        raise ValueError("imaginary_height must exceed one half")
+    real_part = eta * eta - alpha * alpha + gamma * gamma
+    imaginary_part = 2.0 * alpha * gamma
+    return real_part * real_part - imaginary_part * imaginary_part
