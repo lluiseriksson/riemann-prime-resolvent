@@ -216,3 +216,8 @@ assembled in the same Arb Schur matrix.  A preliminary float export before
 the singular cancellations produced spurious values of order $10^{38}$ and
 was rejected; all registered Gram data are accumulated in Arb and rounded
 only at the final matrix boundary.
+
+The subsequent exact Legendre-Q recombination and completed interval inertia
+are recorded in `second-window-schur.md`.  In particular, the spectral-gap
+obligation stated here is now discharged at the single point $a=0.551$; the
+lowest-even-eigenvalue Temple obligation remains open.

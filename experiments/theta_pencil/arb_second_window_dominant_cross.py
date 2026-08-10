@@ -81,7 +81,46 @@ def build_arb_second_window_dominant_cross(
         bridge = 2 * h_three - h_two - 2
         center = 2 * h_two - 2
         lengths = (edge, bridge, edge, center, edge, bridge, edge)
+        labels = ("edge", "bridge", "edge", "center", "edge", "bridge", "edge")
         result = arb_mat(low_offsets[-1], high_offsets[-1])
+        block_cache = {}
+
+        def gap_signature(left_block: int, right_block: int):
+            between = labels[left_block + 1 : right_block]
+            return tuple(between.count(label) for label in ("edge", "bridge", "center"))
+
+        def cached_cross(
+            left_block: int,
+            right_block: int,
+            left_start: int,
+            left_end: int,
+            right_start: int,
+            right_end: int,
+        ):
+            signature = gap_signature(left_block, right_block)
+            key = (
+                labels[left_block],
+                labels[right_block],
+                signature,
+                left_start,
+                left_end,
+                right_start,
+                right_end,
+            )
+            if key not in block_cache:
+                gap = sum(lengths[left_block + 1 : right_block], arb(0))
+                block_cache[key] = _cross_block_rectangular(
+                    arb,
+                    arb_mat,
+                    lengths[left_block],
+                    lengths[right_block],
+                    gap,
+                    left_start,
+                    left_end,
+                    right_start,
+                    right_end,
+                )
+            return block_cache[key]
 
         def standard_entry(left: int, right: int):
             if (left + right) % 2:
@@ -98,26 +137,18 @@ def build_arb_second_window_dominant_cross(
                 if low_block == high_block:
                     block = None
                 elif low_block < high_block:
-                    gap = sum(lengths[low_block + 1 : high_block], arb(0))
-                    block = _cross_block_rectangular(
-                        arb,
-                        arb_mat,
-                        lengths[low_block],
-                        lengths[high_block],
-                        gap,
+                    block = cached_cross(
+                        low_block,
+                        high_block,
                         0,
                         low_count,
                         high_start,
                         high_degree_end,
                     )
                 else:
-                    gap = sum(lengths[high_block + 1 : low_block], arb(0))
-                    block = _cross_block_rectangular(
-                        arb,
-                        arb_mat,
-                        lengths[high_block],
-                        lengths[low_block],
-                        gap,
+                    block = cached_cross(
+                        high_block,
+                        low_block,
                         high_start,
                         high_degree_end,
                         0,
