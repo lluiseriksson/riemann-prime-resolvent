@@ -12,6 +12,11 @@ from dataclasses import dataclass
 
 import numpy as np
 
+from experiments.theta_pencil.support_window import (
+    in_first_prime_window,
+    prime_overlap_positive,
+)
+
 
 @dataclass(frozen=True)
 class ArbPrimeMatrix:
@@ -61,17 +66,18 @@ def _restarted_arb_legendre_values(cut, count: int, arb, stride: int = 4096):
     return values
 
 
-def build_arb_prime_two_matrix(
+def build_arb_prime_matrix(
     half_width: float,
+    prime: int,
     low_dimension: int,
     maximum_degree: int,
     precision: int = 8192,
 ) -> ArbPrimeMatrix:
     """Enclose rows ``m < low_dimension`` and columns ``n < maximum_degree``."""
-    if not math.log(2.0) / 2.0 < half_width <= math.log(3.0) / 2.0:
-        raise ValueError(
-            "the prime-2-only formula requires log(2)/2 < a <= log(3)/2"
-        )
+    if prime < 2:
+        raise ValueError("prime must be at least two")
+    if not prime_overlap_positive(half_width, prime):
+        raise ValueError("the prime translation must have positive overlap")
     if not 1 <= low_dimension <= maximum_degree:
         raise ValueError("require 1 <= low_dimension <= maximum_degree")
     try:
@@ -83,8 +89,9 @@ def build_arb_prime_two_matrix(
     try:
         ctx.prec = precision
         two = arb(2)
+        prime_ball = arb(prime)
         a = arb(str(half_width))
-        cut = 1 - two.log() / a
+        cut = 1 - prime_ball.log() / a
         jet_count = low_dimension
         padded = maximum_degree + jet_count
 
@@ -144,7 +151,7 @@ def build_arb_prime_two_matrix(
         product = arb_mat(endpoint) * arb_mat(
             [row[:maximum_degree] for row in rows]
         )
-        coefficient = -2 * two.log() / two.sqrt()
+        coefficient = -2 * prime_ball.log() / prime_ball.sqrt()
         midpoint = np.empty((low_dimension, maximum_degree), dtype=float)
         radius = np.empty_like(midpoint)
         for left in range(low_dimension):
@@ -159,6 +166,23 @@ def build_arb_prime_two_matrix(
     finally:
         ctx.prec = previous_precision
     return ArbPrimeMatrix(midpoint=midpoint, radius=radius, precision=precision)
+
+
+def build_arb_prime_two_matrix(
+    half_width: float,
+    low_dimension: int,
+    maximum_degree: int,
+    precision: int = 8192,
+) -> ArbPrimeMatrix:
+    """Backward-compatible matrix wrapper for the first prime window."""
+
+    if not in_first_prime_window(half_width):
+        raise ValueError(
+            "the prime-2-only formula requires log(2)/2 < a <= log(3)/2"
+        )
+    return build_arb_prime_matrix(
+        half_width, 2, low_dimension, maximum_degree, precision
+    )
 
 
 def build_arb_prime_action(
@@ -178,7 +202,7 @@ def build_arb_prime_action(
     dimension = len(vector)
     if prime < 2:
         raise ValueError("prime must be at least two")
-    if not math.log(float(prime)) / 2.0 < half_width:
+    if not prime_overlap_positive(half_width, prime):
         raise ValueError("the prime translation must have positive overlap")
     if dimension < 1 or maximum_degree < dimension:
         raise ValueError("require a nonempty vector and maximum_degree >= dimension")
@@ -277,7 +301,7 @@ def build_arb_prime_two_action(
 ) -> ArbPrimeAction:
     """Backward-compatible wrapper for the prime-two action."""
 
-    if not math.log(2.0) / 2.0 < half_width <= math.log(3.0) / 2.0:
+    if not in_first_prime_window(half_width):
         raise ValueError(
             "the prime-2-only formula requires log(2)/2 < a <= log(3)/2"
         )

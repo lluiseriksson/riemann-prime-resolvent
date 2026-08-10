@@ -8,11 +8,11 @@ from dataclasses import dataclass
 import numpy as np
 
 from experiments.theta_pencil.arb_prime_jet_correction import (
-    build_arb_prime_jet_correction,
+    build_arb_active_prime_jet_correction,
 )
 from experiments.theta_pencil.arb_prime_translation import (
     _arb_radius_as_float,
-    build_arb_prime_two_matrix,
+    build_arb_prime_matrix,
 )
 from experiments.theta_pencil.arb_smooth_kernel import build_arb_smooth_matrix
 
@@ -25,6 +25,7 @@ class ArbSourceSchur:
     contained_in_target_box: bool
     target_radius: float
     precision: int
+    active_primes: tuple[int, ...]
 
 
 def _roundtrip_ball(arb, midpoint: float, radius: float):
@@ -45,6 +46,8 @@ def certify_source_schur_box(
     target_radius: float = 1.0e-6,
     precision: int = 192,
     prime_precision: int = 8192,
+    active_primes: tuple[int, ...] = (2,),
+    perturbation_loss: float | None = None,
 ) -> ArbSourceSchur:
     """Prove that the exact finite Schur source lies near ``target_matrix``.
 
@@ -54,6 +57,8 @@ def certify_source_schur_box(
     """
     if parity not in (0, 1):
         raise ValueError("parity must be zero or one")
+    if not active_primes:
+        raise ValueError("at least one active prime is required")
     low_degrees = np.arange(parity, low_dimension, 2)
     target = np.asarray(target_matrix, dtype=float)
     if target.shape != (len(low_degrees), len(low_degrees)):
@@ -65,20 +70,29 @@ def certify_source_schur_box(
     except ImportError as error:  # pragma: no cover
         raise RuntimeError("python-flint is required") from error
 
-    prime = build_arb_prime_two_matrix(
-        half_width, low_dimension, finite_dimension, prime_precision
-    )
+    primes = [
+        build_arb_prime_matrix(
+            half_width,
+            prime,
+            low_dimension,
+            finite_dimension,
+            prime_precision,
+        )
+        for prime in active_primes
+    ]
     smooth = build_arb_smooth_matrix(
         half_width, low_dimension, smooth_dimension, 23, precision
     )
-    jets = build_arb_prime_jet_correction(
+    jets = build_arb_active_prime_jet_correction(
         half_width,
+        active_primes,
         low_degrees,
         finite_dimension,
         jet_end,
         jet_count,
         spectral_shift,
         precision,
+        perturbation_loss=perturbation_loss,
     )
 
     previous_precision = ctx.prec
@@ -89,9 +103,15 @@ def certify_source_schur_box(
         scalar = -a.log() - (arb(2) * arb.pi()).log() - arb.const_euler()
         if not scalar.upper() < 0:
             raise ArithmeticError("could not certify the scalar sign")
+        prime_balls = [arb(prime) for prime in active_primes]
         loss = (
-            -scalar
-            + arb(2) * arb.const_log2() / arb(2).sqrt()
+            arb(str(perturbation_loss))
+            if perturbation_loss is not None
+            else -scalar
+            + sum(
+                (arb(2) * prime.log() / prime.sqrt() for prime in prime_balls),
+                arb(0),
+            )
             + arb(6) * a
         )
 
@@ -117,8 +137,16 @@ def certify_source_schur_box(
             )
 
         def prime_entry(left: int, right: int):
-            return _roundtrip_ball(
-                arb, prime.midpoint[left, right], prime.radius[left, right]
+            return sum(
+                (
+                    _roundtrip_ball(
+                        arb,
+                        prime.midpoint[left, right],
+                        prime.radius[left, right],
+                    )
+                    for prime in primes
+                ),
+                arb(0),
             )
 
         def smooth_entry(left: int, right: int):
@@ -198,4 +226,5 @@ def certify_source_schur_box(
         contained_in_target_box=maximum_distance < target_radius,
         target_radius=target_radius,
         precision=precision,
+        active_primes=active_primes,
     )

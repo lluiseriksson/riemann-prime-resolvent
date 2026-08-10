@@ -27,13 +27,13 @@ from experiments.theta_pencil.legendre_jump_tail import (
 from experiments.theta_pencil.legendre_log_matrix import (
     boundary_potential_matrix,
 )
-from experiments.theta_pencil.legendre_tail_bound import bounded_perturbation_norm
 from experiments.theta_pencil.prime_jet_tail import (
-    piecewise_prime_remainder_variation_bound,
-    prime_jet_tail_weighted_norm,
-    prime_jet_weighted_correction,
+    active_prime_jet_tail_weighted_norm,
+    active_prime_jet_weighted_correction,
+    active_prime_remainder_variation_bound,
 )
 from experiments.theta_pencil.semilocal_weil_matrix import EULER_GAMMA
+from experiments.theta_pencil.screw_weil_operator import von_mangoldt
 from experiments.theta_pencil.smooth_legendre_series import (
     smooth_kernel_series_matrix,
     smooth_kernel_series_remainder_bound,
@@ -66,16 +66,32 @@ def run_parity_inertia_audit(
     jet_count: int = 6,
     jet_end: int = 1_000_000,
     partitions: int = 128,
+    active_primes: tuple[int, ...] = (2,),
 ) -> ParityInertiaAudit:
     if parity not in (0, 1):
         raise ValueError("parity must be zero or one")
     if not 0 < low_dimension < smooth_dimension <= finite_dimension:
         raise ValueError("dimensions must satisfy low < smooth <= finite")
 
-    loss = bounded_perturbation_norm(half_width)
+    scalar_coefficient = (
+        -math.log(half_width) - math.log(2.0 * math.pi) - EULER_GAMMA
+    )
+    loss = (
+        abs(scalar_coefficient)
+        + 2.0
+        * math.fsum(
+            von_mangoldt(prime) / math.sqrt(prime)
+            for prime in active_primes
+        )
+        + 6.0 * half_width
+    )
     low_components = build_legendre_weil_components(
         half_width, low_dimension, max(512, 2 * low_dimension)
     )
+    if low_components.active_prime_powers != active_primes:
+        raise ValueError(
+            "active_primes must equal the prime powers in the support window"
+        )
     smooth_series = smooth_kernel_series_matrix(
         half_width, smooth_dimension, maximum_power=23
     )
@@ -89,20 +105,23 @@ def run_parity_inertia_audit(
 
     quadrature_order = (finite_dimension + low_dimension + 2) // 2 + 2
     nodes, weights = leggauss(quadrature_order)
-    shift = math.log(2.0) / half_width
-    cut = 1.0 - shift
-    x = (cut + 1.0) * nodes / 2.0 + (cut - 1.0) / 2.0
-    scaled_weights = weights * (cut + 1.0) / 2.0
-    at_x = normalized_legendre_values(x, finite_dimension)
-    at_shift = normalized_legendre_values(x + shift, finite_dimension)
-    prime_coefficient = math.log(2.0) / math.sqrt(2.0)
     cross = boundary_potential_matrix(finite_dimension)[:low_dimension, low_dimension:]
-    cross -= prime_coefficient * (
-        (at_shift[:low_dimension] * scaled_weights)
-        @ at_x[low_dimension:].T
-        + (at_x[:low_dimension] * scaled_weights)
-        @ at_shift[low_dimension:].T
-    )
+    for prime in active_primes:
+        translation = math.log(prime) / half_width
+        cut = 1.0 - translation
+        x = (cut + 1.0) * nodes / 2.0 + (cut - 1.0) / 2.0
+        scaled_weights = weights * (cut + 1.0) / 2.0
+        at_x = normalized_legendre_values(x, finite_dimension)
+        at_shift = normalized_legendre_values(
+            x + translation, finite_dimension
+        )
+        prime_coefficient = von_mangoldt(prime) / math.sqrt(prime)
+        cross -= prime_coefficient * (
+            (at_shift[:low_dimension] * scaled_weights)
+            @ at_x[low_dimension:].T
+            + (at_x[:low_dimension] * scaled_weights)
+            @ at_shift[low_dimension:].T
+        )
 
     cross[:, : smooth_dimension - low_dimension] += smooth_series[
         :low_dimension, low_dimension:smooth_dimension
@@ -118,8 +137,9 @@ def run_parity_inertia_audit(
     ) @ selected_cross.T
     raw_eigenvalues = eigh(schur, eigvals_only=True, subset_by_index=[0, 2])
 
-    jet_correction = prime_jet_weighted_correction(
+    jet_correction = active_prime_jet_weighted_correction(
         half_width,
+        active_primes,
         low_degrees,
         finite_dimension,
         jet_end,
@@ -134,11 +154,16 @@ def run_parity_inertia_audit(
     end_denominator = (
         float(digamma(jet_end + 1) + EULER_GAMMA) - loss - spectral_floor
     )
-    jet_tail = prime_jet_tail_weighted_norm(
-        half_width, low_degrees, jet_end, jet_count, end_denominator
+    jet_tail = active_prime_jet_tail_weighted_norm(
+        half_width,
+        active_primes,
+        low_degrees,
+        jet_end,
+        jet_count,
+        end_denominator,
     )
-    variation = piecewise_prime_remainder_variation_bound(
-        half_width, low_degrees, jet_count, partitions
+    variation = active_prime_remainder_variation_bound(
+        half_width, active_primes, low_degrees, jet_count, partitions
     )
     finite_denominator = float(denominators[0])
     prime_remainder = wang_normalized_tail_bound(

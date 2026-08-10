@@ -12,6 +12,7 @@ from experiments.theta_pencil.regularized_tail_gate import (
 from experiments.theta_pencil.arb_second_green_tail import (
     certify_first_window_second_green_tails,
 )
+from experiments.theta_pencil.support_window import at_most_prime_three_boundary
 
 
 @dataclass(frozen=True)
@@ -62,7 +63,7 @@ def certify_regularized_map_bound(
 
     if degree_count != 16:
         raise ValueError("the registered constants are for degree_count=16")
-    if not 0.5 <= half_width <= math.log(3.0) / 2.0:
+    if not 0.5 <= half_width or not at_most_prime_three_boundary(half_width):
         raise ValueError("the registered geometry requires 1/2 <= a <= log(3)/2")
     if complement_floor <= 0:
         raise ValueError("complement_floor must be positive")

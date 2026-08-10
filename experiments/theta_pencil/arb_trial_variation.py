@@ -8,6 +8,10 @@ from dataclasses import dataclass
 import numpy as np
 
 from experiments.theta_pencil.arb_prime_translation import _arb_radius_as_float
+from experiments.theta_pencil.support_window import (
+    in_first_prime_window,
+    prime_overlap_positive,
+)
 
 
 @dataclass(frozen=True)
@@ -19,8 +23,9 @@ class ArbVariationBound:
     precision: int
 
 
-def certify_prime_operator_remainder_variation(
+def certify_prime_operator_remainder_variation_for_prime(
     half_width: float,
+    prime: int,
     low_degrees: np.ndarray,
     derivative_order: int = 6,
     partitions: int = 128,
@@ -28,10 +33,10 @@ def certify_prime_operator_remainder_variation(
 ) -> ArbVariationBound:
     """Vector-valued version used by the parity Schur tail certificate."""
     degrees = np.asarray(low_degrees, dtype=int)
-    if not math.log(2.0) / 2.0 < half_width <= math.log(3.0) / 2.0:
-        raise ValueError(
-            "the exact Arb implementation requires log(2)/2 < a <= log(3)/2"
-        )
+    if prime < 2:
+        raise ValueError("prime must be at least two")
+    if not prime_overlap_positive(half_width, prime):
+        raise ValueError("the prime translation must have positive overlap")
     if len(degrees) < 1 or derivative_order < 1 or partitions < 1:
         raise ValueError("invalid degrees, derivative order, or partition count")
     try:
@@ -63,7 +68,8 @@ def certify_prime_operator_remainder_variation(
         order = maximum_derivative_degree + 1
         nodes_weights = [arb.legendre_p_root(order, k, weight=True) for k in range(order)]
         a = arb(str(half_width))
-        translation = arb.const_log2() / a
+        prime_ball = arb(prime)
+        translation = prime_ball.log() / a
         cut = arb(1) - translation
         length = cut + 1
         total = arb(0)
@@ -84,13 +90,71 @@ def certify_prime_operator_remainder_variation(
             total += (arcsine_mass * square_integral).sqrt()
 
         cut_weight = (arb(1) - cut * cut).sqrt().sqrt()
-        prime_factor = arb(2) * arb.const_log2() / arb(2).sqrt()
+        prime_factor = arb(2) * prime_ball.log() / prime_ball.sqrt()
         bound = prime_factor * (total + endpoint_square.sqrt() / cut_weight)
         midpoint = float(bound.mid())
         radius = _arb_radius_as_float(bound)
         upper = math.nextafter(float(bound.upper()), math.inf)
     finally:
         ctx.prec = previous_precision
+    return ArbVariationBound(
+        midpoint=midpoint,
+        radius=radius,
+        upper=upper,
+        partitions=partitions,
+        precision=precision,
+    )
+
+
+def certify_prime_operator_remainder_variation(
+    half_width: float,
+    low_degrees: np.ndarray,
+    derivative_order: int = 6,
+    partitions: int = 128,
+    precision: int = 768,
+) -> ArbVariationBound:
+    """Backward-compatible vector-valued prime-two certificate."""
+
+    if not in_first_prime_window(half_width):
+        raise ValueError(
+            "the exact Arb implementation requires log(2)/2 < a <= log(3)/2"
+        )
+    return certify_prime_operator_remainder_variation_for_prime(
+        half_width,
+        2,
+        low_degrees,
+        derivative_order,
+        partitions,
+        precision,
+    )
+
+
+def certify_active_prime_operator_remainder_variation(
+    half_width: float,
+    low_degrees: np.ndarray,
+    active_primes: tuple[int, ...],
+    derivative_order: int = 6,
+    partitions: int = 128,
+    precision: int = 768,
+) -> ArbVariationBound:
+    """Sum vector-valued remainder bounds over all active prime cuts."""
+
+    if not active_primes:
+        raise ValueError("at least one active prime is required")
+    bounds = [
+        certify_prime_operator_remainder_variation_for_prime(
+            half_width,
+            prime,
+            low_degrees,
+            derivative_order,
+            partitions,
+            precision,
+        )
+        for prime in active_primes
+    ]
+    midpoint = math.fsum(bound.midpoint for bound in bounds)
+    radius = math.fsum(bound.radius for bound in bounds) + math.ulp(midpoint)
+    upper = math.nextafter(math.fsum(bound.upper for bound in bounds), math.inf)
     return ArbVariationBound(
         midpoint=midpoint,
         radius=radius,
@@ -147,7 +211,7 @@ def certify_prime_remainder_variation_for_prime(
     vector = np.asarray(coefficients, dtype=float)
     if prime < 2:
         raise ValueError("prime must be at least two")
-    if not math.log(float(prime)) / 2.0 < half_width:
+    if not prime_overlap_positive(half_width, prime):
         raise ValueError("the prime translation must have positive overlap")
     if derivative_order < 1 or len(vector) <= derivative_order + 1:
         raise ValueError("the derivative order must fit the trial polynomial")
@@ -227,7 +291,7 @@ def certify_prime_remainder_variation(
 ) -> ArbVariationBound:
     """Backward-compatible prime-two variation certificate."""
 
-    if not math.log(2.0) / 2.0 < half_width <= math.log(3.0) / 2.0:
+    if not in_first_prime_window(half_width):
         raise ValueError(
             "the exact Arb implementation requires log(2)/2 < a <= log(3)/2"
         )

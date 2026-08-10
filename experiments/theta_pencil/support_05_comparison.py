@@ -10,6 +10,7 @@ from experiments.theta_pencil.smooth_legendre_series import (
     smooth_kernel_series_remainder_bound,
     smooth_remainder_series_coefficients,
 )
+from experiments.theta_pencil.support_window import at_most_prime_three_boundary
 
 
 @dataclass(frozen=True)
@@ -73,7 +74,7 @@ def certify_first_prime_comparison(
     monotonicity exactly as in the original ``a=1/2`` certificate.
     """
 
-    if not 0.5 <= half_width <= math.log(3.0) / 2.0:
+    if not 0.5 <= half_width or not at_most_prime_three_boundary(half_width):
         raise ValueError("the comparison certificate requires 1/2 <= a <= log(3)/2")
     if subdivisions < 1:
         raise ValueError("subdivisions must be positive")

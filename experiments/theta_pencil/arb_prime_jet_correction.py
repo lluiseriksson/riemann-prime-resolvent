@@ -13,6 +13,10 @@ from dataclasses import dataclass
 import numpy as np
 
 from experiments.theta_pencil.arb_prime_translation import _arb_radius_as_float
+from experiments.theta_pencil.support_window import (
+    in_first_prime_window,
+    prime_overlap_positive,
+)
 
 
 @dataclass(frozen=True)
@@ -24,8 +28,9 @@ class ArbJetCorrection:
     precision: int
 
 
-def build_arb_prime_jet_correction(
+def build_arb_active_prime_jet_correction(
     half_width: float,
+    active_primes: tuple[int, ...],
     low_degrees: np.ndarray,
     first_degree: int,
     last_degree: int,
@@ -33,17 +38,23 @@ def build_arb_prime_jet_correction(
     spectral_shift: float = 0.005,
     precision: int = 192,
     progress_stride: int | None = None,
+    perturbation_loss: float | None = None,
 ) -> ArbJetCorrection:
-    """Enclose ``J D^-1 J*`` for ``first_degree <= n < last_degree``.
+    """Enclose the combined-prime ``J D^-1 J*`` over a degree band.
 
-    Only the registered first-prime window ``a=2/5`` is supported.  Every
-    transcendental constant and every recurrence operation is evaluated in
-    Arb.  ``last_degree`` is exclusive, as in ``prime_jet_weighted_correction``.
+    Cross terms between different prime cuts are retained in one Gram matrix.
+    Every transcendental constant and recurrence operation is evaluated in
+    Arb. ``last_degree`` is exclusive.
     """
-    if not math.log(2.0) / 2.0 < half_width <= math.log(3.0) / 2.0:
-        raise ValueError(
-            "the exact Arb jet implementation requires log(2)/2 < a <= log(3)/2"
-        )
+    if not active_primes:
+        raise ValueError("at least one active prime is required")
+    if any(prime < 2 for prime in active_primes):
+        raise ValueError("active primes must be at least two")
+    if any(
+        not prime_overlap_positive(half_width, prime)
+        for prime in active_primes
+    ):
+        raise ValueError("every active prime must have positive overlap")
     low = np.asarray(low_degrees, dtype=int)
     if low.ndim != 1 or len(low) == 0:
         raise ValueError("low_degrees must be a nonempty vector")
@@ -62,14 +73,26 @@ def build_arb_prime_jet_correction(
     try:
         ctx.prec = precision
         a = arb(str(half_width))
-        cut = arb(1) - arb.const_log2() / a
         sqrt_two = arb(2).sqrt()
-        prime_factor = -arb(2) * arb.const_log2() / sqrt_two
+        prime_balls = [arb(prime) for prime in active_primes]
+        cuts = [arb(1) - prime.log() / a for prime in prime_balls]
+        prime_factors = [
+            -arb(2) * prime.log() / prime.sqrt() for prime in prime_balls
+        ]
 
         scalar = -a.log() - (arb(2) * arb.pi()).log() - arb.const_euler()
         if not scalar.upper() < 0:
             raise ArithmeticError("could not certify the sign of the scalar term")
-        loss = -scalar + arb(2) * arb.const_log2() / sqrt_two + arb(6) * a
+        loss = (
+            arb(str(perturbation_loss))
+            if perturbation_loss is not None
+            else -scalar
+            + sum(
+                (arb(2) * prime.log() / prime.sqrt() for prime in prime_balls),
+                arb(0),
+            )
+            + arb(6) * a
+        )
         shift = arb(str(spectral_shift))
 
         normalizations = {
@@ -88,46 +111,55 @@ def build_arb_prime_jet_correction(
                 ratio /= arb(2) ** jet * math.factorial(jet) ** 2
                 endpoint[row][jet] = normalizations[degree] * ratio
 
-        # Direct certified evaluation avoids the dependency explosion of an
-        # interval-valued three-term recurrence.  Arb selects asymptotic or
-        # hypergeometric algorithms appropriate to the degree.
-        standard_values: dict[int, object] = {0: arb(1)}
-        step_values: dict[int, object] = {
-            0: (cut + 1) / sqrt_two,
-        }
+        combined_endpoint = [
+            row * len(active_primes) for row in endpoint
+        ]
+        standard_values = [{0: arb(1)} for _ in active_primes]
+        step_values = [
+            {0: (cut + 1) / sqrt_two} for cut in cuts
+        ]
         harmonic = arb(0)
-        gram = [[arb(0) for _ in range(jet_count)] for _ in range(jet_count)]
+        combined_size = len(active_primes) * jet_count
+        gram = [
+            [arb(0) for _ in range(combined_size)]
+            for _ in range(combined_size)
+        ]
         parity = int(low[0] % 2)
         maximum_needed = last_degree - 1 + jet_count + 1
 
         def normalization(degree: int):
             return (arb(2 * degree + 1) / 2).sqrt()
 
-        def coefficient(jet: int, degree: int, memo: dict[tuple[int, int], object]):
-            key = (jet, degree)
+        def coefficient(
+            prime_index: int,
+            jet: int,
+            degree: int,
+            memo: dict[tuple[int, int, int], object],
+        ):
+            key = (prime_index, jet, degree)
             if key in memo:
                 return memo[key]
             if jet == 0:
-                value = step_values[degree]
+                value = step_values[prime_index][degree]
             else:
                 value = -arb(jet) * normalization(degree) / (2 * degree + 1) * (
-                    coefficient(jet - 1, degree + 1, memo)
+                    coefficient(prime_index, jet - 1, degree + 1, memo)
                     / normalization(degree + 1)
-                    - coefficient(jet - 1, degree - 1, memo)
+                    - coefficient(prime_index, jet - 1, degree - 1, memo)
                     / normalization(degree - 1)
                 )
             memo[key] = value
             return value
 
         for degree in range(1, maximum_needed + 1):
-            standard_values[degree] = cut.legendre_p(degree)
-
-            # P_{r+1} has just become available, so form the step coefficient r.
             r = degree - 1
-            if r >= 1 and r + 1 in standard_values:
-                step_values[r] = normalization(r) * (
-                    standard_values[r + 1] - standard_values[r - 1]
-                ) / (2 * r + 1)
+            for prime_index, cut in enumerate(cuts):
+                standard_values[prime_index][degree] = cut.legendre_p(degree)
+                if r >= 1:
+                    step_values[prime_index][r] = normalization(r) * (
+                        standard_values[prime_index][r + 1]
+                        - standard_values[prime_index][r - 1]
+                    ) / (2 * r + 1)
 
             harmonic += arb(1) / degree
             center = degree - jet_count - 1
@@ -136,8 +168,14 @@ def build_arb_prime_jet_correction(
                 and center < last_degree
                 and center % 2 == parity
             ):
-                memo: dict[tuple[int, int], object] = {}
-                vector = [coefficient(jet, center, memo) for jet in range(jet_count)]
+                memo: dict[tuple[int, int, int], object] = {}
+                vector = []
+                for prime_index, prime_factor in enumerate(prime_factors):
+                    vector.extend(
+                        prime_factor
+                        * coefficient(prime_index, jet, center, memo)
+                        for jet in range(jet_count)
+                    )
                 # ``arb`` supports in-place mutation; copy rather than aliasing
                 # the running harmonic sum before removing the look-ahead.
                 denominator = arb(harmonic)
@@ -148,8 +186,8 @@ def build_arb_prime_jet_correction(
                 denominator -= loss + shift
                 if not denominator.lower() > 0:
                     raise ArithmeticError("tail denominator was not certified positive")
-                for left in range(jet_count):
-                    for right in range(left, jet_count):
+                for left in range(combined_size):
+                    for right in range(left, combined_size):
                         gram[left][right] += vector[left] * vector[right] / denominator
 
                 if progress_stride and center % progress_stride < 2:
@@ -157,20 +195,21 @@ def build_arb_prime_jet_correction(
 
             # Only a fixed window around the next center is ever needed.
             floor = center - jet_count - 2
-            for old in tuple(step_values):
-                if old < floor:
-                    del step_values[old]
-            for old in tuple(standard_values):
-                if old < degree - 2:
-                    del standard_values[old]
+            for prime_index in range(len(active_primes)):
+                for old in tuple(step_values[prime_index]):
+                    if old < floor:
+                        del step_values[prime_index][old]
+                for old in tuple(standard_values[prime_index]):
+                    if old < degree - 2:
+                        del standard_values[prime_index][old]
 
-        for left in range(jet_count):
+        for left in range(combined_size):
             for right in range(left):
                 gram[left][right] = gram[right][left]
 
-        endpoint_matrix = arb_mat(endpoint)
+        endpoint_matrix = arb_mat(combined_endpoint)
         gram_matrix = arb_mat(gram)
-        correction = prime_factor**2 * endpoint_matrix * gram_matrix * endpoint_matrix.transpose()
+        correction = endpoint_matrix * gram_matrix * endpoint_matrix.transpose()
         midpoint = np.empty((len(low), len(low)), dtype=float)
         radius = np.empty_like(midpoint)
         for row in range(len(low)):
@@ -186,4 +225,33 @@ def build_arb_prime_jet_correction(
         first_degree=first_degree,
         last_degree=last_degree,
         precision=precision,
+    )
+
+
+def build_arb_prime_jet_correction(
+    half_width: float,
+    low_degrees: np.ndarray,
+    first_degree: int,
+    last_degree: int,
+    jet_count: int,
+    spectral_shift: float = 0.005,
+    precision: int = 192,
+    progress_stride: int | None = None,
+) -> ArbJetCorrection:
+    """Backward-compatible prime-two jet correction."""
+
+    if not in_first_prime_window(half_width):
+        raise ValueError(
+            "the exact Arb jet implementation requires log(2)/2 < a <= log(3)/2"
+        )
+    return build_arb_active_prime_jet_correction(
+        half_width,
+        (2,),
+        low_degrees,
+        first_degree,
+        last_degree,
+        jet_count,
+        spectral_shift,
+        precision,
+        progress_stride,
     )

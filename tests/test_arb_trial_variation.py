@@ -1,8 +1,10 @@
 import numpy as np
 
 from experiments.theta_pencil.arb_trial_variation import (
+    certify_active_prime_operator_remainder_variation,
     certify_active_prime_remainder_variation,
     certify_prime_operator_remainder_variation,
+    certify_prime_operator_remainder_variation_for_prime,
     certify_prime_remainder_variation,
     certify_prime_remainder_variation_for_prime,
 )
@@ -87,3 +89,17 @@ def test_second_order_prime_three_variation_dominates_direct_quadrature():
     )
     assert certified.upper >= direct
     assert certified.upper < 3.0 * direct
+
+
+def test_active_operator_variation_dominates_prime_two_and_three_sum():
+    degrees = np.arange(1, 12, 2)
+    individual = [
+        certify_prime_operator_remainder_variation_for_prime(
+            0.62, prime, degrees, 3, 8, 384
+        )
+        for prime in (2, 3)
+    ]
+    active = certify_active_prime_operator_remainder_variation(
+        0.62, degrees, (2, 3), 3, 8, 384
+    )
+    assert active.upper >= sum(bound.upper for bound in individual)

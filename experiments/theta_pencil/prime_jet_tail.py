@@ -13,6 +13,7 @@ from experiments.theta_pencil.legendre_jump_tail import (
     bernstein_jump_tail_bound,
     wang_normalized_tail_bound,
 )
+from experiments.theta_pencil.support_window import prime_overlap_positive
 
 
 def left_step_coefficients(cut: float, maximum_degree: int) -> np.ndarray:
@@ -103,24 +104,62 @@ def endpoint_jet_matrix(degrees: np.ndarray, jet_count: int) -> np.ndarray:
     return result
 
 
-def prime_jet_cross_matrix(
+def prime_jet_cross_matrix_for_prime(
     half_width: float,
+    prime: int,
     low_degrees: np.ndarray,
     high_degrees: np.ndarray,
     jet_count: int,
 ) -> np.ndarray:
-    """Endpoint-jet part of the prime-2 cross matrix in one parity block."""
+    """Endpoint-jet part of one prime cross matrix in one parity block."""
     low = np.asarray(low_degrees, dtype=int)
     high = np.asarray(high_degrees, dtype=int)
     if len(high) == 0:
         return np.zeros((len(low), 0))
     if np.any((low[:, None] + high[None, :]) % 2):
         raise ValueError("low and high degrees must belong to the same parity block")
-    cut = 1.0 - math.log(2.0) / half_width
+    if not prime_overlap_positive(half_width, prime):
+        raise ValueError("the prime translation must have positive overlap")
+    cut = 1.0 - math.log(prime) / half_width
     powers = truncated_power_coefficients(cut, int(high[-1]) + 1, jet_count)
     endpoint = endpoint_jet_matrix(low, jet_count)
-    coefficient = -2.0 * math.log(2.0) / math.sqrt(2.0)
+    coefficient = -2.0 * math.log(prime) / math.sqrt(prime)
     return coefficient * endpoint @ powers[:, high]
+
+
+def prime_jet_cross_matrix(
+    half_width: float,
+    low_degrees: np.ndarray,
+    high_degrees: np.ndarray,
+    jet_count: int,
+) -> np.ndarray:
+    """Backward-compatible prime-two endpoint-jet matrix."""
+
+    return prime_jet_cross_matrix_for_prime(
+        half_width, 2, low_degrees, high_degrees, jet_count
+    )
+
+
+def active_prime_jet_cross_matrix(
+    half_width: float,
+    active_primes: tuple[int, ...],
+    low_degrees: np.ndarray,
+    high_degrees: np.ndarray,
+    jet_count: int,
+) -> np.ndarray:
+    """Sum endpoint-jet cross matrices before forming their Gram."""
+
+    if not active_primes:
+        raise ValueError("at least one active prime is required")
+    return sum(
+        (
+            prime_jet_cross_matrix_for_prime(
+                half_width, prime, low_degrees, high_degrees, jet_count
+            )
+            for prime in active_primes
+        ),
+        np.zeros((len(low_degrees), len(high_degrees))),
+    )
 
 
 def prime_jet_weighted_correction(
@@ -137,6 +176,35 @@ def prime_jet_weighted_correction(
     parity = int(low[0] % 2)
     high = np.arange(first_degree + ((first_degree - parity) % 2), last_degree, 2)
     cross = prime_jet_cross_matrix(half_width, low, high, jet_count)
+    denominators = (
+        digamma(high + 1.0)
+        + EULER_GAMMA
+        - perturbation_loss
+        - spectral_shift
+    )
+    return (cross / denominators) @ cross.T
+
+
+def active_prime_jet_weighted_correction(
+    half_width: float,
+    active_primes: tuple[int, ...],
+    low_degrees: np.ndarray,
+    first_degree: int,
+    last_degree: int,
+    jet_count: int,
+    perturbation_loss: float,
+    spectral_shift: float = 0.0,
+) -> np.ndarray:
+    """Combined-prime correction, including all cross terms."""
+
+    low = np.asarray(low_degrees, dtype=int)
+    parity = int(low[0] % 2)
+    high = np.arange(
+        first_degree + ((first_degree - parity) % 2), last_degree, 2
+    )
+    cross = active_prime_jet_cross_matrix(
+        half_width, active_primes, low, high, jet_count
+    )
     denominators = (
         digamma(high + 1.0)
         + EULER_GAMMA
@@ -206,8 +274,9 @@ def prime_remainder_variation_bound(
     )
 
 
-def prime_jet_tail_weighted_norm(
+def prime_jet_tail_weighted_norm_for_prime(
     half_width: float,
+    prime: int,
     low_degrees: np.ndarray,
     first_degree: int,
     jet_count: int,
@@ -217,11 +286,13 @@ def prime_jet_tail_weighted_norm(
     if denominator_floor <= 0.0:
         raise ValueError("denominator_floor must be positive")
     low = np.asarray(low_degrees, dtype=int)
-    shift = math.log(2.0) / half_width
+    if not prime_overlap_positive(half_width, prime):
+        raise ValueError("the prime translation must have positive overlap")
+    shift = math.log(prime) / half_width
     cut = 1.0 - shift
     cut_weight = (1.0 - cut * cut) ** 0.25
     endpoint = endpoint_jet_matrix(low, jet_count)
-    prime_coefficient = math.log(2.0) / math.sqrt(2.0)
+    prime_coefficient = math.log(prime) / math.sqrt(prime)
     total = 0.0
     for jet in range(jet_count):
         if jet == 0:
@@ -243,8 +314,51 @@ def prime_jet_tail_weighted_norm(
     return total / math.sqrt(denominator_floor)
 
 
-def piecewise_prime_remainder_variation_bound(
+def prime_jet_tail_weighted_norm(
     half_width: float,
+    low_degrees: np.ndarray,
+    first_degree: int,
+    jet_count: int,
+    denominator_floor: float,
+) -> float:
+    """Backward-compatible prime-two weighted jet tail."""
+
+    return prime_jet_tail_weighted_norm_for_prime(
+        half_width,
+        2,
+        low_degrees,
+        first_degree,
+        jet_count,
+        denominator_floor,
+    )
+
+
+def active_prime_jet_tail_weighted_norm(
+    half_width: float,
+    active_primes: tuple[int, ...],
+    low_degrees: np.ndarray,
+    first_degree: int,
+    jet_count: int,
+    denominator_floor: float,
+) -> float:
+    """Sum weighted endpoint-jet tails over active prime cuts."""
+
+    return math.fsum(
+        prime_jet_tail_weighted_norm_for_prime(
+            half_width,
+            prime,
+            low_degrees,
+            first_degree,
+            jet_count,
+            denominator_floor,
+        )
+        for prime in active_primes
+    )
+
+
+def piecewise_prime_remainder_variation_bound_for_prime(
+    half_width: float,
+    prime: int,
     low_degrees: np.ndarray,
     derivative_order: int,
     partitions: int = 128,
@@ -263,10 +377,12 @@ def piecewise_prime_remainder_variation_bound(
         raise ValueError("derivative_order must be positive")
     if partitions < 1:
         raise ValueError("partitions must be positive")
-    shift = math.log(2.0) / half_width
+    if not prime_overlap_positive(half_width, prime):
+        raise ValueError("the prime translation must have positive overlap")
+    shift = math.log(prime) / half_width
     length = 2.0 - shift
     if not 0.0 < length < 2.0:
-        raise ValueError("the prime-2 overlap must be nonempty and proper")
+        raise ValueError("the prime overlap must be nonempty and proper")
     inner_endpoint = shift - 1.0
     cut = 1.0 - shift
     polynomial_degree = max(0, int(low[-1]) - derivative_order - 1)
@@ -304,7 +420,41 @@ def piecewise_prime_remainder_variation_bound(
         :, derivative_order
     ] * math.factorial(derivative_order)
     cut_weight = (1.0 - cut * cut) ** 0.25
-    prime_coefficient = math.log(2.0) / math.sqrt(2.0)
+    prime_coefficient = math.log(prime) / math.sqrt(prime)
     return 2.0 * prime_coefficient * (
         integral_bound + float(np.linalg.norm(endpoint)) / cut_weight
+    )
+
+
+def piecewise_prime_remainder_variation_bound(
+    half_width: float,
+    low_degrees: np.ndarray,
+    derivative_order: int,
+    partitions: int = 128,
+) -> float:
+    """Backward-compatible prime-two piecewise variation bound."""
+
+    return piecewise_prime_remainder_variation_bound_for_prime(
+        half_width, 2, low_degrees, derivative_order, partitions
+    )
+
+
+def active_prime_remainder_variation_bound(
+    half_width: float,
+    active_primes: tuple[int, ...],
+    low_degrees: np.ndarray,
+    derivative_order: int,
+    partitions: int = 128,
+) -> float:
+    """Sum piecewise vector variations over active prime cuts."""
+
+    return math.fsum(
+        piecewise_prime_remainder_variation_bound_for_prime(
+            half_width,
+            prime,
+            low_degrees,
+            derivative_order,
+            partitions,
+        )
+        for prime in active_primes
     )

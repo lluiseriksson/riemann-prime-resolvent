@@ -7,6 +7,11 @@ from dataclasses import dataclass
 
 import numpy as np
 
+from experiments.theta_pencil.support_window import (
+    in_first_prime_window,
+    in_second_prime_window,
+)
+
 
 @dataclass(frozen=True)
 class FirstPrimePartition:
@@ -52,7 +57,7 @@ def first_prime_partition(half_width: float) -> FirstPrimePartition:
     hence is zero as an ``L^2`` operator.  Above it a second internal cut is
     needed and this three-block architecture is no longer complete.
     """
-    if not math.log(2.0) / 2.0 < half_width <= math.log(3.0) / 2.0:
+    if not in_first_prime_window(half_width):
         raise ValueError("the cut-adapted partition is for the first prime window")
     displacement = math.log(2.0) / half_width
     cut = 1.0 - displacement
@@ -73,7 +78,7 @@ def second_prime_partition(half_width: float) -> SecondPrimePartition:
     prime-three cuts add the pair ``+/- (1-h_3+h_2)``, yielding seven blocks.
     """
 
-    if not math.log(3.0) / 2.0 < half_width < math.log(2.0):
+    if not in_second_prime_window(half_width):
         raise ValueError("the seven-block partition is for the second prime window")
     h_two = math.log(2.0) / half_width
     h_three = math.log(3.0) / half_width

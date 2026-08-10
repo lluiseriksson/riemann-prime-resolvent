@@ -17,6 +17,7 @@ from experiments.theta_pencil.arb_trial_variation import (
     certify_active_prime_remainder_variation,
 )
 from experiments.theta_pencil.temple_trial_budget import run_temple_trial_audit
+from experiments.theta_pencil.support_window import prime_overlap_positive
 
 
 @dataclass(frozen=True)
@@ -99,7 +100,10 @@ def certify_temple_trial(
         raise ValueError("trial_parity must be zero or one")
     if not active_primes:
         raise ValueError("at least one active prime is required")
-    if any(math.log(float(prime)) >= 2 * half_width for prime in active_primes):
+    if any(
+        not prime_overlap_positive(half_width, prime)
+        for prime in active_primes
+    ):
         raise ValueError("every active prime must have positive translation overlap")
     if prime_jet_count < 1 or prime_jet_count >= dimension:
         raise ValueError("prime_jet_count must lie below dimension")

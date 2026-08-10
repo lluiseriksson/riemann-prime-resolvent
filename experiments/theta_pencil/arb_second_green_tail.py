@@ -15,6 +15,7 @@ from dataclasses import dataclass
 from experiments.theta_pencil.arb_cut_dominant import (
     _local_legendre_coefficients,
 )
+from experiments.theta_pencil.support_window import at_most_prime_three_boundary
 
 
 @dataclass(frozen=True)
@@ -695,7 +696,7 @@ def certify_first_window_second_green_tails(
 ) -> FirstWindowSecondGreenTails:
     """Certify both touching orientations using exact ``log(2)/a`` balls."""
 
-    if not 0.5 <= half_width <= math.log(3.0) / 2.0:
+    if not 0.5 <= half_width or not at_most_prime_three_boundary(half_width):
         raise ValueError("require 1/2 <= a <= log(3)/2")
     try:
         from flint import arb, ctx
