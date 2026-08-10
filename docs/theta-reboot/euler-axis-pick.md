@@ -860,11 +860,90 @@ rapidity curvature argument. It still does not prove RH: the polynomial
 degree and the Markov/sampling constant grow with matrix order, and no
 uniform-in-order estimate has been established.
 
+### The same proof closes every order up to nineteen
+
+The dyadic choice above was made for readability, not efficiency. For a real
+vector on \(n\) nodes, the construction (E42)--(E45) gives
+
+\[
+ \deg_z S_c\le2n-1,qquad \deg_w S_c(w^2)\le d_n:=4n-2.
+\]
+
+Use multiplicative bands \([Y,(1+q_n)Y]\) with
+
+\[
+ q_n=\frac1{4n-1}=\frac1{d_n+1},
+\]
+
+and \(d_n+1\) Chebyshev roots. Take sampling radius
+\(q_nY/(100d_n^2)\). The standard bound
+
+\[
+ \Lambda_{d_n}\le1+\frac2\pi\log(d_n+1)
+\]
+
+and the perturbed-node Markov estimate replace the interpolation factor (4)
+in (E46) by
+
+\[
+ I_n=
+ \frac{\Lambda_{d_n}}{1-0.02\Lambda_{d_n}}.           \tag{E49}
+\]
+
+The real derivative bookkeeping on a band of length \(q_nY\) is
+
+\[
+ B_n=
+ \frac{4d_n^4}{q_n^2}
+ +\frac{16nd_n^2}{q_n}
+ +(4n)^2+4n.                                         \tag{E50}
+\]
+
+Allowing the same factor (4) for the vertical displacement as in (E47), a
+valid sampling constant is
+
+\[
+ C_n=4I_n(1+q_n)^{4n}B_n.                            \tag{E51}
+\]
+
+The explicit count gives fewer than \(q_nY\log Y\) zeros per band. Hence the
+analogue of (E48) closes whenever
+
+\[
+ \boxed{
+ \Theta_n:=\frac{C_nq_n\log T}{4T}<1.}               \tag{E52}
+\]
+
+All sampling intervals contain zeros; even in the worst case
+\(n=19,Y=T\), the smallest lower count exceeds (6.25\cdot10^5\). Direct
+evaluation of the explicit constants gives
+
+\[
+ \Theta_{18}=0.7173\ldots,qquad
+ \Theta_{19}=0.9555\ldots,qquad
+ \Theta_{20}=1.2538\ldots.                           \tag{E53}
+\]
+
+Therefore
+
+\[
+ \boxed{K^{(n)}\succeq0\quad\text{for every }n\le19} \tag{E54}
+\]
+
+unconditionally. The cutoff (19) is a limitation of these deliberately
+coarse constants, not evidence of a failure at order (20). More
+importantly, proving every fixed order separately is not RH: (EC) requires a
+single argument valid for unbounded (n). The next mathematical target is to
+replace the Markov growth in (E50) by a sampling inequality whose constant is
+uniform, or grows slowly enough to be absorbed without a finite verification
+height.
+
 The module `euler_axis_pick.py` implements the orbit algebra and the exact
 interval-rapidity form (E30)--(E31), while `zero_band_variance.py` audits the
 constants in (E26)--(E28), and `order_four_rapidity_counterexample.py`
 records the first open gate (E35). The script `order_four_verified_gram.py`
 checks (E38)--(E45), and `degree_seven_sampling_audit.py` records the constants
-in (E46)--(E48). These
+in (E46)--(E48). The generalized budget and its cutoff are reproduced by
+`finite_order_sampling_budget.py`. These
 floating-point checks are not used in place of the displayed analytic
 inequalities. Global claims still require all separated principal minors.
