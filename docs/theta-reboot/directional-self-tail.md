@@ -72,16 +72,30 @@ interval Schur inertias are
 
 | sector | negative | positive | unresolved | Schur lower | coercive lower |
 |---|---:|---:|---:|---:|---:|
-| even | 0 | 56 | 0 | `3.4679675703228396e-11` | `4.3679506990184653e-13` |
-| odd | 0 | 56 | 0 | `1.8058523028626904e-8` | `2.2654067763727258e-10` |
+| even | 0 | 56 | 0 | `3.467967570386367e-11` | `4.3679506990984787e-13` |
+| odd | 0 | 56 | 0 | `1.805852302862713e-8` | `2.2654067763727542e-10` |
 
 Thus
 
 \[
- A_{0.65}\succeq4.3679506990184653\cdot10^{-13}I>0.
+ A_{0.65}\succeq4.3679506990984787\cdot10^{-13}I>0.
 \]
 
 Domain monotonicity then proves \(\lambda_a>0\) for every
 \(0<a\le0.65\).  This remains a bounded-support theorem and does not prove
 RH.  The executable components are `arb_second_window_self_gram.py` and
 `support_065_certificate.py`.
+
+## Smooth-image completeness correction
+
+The first implementation used target cutoff `maximum_power + 1` for the
+finite smooth polynomial image.  This was too short: integrating
+\(|x-y|^p\) against a source polynomial of degree \(k\) can reach target
+degree \(p+k+1\).  The corrected implementation constructs rectangular maps
+with target count `maximum_power + source_degree_count + 2`.  A regression
+test checks the nonzero \((p,k,n)=(1,15,17)\) coefficient directly.
+
+The full \(a=0.65\) certificate was rerun after this correction.  The numbers
+in the table above are the corrected Arb output; the parity inertias and the
+frontier theorem are unchanged.  This audit matters even though the numerical
+change is small, because no omitted row is admissible in a proof certificate.

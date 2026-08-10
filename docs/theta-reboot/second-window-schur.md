@@ -204,7 +204,7 @@ this point.  Retaining its exact parity Gram, as detailed in
 `directional-self-tail.md`, advances the same unconditional frontier to
 
 \[
- \boxed{A_{0.65}\succeq4.3679506990184653\cdot10^{-13}I>0},
+ \boxed{A_{0.65}\succeq4.3679506990984787\cdot10^{-13}I>0},
  \qquad
  \boxed{\lambda_a>0\ (0<a\le0.65)}.
 \]

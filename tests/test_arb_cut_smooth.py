@@ -5,9 +5,31 @@ from numpy.polynomial.legendre import leggauss, legvander
 from experiments.theta_pencil.arb_cut_smooth import (
     _absolute_distance_moment,
     _power_block,
+    _power_block_rectangular,
     _separated_distance_moment,
     build_arb_cut_smooth_matrix,
 )
+
+
+def test_same_interval_rectangular_map_reaches_degree_p_plus_k_plus_one():
+    flint = pytest.importorskip("flint")
+    previous = flint.ctx.prec
+    try:
+        flint.ctx.prec = 256
+        block = _power_block_rectangular(
+            flint.arb,
+            flint.arb_mat,
+            flint.arb("0.4"),
+            flint.arb("0.4"),
+            flint.arb(0),
+            18,
+            16,
+            1,
+            True,
+        )
+    finally:
+        flint.ctx.prec = previous
+    assert block[17, 15].lower() > 7e-5
 from experiments.theta_pencil.cut_adapted_prime_basis import first_prime_partition
 from experiments.theta_pencil.smooth_legendre_series import (
     smooth_remainder_series_coefficients,

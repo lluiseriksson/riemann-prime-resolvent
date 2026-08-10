@@ -104,8 +104,6 @@ def _power_block_rectangular(
 ):
     """Power-kernel block for possibly different local degree counts."""
 
-    if same_interval and left_degree_count != right_degree_count:
-        raise ValueError("a diagonal power block must be square")
     left = _local_legendre_coefficients(
         arb, left_length, left_degree_count, reversed_=not same_interval
     )

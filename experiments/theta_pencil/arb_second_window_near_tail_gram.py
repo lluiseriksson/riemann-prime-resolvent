@@ -11,8 +11,8 @@ from experiments.theta_pencil.arb_adjacent_full_map import (
     _build_adjacent_full_matrix,
     _build_separated_full_matrix,
 )
+from experiments.theta_pencil.arb_cut_smooth import _power_block_rectangular
 from experiments.theta_pencil.arb_prime_translation import _arb_radius_as_float
-from experiments.theta_pencil.arb_source_schur import _roundtrip_ball
 from experiments.theta_pencil.arb_second_window_flux_gram import (
     _parity_transforms,
 )
@@ -20,9 +20,11 @@ from experiments.theta_pencil.arb_second_window_source import (
     _arb_lengths,
     _degree_pattern,
     _offsets,
-    build_arb_second_window_smooth,
 )
 from experiments.theta_pencil.cut_adapted_prime_basis import second_prime_partition
+from experiments.theta_pencil.smooth_legendre_series import (
+    smooth_remainder_series_coefficients,
+)
 
 
 @dataclass(frozen=True)
@@ -115,24 +117,50 @@ def build_arb_second_window_near_tail_gram(
             + precision
             + 128,
         )
+        smooth_maps = None
+        smooth_degree = 0
+        if maximum_smooth_power is not None:
+            # Integrating |x-y|^p against a source polynomial of degree k
+            # can produce target degree p+k+1.  The old p+1 cutoff omitted
+            # exact rows.  Rectangular maps retain the full finite image
+            # without building a much larger square low source.  These exact
+            # algebraic maps do not need the much higher precision required
+            # later by the exponentially scaled Legendre-Q sequences.
+            smooth_degree = maximum_smooth_power + max(degrees) + 2
+            coefficients = smooth_remainder_series_coefficients(
+                maximum_smooth_power
+            )
+            a = arb(str(half_width))
+            smooth_maps = {}
+            for target in range(7):
+                for source in range(7):
+                    lower = min(target, source)
+                    upper = max(target, source)
+                    gap = sum(pilot_lengths[lower + 1 : upper], arb(0))
+                    block = arb_mat(smooth_degree, degrees[source])
+                    for power, coefficient in enumerate(coefficients):
+                        power_matrix = _power_block_rectangular(
+                            arb,
+                            arb_mat,
+                            pilot_lengths[target],
+                            pilot_lengths[source],
+                            gap,
+                            smooth_degree,
+                            degrees[source],
+                            power,
+                            target == source,
+                        )
+                        rational = (
+                            arb(coefficient.numerator) / coefficient.denominator
+                        )
+                        block += (-a * rational * a**power) * power_matrix
+                    smooth_maps[target, source] = block
         ctx.prec = working_precision
         _, lengths = _arb_lengths(arb, half_width)
         labels = ("edge", "bridge", "edge", "center", "edge", "bridge", "edge")
         offsets = _offsets(degrees)
         total = offsets[-1]
         full = arb_mat(total, total)
-        smooth = None
-        smooth_degree = 0
-        if maximum_smooth_power is not None:
-            smooth_degree = max(max(degrees), maximum_smooth_power + 1)
-            smooth = build_arb_second_window_smooth(
-                half_width,
-                smooth_degree,
-                smooth_degree,
-                smooth_degree,
-                maximum_smooth_power,
-                precision,
-            )
         cross_maps = {}
         q_cache = {}
         for target in range(7):
@@ -204,18 +232,10 @@ def build_arb_second_window_near_tail_gram(
                             ]
                             if source < target and (degree + source_degree) % 2:
                                 value = -value
-                        if smooth is not None and degree < smooth_degree:
-                            value += _roundtrip_ball(
-                                arb,
-                                smooth.midpoint[
-                                    target * smooth_degree + degree,
-                                    source * smooth_degree + source_degree,
-                                ],
-                                smooth.radius[
-                                    target * smooth_degree + degree,
-                                    source * smooth_degree + source_degree,
-                                ],
-                            )
+                        if smooth_maps is not None and degree < smooth_degree:
+                            value += smooth_maps[target, source][
+                                degree, source_degree
+                            ]
                         vector[
                             0,
                             local_offsets[source_index] + source_degree,
