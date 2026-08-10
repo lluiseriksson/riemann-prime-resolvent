@@ -148,6 +148,7 @@ It does not authorize changing the success condition.
 - [Separable prime-power chain floor](prime-power-chain-floor.md)
 - [Thirteen-block prime-power-four window](third-window-partition.md)
 - [Certified localized positivity through support 0.7](support-070-certificate.md)
+- [No form-level differential propagation in the support](support-derivative-no-go.md)
 - [Cut-adapted exact prime basis](cut-adapted-prime-basis.md)
 - [Support-extension audit](support-extension-audit.md)
 - [Falsifiers and abandonment conditions](falsifiers.md)
