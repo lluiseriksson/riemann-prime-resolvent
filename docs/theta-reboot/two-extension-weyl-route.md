@@ -125,14 +125,185 @@ Thus shift independence cannot be claimed uniformly when either spectral gap
 collapses. The finite executable model in `finite_weyl_ratio.py` checks both
 the Herglotz sign and this resolvent identity.
 
+## Exact two-channel shift defect
+
+The dependence can be localized more sharply. Put
+
+\[
+ R_\lambda=(A_a-\lambda I)^{-1},\qquad
+ N_\lambda(z)=L_z(R_\lambda e^x),\qquad
+ D_\lambda(z)=L_z(R_\lambda e^{-x}),
+\]
+
+where \(L_z(f)=\int_{-a}^a f(x)e^{izx}\,dx\). Apart from the fixed factor
+\(-(z-i)/(z+i)\), the characteristic quotient is
+\(q_\lambda=N_\lambda/D_\lambda\). The resolvent identity gives the exact
+formula
+
+\[
+ q_\mu-q_\lambda=
+ \frac{(\mu-\lambda)
+ \left[
+ L_z(R_\mu R_\lambda e^x)D_\lambda
+ -N_\lambda L_z(R_\mu R_\lambda e^{-x})
+ \right]}
+ {D_\mu D_\lambda}.                                      \tag{SD}
+\]
+
+Consequently, shift invariance is equivalent to the vanishing of the
+bracketed \(2\times2\) determinant. It is not a consequence of
+self-adjointness.  For example, with
+
+\[
+ A=\operatorname{diag}(a,b),\quad e^x=(1,1),\quad
+ e^{-x}=(1,-1),\quad L=(X,Y),
+\]
+
+one obtains
+
+\[
+ q_\lambda=
+ \frac{X(b-\lambda)+Y(a-\lambda)}
+      {X(b-\lambda)-Y(a-\lambda)},\qquad
+ q_\lambda'=
+ \frac{2XY(a-b)}{[X(b-\lambda)-Y(a-\lambda)]^2}.
+\]
+
+Thus the quotient is generically shift-dependent already in dimension two.
+
+Reflection symmetry identifies the exact source of the defect in the Suzuki
+model. Write \(e^x=\cosh x+\sinh x\) and use that \(A_a\) commutes with
+reflection. If
+
+\[
+ C_\lambda=L_z(R_\lambda\cosh x),\qquad
+ S_\lambda=L_z(R_\lambda\sinh x),
+\]
+
+then \(N_\lambda=C_\lambda+S_\lambda\),
+\(D_\lambda=C_\lambda-S_\lambda\), and
+
+\[
+ N_\mu D_\lambda-N_\lambda D_\mu
+ =2(S_\mu C_\lambda-C_\mu S_\lambda).                  \tag{PS}
+\]
+
+Exact invariance would therefore require the relative odd/even response
+\(S_\lambda/C_\lambda\) to be independent of the shift. The even and odd
+resolvents have different spectra, so there is no formal reason for this
+identity.
+
+The source-normalized Galerkin diagnostic at \(a=0.72\), 32 Dirichlet modes,
+8193 quadrature points and \(z=0.7+0.8i\) gives
+
+| \(\lambda\) | characteristic quotient | \(S_\lambda/C_\lambda\) |
+|---:|---:|---:|
+| -0.1 | \(-0.0542640+0.3443723i\) | \(-0.0390826+0.0318106i\) |
+| -1 | \(-0.0792823+0.2960457i\) | \(-0.1038478+0.0838308i\) |
+| -10 | \(-0.0871021+0.2778648i\) | \(-0.1297620+0.1042172i\) |
+
+The relative spread is \(0.21276\). Formula (SD) closes to
+\(4.6\cdot10^{-14}\), and (PS) to \(1.4\cdot10^{-15}\). This is a finite
+diagnostic, not a theorem about the infinite operator, but it falsifies
+automatic shift invariance as an algebraic principle.
+
+Nor is the finite change merely one constant Möbius reparametrization. A
+constant Möbius map preserves the cross-ratio of four values. At the four
+pre-registered upper-half-plane probes, the cross-ratios for shifts
+\(-0.1,-1,-10\) are respectively
+
+\[
+ 0.6036746-0.2287135i,\quad
+ 0.6103380-0.2268093i,\quad
+ 0.6145658-0.2255171i.
+\]
+
+The largest defect is \(0.0113506\). Thus any Möbius covariance needed in
+the limit must emerge asymptotically after a canonical boundary
+normalization; it is not present exactly in the raw finite quotient.
+
+The production diagnostic is reproducible with
+
+    python -m experiments.theta_pencil.screw_weyl_shift_diagnostic \
+      --half-width 0.72 --grid 8193 --basis 32 \
+      --z-real 0.7 --z-imag 0.8 --shifts -0.1 -1 -10
+
+The captured JSON artifact has SHA-256
+`04C337EE4339CD9268179CB0EE237180985FDDAC015D23FC1E4D52013B8AAE81`.
+
+## Shifted Herglotz targets remove the near-zero-shift requirement
+
+There is nevertheless a better route than exact invariance. Let
+
+\[
+ M_0(z)=\frac{\Xi(z)}{\Xi'(z)},\qquad
+ M_\tau(z)=\frac{M_0(z)}{1-\tau M_0(z)}
+ =\frac{\Xi(z)}{\Xi'(z)-\tau\Xi(z)},\quad \tau\in\mathbb R.
+\]
+
+The real Möbius map \(w\mapsto w/(1-\tau w)\) has determinant one and maps
+the upper half-plane to itself. Hence
+
+\[
+ \boxed{\mathrm{RH}\iff M_\tau\text{ is Herglotz on }\mathbb C_+}
+ \qquad(\tau\in\mathbb R).                              \tag{SH}
+\]
+
+The forward implication follows from the corresponding property of \(M_0\).
+Conversely, every off-real zero \(\rho\) of multiplicity \(m\) gives
+\(M_\tau(z)=(z-\rho)/m+O((z-\rho)^2)\), an interior zero impossible for a
+nonconstant Herglotz function.
+
+This matters because Section 8 of Suzuki writes the continuous-kernel shift
+as \(S_a=G_a-\lambda R_a\), with the inverse Laplacian \(R_a\). Formally on
+the full line its Fourier multiplier changes from
+\(z^{-2}\xi'/\xi\) to \(z^{-2}(\xi'/\xi-\lambda)\). The corresponding
+candidate limit is therefore the shifted logarithmic-derivative reciprocal,
+not the zero-shift target.  A safe shift need not tend to zero if this
+full-line passage and its boundary normalization can be made rigorous.
+
+Define the exactly unshifted finite function by
+
+\[
+ \widetilde m_a(z)=\frac{m_{a,\lambda(a)}(z)}
+ {1+\lambda(a)m_{a,\lambda(a)}(z)}.                     \tag{UN}
+\]
+
+For every real \(\lambda(a)\), (UN) remains Herglotz. Therefore local uniform
+convergence \(\widetilde m_a\to M_0\) would prove RH without ever assuming an
+admissible sequence \(\lambda(a)\to0\).
+
+The quantitative price is exact. If
+
+\[
+ w=\frac{m}{1-\lambda m},\qquad \widehat w=w+\varepsilon,
+\]
+
+then
+
+\[
+ \frac{\widehat w}{1+\lambda\widehat w}-m
+ =\frac{\varepsilon(1-\lambda m)^2}
+ {1+\lambda\varepsilon(1-\lambda m)}.                  \tag{AE}
+\]
+
+Thus a safety shift with \(|\lambda(a)|\to\infty\) amplifies an ordinary
+boundary error quadratically. Away from zeros and poles, the required raw
+convergence scale is \(o(|\lambda(a)|^{-2})\). This is the new quantitative
+gate: prove a boundary/full-line resolvent estimate at that scale, or the
+renormalized route does not close.
+
 ## New proof obligation
 
-The viable branch is now precise:
+The viable branch is now more precise:
 
-1. define the two-extension Weyl function with an explicit safe shift;
-2. derive its dependence on the screw kernel without assuming positivity;
-3. either prove exact shift invariance, or renormalize the shift contribution;
-4. prove local uniform convergence on \(\mathbb C_+\) to \(\Xi/\Xi'\).
+1. choose an explicit, provably admissible safety shift \(\lambda(a)\);
+2. fix a canonical boundary triple and hence a canonical Herglotz
+   \(m_{a,\lambda(a)}\);
+3. prove the full-line shifted target and a boundary error
+   \(o(|\lambda(a)|^{-2})\) on compact subsets of \(\mathbb C_+\);
+4. apply (UN) and prove local uniform convergence to \(\Xi/\Xi'\).
 
 Step 4 would prove RH. No near-zero admissible shift may be assumed in its
-proof, by the lemma above.
+proof, by the lemma above. The missing theorem is no longer exact shift
+invariance: it is the quantitative boundary-resolvent estimate in step 3.
