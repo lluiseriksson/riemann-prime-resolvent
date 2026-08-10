@@ -628,9 +628,243 @@ another bound on \(g'\); it is a genuinely third-order conditional-correlation
 constraint. For the Riemann kernel this must be derived from the zero-orbit
 mixture or directly from the Euler formula.
 
+### A full-rank verified Gram floor at order four
+
+There is a concrete way to calibrate the required domination. An on-line zero
+of height \(\gamma\) contributes to the congruent kernel (E4)
+
+\[
+ G_\gamma(x,y)=
+ \frac{2(xy+\gamma^2)}{(x^2+\gamma^2)(y^2+\gamma^2)}. \tag{E37}
+\]
+
+This is the rank-two Gram kernel of the features
+
+\[
+ \frac{\sqrt2\gamma}{x^2+\gamma^2},\qquad
+ \frac{\sqrt2x}{x^2+\gamma^2}.
+\]
+
+Two distinct verified heights \(\gamma_1,\gamma_2\) therefore give a
+full-rank floor on four distinct nodes \(x_1<\cdots<x_4\). If
+\(g_j=\gamma_j^2\), direct Cauchy--Vandermonde elimination gives
+
+\[
+ \boxed{
+ \det(G_{\gamma_1}+G_{\gamma_2})=
+ \left[
+ \frac{4\gamma_1\gamma_2(g_2-g_1)^2
+ \prod_{i<j}(x_j-x_i)}
+ {\prod_i(x_i^2+g_1)(x_i^2+g_2)}
+ \right]^2>0.}                                      \tag{E38}
+\]
+
+To expose exactly what remains, replace every positive-height zero by an
+on-line surrogate at the same height, counted with multiplicity, and call the
+resulting positive matrix \(H_0\). For an off-line pair
+\(\alpha\mathbin\pm i\gamma\), write \(a=\alpha^2\), \(g=\gamma^2\),
+\(C=x^2+g\), and
+
+\[
+ D=(C-a)^2+4ag.
+\]
+
+The difference between its true logarithmic-derivative mass and its two
+on-line surrogates is exactly
+
+\[
+ e_{a,g}(x)=
+ \frac{4x}{C}\frac{a(x^2-3g-a)}{D}.                 \tag{E39}
+\]
+
+Hence the complete perturbation is the convergent symmetric kernel
+
+\[
+ E_{ij}=\sum_{\mathrm{off}}
+ \frac{e_{a,g}(x_i)+e_{a,g}(x_j)}{x_i+x_j},qquad
+ H=H_0+E.                                             \tag{E40}
+\]
+
+Let \(H_{12}=G_{\gamma_1}+G_{\gamma_2}\) for the first two certified
+heights. Since \(H_0\succeq H_{12}>0\), the explicit, non-circular sufficient
+order-four gate is
+
+\[
+ \boxed{
+ \left\|H_{12}^{-1/2}EH_{12}^{-1/2}\right\|_{\mathrm{op}}\le1.} \tag{E41}
+\]
+
+Indeed, (E41) gives \(H_{12}+E\succeq0\), and adding
+\(H_0-H_{12}\succeq0\) yields \(H\succeq0\). The gate is deliberately
+stronger than necessary, but every term is explicit and the off-line sum
+starts only above \(3\cdot10^{12}\). The unresolved issue is uniformity in
+the node geometry: \(H_{12}^{-1}\) becomes ill-conditioned as nodes
+coalesce or escape, while the perturbation has matching divided-difference
+cancellation that a crude entrywise norm would lose.
+
+That cancellation is visible before taking norms. For a real vector
+\(c=(c_i)_{i=1}^4\), define
+
+\[
+ F_c(w)=\sum_i\frac{c_ix_i}{x_i^2+w^2},\qquad
+ G_c(w)=\sum_i\frac{c_i}{x_i^2+w^2},\qquad
+ Q_c(w)=F_c(w)^2+w^2G_c(w)^2.                        \tag{E42}
+\]
+
+The quadratic form of one on-line height is \(2Q_c(\gamma)\). For an
+off-line conjugate pair, put \(w=\gamma-i\alpha\). Its grouped quadratic form
+is exactly \(4\operatorname{Re}Q_c(\gamma-i\alpha)\), whereas its two
+on-line surrogates contribute \(4Q_c(\gamma)\). Since \(Q_c\) is real on the
+real axis, Taylor's formula along the vertical segment gives
+
+\[
+ \boxed{
+ \operatorname{Re}Q_c(\gamma-i\alpha)-Q_c(\gamma)
+ =-\alpha^2\int_0^1(1-t)
+ \operatorname{Re}Q_c''(\gamma-it\alpha)\,dt.}       \tag{E43}
+\]
+
+Thus the node-uniform order-four problem is reduced to a rational Bernstein
+inequality. A sufficient form, with zero multiplicities understood, is
+
+\[
+ \boxed{
+ 2\sum_{\mathrm{off}}\alpha^2\int_0^1(1-t)
+ |Q_c''(\gamma-it\alpha)|\,dt
+ \le \sum_{\gamma>0} Q_c(\gamma)
+ \quad\text{for every }c\in\mathbb R^4.}             \tag{E44}
+\]
+
+Unlike an entrywise estimate, (E44) remains meaningful when nodes coalesce:
+both sides see the same rational cancellations. It is not yet proved. Its
+finite-dimensional feature is important: after a common denominator,
+\(F_c\) and \(G_c\) have numerator degree bounded by the four nodes. Extending
+the same inequality uniformly to arbitrary dimension would recover the full
+RH difficulty; the present target is only the first open dimension.
+
+More explicitly, set \(z=w^2\) and
+
+\[
+ \begin{aligned}
+ P(z)&=\prod_{i=1}^4(z+x_i^2),\\
+ A_c(z)&=\sum_i c_i\prod_{j\ne i}(z+x_j^2),\\
+ B_c(z)&=\sum_i c_ix_i\prod_{j\ne i}(z+x_j^2).
+ \end{aligned}
+\]
+
+Then
+
+\[
+ \boxed{
+ Q_c(w)=\frac{S_c(w^2)}{P(w^2)^2},\qquad
+ S_c(z)=B_c(z)^2+zA_c(z)^2\ge0\quad(z\ge0),}         \tag{E45}
+\]
+
+with \(\deg S_c\le7\). Thus order four no longer asks for an estimate on an
+arbitrary analytic function: it asks for a sampling/derivative inequality for
+a nonnegative degree-seven numerator divided by four positive quadratic
+scales. A zero of \(Q_c\) on the positive axis forces both \(A_c\) and
+\(B_c\) to vanish, so this family cannot track more than finitely many of the
+densely spaced zeta heights. The next quantitative target is an explicit
+degree-seven Remez--Bernstein sampling lemma on dyadic height bands, combined
+with the unconditional Riemann--von Mangoldt count.
+
+### Closing the order-four sampling lemma
+
+The required constants are much weaker than standard polynomial inequalities
+provide. Partition \([T,\infty)\), \(T=3\cdot10^{12}\), into dyadic bands
+\(I_Y=[Y,2Y]\). On each band take the fifteen roots of the degree-fifteen
+Chebyshev polynomial, affinely transported to \(I_Y\). Around each root use a
+radius
+
+\[
+ \delta Y,qquad \delta=\frac1{24\cdot14^2}.
+\]
+
+The explicit zero-counting envelope used in (E27) shows that every one of
+these disjoint intervals contains a zeta zero. At the smallest band the worst
+lower count is already \(5.45\cdot10^9\), and direct differentiation shows it
+increases with \(Y\). Choose one positive zero height \(\lambda_k\) from each
+interval.
+
+Let \(R(w)=S_c(w^2)\), so \(\deg R\le14\), and let
+\(D(w)=P(w^2)^2\). The Chebyshev Lebesgue constant is less than \(3\).
+Markov's inequality and the choice of \(\delta\) give
+
+\[
+ \|R\|_{I_Y}
+ \le3\left(\max_k|R(\lambda_k)|+rac1{12}\|R\|_{I_Y}\right),
+\]
+
+hence
+
+\[
+ \|R\|_{I_Y}\le4\max_k|R(\lambda_k)|.               \tag{E46}
+\]
+
+Across \(I_Y\), each factor \(w^2+x_i^2\) varies by at most a factor \(4\),
+so \(\max D/\min D\le4^8\). On the real interval,
+
+\[
+ \|R'\|\le\frac{2\cdot14^2}{Y}\|R\|,
+ \qquad
+ \|R''\|\le\frac{4\cdot14^4}{Y^2}\|R\|,
+\]
+
+while \(|D'/D|\le16/Y\) and
+\(|(D'/D)'|\le16/Y^2\). Differentiating \(Q=R/D\), inserting (E46), and
+then using Taylor's formula through the strip \(|\operatorname{Im}w|\le1/2\)
+gives the deliberately rounded bound
+
+\[
+ \boxed{
+ \sup_{\substack{Y\le\operatorname{Re}w\le2Y\\
+                  |\operatorname{Im}w|\le1/2}}
+ |Q_c''(w)|
+ \le\frac{C_*}{Y^2}\max_{1\le k\le15}Q_c(\lambda_k),
+ \qquad C_*=2\cdot10^{11}.}                          \tag{E47}
+\]
+
+For reference, the real-axis bookkeeping before the harmless vertical-strip
+rounding is
+
+\[
+ 4\cdot4^8
+ \left(4\cdot14^4+64\cdot14^2+16^2+16\right)
+ <4.37\cdot10^{10};
+\]
+
+the factor allowed in (E47) is more than four times larger. Since the strip
+width relative to \(Y\) is below \(1.7\cdot10^{-13}\), the stated rounding
+also follows directly by expanding the degree-sixteen numerator and
+denominator derivatives along the vertical segment.
+
+There are fewer than \(Y\log Y\) positive zeros in \(I_Y\). Therefore the
+left side of (E44), restricted to one band, is at most
+
+\[
+ \frac14\,Y\log Y\,\frac{C_*}{Y^2}
+ \max_kQ_c(\lambda_k)
+ \le0.479\max_kQ_c(\lambda_k).                       \tag{E48}
+\]
+
+Here \(1/4\) comes from
+\(2\alpha^2\int_0^1(1-t)dt\le1/4\). The function \(\log Y/Y\) decreases
+for \(Y\ge T\), so the displayed decimal is its worst value. The fifteen
+chosen zeros are disjoint between bands, and their positive values occur in
+the right side of (E44). Summing (E48) over all dyadic bands proves (E44).
+
+Consequently every \(4\times4\) Euler-axis Pick matrix is positive
+semidefinite, unconditionally. This closes the first gate not implied by the
+rapidity curvature argument. It still does not prove RH: the polynomial
+degree and the Markov/sampling constant grow with matrix order, and no
+uniform-in-order estimate has been established.
+
 The module `euler_axis_pick.py` implements the orbit algebra and the exact
 interval-rapidity form (E30)--(E31), while `zero_band_variance.py` audits the
 constants in (E26)--(E28), and `order_four_rapidity_counterexample.py`
-records the first open gate (E35). These
+records the first open gate (E35). The script `order_four_verified_gram.py`
+checks (E38)--(E45), and `degree_seven_sampling_audit.py` records the constants
+in (E46)--(E48). These
 floating-point checks are not used in place of the displayed analytic
 inequalities. Global claims still require all separated principal minors.
