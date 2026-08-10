@@ -1920,6 +1920,111 @@ control nonconsecutive triples or blocks whose bandwidth grows with their
 degree.  Those long-range couplings are now the first remaining Jacobi
 obstruction.
 
+There is a natural operator-calculus interpretation of the same arithmetic
+matrix tower.  Define the unitary map
+
+\[
+ (Up)(v)=e^{-v/2}p(e^{-v}),\qquad
+ U:L^2(0,1)\longrightarrow L^2(0,\infty).
+\]
+
+On the polynomial core it conjugates the Euler generator to a translation
+generator:
+
+\[
+ \boxed{
+ U\left(t\frac d{dt}+\frac12\right)U^{-1}
+ =\mathfrak D:=-\frac d{dv}.}                       \tag{E117}
+\]
+
+The operator \(-\mathfrak D=d/dv\), with its maximal translation domain,
+generates the left-translation contraction semigroup
+\((S_r f)(v)=f(v+r)\).  Hence \(\mathfrak D\) is maximal accretive.  Moreover
+
+\[
+ \mathfrak D e^{-(n+1/2)v}=(n+1/2)e^{-(n+1/2)v},
+\]
+
+so the multiplier in (E96) is precisely the functional calculus
+
+\[
+ \boxed{U\mathcal L U^{-1}=L(\mathfrak D),\qquad
+ L(z)=\frac{\xi'(1/2+z)}{\xi(1/2+z)}}               \tag{E118}
+\]
+
+on the span of these exponentials.  This suggests a short sufficient route.
+If \(L\) were a Bernstein function, its Levy--Khintchine representation
+
+\[
+ L(z)=a+bz+\int_0^\infty(1-e^{-rz})\,d\mu(r)
+\]
+
+would give
+
+\[
+ \operatorname {Re}\langle f,L(\mathfrak D)f\rangle
+ =a\lVert f\rVert^2+b\operatorname {Re}\langle f,\mathfrak Df\rangle
+ +\int_0^\infty
+   \operatorname {Re}\langle f,(I-S_r)f\rangle\,d\mu(r)\ge0. \tag{E119}
+\]
+
+Here every term is nonnegative because \(\mathfrak D\) is accretive and
+\(S_r\) is contractive.  Equation (E119) would prove the whole arithmetic
+Pick tower without estimating its individual Jacobi bands.
+
+This shortcut, however, fails by a strict unconditional sign.  In the
+absolutely convergent Euler region,
+
+\[
+ \boxed{
+ L'''\!\left(\frac52\right)
+ =-6\left(\frac1{3^4}+\frac1{2^4}\right)
+ +\frac{\pi^4-96}{16}
+ +\sum_{n\ge2}\frac{\Lambda(n)(\log n)^3}{n^3}.}    \tag{E120}
+\]
+
+Let
+
+\[
+ T=6\left(\frac1{3^4}+\frac1{2^4}\right)
+   -\frac{\pi^4-96}{16}
+  =0.3610058844489217467\ldots.
+\]
+
+Direct enumeration of prime powers through \(R=10^5\), using
+\(\Lambda(p^k)(\log p^k)^3/p^{3k}=k^3(\log p)^4/p^{3k}\), gives
+
+\[
+ S_R=0.3606577241464848909\ldots.
+\]
+
+Since \(\Lambda(n)\le\log n\) and \((\log x)^4/x^3\) is decreasing on
+this tail,
+
+\[
+ \begin{aligned}
+ 0\le\sum_{n>R}\frac{\Lambda(n)(\log n)^3}{n^3}
+ &\le\int_R^\infty\frac{(\log x)^4}{x^3}\,dx\\
+ &=\frac1{R^2}\left(\frac{(\log R)^4}{2}+(\log R)^3
+ +\frac32(\log R)^2+\frac32\log R+\frac34\right)\\
+ &=1.0527263128402504\ldots\,10^{-6}.               \tag{E121}
+ \end{aligned}
+\]
+
+Consequently
+
+\[
+ \boxed{L'''\!\left(\frac52\right)
+ <-0.0003471075761240<0.}                           \tag{E122}
+\]
+
+For a Bernstein function the derivative is completely monotone, in
+particular \(L'''\ge0\).  Thus \(L\) is not Bernstein, and generic positive
+semigroup subordination cannot prove (E89).  This does **not** refute the
+positive-real/Herglotz property of \(L\): that larger property is exactly the
+RH-side Pick criterion.  The obstruction is specifically to obtaining its
+positivity for free from the Bernstein subclass.
+
 Thus no finite verification height can make this particular absolute-value
 argument uniform in \(n\). Raising \(T\) only moves the finite cutoff.  The
 column-sum argument removes the \(n^5\) loss of (E55), but its
@@ -1948,6 +2053,10 @@ off-diagonal formulas, the row-sum counterexample, the consecutive
 three-band theorem (E99)--(E116), and the large-degree Euler bounds are
 checked by
 `jacobi_band_pick.py`.
+The translation-generator identity (E117)--(E119) and the failure of the
+Bernstein shortcut (E120)--(E122) are audited by
+`bernstein_functional_calculus_gate.py`; its finite sum is enclosed by the
+displayed elementary analytic tail rather than treated as evidence for RH.
 The floating-point checks elsewhere in this audit are not used in place of
 the displayed analytic inequalities. Global claims still require all
 separated principal minors.
