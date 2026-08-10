@@ -7,6 +7,7 @@ that enclosure from the analytic formulas is a separate source-level task.
 
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass
 
 import numpy as np
@@ -21,6 +22,7 @@ class IntervalInertiaResult:
     unresolved_count: int
     real_intervals: tuple[tuple[float, float], ...]
     maximum_imaginary_radius: float
+    method: str = "direct-ball"
 
 
 def certify_interval_inertia(
@@ -48,18 +50,56 @@ def certify_interval_inertia(
                 for row in range(len(array))
             ]
         )
-        eigenvalues = ball_matrix.eig(multiple=True, algorithm="rump")
+        try:
+            eigenvalues = ball_matrix.eig(multiple=True, algorithm="rump")
+            method = "direct-ball"
+        except ValueError:
+            # For a symmetric midpoint M and any symmetric perturbation E
+            # with |E_ij| <= r, Weyl gives
+            # |lambda_k(M+E)-lambda_k(M)| <= ||E||_2 <= dimension*r.
+            # Isolating the point spectrum and enlarging every interval by
+            # that explicit amount is often stronger than asking Rump to
+            # diagonalize an independently ball-valued matrix directly.
+            # ``np.allclose`` above admits harmless last-bit asymmetry.  Use
+            # the exactly symmetric midpoint and charge half of the maximum
+            # antisymmetric defect to the entrywise perturbation budget.
+            symmetric_midpoint = 0.5 * (array + array.T)
+            antisymmetric_budget = 0.5 * float(np.max(np.abs(array - array.T)))
+            fallback_radius = math.nextafter(
+                entry_radius + antisymmetric_budget, math.inf
+            )
+            point_matrix = arb_mat(
+                [
+                    [
+                        arb(float(symmetric_midpoint[row, column]))
+                        for column in range(len(array))
+                    ]
+                    for row in range(len(array))
+                ]
+            )
+            eigenvalues = point_matrix.eig(multiple=True, algorithm="rump")
+            method = "point-weyl"
     finally:
         ctx.prec = previous_precision
 
+    weyl_loss = (
+        len(array) * fallback_radius if method == "point-weyl" else 0.0
+    )
     intervals = tuple(
-        (float(value.real.lower()), float(value.real.upper()))
+        (
+            math.nextafter(float(value.real.lower()) - weyl_loss, -math.inf),
+            math.nextafter(float(value.real.upper()) + weyl_loss, math.inf),
+        )
         for value in eigenvalues
     )
     negative = sum(upper < 0.0 for _, upper in intervals)
     positive = sum(lower > 0.0 for lower, _ in intervals)
     unresolved = len(intervals) - negative - positive
-    imaginary = max(float(value.imag.rad()) for value in eigenvalues)
+    imaginary = (
+        0.0
+        if method == "point-weyl"
+        else max(float(value.imag.rad()) for value in eigenvalues)
+    )
     return IntervalInertiaResult(
         dimension=len(array),
         entry_radius=entry_radius,
@@ -68,6 +108,7 @@ def certify_interval_inertia(
         unresolved_count=unresolved,
         real_intervals=intervals,
         maximum_imaginary_radius=imaginary,
+        method=method,
     )
 
 

@@ -51,6 +51,7 @@ class SecondWindowSchurParity:
     coupling_norm_upper: float
     coercive_lower: float
     entry_radius: float
+    inertia_method: str = "direct-ball"
 
 
 @dataclass(frozen=True)
@@ -576,6 +577,7 @@ def certify_second_window_schur(
                     coupling_norm_upper=coupling_norm_upper,
                     coercive_lower=coercive_lower,
                     entry_radius=entry_radius,
+                    inertia_method=inertia.method,
                 )
             )
     finally:

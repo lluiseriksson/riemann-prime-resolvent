@@ -157,20 +157,38 @@ def build_arb_third_window_dominant(
                         value += shift
                     matrix[offsets[block] + left, offsets[block] + right] = value
 
+        labels = (
+            "edge", "bridge", "edge", "center", "edge", "bridge", "edge",
+            "bridge", "edge", "center", "edge", "bridge", "edge",
+        )
+        cross_cache = {}
         for left_block in range(13):
             for right_block in range(left_block + 1, 13):
-                gap = sum(lengths[left_block + 1 : right_block], arb(0))
-                cross = _cross_block_rectangular(
-                    arb,
-                    arb_mat,
-                    lengths[left_block],
-                    lengths[right_block],
-                    gap,
-                    0,
+                between = labels[left_block + 1 : right_block]
+                key = (
+                    labels[left_block],
+                    labels[right_block],
+                    tuple(
+                        between.count(label)
+                        for label in ("edge", "bridge", "center")
+                    ),
                     degrees[left_block],
-                    0,
                     degrees[right_block],
                 )
+                if key not in cross_cache:
+                    gap = sum(lengths[left_block + 1 : right_block], arb(0))
+                    cross_cache[key] = _cross_block_rectangular(
+                        arb,
+                        arb_mat,
+                        lengths[left_block],
+                        lengths[right_block],
+                        gap,
+                        0,
+                        degrees[left_block],
+                        0,
+                        degrees[right_block],
+                    )
+                cross = cross_cache[key]
                 for left in range(degrees[left_block]):
                     for right in range(degrees[right_block]):
                         value = cross[left, right]
@@ -211,25 +229,47 @@ def build_arb_third_window_smooth(
         a, _, lengths = _arb_breakpoints_lengths(arb, half_width)
         total = offsets[-1]
         matrix = arb_mat(total, total)
+        labels = (
+            "edge", "bridge", "edge", "center", "edge", "bridge", "edge",
+            "bridge", "edge", "center", "edge", "bridge", "edge",
+        )
+        block_cache = {}
         for left_block in range(13):
             for right_block in range(left_block, 13):
                 same = left_block == right_block
-                gap = sum(lengths[left_block + 1 : right_block], arb(0))
-                block = arb_mat(degrees[left_block], degrees[right_block])
-                for power, coefficient in enumerate(coefficients):
-                    power_matrix = _power_block_rectangular(
-                        arb,
-                        arb_mat,
-                        lengths[left_block],
-                        lengths[right_block],
-                        gap,
-                        degrees[left_block],
-                        degrees[right_block],
-                        power,
-                        same,
-                    )
-                    rational = arb(coefficient.numerator) / coefficient.denominator
-                    block += (-a * rational * a**power) * power_matrix
+                between = labels[left_block + 1 : right_block]
+                key = (
+                    labels[left_block],
+                    labels[right_block],
+                    tuple(
+                        between.count(label)
+                        for label in ("edge", "bridge", "center")
+                    ),
+                    degrees[left_block],
+                    degrees[right_block],
+                    same,
+                )
+                if key not in block_cache:
+                    gap = sum(lengths[left_block + 1 : right_block], arb(0))
+                    block = arb_mat(degrees[left_block], degrees[right_block])
+                    for power, coefficient in enumerate(coefficients):
+                        power_matrix = _power_block_rectangular(
+                            arb,
+                            arb_mat,
+                            lengths[left_block],
+                            lengths[right_block],
+                            gap,
+                            degrees[left_block],
+                            degrees[right_block],
+                            power,
+                            same,
+                        )
+                        rational = (
+                            arb(coefficient.numerator) / coefficient.denominator
+                        )
+                        block += (-a * rational * a**power) * power_matrix
+                    block_cache[key] = block
+                block = block_cache[key]
                 for left in range(degrees[left_block]):
                     for right in range(degrees[right_block]):
                         value = block[left, right]

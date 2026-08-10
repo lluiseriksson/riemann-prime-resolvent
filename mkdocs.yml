@@ -61,6 +61,8 @@ nav:
       - Legendre Feshbach reduction: theta-reboot/legendre-feshbach.md
       - Endpoint-jump tail: theta-reboot/endpoint-jump-tail.md
       - Support-extension audit: theta-reboot/support-extension-audit.md
+      - Prime-power-four window: theta-reboot/third-window-partition.md
+      - Certified support 0.7: theta-reboot/support-070-certificate.md
       - Falsifiers: theta-reboot/falsifiers.md
   - Criterion layer site: https://lluiseriksson.github.io/riemann-prime-resolvent/criterion/
   - Programme contract: PROGRAMME_RELATION.md

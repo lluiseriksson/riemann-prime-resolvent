@@ -57,9 +57,9 @@ After adding the scalar term, subtracting the order-47 smooth loss and adding
  \boxed{D_{\ge16}\succeq0.6043415694704174I>0}.
 \]
 
-This is the first rigorous component of the programme beyond
-\(a=\log2\).  It is not a proof that \(A_{0.7}>0\): the directional
-infinite-tail Schur correction remains open.
+This was the first rigorous component of the programme beyond
+\(a=\log2\).  The directional infinite-tail Schur correction described below
+has now closed the full operator at \(a=0.7\).
 
 ## Exact finite source
 
@@ -93,3 +93,55 @@ Executable components are `third_prime_partition`,
 `build_third_window_prime_matrix` and
 `certify_third_window_pointwise_floor`; the finite source is
 `build_arb_third_window_source`.
+
+## Full directional Schur closure
+
+The source uses 12 local Legendre modes in each of the thirteen intervals.
+The complement is split orthogonally into the near band
+\(12\le n<176\) and the remote tail \(n\ge176\).  If \(P\) and \(Q\)
+denote those projections, the harmonic diagonal and the common pointwise
+floor give the form inequality
+
+\[
+ D\succeq d_{\rm near}P+d_{\rm tail}Q,
+ \qquad
+ d_{\rm near}=0.3268232544521020,
+ \quad d_{\rm tail}=2.974150455025881.
+\]
+
+The inverse is operator antitone on positive operators.  Therefore
+
+\[
+ D^{-1}\preceq d_{\rm near}^{-1}P+d_{\rm tail}^{-1}Q.
+\]
+
+This step is valid even though the complement mixes Legendre degrees.  It is
+the reason the much smaller remote-tail coupling need not be charged against
+the weakest near-band denominator.  Exact Arb Grams retain the endpoint flux,
+adjacent singular and self-tail directions through degree 8191; the remaining
+scalar losses are bounded by
+
+\[
+ \varepsilon_{\rm smooth}\le2.266540766067023\cdot10^{-16},
+ \qquad
+ \varepsilon_{\rm other}\le2.3664536098916882\cdot10^{-14}.
+\]
+
+At 512-bit precision the even and odd Schur matrices both have 78 certified
+positive eigenvalues and no negative or unresolved eigenvalues.  Their lower
+spectral endpoints are respectively
+
+\[
+ 1.5700644483114687\cdot10^{-13},\qquad
+ 2.5162073334751495\cdot10^{-10}.
+\]
+
+The block reconstruction then proves
+
+\[
+ \boxed{A_{0.7}\succeq
+ 1.0783783252951832\cdot10^{-15}I>0}.
+\]
+
+The complete claim boundary and reproduction data are in
+[the support-0.7 certificate](support-070-certificate.md).

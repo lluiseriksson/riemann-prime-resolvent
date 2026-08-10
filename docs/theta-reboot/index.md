@@ -77,27 +77,21 @@ is now the active numerical-analytic track: Suzuki's localized Weil operator
 reconstruction prove
 
 \[
- A_{0.675}\succeq1.5531308365921327\cdot10^{-13}I>0.
+ A_{0.7}\succeq1.0783783252951832\cdot10^{-15}I>0.
 \]
 
 Domain monotonicity then gives the unconditional interval theorem
 
 \[
- \lambda_a>0\qquad(0<a\le0.675).
+ \lambda_a>0\qquad(0<a\le0.7).
 \]
 
 This does not prove RH: Suzuki's criterion requires nonnegativity for every
-support.  The prime-power-four threshold has now been crossed for the
-high-degree complement only: at \(a=0.7\), a thirteen-block joint graph proves
-
-\[
- D_{\ge16}\succeq0.6043415694704174I>0.
-\]
-
-The unconditional **full-operator** frontier remains \(a=0.675\).  The active
-gate is to assemble the thirteen-block low source and retain its directional
-infinite-tail Schur correction tightly enough to prove or falsify
-\(A_{0.7}>0\).
+support.  The new certificate crosses the prime-power-four threshold with the
+full operator, not merely its high-degree complement.  It uses a thirteen-block
+exact source and a two-denominator directional Schur estimate.  The active gate
+is now to replace support-by-support certificates by a uniform threshold
+mechanism whose constants remain controlled as further prime powers enter.
 
 ## Why this track is different
 
@@ -153,6 +147,7 @@ It does not authorize changing the success condition.
 - [Historical non-closure and resolution at support 0.675](support-0675-no-close.md)
 - [Separable prime-power chain floor](prime-power-chain-floor.md)
 - [Thirteen-block prime-power-four window](third-window-partition.md)
+- [Certified localized positivity through support 0.7](support-070-certificate.md)
 - [Cut-adapted exact prime basis](cut-adapted-prime-basis.md)
 - [Support-extension audit](support-extension-audit.md)
 - [Falsifiers and abandonment conditions](falsifiers.md)
