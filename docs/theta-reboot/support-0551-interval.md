@@ -119,3 +119,9 @@ accident.  Its radius also quantifies the remaining obstruction: bare
 Any scalable continuation must exploit additional regularity of the ground
 state or a monotonicity/positivity principle, rather than repeat this modulus
 at successive support values.
+
+For the sign question alone, the domain-monotonicity proposition is much
+stronger: the later endpoint certificate at \(a=0.60\) proves positivity for
+every smaller support, including this whole neighbourhood.  The present
+continuity estimate remains useful only as a quantitative comparison of
+operators on the rescaled common space.

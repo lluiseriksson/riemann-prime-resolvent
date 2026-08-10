@@ -156,6 +156,49 @@ and hence
 This reconstruction is deliberately conservative but supplies the correct
 currency for support-parameter continuation.
 
+The identical registered calculation at the second anchor \(a=0.56\) also
+closes without changing dimensions, cutoffs or tail balances:
+
+| sector | Schur lower | complement lower | coupling upper | full coercive lower |
+|---|---:|---:|---:|---:|
+| even | `2.649194576210592e-8` | `0.5825110017149943` | `2.715003792835399` | `8.267012903894029e-10` |
+| odd | `7.925485469417453e-6` | `0.5825110017149943` | `2.712985565486463` | `2.476237103020864e-7` |
+
+Thus a second unconditional point theorem is
+
+\[
+ \boxed{A_{0.56}\succeq8.267012903894029\cdot10^{-10}I}.
+\]
+
+Its executable wrapper is `support_056_certificate.py`; its open-neighbourhood
+consequence is recorded in `support-056-interval.md`.
+
+Two further runs, again without changing the registered dimensions, cutoffs
+or tail balance, extend the point frontier:
+
+| support | even Schur lower | odd Schur lower | complement lower | full coercive lower |
+|---:|---:|---:|---:|---:|
+| `0.575` | `8.655272936840826e-9` | `3.153059355378859e-6` | `0.5340483183929586` | `2.5085271253218746e-10` |
+| `0.600` | `2.0608656364146838e-10` | `5.913838117116962e-7` | `0.4575087038774776` | `4.837712697730659e-12` |
+
+In particular,
+
+\[
+ \boxed{A_{0.60}\succeq4.837712697730659\cdot10^{-12}I>0}.
+\]
+
+The domain-monotonicity proposition in `screw-operator.md` says that
+\(\lambda_b\le\lambda_a\) for \(0<a<b\).  Therefore this single endpoint
+certificate proves the stronger interval statement
+
+\[
+ \boxed{\lambda_a>0\quad\text{for every }0<a\le0.60.}
+\]
+
+No continuity modulus or covering by tiny neighbourhoods is needed in the
+leftward direction.  The executable endpoint wrapper is
+`support_06_certificate.py`.
+
 The certificate is reproduced by
 
 ```python

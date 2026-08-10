@@ -13,7 +13,7 @@ from experiments.theta_pencil.support_interval_certificate import (
 
 
 @dataclass(frozen=True)
-class Support0551IntervalCertificate:
+class TwoPrimeSupportIntervalCertificate:
     center: float
     neighborhood_lower: float
     neighborhood_upper: float
@@ -31,10 +31,14 @@ class Support0551IntervalCertificate:
     precision: int
 
 
+# Backward-compatible public name for the first registered two-prime anchor.
+Support0551IntervalCertificate = TwoPrimeSupportIntervalCertificate
+
+
 def certify_support_0551_interval(
     point_lower: float = 1.3163321231312722e-9,
     precision: int = 256,
-) -> Support0551IntervalCertificate:
+) -> TwoPrimeSupportIntervalCertificate:
     """Certify a two-prime open interval around ``a = 0.551``.
 
     If ``N`` is the returned decimal exponent, then
@@ -43,6 +47,25 @@ def certify_support_0551_interval(
     activation thresholds, so its arithmetic part contains exactly the
     translations attached to 2 and 3.
     """
+
+    return _certify_two_prime_support_interval(
+        center_text="0.551",
+        lower_text="0.55",
+        upper_text="0.56",
+        point_lower=point_lower,
+        precision=precision,
+    )
+
+
+def _certify_two_prime_support_interval(
+    *,
+    center_text: str,
+    lower_text: str,
+    upper_text: str,
+    point_lower: float,
+    precision: int,
+) -> TwoPrimeSupportIntervalCertificate:
+    """Common continuation theorem inside the fixed two-prime window."""
 
     if point_lower <= 0:
         raise ValueError("point_lower must be positive")
@@ -54,9 +77,11 @@ def certify_support_0551_interval(
     previous_precision = ctx.prec
     try:
         ctx.prec = precision
-        center = arb("0.551")
-        lower = arb("0.55")
-        upper = arb("0.56")
+        center = arb(center_text)
+        lower = arb(lower_text)
+        upper = arb(upper_text)
+        if not lower.upper() < center.lower() or not center.upper() < upper.lower():
+            raise ValueError("the centre must lie inside the neighbourhood")
         if not lower.lower() > (arb(3).log() / 2).upper():
             raise ArithmeticError("the neighbourhood crosses the prime-three threshold")
         if not upper.upper() < arb.const_log2().lower():
@@ -149,10 +174,10 @@ def certify_support_0551_interval(
     finally:
         ctx.prec = previous_precision
 
-    return Support0551IntervalCertificate(
-        center=0.551,
-        neighborhood_lower=0.55,
-        neighborhood_upper=0.56,
+    return TwoPrimeSupportIntervalCertificate(
+        center=float(center_text),
+        neighborhood_lower=float(lower_text),
+        neighborhood_upper=float(upper_text),
         point_lower=point_lower,
         certified_interval_lower=certified_lower,
         smooth_kernel_supremum_upper=smooth_supremum,
