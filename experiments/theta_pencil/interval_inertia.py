@@ -25,6 +25,110 @@ class IntervalInertiaResult:
     method: str = "direct-ball"
 
 
+@dataclass(frozen=True)
+class ArbPositiveDefiniteCongruence:
+    dimension: int
+    transformed_gershgorin_lower: float
+    transformation_gram_lower: float
+    transformation_norm_squared_upper: float
+    original_spectral_lower: float
+    method: str = "congruence-gershgorin"
+
+
+def certify_arb_positive_definite_by_congruence(
+    matrix, precision: int = 192
+) -> ArbPositiveDefiniteCongruence:
+    """Prove an Arb matrix positive using a midpoint eigenbasis.
+
+    The input retains its individual entry radii.  A floating eigenbasis is
+    treated only as a point matrix: Arb verifies both its invertibility and
+    strict Gershgorin positivity after congruence.
+    """
+
+    if matrix.nrows() != matrix.ncols() or matrix.nrows() < 1:
+        raise ValueError("matrix must be nonempty and square")
+    try:
+        from flint import arb, arb_mat, ctx
+    except ImportError as error:  # pragma: no cover - environment dependent
+        raise RuntimeError("python-flint is required") from error
+
+    dimension = matrix.nrows()
+    previous_precision = ctx.prec
+    try:
+        ctx.prec = precision
+        symmetric = (matrix + matrix.transpose()) / 2
+        midpoint = np.array(
+            [
+                [float(symmetric[row, column].mid()) for column in range(dimension)]
+                for row in range(dimension)
+            ],
+            dtype=float,
+        )
+        midpoint = 0.5 * (midpoint + midpoint.T)
+        _, eigenvectors = np.linalg.eigh(midpoint)
+        transform = arb_mat(
+            [
+                [arb(float(eigenvectors[row, column])) for column in range(dimension)]
+                for row in range(dimension)
+            ]
+        )
+
+        gram = transform.transpose() * transform
+        gram_lowers = []
+        gram_uppers = []
+        for row in range(dimension):
+            off_diagonal = sum(
+                (
+                    abs(gram[row, column]).upper()
+                    for column in range(dimension)
+                    if column != row
+                ),
+                arb(0),
+            )
+            gram_lowers.append(gram[row, row].lower() - off_diagonal)
+            gram_uppers.append(gram[row, row].upper() + off_diagonal)
+        gram_lower = min(gram_lowers)
+        gram_upper = max(gram_uppers)
+        if not gram_lower > 0:
+            raise ArithmeticError("the congruence transform was not certified invertible")
+
+        transformed = transform.transpose() * symmetric * transform
+        transformed_lowers = []
+        for row in range(dimension):
+            off_diagonal = sum(
+                (
+                    abs(transformed[row, column]).upper()
+                    for column in range(dimension)
+                    if column != row
+                ),
+                arb(0),
+            )
+            transformed_lowers.append(
+                transformed[row, row].lower() - off_diagonal
+            )
+        transformed_lower = min(transformed_lowers)
+        if not transformed_lower > 0:
+            raise ArithmeticError(
+                "the congruent interval matrix was not strictly positive"
+            )
+        original_lower = transformed_lower / gram_upper
+    finally:
+        ctx.prec = previous_precision
+
+    def lower_float(value) -> float:
+        return math.nextafter(float(value.lower()), -math.inf)
+
+    return ArbPositiveDefiniteCongruence(
+        dimension=dimension,
+        transformed_gershgorin_lower=lower_float(transformed_lower),
+        transformation_gram_lower=lower_float(gram_lower),
+        transformation_norm_squared_upper=math.nextafter(
+            float(gram_upper.upper()), math.inf
+        ),
+        original_spectral_lower=lower_float(original_lower),
+    )
+
+
 def certify_interval_inertia(
     matrix: np.ndarray, entry_radius: float, precision: int = 192
 ) -> IntervalInertiaResult:

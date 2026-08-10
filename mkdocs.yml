@@ -64,7 +64,8 @@ nav:
       - Prime-power-four window: theta-reboot/third-window-partition.md
       - Certified support 0.7: theta-reboot/support-070-certificate.md
       - Support-derivative no-go: theta-reboot/support-derivative-no-go.md
-      - Support 0.72 non-closure: theta-reboot/support-072-no-close.md
+      - Support 0.72 historical non-closure: theta-reboot/support-072-no-close.md
+      - Certified support 0.72: theta-reboot/support-072-certificate.md
       - Falsifiers: theta-reboot/falsifiers.md
   - Criterion layer site: https://lluiseriksson.github.io/riemann-prime-resolvent/criterion/
   - Programme contract: PROGRAMME_RELATION.md

@@ -1,6 +1,7 @@
 import numpy as np
 import pytest
 
+import experiments.theta_pencil.arb_third_window_near_tail_gram as near_tail_module
 from experiments.theta_pencil.arb_third_window_flux_gram import (
     build_arb_third_window_flux_gram,
 )
@@ -119,6 +120,50 @@ def test_multiband_near_tail_sums_to_single_band():
         radius = sum(getattr(band, f"{parity}_radius") for band in bands)
         assert midpoint == pytest.approx(getattr(single, f"{parity}_midpoint"))
         assert np.all(radius >= getattr(single, f"{parity}_radius"))
+
+
+def test_near_tail_cross_map_cache_resumes_without_rebuilding(
+    tmp_path, monkeypatch
+):
+    pytest.importorskip("flint")
+    kwargs = dict(
+        half_width=0.7,
+        edge_degree=1,
+        bridge_degree=1,
+        center_degree=1,
+        first_degree=2,
+        last_degree=5,
+        precision=192,
+        maximum_smooth_power=2,
+        cross_map_cache_dir=tmp_path / "cross-maps",
+    )
+    first = build_arb_third_window_near_tail_gram(**kwargs)
+    assert list((tmp_path / "cross-maps").glob("cross-map-*.npz"))
+
+    def fail_if_adjacent_rebuilt(*args, **kwargs):
+        raise AssertionError("a cached cross map was rebuilt")
+
+    def fail_if_separated_rebuilt(*args, **kwargs):
+        raise AssertionError("a cached cross map was rebuilt")
+
+    monkeypatch.setattr(
+        near_tail_module,
+        "_build_adjacent_full_matrix",
+        fail_if_adjacent_rebuilt,
+    )
+    monkeypatch.setattr(
+        near_tail_module,
+        "_build_separated_full_matrix",
+        fail_if_separated_rebuilt,
+    )
+    second = build_arb_third_window_near_tail_gram(**kwargs)
+    for parity in ("even", "odd"):
+        first_midpoint = getattr(first, f"{parity}_midpoint")
+        second_midpoint = getattr(second, f"{parity}_midpoint")
+        first_radius = getattr(first, f"{parity}_radius")
+        second_radius = getattr(second, f"{parity}_radius")
+        assert second_midpoint == pytest.approx(first_midpoint, abs=1e-14)
+        assert np.all(second_radius >= first_radius)
 
 
 def test_third_window_other_tail_is_finite_after_directional_extraction():

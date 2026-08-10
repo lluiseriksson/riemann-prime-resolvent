@@ -2,8 +2,11 @@
 
 from __future__ import annotations
 
+import hashlib
+import json
 import math
 from dataclasses import dataclass
+from pathlib import Path
 
 import numpy as np
 
@@ -13,6 +16,7 @@ from experiments.theta_pencil.arb_adjacent_full_map import (
 )
 from experiments.theta_pencil.arb_cut_smooth import _power_block_rectangular
 from experiments.theta_pencil.arb_prime_translation import _arb_radius_as_float
+from experiments.theta_pencil.arb_source_schur import _roundtrip_ball
 from experiments.theta_pencil.arb_third_window_source import (
     _arb_breakpoints_lengths,
     _degree_pattern,
@@ -49,6 +53,118 @@ def _export(matrix):
     return midpoint, radius
 
 
+def _cross_map_cache_metadata(
+    half_width: float,
+    target_label: str,
+    source_label: str,
+    gap_signature: tuple[int, int, int],
+    source_degree_count: int,
+    first_degree: int,
+    last_degree: int,
+    working_precision: int,
+    builder_kind: str,
+) -> dict[str, int | str | list[int]]:
+    """Describe every proof-relevant input to one reusable cross map."""
+
+    return {
+        "format": 1,
+        "architecture": "third-window-near-tail-cross-map",
+        "half_width": repr(half_width),
+        "target_label": target_label,
+        "source_label": source_label,
+        "gap_signature": list(gap_signature),
+        "source_degree_count": source_degree_count,
+        "first_degree": first_degree,
+        "last_degree": last_degree,
+        "working_precision": working_precision,
+        "builder_kind": builder_kind,
+    }
+
+
+def _smooth_map_cache_metadata(
+    half_width: float,
+    target_label: str,
+    source_label: str,
+    gap_signature: tuple[int, int, int],
+    source_degree_count: int,
+    smooth_degree: int,
+    maximum_smooth_power: int,
+    precision: int,
+    same_block: bool,
+) -> dict[str, int | str | bool | list[int]]:
+    return {
+        "format": 1,
+        "architecture": "third-window-near-tail-smooth-map",
+        "half_width": repr(half_width),
+        "target_label": target_label,
+        "source_label": source_label,
+        "gap_signature": list(gap_signature),
+        "source_degree_count": source_degree_count,
+        "smooth_degree": smooth_degree,
+        "maximum_smooth_power": maximum_smooth_power,
+        "precision": precision,
+        "same_block": same_block,
+    }
+
+
+def _matrix_cache_path(
+    cache_directory: str | Path,
+    metadata,
+    prefix: str,
+) -> Path:
+    encoded = json.dumps(metadata, sort_keys=True, separators=(",", ":"))
+    digest = hashlib.sha256(encoded.encode("utf-8")).hexdigest()[:24]
+    return Path(cache_directory) / f"{prefix}-{digest}.npz"
+
+
+def _save_arb_matrix(path: Path, matrix, metadata) -> None:
+    """Atomically store parseable Arb balls, preserving tiny coefficients."""
+
+    path.parent.mkdir(parents=True, exist_ok=True)
+    balls = np.array(
+        [
+            [matrix[row, column].str(more=True) for column in range(matrix.ncols())]
+            for row in range(matrix.nrows())
+        ]
+    )
+    temporary = path.with_suffix(path.suffix + ".tmp")
+    with temporary.open("wb") as stream:
+        np.savez_compressed(
+            stream,
+            metadata=np.array(json.dumps(metadata, sort_keys=True)),
+            balls=balls,
+        )
+    temporary.replace(path)
+
+
+def _load_arb_matrix(path: Path, expected_metadata, arb, arb_mat):
+    """Reload one map only when all proof parameters agree exactly."""
+
+    if not path.exists():
+        return None
+    with np.load(path, allow_pickle=False) as payload:
+        metadata = json.loads(str(payload["metadata"].item()))
+        if metadata != expected_metadata:
+            raise ValueError("the Arb-matrix cache metadata do not match")
+        balls = payload["balls"]
+    if "smooth_degree" in metadata:
+        row_count = int(metadata["smooth_degree"])
+    else:
+        row_count = int(metadata["last_degree"]) - int(
+            metadata["first_degree"]
+        )
+    expected_shape = (row_count, int(metadata["source_degree_count"]))
+    if balls.shape != expected_shape:
+        raise ValueError("the Arb-matrix cache shape does not match its metadata")
+    matrix = arb_mat(*expected_shape)
+    for row in range(expected_shape[0]):
+        for column in range(expected_shape[1]):
+            # The saved string is itself an enclosing Arb interval.  Parsing
+            # it at the registered working precision preserves that inclusion.
+            matrix[row, column] = arb(str(balls[row, column]))
+    return matrix
+
+
 def build_arb_third_window_near_tail_gram(
     half_width: float = 0.7,
     edge_degree: int = 16,
@@ -59,6 +175,7 @@ def build_arb_third_window_near_tail_gram(
     precision: int = 512,
     maximum_smooth_power: int | None = 47,
     band_boundaries: tuple[int, ...] | None = None,
+    cross_map_cache_dir: str | Path | None = None,
 ) -> ArbThirdWindowNearTailGram | tuple[ArbThirdWindowNearTailGram, ...]:
     """Accumulate every source contribution in each exact target row."""
 
@@ -164,24 +281,58 @@ def build_arb_third_window_near_tail_gram(
                         gap = sum(
                             pilot_lengths[lower + 1 : upper], arb(0)
                         )
-                        block = arb_mat(smooth_degree, degrees[source])
-                        for power, coefficient in enumerate(coefficients):
-                            power_matrix = _power_block_rectangular(
+                        smooth_metadata = _smooth_map_cache_metadata(
+                            half_width=half_width,
+                            target_label=labels[target],
+                            source_label=labels[source],
+                            gap_signature=key[2],
+                            source_degree_count=degrees[source],
+                            smooth_degree=smooth_degree,
+                            maximum_smooth_power=maximum_smooth_power,
+                            precision=max(precision, 128),
+                            same_block=target == source,
+                        )
+                        smooth_cache_path = None
+                        block = None
+                        if cross_map_cache_dir is not None:
+                            smooth_cache_path = _matrix_cache_path(
+                                cross_map_cache_dir,
+                                smooth_metadata,
+                                "smooth-map",
+                            )
+                            block = _load_arb_matrix(
+                                smooth_cache_path,
+                                smooth_metadata,
                                 arb,
                                 arb_mat,
-                                pilot_lengths[target],
-                                pilot_lengths[source],
-                                gap,
-                                smooth_degree,
-                                degrees[source],
-                                power,
-                                target == source,
                             )
-                            rational = (
-                                arb(coefficient.numerator)
-                                / coefficient.denominator
-                            )
-                            block += (-a * rational * a**power) * power_matrix
+                        if block is None:
+                            block = arb_mat(smooth_degree, degrees[source])
+                            for power, coefficient in enumerate(coefficients):
+                                power_matrix = _power_block_rectangular(
+                                    arb,
+                                    arb_mat,
+                                    pilot_lengths[target],
+                                    pilot_lengths[source],
+                                    gap,
+                                    smooth_degree,
+                                    degrees[source],
+                                    power,
+                                    target == source,
+                                )
+                                rational = (
+                                    arb(coefficient.numerator)
+                                    / coefficient.denominator
+                                )
+                                block += (
+                                    -a * rational * a**power
+                                ) * power_matrix
+                            if smooth_cache_path is not None:
+                                _save_arb_matrix(
+                                    smooth_cache_path,
+                                    block,
+                                    smooth_metadata,
+                                )
                         smooth_cache[key] = block
                     smooth_maps[target, source] = smooth_cache[key]
 
@@ -227,13 +378,41 @@ def build_arb_third_window_near_tail_gram(
                     )
                     if builder is _build_separated_full_matrix:
                         arguments += (gap,)
-                    cross_maps[geometry] = builder(
-                        *arguments,
-                        degrees[source],
-                        first_degree,
-                        last_degree,
-                        q_cache,
+                    metadata = _cross_map_cache_metadata(
+                        half_width=half_width,
+                        target_label=labels[target],
+                        source_label=labels[source],
+                        gap_signature=gap_signature,
+                        source_degree_count=degrees[source],
+                        first_degree=first_degree,
+                        last_degree=last_degree,
+                        working_precision=working_precision,
+                        builder_kind=(
+                            "adjacent"
+                            if builder is _build_adjacent_full_matrix
+                            else "separated"
+                        ),
                     )
+                    cached = None
+                    cache_path = None
+                    if cross_map_cache_dir is not None:
+                        cache_path = _matrix_cache_path(
+                            cross_map_cache_dir, metadata, "cross-map"
+                        )
+                        cached = _load_arb_matrix(
+                            cache_path, metadata, arb, arb_mat
+                        )
+                    if cached is None:
+                        cached = builder(
+                            *arguments,
+                            degrees[source],
+                            first_degree,
+                            last_degree,
+                            q_cache,
+                        )
+                        if cache_path is not None:
+                            _save_arb_matrix(cache_path, cached, metadata)
+                    cross_maps[geometry] = cached
                 cross_maps[target, source] = cross_maps[geometry]
 
         for target in range(13):

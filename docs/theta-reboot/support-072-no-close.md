@@ -1,10 +1,18 @@
-# Registered non-closure at support 0.72
+# Historical non-closure at support 0.72
+
+!!! success "Resolved by a multiband denominator"
+
+    The failure recorded below has been repaired rigorously by splitting the
+    near complement at degree 16. See the
+    [support-0.72 certificate](support-072-certificate.md). This page is kept
+    as the audit trail for the discarded common-denominator architecture.
 
 ## Claim boundary
 
 This note records the failure of one rigorous Schur architecture.  It is not a
 negative-vector certificate for Suzuki's operator and is not evidence against
-RH.  The unconditional full-operator frontier remains \(a=0.7\).
+RH. The statement that the frontier remained \(a=0.7\) was true at the time
+of this run and has since been superseded by the support-0.72 certificate.
 
 ## Fixed run
 
