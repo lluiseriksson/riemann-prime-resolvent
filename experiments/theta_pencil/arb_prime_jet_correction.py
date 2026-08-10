@@ -13,6 +13,7 @@ from dataclasses import dataclass
 import numpy as np
 
 from experiments.theta_pencil.arb_prime_translation import _arb_radius_as_float
+from experiments.theta_pencil.prime_power_arithmetic import prime_power_base
 from experiments.theta_pencil.support_window import (
     in_first_prime_window,
     prime_overlap_positive,
@@ -75,9 +76,13 @@ def build_arb_active_prime_jet_correction(
         a = arb(str(half_width))
         sqrt_two = arb(2).sqrt()
         prime_balls = [arb(prime) for prime in active_primes]
+        mangoldt_balls = [
+            arb(prime_power_base(prime)).log() for prime in active_primes
+        ]
         cuts = [arb(1) - prime.log() / a for prime in prime_balls]
         prime_factors = [
-            -arb(2) * prime.log() / prime.sqrt() for prime in prime_balls
+            -arb(2) * mangoldt / prime.sqrt()
+            for prime, mangoldt in zip(prime_balls, mangoldt_balls)
         ]
 
         scalar = -a.log() - (arb(2) * arb.pi()).log() - arb.const_euler()
@@ -88,7 +93,10 @@ def build_arb_active_prime_jet_correction(
             if perturbation_loss is not None
             else -scalar
             + sum(
-                (arb(2) * prime.log() / prime.sqrt() for prime in prime_balls),
+                (
+                    arb(2) * mangoldt / prime.sqrt()
+                    for prime, mangoldt in zip(prime_balls, mangoldt_balls)
+                ),
                 arb(0),
             )
             + arb(6) * a

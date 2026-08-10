@@ -10,6 +10,7 @@ import numpy as np
 from experiments.theta_pencil.support_window import (
     in_first_prime_window,
     in_second_prime_window,
+    in_third_prime_partition_window,
 )
 
 
@@ -45,6 +46,26 @@ class SecondPrimePartition:
 @dataclass(frozen=True)
 class SecondWindowPrimeMatrix:
     partition: SecondPrimePartition
+    interval_degrees: tuple[int, ...]
+    offsets: tuple[int, ...]
+    matrix: np.ndarray
+
+
+@dataclass(frozen=True)
+class ThirdPrimePartition:
+    half_width: float
+    displacement_two: float
+    displacement_three: float
+    displacement_four: float
+    intervals: tuple[tuple[float, float], ...]
+    prime_two_pairs: tuple[tuple[int, int], ...]
+    prime_three_pairs: tuple[tuple[int, int], ...]
+    prime_four_pairs: tuple[tuple[int, int], ...]
+
+
+@dataclass(frozen=True)
+class ThirdWindowPrimeMatrix:
+    partition: ThirdPrimePartition
     interval_degrees: tuple[int, ...]
     offsets: tuple[int, ...]
     matrix: np.ndarray
@@ -105,6 +126,107 @@ def second_prime_partition(half_width: float) -> SecondPrimePartition:
         intervals=intervals,
         prime_two_pairs=((0, 4), (1, 5), (2, 6)),
         prime_three_pairs=((0, 6),),
+    )
+
+
+def third_prime_partition(half_width: float) -> ThirdPrimePartition:
+    """Thirteen-interval closure after the prime-power-four threshold."""
+
+    if not in_third_prime_partition_window(half_width):
+        raise ValueError("the thirteen-block partition is for the third window")
+    h_two = math.log(2.0) / half_width
+    h_three = math.log(3.0) / half_width
+    h_four = 2.0 * h_two
+    breakpoints = (
+        -1.0,
+        1.0 - 2.0 * h_two,
+        -1.0 + 2.0 * h_two - h_three,
+        1.0 - h_three,
+        -1.0 - h_two + h_three,
+        1.0 - 3.0 * h_two + h_three,
+        -1.0 + h_two,
+        1.0 - h_two,
+        -1.0 + 3.0 * h_two - h_three,
+        1.0 + h_two - h_three,
+        -1.0 + h_three,
+        1.0 - 2.0 * h_two + h_three,
+        -1.0 + 2.0 * h_two,
+        1.0,
+    )
+    if not all(
+        breakpoints[index] < breakpoints[index + 1]
+        for index in range(len(breakpoints) - 1)
+    ):
+        raise ArithmeticError("the third-window cut ordering did not close")
+    return ThirdPrimePartition(
+        half_width=half_width,
+        displacement_two=h_two,
+        displacement_three=h_three,
+        displacement_four=h_four,
+        intervals=tuple(zip(breakpoints[:-1], breakpoints[1:])),
+        prime_two_pairs=(
+            (0, 6),
+            (1, 7),
+            (2, 8),
+            (3, 9),
+            (4, 10),
+            (5, 11),
+            (6, 12),
+        ),
+        prime_three_pairs=((0, 10), (1, 11), (2, 12)),
+        prime_four_pairs=((0, 12),),
+    )
+
+
+def build_third_window_prime_matrix(
+    half_width: float,
+    edge_degree: int,
+    bridge_degree: int,
+    center_degree: int,
+) -> ThirdWindowPrimeMatrix:
+    """Exact prime-power graph in the thirteen-interval local basis."""
+
+    if min(edge_degree, bridge_degree, center_degree) < 1:
+        raise ValueError("all local degree counts must be positive")
+    partition = third_prime_partition(half_width)
+    degrees = (
+        edge_degree,
+        bridge_degree,
+        edge_degree,
+        center_degree,
+        edge_degree,
+        bridge_degree,
+        edge_degree,
+        bridge_degree,
+        edge_degree,
+        center_degree,
+        edge_degree,
+        bridge_degree,
+        edge_degree,
+    )
+    offsets = [0]
+    for degree in degrees:
+        offsets.append(offsets[-1] + degree)
+    matrix = np.zeros((offsets[-1], offsets[-1]))
+
+    def add(pairs, coefficient):
+        for left, right in pairs:
+            if degrees[left] != degrees[right]:
+                raise ArithmeticError("translated interval degrees differ")
+            left_slice = slice(offsets[left], offsets[left + 1])
+            right_slice = slice(offsets[right], offsets[right + 1])
+            block = -coefficient * np.eye(degrees[left])
+            matrix[left_slice, right_slice] += block
+            matrix[right_slice, left_slice] += block
+
+    add(partition.prime_two_pairs, math.log(2.0) / math.sqrt(2.0))
+    add(partition.prime_three_pairs, math.log(3.0) / math.sqrt(3.0))
+    add(partition.prime_four_pairs, math.log(2.0) / math.sqrt(4.0))
+    return ThirdWindowPrimeMatrix(
+        partition=partition,
+        interval_degrees=degrees,
+        offsets=tuple(offsets),
+        matrix=matrix,
     )
 
 

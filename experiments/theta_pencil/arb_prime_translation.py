@@ -12,6 +12,7 @@ from dataclasses import dataclass
 
 import numpy as np
 
+from experiments.theta_pencil.prime_power_arithmetic import prime_power_base
 from experiments.theta_pencil.support_window import (
     in_first_prime_window,
     prime_overlap_positive,
@@ -151,7 +152,8 @@ def build_arb_prime_matrix(
         product = arb_mat(endpoint) * arb_mat(
             [row[:maximum_degree] for row in rows]
         )
-        coefficient = -2 * prime_ball.log() / prime_ball.sqrt()
+        mangoldt = arb(prime_power_base(prime)).log()
+        coefficient = -2 * mangoldt / prime_ball.sqrt()
         midpoint = np.empty((low_dimension, maximum_degree), dtype=float)
         radius = np.empty_like(midpoint)
         for left in range(low_dimension):
@@ -272,7 +274,8 @@ def build_arb_prime_action(
             for degree in range(maximum_degree):
                 action[degree] += factor * row[degree]
 
-        coefficient = -2 * prime_ball.log() / prime_ball.sqrt()
+        mangoldt = arb(prime_power_base(prime)).log()
+        coefficient = -2 * mangoldt / prime_ball.sqrt()
         midpoint = np.zeros(maximum_degree, dtype=float)
         radius = np.zeros_like(midpoint)
         for degree in range(parity, maximum_degree, 2):

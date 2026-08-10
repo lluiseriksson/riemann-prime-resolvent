@@ -17,6 +17,7 @@ def _log(integer: int) -> Decimal:
 
 LOG_TWO = _log(2)
 LOG_THREE = _log(3)
+LOG_NINE_OVER_TWO = _log(9) - LOG_TWO
 
 
 def prime_overlap_positive(half_width: float, prime: int) -> bool:
@@ -39,6 +40,18 @@ def in_second_prime_window(half_width: float) -> bool:
 
     value = _decimal(half_width)
     return LOG_THREE / 2 < value < LOG_TWO
+
+
+def in_third_prime_partition_window(half_width: float) -> bool:
+    """Test the first stable 13-block window after prime power four enters.
+
+    The endpoint orbit for translations by ``log(2)/a``, ``log(3)/a`` and
+    ``log(4)/a`` has thirteen intervals precisely on the open window
+    ``log(2) < a < log(9/2)/2``.
+    """
+
+    value = _decimal(half_width)
+    return LOG_TWO < value < LOG_NINE_OVER_TWO / 2
 
 
 def at_most_prime_three_boundary(half_width: float) -> bool:

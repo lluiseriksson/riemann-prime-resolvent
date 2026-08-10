@@ -87,11 +87,17 @@ Domain monotonicity then gives the unconditional interval theorem
 \]
 
 This does not prove RH: Suzuki's criterion requires nonnegativity for every
-support.  A joint pointwise treatment of boundary potential and the active
-prime-two/prime-three graph removes the three artificial directions left by
-the old split estimate at \(a=0.675\).  The immediate gate is now structural:
-at \(a=\log2\), the prime-power-four translation enters and requires a new
-closed cut partition and a larger joint fiber graph.
+support.  The prime-power-four threshold has now been crossed for the
+high-degree complement only: at \(a=0.7\), a thirteen-block joint graph proves
+
+\[
+ D_{\ge16}\succeq0.6043415694704174I>0.
+\]
+
+The unconditional **full-operator** frontier remains \(a=0.675\).  The active
+gate is to assemble the thirteen-block low source and retain its directional
+infinite-tail Schur correction tightly enough to prove or falsify
+\(A_{0.7}>0\).
 
 ## Why this track is different
 
@@ -145,6 +151,8 @@ It does not authorize changing the success condition.
 - [Directional self-tail Gram](directional-self-tail.md)
 - [Joint pointwise two-prime complement floor](joint-two-prime-floor.md)
 - [Historical non-closure and resolution at support 0.675](support-0675-no-close.md)
+- [Separable prime-power chain floor](prime-power-chain-floor.md)
+- [Thirteen-block prime-power-four window](third-window-partition.md)
 - [Cut-adapted exact prime basis](cut-adapted-prime-basis.md)
 - [Support-extension audit](support-extension-audit.md)
 - [Falsifiers and abandonment conditions](falsifiers.md)

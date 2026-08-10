@@ -94,6 +94,25 @@ def test_prime_three_matrix_encloses_independent_gauss_values():
     assert np.max(result.radius) < 1e-40
 
 
+def test_prime_power_four_uses_von_mangoldt_not_log_four():
+    low = 6
+    maximum = 20
+    result = build_arb_prime_matrix(0.7, 4, low, maximum, precision=512)
+    shift = np.log(4.0) / 0.7
+    cut = 1.0 - shift
+    nodes, weights = leggauss(32)
+    x = (cut + 1.0) * nodes / 2.0 + (cut - 1.0) / 2.0
+    scaled = weights * (cut + 1.0) / 2.0
+    at_x = normalized_legendre_values(x, maximum)
+    at_shift = normalized_legendre_values(x + shift, maximum)
+    direct = -np.log(2.0) / np.sqrt(4.0) * (
+        (at_shift[:low] * scaled) @ at_x.T
+        + (at_x[:low] * scaled) @ at_shift.T
+    )
+    assert np.max(np.abs(result.midpoint - direct)) < 2e-13
+    assert np.max(result.radius) < 1e-40
+
+
 def test_active_prime_action_contains_sum_of_individual_actions():
     coefficients = np.zeros(8)
     coefficients[1::2] = np.linspace(0.1, 0.4, 4)

@@ -7,6 +7,8 @@ from dataclasses import dataclass
 
 import numpy as np
 
+from experiments.theta_pencil.prime_power_arithmetic import prime_power_base
+
 from experiments.theta_pencil.arb_prime_translation import _arb_radius_as_float
 from experiments.theta_pencil.support_window import (
     in_first_prime_window,
@@ -90,7 +92,9 @@ def certify_prime_operator_remainder_variation_for_prime(
             total += (arcsine_mass * square_integral).sqrt()
 
         cut_weight = (arb(1) - cut * cut).sqrt().sqrt()
-        prime_factor = arb(2) * prime_ball.log() / prime_ball.sqrt()
+        prime_factor = (
+            arb(2) * arb(prime_power_base(prime)).log() / prime_ball.sqrt()
+        )
         bound = prime_factor * (total + endpoint_square.sqrt() / cut_weight)
         midpoint = float(bound.mid())
         radius = _arb_radius_as_float(bound)

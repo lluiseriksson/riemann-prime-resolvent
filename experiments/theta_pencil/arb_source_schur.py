@@ -15,6 +15,7 @@ from experiments.theta_pencil.arb_prime_translation import (
     build_arb_prime_matrix,
 )
 from experiments.theta_pencil.arb_smooth_kernel import build_arb_smooth_matrix
+from experiments.theta_pencil.prime_power_arithmetic import prime_power_base
 
 
 @dataclass(frozen=True)
@@ -48,6 +49,7 @@ def certify_source_schur_box(
     prime_precision: int = 8192,
     active_primes: tuple[int, ...] = (2,),
     perturbation_loss: float | None = None,
+    maximum_smooth_power: int = 23,
 ) -> ArbSourceSchur:
     """Prove that the exact finite Schur source lies near ``target_matrix``.
 
@@ -81,7 +83,11 @@ def certify_source_schur_box(
         for prime in active_primes
     ]
     smooth = build_arb_smooth_matrix(
-        half_width, low_dimension, smooth_dimension, 23, precision
+        half_width,
+        low_dimension,
+        smooth_dimension,
+        maximum_smooth_power,
+        precision,
     )
     jets = build_arb_active_prime_jet_correction(
         half_width,
@@ -104,12 +110,18 @@ def certify_source_schur_box(
         if not scalar.upper() < 0:
             raise ArithmeticError("could not certify the scalar sign")
         prime_balls = [arb(prime) for prime in active_primes]
+        mangoldt_balls = [
+            arb(prime_power_base(prime)).log() for prime in active_primes
+        ]
         loss = (
             arb(str(perturbation_loss))
             if perturbation_loss is not None
             else -scalar
             + sum(
-                (arb(2) * prime.log() / prime.sqrt() for prime in prime_balls),
+                (
+                    arb(2) * mangoldt / prime.sqrt()
+                    for prime, mangoldt in zip(prime_balls, mangoldt_balls)
+                ),
                 arb(0),
             )
             + arb(6) * a

@@ -8,6 +8,8 @@ import numpy as np
 from numpy.polynomial.legendre import legder, leggauss, legval
 from scipy.special import digamma, gammaln, roots_jacobi
 
+from experiments.theta_pencil.prime_power_arithmetic import von_mangoldt
+
 from experiments.theta_pencil.semilocal_weil_matrix import EULER_GAMMA
 from experiments.theta_pencil.legendre_jump_tail import (
     bernstein_jump_tail_bound,
@@ -123,7 +125,7 @@ def prime_jet_cross_matrix_for_prime(
     cut = 1.0 - math.log(prime) / half_width
     powers = truncated_power_coefficients(cut, int(high[-1]) + 1, jet_count)
     endpoint = endpoint_jet_matrix(low, jet_count)
-    coefficient = -2.0 * math.log(prime) / math.sqrt(prime)
+    coefficient = -2.0 * von_mangoldt(prime) / math.sqrt(prime)
     return coefficient * endpoint @ powers[:, high]
 
 
@@ -292,7 +294,7 @@ def prime_jet_tail_weighted_norm_for_prime(
     cut = 1.0 - shift
     cut_weight = (1.0 - cut * cut) ** 0.25
     endpoint = endpoint_jet_matrix(low, jet_count)
-    prime_coefficient = math.log(prime) / math.sqrt(prime)
+    prime_coefficient = von_mangoldt(prime) / math.sqrt(prime)
     total = 0.0
     for jet in range(jet_count):
         if jet == 0:
@@ -420,7 +422,7 @@ def piecewise_prime_remainder_variation_bound_for_prime(
         :, derivative_order
     ] * math.factorial(derivative_order)
     cut_weight = (1.0 - cut * cut) ** 0.25
-    prime_coefficient = math.log(prime) / math.sqrt(prime)
+    prime_coefficient = von_mangoldt(prime) / math.sqrt(prime)
     return 2.0 * prime_coefficient * (
         integral_bound + float(np.linalg.norm(endpoint)) / cut_weight
     )

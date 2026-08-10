@@ -10,6 +10,7 @@ import numpy as np
 from experiments.theta_pencil.arb_trial_variation import (
     certify_active_prime_operator_remainder_variation,
 )
+from experiments.theta_pencil.prime_power_arithmetic import prime_power_base
 from experiments.theta_pencil.smooth_legendre_series import (
     smooth_kernel_series_remainder_bound,
 )
@@ -46,6 +47,8 @@ def certify_parity_tail_budget(
     precision: int = 768,
     jet_correction_norm_upper: float = 0.0103,
     active_primes: tuple[int, ...] = (2,),
+    perturbation_loss: float | None = None,
+    maximum_smooth_power: int = 23,
 ) -> ArbParityTailBudget:
     if parity not in (0, 1):
         raise ValueError("parity must be zero or one")
@@ -71,20 +74,32 @@ def certify_parity_tail_budget(
         if not scalar.upper() < 0:
             raise ArithmeticError("could not certify the scalar sign")
         prime_balls = [arb(prime) for prime in active_primes]
-        loss = -scalar + sum(
-            (arb(2) * prime.log() / prime.sqrt() for prime in prime_balls),
-            arb(0),
-        ) + arb(6) * a
+        mangoldt_balls = [
+            arb(prime_power_base(prime)).log() for prime in active_primes
+        ]
+        loss = (
+            arb(str(perturbation_loss))
+            if perturbation_loss is not None
+            else -scalar
+            + sum(
+                (
+                    arb(2) * mangoldt / prime.sqrt()
+                    for prime, mangoldt in zip(prime_balls, mangoldt_balls)
+                ),
+                arb(0),
+            )
+            + arb(6) * a
+        )
         shift = arb(str(spectral_shift))
 
         def denominator(index: int):
             return arb(index + 1).digamma() + arb.const_euler() - loss - shift
 
         jet_tail = arb(0)
-        for prime in prime_balls:
+        for prime, mangoldt in zip(prime_balls, mangoldt_balls):
             cut = arb(1) - prime.log() / a
             cut_weight = (arb(1) - cut * cut).sqrt().sqrt()
-            prime_coefficient = prime.log() / prime.sqrt()
+            prime_coefficient = mangoldt / prime.sqrt()
             for jet in range(jet_count):
                 endpoint_square = arb(0)
                 for degree_value in degrees:
@@ -161,7 +176,10 @@ def certify_parity_tail_budget(
 
         if low_dimension + 24 < smooth_dimension:
             smooth_remainder = math.nextafter(
-                smooth_kernel_series_remainder_bound(half_width, 23), math.inf
+                smooth_kernel_series_remainder_bound(
+                    half_width, maximum_smooth_power
+                ),
+                math.inf,
             )
             smooth = arb(str(smooth_remainder)) / denominator(
                 smooth_dimension
