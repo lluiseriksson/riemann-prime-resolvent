@@ -6,9 +6,22 @@ import pytest
 from experiments.theta_pencil.exterior_boundary_curvature import (
     active_exterior_prime_powers,
     exterior_curvature,
+    pnt_centered_prime_window,
     smooth_screw_second,
     smooth_screw_second_series,
 )
+
+
+def test_pnt_centering_is_the_exact_growing_smooth_counterterm():
+    coordinate = np.linspace(-0.4, 0.4, 4001)
+    values = coordinate**2 - np.trapezoid(coordinate**2, coordinate) / 0.8
+    exterior = 1.2
+    prime, main, remainder = pnt_centered_prime_window(
+        coordinate, values, exterior
+    )
+    assert remainder == pytest.approx(prime - main)
+    moment = np.trapezoid(np.exp(-coordinate / 2.0) * values, coordinate)
+    assert main == pytest.approx(np.exp(exterior / 2.0) * moment)
 
 
 def test_smooth_kernel_geometric_decomposition():

@@ -77,3 +77,44 @@ def exterior_curvature(
         sample = float(np.interp(sample_point, points, source))
         prime += von_mangoldt(integer) * sample / math.sqrt(integer)
     return smooth, prime, smooth + prime
+
+
+def pnt_centered_prime_window(
+    coordinate: np.ndarray,
+    values: np.ndarray,
+    exterior_point: float,
+) -> tuple[float, float, float]:
+    """Return the prime window, its PNT main term, and their difference.
+
+    Writing ``psi(X)=X+R(X)``, the Stieltjes integral for the moving prime
+    window has main term
+
+    ``exp(x/2) * integral exp(-y/2) v(y) dy``.
+
+    This is exactly the growing smooth term with the opposite sign in the
+    exterior-curvature equation. The final component is therefore the
+    arithmetic remainder that survives this cancellation.
+    """
+
+    points = np.asarray(coordinate, dtype=float)
+    source = np.asarray(values, dtype=float)
+    if points.ndim != 1 or source.shape != points.shape or len(points) < 3:
+        raise ValueError(
+            "coordinate and values must be matching one-dimensional grids"
+        )
+    steps = np.diff(points)
+    if not np.allclose(steps, steps[0], atol=1.0e-12, rtol=1.0e-12):
+        raise ValueError("coordinate grid must be equally spaced")
+    half_width = max(abs(float(points[0])), abs(float(points[-1])))
+    if exterior_point <= half_width:
+        raise ValueError("exterior_point must exceed the grid half-width")
+
+    prime = 0.0
+    for integer in active_exterior_prime_powers(half_width, exterior_point):
+        sample_point = exterior_point - math.log(integer)
+        sample = float(np.interp(sample_point, points, source))
+        prime += von_mangoldt(integer) * sample / math.sqrt(integer)
+    main = math.exp(exterior_point / 2.0) * float(
+        np.trapezoid(np.exp(-points / 2.0) * source, points)
+    )
+    return prime, main, prime - main

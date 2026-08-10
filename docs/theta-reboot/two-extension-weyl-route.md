@@ -591,7 +591,25 @@ and hence matching the first derivative is equivalent to
 \]
 
 The value in (XD)--(KB) is evaluated wholly in the absolutely convergent
-half-plane at $s=3/2$; no zero data or RH assumption enters it.
+half-plane at $s=3/2$; no zero data or RH assumption enters it. A 200-bit
+Arb power-series evaluation certifies
+
+\[
+ F_\Xi'(i)
+ \in[-0.99680195203240090352889670478775783257375005566523721961
+      \mathbin{\pm}7.35\cdot10^{-57}],
+\]
+
+and
+
+\[
+ \kappa_\Xi
+ \in[0.00160158495655717571706007323750804007113993279814736277
+      \mathbin{\pm}7.04\cdot10^{-57}].
+\]
+
+The executable certificate is
+<code>arb_riemann_weyl_basepoint.py</code>.
 
 There is also an existence statement. Suppose the ground state at support
 $a$ is simple and even. As $\lambda\uparrow\mu_0(a)$, its pole occurs only
@@ -1013,6 +1031,78 @@ that cancels in (FC). Equation (EC) is an exact reformulation of the missing
 boundary theorem; it does not establish the required convergence or a sign.
 The module \`exterior_boundary_curvature.py\` checks the smooth geometric
 series and evaluates the moving-window term on sampled sources.
+
+### Exact PNT centering of the exterior window
+
+The apparently dominant exponential in (EC) cancels exactly against the
+prime-number-theorem main term. Put
+
+\[
+ \psi(X)=\sum_{n\le X}\Lambda(n),\qquad R(X)=\psi(X)-X,
+\]
+
+and write the finite prime-power window as a Stieltjes integral:
+
+\[
+ P_v(x)=\int_{e^{x-a}}^{e^{x+a}}
+ t^{-1/2}v(x-\log t)\,d\psi(t).
+\]
+
+Splitting \(d\psi=dt+dR\) gives the exact identity
+
+\[
+ P_v(x)=e^{x/2}\int_{-a}^{a}e^{-y/2}v(y)\,dy
+          +\mathcal R_v(x),                              \tag{PC}
+\]
+
+where
+
+\[
+ \mathcal R_v(x)=\int_{e^{x-a}}^{e^{x+a}}
+ t^{-1/2}v(x-\log t)\,dR(t).
+\]
+
+Consequently (EC) reduces to
+
+\[
+ h''(x)=\mathcal R_v(x)
+ -e^{-x/2}M_+
+ +\sum_{j\ge0}e^{-(2j+1/2)x}M_j,                         \tag{ECP}
+\]
+
+with \(M_+=\int_{-a}^{a}e^{y/2}v(y)\,dy\) and
+\(M_j=\int_{-a}^{a}e^{(2j+1/2)y}v(y)\,dy\). Thus no
+uncancelled \(e^{x/2}\) contribution remains.
+
+For \(v\in H^1[-a,a]\), Stieltjes integration by parts makes the remaining
+obligation completely explicit:
+
+\[
+\begin{aligned}
+ \mathcal R_v(x)={}&
+ e^{-(x+a)/2}v(-a)R(e^{x+a})
+ -e^{-(x-a)/2}v(a)R(e^{x-a})\\
+ &+\int_{-a}^{a}
+ \frac{R(e^{x-y})}{e^{(x-y)/2}}
+ \left(v'(y)+\frac12v(y)\right)dy.                       \tag{PR}
+\end{aligned}
+\]
+
+The two endpoint terms are essential: the relevant deficiency vectors are
+not known to satisfy Dirichlet boundary conditions. Formula (PR) identifies
+the precise analytic input still missing from the Weyl route: signed control
+of the normalized PNT remainder against the resolvent source, together with
+its endpoint traces.
+
+This also closes the naive absolute-value route. Known unconditional PNT
+remainders do not make \(R(X)/\sqrt X\) decay; even RH gives only the classical
+von-Koch scale \(R(X)=O(\!\sqrt X\log^2 X)\). Taking absolute values in (PR)
+therefore asks for essentially RH-strength arithmetic control and cannot be
+used as an unconditional proof step. Any viable continuation must exploit
+signed cancellation in this specific pairing or a structural identity for
+the endpoint traces. The helper \`pnt_centered_prime_window\` checks the exact
+main-term subtraction numerically without treating it as evidence for that
+missing estimate.
 
 ### Mellin closure and a one-open-set reduction
 
