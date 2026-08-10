@@ -177,3 +177,42 @@ At $a=0.551$, a 512-bit calculation gives
 Thus both proposed spectral shifts, $10^{-3}$ and $5\,10^{-2}$, have a
 strict common denominator.  What remains is not a missing floor but the
 matrix-valued Schur correction from the 16-mode source to the complement.
+
+## Signed singular Gram
+
+The worst adjacent singular tail is nearly rank one.  Replacing it by a
+Frobenius norm destroys its direction.  The Arb implementation now streams
+the signed rows
+
+\[
+ \frac{r_n}{n(n+1)},\qquad 128\le n<4096,
+\]
+
+and accumulates their outer products before any float export.  For a target
+block with two adjacent sources, both source rows are concatenated first;
+the reflection factor $(-1)^{n+k}$ is retained.  Hence the cross terms
+between the left and right source blocks survive.  The moment tail above
+4096 is added only afterwards as a scalar PSD remainder.
+
+At $a=0.551$ with 16 modes on every local block, the rigorous remainder norm
+is below `3.4057527351144824e-5`.  The square roots of the largest eigenvalues
+of the assembled singular Gram are `0.2221514069` (even) and `0.2220763634`
+(odd).  The large norm is strongly transverse to the low spectral vectors:
+
+| sector | finite source eigenvalue | singular Gram on its vector |
+|---|---:|---:|
+| even ground | $4.9774330\,10^{-8}$ | $1.1599893\,10^{-9}$ |
+| even second | $1.3584850\,10^{-3}$ | $1.1616496\,10^{-9}$ |
+| odd ground | $1.3457300\,10^{-5}$ | $1.1600628\,10^{-9}$ |
+| odd second | $7.1910518\,10^{-2}$ | $1.4780089\,10^{-9}$ |
+
+Subtracting only this Gram with denominator
+`0.6126659781618331-shift` leaves the second even value at
+`0.00135848314`, still above the registered floor `0.001`.
+
+These figures are a signed-tail diagnostic, not yet an inertia certificate.
+The finite low--high band, endpoint flux and analytic remainder must be
+assembled in the same Arb Schur matrix.  A preliminary float export before
+the singular cancellations produced spurious values of order $10^{38}$ and
+was rejected; all registered Gram data are accumulated in Arb and rounded
+only at the final matrix boundary.
