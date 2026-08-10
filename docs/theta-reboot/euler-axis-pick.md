@@ -194,6 +194,72 @@ sign proof is the rigorous zero verification of Platt and Trudgian,
 [arXiv:2004.09765](https://arxiv.org/abs/2004.09765); its enormous height is
 used only through the weak consequence \(|\gamma|>1\).
 
-The module `euler_axis_pick.py` implements (EP)--(E5) as exact floating-point
+## Hyperbolic form of the order-three gate
+
+Normalize \(H^{(N)}\) to unit diagonal and introduce
+
+\[
+ t_j=\frac12\log\eta_j,\qquad v_j=\frac12\log L(\eta_j).
+\]
+
+An exact cancellation gives the correlation kernel
+
+\[
+ \boxed{
+ R_{jk}=\frac{H_{jk}}{\sqrt{H_{jj}H_{kk}}}
+ =\frac{\cosh(v_j-v_k)}{\cosh(t_j-t_k)}.}              \tag{E12}
+\]
+
+The order-two theorem says precisely that \(t\mapsto v(t)\) is an increasing
+contraction. In differential form,
+
+\[
+ 0<p(t):=v'(t)=\frac{\eta L'(\eta)}{L(\eta)}<1.         \tag{E13}
+\]
+
+This metric contraction is not sufficient at order three. For example, the
+piecewise-linear increasing contraction through
+
+\[
+ (t_1,t_2,t_3)=(1.37291657,1.70725522,2.21284712),
+\]
+
+\[
+ (v_1,v_2,v_3)=(0.80805853,1.07720414,1.10966327)
+\]
+
+has \(\det R\approx-0.0033452\). Thus no argument using only the
+one-Lipschitz property can close the next level.
+
+There is, however, a sharp local obstruction. Put three symmetric nodes at
+\(t-h,t,t+h\), write \(p=v'(t)\) and \(q=v''(t)\), and expand (E12). Direct
+Taylor algebra gives
+
+\[
+ \boxed{
+ \det R=\left(4(1-p^2)^2-q^2\right)h^6+O(h^8).}        \tag{E14}
+\]
+
+Consequently order-three positivity requires
+
+\[
+ \boxed{|v''(t)|\le2(1-v'(t)^2),}                      \tag{E15}
+\]
+
+or, equivalently, \(\operatorname{artanh}(v')\) must be \(2\)-Lipschitz.
+In terms of the Euler-axis log derivative,
+
+\[
+ v'(t)=\frac{\eta L'}L,
+\qquad
+ v''(t)=2\eta\frac d{d\eta}\left(\frac{\eta L'}L\right). \tag{E16}
+\]
+
+Proving (E15) for the Riemann target would be a genuine order-three local
+theorem, but still not global \(3\times3\) positivity. The next audit must
+therefore separate the local curvature gate from the remaining three-point
+geometry.
+
+The module `euler_axis_pick.py` implements (EP)--(E16) as exact floating-point
 algebra for falsification and cross-checking. Rigorous claims require interval
 evaluation of (E1) and all relevant principal minors.

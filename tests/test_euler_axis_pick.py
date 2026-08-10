@@ -5,6 +5,8 @@ from experiments.theta_pencil.euler_axis_pick import (
     centered_zero_orbit_gate_margin,
     euler_axis_log_derivative_kernel,
     euler_axis_pick_matrix,
+    local_three_point_curvature_gate,
+    normalized_log_derivative_correlation,
     reciprocal_log_derivative_congruence_residual,
     two_point_log_derivative_gate,
     two_point_pick_determinant,
@@ -51,3 +53,31 @@ def test_every_admissible_off_line_zero_orbit_has_positive_gate_margin():
         assert centered_zero_orbit_gate_margin(alpha, gamma, eta) > 0.0
     with pytest.raises(ValueError):
         centered_zero_orbit_gate_margin(0.5, 14.0, 1.0)
+
+
+def test_hyperbolic_correlation_is_the_diagonal_normalization():
+    heights = (1.0, 2.0, 3.0)
+    log_derivatives = (0.05, 0.09, 0.13)
+    kernel = euler_axis_log_derivative_kernel(heights, log_derivatives)
+    diagonal = np.sqrt(np.diag(kernel))
+    direct = kernel / (diagonal[:, None] * diagonal[None, :])
+    assert np.allclose(
+        normalized_log_derivative_correlation(heights, log_derivatives),
+        direct,
+    )
+
+
+def test_local_three_point_gate_is_the_h6_determinant_coefficient():
+    slope = 0.5
+    curvature = 0.2
+    target = local_three_point_curvature_gate(slope, curvature)
+    assert target == pytest.approx(2.21)
+    for step in (0.01, 0.005):
+        points = np.array((-step, 0.0, step))
+        values = slope * points + 0.5 * curvature * points**2
+        correlation = np.cosh(values[:, None] - values[None, :]) / np.cosh(
+            points[:, None] - points[None, :]
+        )
+        assert np.linalg.det(correlation) / step**6 == pytest.approx(
+            target, rel=5.0e-4
+        )

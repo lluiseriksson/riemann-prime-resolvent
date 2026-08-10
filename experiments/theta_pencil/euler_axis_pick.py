@@ -156,3 +156,44 @@ def centered_zero_orbit_gate_margin(
     real_part = eta * eta - alpha * alpha + gamma * gamma
     imaginary_part = 2.0 * alpha * gamma
     return real_part * real_part - imaginary_part * imaginary_part
+
+
+def normalized_log_derivative_correlation(
+    imaginary_heights: tuple[float, ...],
+    completed_log_derivatives: tuple[float, ...],
+) -> np.ndarray:
+    """Normalize the log-derivative Pick kernel to unit diagonal.
+
+    With ``t_j=log(eta_j)/2`` and ``v_j=log(L_j)/2``, the result is exactly
+
+    ``R_jk=cosh(v_j-v_k)/cosh(t_j-t_k)``.
+    """
+
+    heights = np.asarray(imaginary_heights, dtype=float)
+    values = np.asarray(completed_log_derivatives, dtype=float)
+    if heights.shape != values.shape or heights.ndim != 1 or len(heights) == 0:
+        raise ValueError("heights and log derivatives must be nonempty vectors")
+    if np.any(heights <= 0.0) or np.any(values <= 0.0):
+        raise ValueError("heights and log derivatives must be positive")
+    log_heights = 0.5 * np.log(heights)
+    log_values = 0.5 * np.log(values)
+    return np.cosh(log_values[:, None] - log_values[None, :]) / np.cosh(
+        log_heights[:, None] - log_heights[None, :]
+    )
+
+
+def local_three_point_curvature_gate(
+    logarithmic_slope: float,
+    logarithmic_curvature: float,
+) -> float:
+    """Return the leading confluent three-point Pick determinant coefficient.
+
+    If ``v=v(t)``, ``p=v'(t)``, and ``q=v''(t)``, then for the normalized
+    correlation matrix at ``t-h,t,t+h`` one has
+
+    ``det R = (4*(1-p^2)^2-q^2)*h^6 + O(h^8)``.
+    """
+
+    slope = float(logarithmic_slope)
+    curvature = float(logarithmic_curvature)
+    return 4.0 * (1.0 - slope * slope) ** 2 - curvature * curvature
