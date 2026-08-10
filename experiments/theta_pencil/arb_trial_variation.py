@@ -130,8 +130,9 @@ def _legendre_series_value(coefficients, point, arb):
     return value
 
 
-def certify_prime_remainder_variation(
+def certify_prime_remainder_variation_for_prime(
     half_width: float,
+    prime: int,
     coefficients: np.ndarray,
     partitions: int = 32,
     precision: int = 1024,
@@ -143,10 +144,10 @@ def certify_prime_remainder_variation(
     order integrates that polynomial exactly.
     """
     vector = np.asarray(coefficients, dtype=float)
-    if not math.log(2.0) / 2.0 < half_width <= math.log(3.0) / 2.0:
-        raise ValueError(
-            "the exact Arb implementation requires log(2)/2 < a <= log(3)/2"
-        )
+    if prime < 2:
+        raise ValueError("prime must be at least two")
+    if not math.log(float(prime)) / 2.0 < half_width:
+        raise ValueError("the prime translation must have positive overlap")
     if len(vector) < 3 or partitions < 1:
         raise ValueError("need at least three coefficients and one partition")
     if np.any(vector[::2] != 0.0) and np.any(vector[1::2] != 0.0):
@@ -169,7 +170,8 @@ def certify_prime_remainder_variation(
         nodes_weights = [arb.legendre_p_root(order, k, weight=True) for k in range(order)]
 
         a = arb(str(half_width))
-        translation = arb.const_log2() / a
+        prime_ball = arb(prime)
+        translation = prime_ball.log() / a
         cut = arb(1) - translation
         length = cut + 1
         total = arb(0)
@@ -190,13 +192,59 @@ def certify_prime_remainder_variation(
         for degree in range(1, len(standard)):
             endpoint_derivative += standard[degree] * degree * (degree + 1) / 2
         cut_weight = (arb(1) - cut * cut).sqrt().sqrt()
-        prime_factor = arb(2) * arb.const_log2() / arb(2).sqrt()
+        prime_factor = arb(2) * prime_ball.log() / prime_ball.sqrt()
         bound = prime_factor * (total + abs(endpoint_derivative) / cut_weight)
         midpoint = float(bound.mid())
         radius = _arb_radius_as_float(bound)
         upper = math.nextafter(float(bound.upper()), math.inf)
     finally:
         ctx.prec = previous_precision
+    return ArbVariationBound(
+        midpoint=midpoint,
+        radius=radius,
+        upper=upper,
+        partitions=partitions,
+        precision=precision,
+    )
+
+
+def certify_prime_remainder_variation(
+    half_width: float,
+    coefficients: np.ndarray,
+    partitions: int = 32,
+    precision: int = 1024,
+) -> ArbVariationBound:
+    """Backward-compatible prime-two variation certificate."""
+
+    if not math.log(2.0) / 2.0 < half_width <= math.log(3.0) / 2.0:
+        raise ValueError(
+            "the exact Arb implementation requires log(2)/2 < a <= log(3)/2"
+        )
+    return certify_prime_remainder_variation_for_prime(
+        half_width, 2, coefficients, partitions, precision
+    )
+
+
+def certify_active_prime_remainder_variation(
+    half_width: float,
+    coefficients: np.ndarray,
+    primes: tuple[int, ...],
+    partitions: int = 32,
+    precision: int = 1024,
+) -> ArbVariationBound:
+    """Add the certified variation bounds for all active prime jumps."""
+
+    if not primes:
+        raise ValueError("at least one active prime is required")
+    bounds = [
+        certify_prime_remainder_variation_for_prime(
+            half_width, prime, coefficients, partitions, precision
+        )
+        for prime in primes
+    ]
+    midpoint = math.fsum(bound.midpoint for bound in bounds)
+    radius = math.fsum(bound.radius for bound in bounds) + math.ulp(midpoint)
+    upper = math.nextafter(math.fsum(bound.upper for bound in bounds), math.inf)
     return ArbVariationBound(
         midpoint=midpoint,
         radius=radius,

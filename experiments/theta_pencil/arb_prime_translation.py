@@ -161,13 +161,14 @@ def build_arb_prime_two_matrix(
     return ArbPrimeMatrix(midpoint=midpoint, radius=radius, precision=precision)
 
 
-def build_arb_prime_two_action(
+def build_arb_prime_action(
     half_width: float,
+    prime: int,
     coefficients: np.ndarray,
     maximum_degree: int,
     precision: int = 8192,
 ) -> ArbPrimeAction:
-    """Enclose the prime-2 translation applied to one even trial vector.
+    """Enclose one prime translation applied to a parity-pure trial vector.
 
     Collapsing the endpoint jets before generating the truncated powers keeps
     memory linear in ``maximum_degree``. Coefficients are interpreted as the
@@ -175,10 +176,10 @@ def build_arb_prime_two_action(
     """
     vector = np.asarray(coefficients, dtype=float)
     dimension = len(vector)
-    if not math.log(2.0) / 2.0 < half_width <= math.log(3.0) / 2.0:
-        raise ValueError(
-            "the prime-2-only formula requires log(2)/2 < a <= log(3)/2"
-        )
+    if prime < 2:
+        raise ValueError("prime must be at least two")
+    if not math.log(float(prime)) / 2.0 < half_width:
+        raise ValueError("the prime translation must have positive overlap")
     if dimension < 1 or maximum_degree < dimension:
         raise ValueError("require a nonempty vector and maximum_degree >= dimension")
     even_active = np.any(vector[::2] != 0.0)
@@ -195,8 +196,9 @@ def build_arb_prime_two_action(
     try:
         ctx.prec = precision
         two = arb(2)
+        prime_ball = arb(prime)
         a = arb(str(half_width))
-        cut = 1 - two.log() / a
+        cut = 1 - prime_ball.log() / a
         padded = maximum_degree + dimension
         legendre = _restarted_arb_legendre_values(cut, padded + 2, arb)
 
@@ -246,7 +248,7 @@ def build_arb_prime_two_action(
             for degree in range(maximum_degree):
                 action[degree] += factor * row[degree]
 
-        coefficient = -2 * two.log() / two.sqrt()
+        coefficient = -2 * prime_ball.log() / prime_ball.sqrt()
         midpoint = np.zeros(maximum_degree, dtype=float)
         radius = np.zeros_like(midpoint)
         for degree in range(parity, maximum_degree, 2):
@@ -264,4 +266,50 @@ def build_arb_prime_two_action(
             radius[degree] = exported_radius
     finally:
         ctx.prec = previous_precision
+    return ArbPrimeAction(midpoint=midpoint, radius=radius, precision=precision)
+
+
+def build_arb_prime_two_action(
+    half_width: float,
+    coefficients: np.ndarray,
+    maximum_degree: int,
+    precision: int = 8192,
+) -> ArbPrimeAction:
+    """Backward-compatible wrapper for the prime-two action."""
+
+    if not math.log(2.0) / 2.0 < half_width <= math.log(3.0) / 2.0:
+        raise ValueError(
+            "the prime-2-only formula requires log(2)/2 < a <= log(3)/2"
+        )
+    return build_arb_prime_action(
+        half_width, 2, coefficients, maximum_degree, precision
+    )
+
+
+def build_arb_active_prime_action(
+    half_width: float,
+    coefficients: np.ndarray,
+    maximum_degree: int,
+    primes: tuple[int, ...],
+    precision: int = 8192,
+) -> ArbPrimeAction:
+    """Sum certified actions for the supplied active primes."""
+
+    if not primes:
+        raise ValueError("at least one active prime is required")
+    actions = [
+        build_arb_prime_action(
+            half_width, prime, coefficients, maximum_degree, precision
+        )
+        for prime in primes
+    ]
+    midpoint = np.sum([action.midpoint for action in actions], axis=0)
+    radius = np.sum([action.radius for action in actions], axis=0)
+    # The floating additions incur one final rounding per component.
+    radius += np.array(
+        [
+            math.ulp(float(value)) if value != 0.0 else math.ulp(0.0)
+            for value in midpoint
+        ]
+    )
     return ArbPrimeAction(midpoint=midpoint, radius=radius, precision=precision)

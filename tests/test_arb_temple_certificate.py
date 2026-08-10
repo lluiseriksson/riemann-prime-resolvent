@@ -49,3 +49,19 @@ def test_small_arb_temple_pipeline_is_finite():
     # This deliberately small regression case is not expected to certify the
     # final positive Temple lower bound.
     assert result.temple_lower < result.rayleigh_lower
+
+
+def test_second_window_pipeline_includes_two_active_primes():
+    result = certify_temple_trial(
+        half_width=0.62,
+        dimension=12,
+        residual_end=64,
+        second_floor=1.0,
+        variation_partitions=4,
+        precision=256,
+        prime_precision=1536,
+        active_primes=(2, 3),
+    )
+    assert result.rayleigh_lower > 0.0
+    assert result.variation_upper > 0.0
+    assert result.total_residual_upper > 0.0

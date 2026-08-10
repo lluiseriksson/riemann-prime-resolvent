@@ -1,8 +1,10 @@
 import numpy as np
 
 from experiments.theta_pencil.arb_trial_variation import (
+    certify_active_prime_remainder_variation,
     certify_prime_operator_remainder_variation,
     certify_prime_remainder_variation,
+    certify_prime_remainder_variation_for_prime,
 )
 from experiments.theta_pencil.prime_jet_tail import (
     piecewise_prime_remainder_variation_bound,
@@ -36,3 +38,30 @@ def test_operator_variation_is_a_finite_positive_bound():
     )
     assert certified.upper > 0.0
     assert certified.upper < 2.0 * direct
+
+
+def test_generic_prime_two_variation_matches_legacy_wrapper():
+    coefficients = np.zeros(12)
+    coefficients[::2] = np.linspace(0.1, 0.6, 6)
+    legacy = certify_prime_remainder_variation(
+        0.4, coefficients, partitions=8, precision=384
+    )
+    generic = certify_prime_remainder_variation_for_prime(
+        0.4, 2, coefficients, partitions=8, precision=384
+    )
+    assert generic == legacy
+
+
+def test_active_variation_dominates_each_prime_and_their_sum():
+    coefficients = np.zeros(12)
+    coefficients[1::2] = np.linspace(0.1, 0.6, 6)
+    individual = [
+        certify_prime_remainder_variation_for_prime(
+            0.62, prime, coefficients, partitions=8, precision=384
+        )
+        for prime in (2, 3)
+    ]
+    active = certify_active_prime_remainder_variation(
+        0.62, coefficients, (2, 3), partitions=8, precision=384
+    )
+    assert active.upper >= sum(bound.upper for bound in individual)

@@ -10,11 +10,11 @@ import numpy as np
 from experiments.theta_pencil.arb_prime_translation import (
     ArbPrimeAction,
     _arb_radius_as_float,
-    build_arb_prime_two_action,
+    build_arb_active_prime_action,
 )
 from experiments.theta_pencil.arb_smooth_kernel import build_arb_smooth_matrix
 from experiments.theta_pencil.arb_trial_variation import (
-    certify_prime_remainder_variation,
+    certify_active_prime_remainder_variation,
 )
 from experiments.theta_pencil.temple_trial_budget import run_temple_trial_audit
 
@@ -39,6 +39,7 @@ class ArbTempleCertificate:
     second_floor: float
     temple_lower: float
     variation_upper: float
+    endpoint_constraints: int
     prime_precision: int
     precision: int
 
@@ -88,10 +89,16 @@ def certify_temple_trial(
     precision: int = 1024,
     prime_precision: int = 10240,
     prime_action: ArbPrimeAction | None = None,
+    active_primes: tuple[int, ...] = (2,),
+    endpoint_constraints: int = 0,
 ) -> ArbTempleCertificate:
     """Certify positivity of the lowest point assuming the supplied gap floor."""
     if trial_parity not in (0, 1):
         raise ValueError("trial_parity must be zero or one")
+    if not active_primes:
+        raise ValueError("at least one active prime is required")
+    if any(math.log(float(prime)) >= 2 * half_width for prime in active_primes):
+        raise ValueError("every active prime must have positive translation overlap")
     if dimension < 4 or residual_end <= dimension:
         raise ValueError("require 4 <= dimension < residual_end")
     minimum_prime_precision = _minimum_prime_precision(dimension, residual_end)
@@ -118,12 +125,17 @@ def certify_temple_trial(
         residual_end=trial_build_end,
         second_floor=second_floor,
         trial_parity=trial_parity,
+        endpoint_constraints=endpoint_constraints,
     )
     coefficients = floating.coefficients.copy()
     coefficients[1 - trial_parity :: 2] = 0.0
     if prime_action is None:
-        prime = build_arb_prime_two_action(
-            half_width, coefficients, residual_end, prime_precision
+        prime = build_arb_active_prime_action(
+            half_width,
+            coefficients,
+            residual_end,
+            active_primes,
+            prime_precision,
         )
     else:
         prime = prime_action
@@ -144,8 +156,12 @@ def certify_temple_trial(
     smooth = build_arb_smooth_matrix(
         half_width, smooth_extent, smooth_extent, smooth_power, precision
     )
-    variation = certify_prime_remainder_variation(
-        half_width, coefficients, variation_partitions, precision
+    variation = certify_active_prime_remainder_variation(
+        half_width,
+        coefficients,
+        active_primes,
+        variation_partitions,
+        precision,
     )
 
     previous_precision = ctx.prec
@@ -245,13 +261,21 @@ def certify_temple_trial(
             ),
             arb(0),
         )
-        cut = arb(1) - arb.const_log2() / a
-        cut_weight = (arb(1) - cut * cut).sqrt().sqrt()
-        jump_total = arb(2) * arb.const_log2() / arb(2).sqrt() * abs(endpoint)
         jump_constant = (arb(8) / (3 * arb.pi())).sqrt()
-        jump_tail = jump_constant * jump_total / (
-            cut_weight * arb(residual_end - 1).sqrt()
-        )
+        jump_tail = arb(0)
+        for active_prime in active_primes:
+            prime_ball = arb(active_prime)
+            cut = arb(1) - prime_ball.log() / a
+            cut_weight = (arb(1) - cut * cut).sqrt().sqrt()
+            jump_total = (
+                arb(2)
+                * prime_ball.log()
+                / prime_ball.sqrt()
+                * abs(endpoint)
+            )
+            jump_tail += jump_constant * jump_total / (
+                cut_weight * arb(residual_end - 1).sqrt()
+            )
 
         variation_ball = arb(str(variation.upper))
         prime_remainder_tail = (
@@ -359,6 +383,7 @@ def certify_temple_trial(
         second_floor=second_floor,
         temple_lower=temple_lower,
         variation_upper=variation.upper,
+        endpoint_constraints=endpoint_constraints,
         prime_precision=prime_precision,
         precision=precision,
     )

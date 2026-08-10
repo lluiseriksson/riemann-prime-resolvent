@@ -4,6 +4,8 @@ from numpy.polynomial.legendre import leggauss
 
 from experiments.theta_pencil.arb_prime_translation import (
     _restarted_arb_legendre_values,
+    build_arb_active_prime_action,
+    build_arb_prime_action,
     build_arb_prime_two_action,
     build_arb_prime_two_matrix,
 )
@@ -49,6 +51,41 @@ def test_streamed_odd_action_matches_matrix_product_at_second_width():
     expected = coefficients @ matrix.midpoint
     assert np.max(action.radius) < 1.0e-100
     assert np.max(np.abs(action.midpoint - expected)) < 1.0e-13
+
+
+def test_streamed_prime_three_action_matches_independent_gauss_quadrature():
+    coefficients = np.zeros(8)
+    coefficients[::2] = np.linspace(0.1, 0.4, 4)
+    maximum = 32
+    action = build_arb_prime_action(0.62, 3, coefficients, maximum, 1024)
+    shift = np.log(3.0) / 0.62
+    cut = 1.0 - shift
+    nodes, weights = leggauss(40)
+    x = (cut + 1.0) * nodes / 2.0 + (cut - 1.0) / 2.0
+    scaled = weights * (cut + 1.0) / 2.0
+    at_x = normalized_legendre_values(x, maximum)
+    at_shift = normalized_legendre_values(x + shift, maximum)
+    matrix = -np.log(3.0) / np.sqrt(3.0) * (
+        (at_shift[: len(coefficients)] * scaled) @ at_x.T
+        + (at_x[: len(coefficients)] * scaled) @ at_shift.T
+    )
+    expected = coefficients @ matrix
+    assert np.max(action.radius) < 1.0e-100
+    assert np.max(np.abs(action.midpoint - expected)) < 1.0e-13
+
+
+def test_active_prime_action_contains_sum_of_individual_actions():
+    coefficients = np.zeros(8)
+    coefficients[1::2] = np.linspace(0.1, 0.4, 4)
+    individual = [
+        build_arb_prime_action(0.62, prime, coefficients, 32, 1024)
+        for prime in (2, 3)
+    ]
+    combined = build_arb_active_prime_action(
+        0.62, coefficients, 32, (2, 3), 1024
+    )
+    expected = individual[0].midpoint + individual[1].midpoint
+    assert np.all(np.abs(combined.midpoint - expected) <= combined.radius)
 
 
 @pytest.mark.parametrize("half_width", [0.3, np.log(2.0) / 2.0, 0.56])

@@ -8,7 +8,7 @@ from dataclasses import dataclass, field
 
 import numpy as np
 from numpy.polynomial.legendre import legder, leggauss, legval
-from scipy.linalg import eigh
+from scipy.linalg import eigh, null_space
 
 from experiments.theta_pencil.legendre_feshbach import (
     build_legendre_weil_components,
@@ -24,6 +24,7 @@ from experiments.theta_pencil.smooth_legendre_series import (
     smooth_kernel_series_matrix,
     smooth_kernel_series_remainder_bound,
 )
+from experiments.theta_pencil.screw_weil_operator import von_mangoldt
 
 
 @dataclass(frozen=True)
@@ -44,6 +45,7 @@ class TempleTrialAudit:
     temple_lower: float
     endpoint_value: float
     prime_remainder_variation: float
+    endpoint_constraints: int
     coefficients: np.ndarray = field(repr=False)
 
 
@@ -75,13 +77,16 @@ def _prime_coefficients_for_trial(
     half_width: float,
     coefficients: np.ndarray,
     maximum_degree: int,
+    prime_power: int = 2,
 ) -> np.ndarray:
     dimension = len(coefficients)
-    shift = math.log(2.0) / half_width
+    weight = von_mangoldt(prime_power) / math.sqrt(prime_power)
+    if weight == 0.0:
+        raise ValueError("prime_power must be a prime power")
+    shift = math.log(prime_power) / half_width
     cut = 1.0 - shift
     order = (maximum_degree + dimension + 2) // 2 + 2
     nodes, weights = leggauss(order)
-    prime_coefficient = math.log(2.0) / math.sqrt(2.0)
 
     def one_interval(left: float, right: float, source_shift: float) -> np.ndarray:
         x = (right - left) * nodes / 2.0 + (right + left) / 2.0
@@ -93,7 +98,7 @@ def _prime_coefficients_for_trial(
             x, scaled_weights * trial, maximum_degree
         )
 
-    return -prime_coefficient * (
+    return -weight * (
         one_interval(-1.0, cut, shift)
         + one_interval(-cut, 1.0, -shift)
     )
@@ -120,7 +125,10 @@ def _potential_coefficients_for_trial(
 
 
 def _prime_remainder_variation(
-    half_width: float, coefficients: np.ndarray, quadrature_order: int = 3000
+    half_width: float,
+    coefficients: np.ndarray,
+    quadrature_order: int = 3000,
+    prime_power: int = 2,
 ) -> float:
     """Weighted variation after removing the two jump steps."""
     polynomial = coefficients * np.sqrt(
@@ -128,7 +136,10 @@ def _prime_remainder_variation(
     )
     first = legder(polynomial)
     second = legder(first)
-    shift = math.log(2.0) / half_width
+    weight = von_mangoldt(prime_power) / math.sqrt(prime_power)
+    if weight == 0.0:
+        raise ValueError("prime_power must be a prime power")
+    shift = math.log(prime_power) / half_width
     cut = 1.0 - shift
     nodes, weights = leggauss(quadrature_order)
     x = (cut + 1.0) * nodes / 2.0 + (cut - 1.0) / 2.0
@@ -139,8 +150,7 @@ def _prime_remainder_variation(
             np.abs(legval(x + shift, second)) / (1.0 - x * x) ** 0.25,
         )
     )
-    prime_coefficient = math.log(2.0) / math.sqrt(2.0)
-    return 2.0 * prime_coefficient * (
+    return 2.0 * weight * (
         integral
         + abs(float(legval(1.0, first))) / (1.0 - cut * cut) ** 0.25
     )
@@ -152,9 +162,13 @@ def run_temple_trial_audit(
     residual_end: int = 8192,
     second_floor: float = 0.005,
     trial_parity: int = 0,
+    endpoint_constraints: int = 0,
 ) -> TempleTrialAudit:
     if trial_parity not in (0, 1):
         raise ValueError("trial_parity must be zero or one")
+    selected = np.arange(trial_parity, trial_dimension, 2)
+    if endpoint_constraints < 0 or endpoint_constraints >= len(selected):
+        raise ValueError("endpoint_constraints must fit the parity subspace")
     components = build_legendre_weil_components(
         half_width, trial_dimension, max(1400, 2 * trial_dimension)
     )
@@ -164,10 +178,26 @@ def run_temple_trial_audit(
         + components.prime
         + smooth_kernel_series_matrix(half_width, trial_dimension, 23)
     )
-    selected = np.arange(trial_parity, trial_dimension, 2)
-    _, eigenvector = eigh(
-        matrix[np.ix_(selected, selected)], subset_by_index=[0, 0]
-    )
+    parity_matrix = matrix[np.ix_(selected, selected)]
+    if endpoint_constraints:
+        constraint_rows = []
+        for derivative_order in range(endpoint_constraints):
+            row = np.sqrt((2.0 * selected + 1.0) / 2.0)
+            for factor in range(derivative_order):
+                row *= (
+                    (selected - factor) * (selected + factor + 1)
+                    / (2 * (factor + 1))
+                )
+            row /= np.linalg.norm(row)
+            constraint_rows.append(row)
+        constraint_kernel = null_space(np.asarray(constraint_rows))
+        _, reduced_vector = eigh(
+            constraint_kernel.T @ parity_matrix @ constraint_kernel,
+            subset_by_index=[0, 0],
+        )
+        eigenvector = constraint_kernel @ reduced_vector
+    else:
+        _, eigenvector = eigh(parity_matrix, subset_by_index=[0, 0])
     coefficients = np.zeros(trial_dimension)
     coefficients[selected] = eigenvector[:, 0]
     center = coefficients @ normalized_legendre_values(
@@ -178,8 +208,14 @@ def run_temple_trial_audit(
     rayleigh = float(coefficients @ matrix @ coefficients)
     low_residual = float(np.linalg.norm(matrix @ coefficients - rayleigh * coefficients))
 
-    prime = _prime_coefficients_for_trial(
-        half_width, coefficients, residual_end
+    prime = sum(
+        (
+            _prime_coefficients_for_trial(
+                half_width, coefficients, residual_end, prime_power
+            )
+            for prime_power in components.active_prime_powers
+        ),
+        np.zeros(residual_end),
     )
     potential = _potential_coefficients_for_trial(coefficients, residual_end)
     smooth_power = 23
@@ -202,14 +238,27 @@ def run_temple_trial_audit(
         (2.0 * np.arange(trial_dimension) + 1.0) / 2.0
     )
     endpoint = float(legval(1.0, polynomial))
-    shift = math.log(2.0) / half_width
-    cut = 1.0 - shift
-    prime_coefficient = math.log(2.0) / math.sqrt(2.0)
-    jump_total = 2.0 * prime_coefficient * abs(endpoint)
-    jump_tail = bernstein_jump_tail_bound(
-        jump_total, (1.0 - cut * cut) ** 0.25, residual_end
+    jump_tail = math.fsum(
+        bernstein_jump_tail_bound(
+            2.0
+            * von_mangoldt(prime_power)
+            / math.sqrt(prime_power)
+            * abs(endpoint),
+            (
+                1.0
+                - (1.0 - math.log(prime_power) / half_width) ** 2
+            )
+            ** 0.25,
+            residual_end,
+        )
+        for prime_power in components.active_prime_powers
     )
-    variation = _prime_remainder_variation(half_width, coefficients)
+    variation = math.fsum(
+        _prime_remainder_variation(
+            half_width, coefficients, prime_power=prime_power
+        )
+        for prime_power in components.active_prime_powers
+    )
     prime_remainder_tail = wang_normalized_tail_bound(
         variation, residual_end, 1
     )
@@ -241,6 +290,7 @@ def run_temple_trial_audit(
         temple_lower=lower,
         endpoint_value=endpoint,
         prime_remainder_variation=variation,
+        endpoint_constraints=endpoint_constraints,
         coefficients=coefficients,
     )
 
