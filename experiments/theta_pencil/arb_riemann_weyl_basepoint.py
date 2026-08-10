@@ -18,6 +18,25 @@ class RiemannWeylBasepointCertificate:
     target_fourier_parity_ratio: object
 
 
+@dataclass(frozen=True)
+class RiemannFourierParityTargetCertificate:
+    precision_bits: int
+    imaginary_height: object
+    normalized_reciprocal_log_derivative: object
+    target_fourier_parity_ratio: object
+
+
+def _xi_series_at(variable, arb):
+    pi = arb.pi()
+    return (
+        variable
+        * (variable - 1)
+        * ((-variable / 2) * pi.log()).exp()
+        * (variable / 2).gamma()
+        * variable.zeta()
+    )
+
+
 def certify_riemann_weyl_basepoint(
     precision_bits: int = 200,
 ) -> RiemannWeylBasepointCertificate:
@@ -40,14 +59,7 @@ def certify_riemann_weyl_basepoint(
     try:
         ctx.prec = precision_bits
         variable = arb_series([arb(3) / 2, 1, 0], 3)
-        pi = arb.pi()
-        xi_series = (
-            variable
-            * (variable - 1)
-            * ((-variable / 2) * pi.log()).exp()
-            * (variable / 2).gamma()
-            * variable.zeta()
-        )
+        xi_series = _xi_series_at(variable, arb)
         xi_value = xi_series[0]
         xi_first = xi_series[1]
         xi_second = 2 * xi_series[2]
@@ -66,11 +78,54 @@ def certify_riemann_weyl_basepoint(
         ctx.prec = old_precision
 
 
+def certify_riemann_fourier_parity_target(
+    imaginary_height: float | str,
+    precision_bits: int = 200,
+) -> RiemannFourierParityTargetCertificate:
+    """Certify ``r_Xi(i*eta)`` wholly in the Euler-product half-plane."""
+
+    if precision_bits < 80:
+        raise ValueError("precision_bits must be at least 80")
+    from flint import arb, arb_series, ctx
+
+    old_precision = ctx.prec
+    try:
+        ctx.prec = precision_bits
+        eta = arb(str(imaginary_height))
+        if not eta.lower() > arb("0.5"):
+            raise ValueError("imaginary_height must exceed one half")
+        base_variable = arb_series([arb(3) / 2, 1], 2)
+        base_xi = _xi_series_at(base_variable, arb)
+        base_scale = base_xi[0] / base_xi[1]
+
+        variable = arb_series([arb(1) / 2 + eta, 1], 2)
+        xi_series = _xi_series_at(variable, arb)
+        normalized = (xi_series[0] / xi_series[1]) / base_scale
+        denominator = eta - normalized
+        if denominator.contains(0):
+            raise ZeroDivisionError("the target parity ratio denominator overlaps zero")
+        target = (1 - eta * normalized) / denominator
+        return RiemannFourierParityTargetCertificate(
+            precision_bits=precision_bits,
+            imaginary_height=eta,
+            normalized_reciprocal_log_derivative=normalized,
+            target_fourier_parity_ratio=target,
+        )
+    finally:
+        ctx.prec = old_precision
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--precision", type=int, default=200)
+    parser.add_argument("--eta", default=None)
     args = parser.parse_args()
     result = certify_riemann_weyl_basepoint(args.precision)
+    parity_target = (
+        certify_riemann_fourier_parity_target(args.eta, args.precision)
+        if args.eta is not None
+        else None
+    )
     from flint import ctx
 
     old_precision = ctx.prec
@@ -94,6 +149,21 @@ def main() -> None:
                 indent=2,
             )
         )
+        if parity_target is not None:
+            print(
+                json.dumps(
+                    {
+                        "imaginary_height": str(parity_target.imaginary_height),
+                        "normalized_reciprocal_log_derivative": str(
+                            parity_target.normalized_reciprocal_log_derivative
+                        ),
+                        "target_fourier_parity_ratio": str(
+                            parity_target.target_fourier_parity_ratio
+                        ),
+                    },
+                    indent=2,
+                )
+            )
     finally:
         ctx.prec = old_precision
 

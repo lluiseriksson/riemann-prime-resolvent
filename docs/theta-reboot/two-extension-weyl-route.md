@@ -858,6 +858,45 @@ ordinary Fourier transform nor convergence on a two-dimensional open set is
 required. The audit function \`imaginary_axis_parity_ratio_audit\` checks
 (IR) against the direct Fourier-channel ratio.
 
+There is a sharp guardrail for the explicit safety shift. From (CT), for any
+fixed point where \(M_0\ne0\),
+
+\[
+ \mathcal T_{\lambda,c_\Xi}(M_0)(z)
+ \longrightarrow-\frac{c_\Xi}{M_0(z)}=-\frac1{F_\Xi(z)}
+ \qquad(|\lambda|\to\infty).                            \tag{ST}
+\]
+
+Therefore, if a finite-support regime is so shift-dominated that its canonical
+Weyl function tends to the universal value \(i\), it cannot converge to the
+shifted Riemann target on any open set: \(-1/F_\Xi\) is nonconstant. This is a
+theorem about such a dominant-shift regime, not yet a theorem that the explicit
+shift (SS) always enters it.
+
+The floating Galerkin falsifier at \(z=3i\) nevertheless shows exactly this
+drift for the currently available discretization. Arb certifies
+\(r_\Xi(3i)=-0.0047202431666865457\ldots\); after the exact unshift and
+normalization, the finite values are
+
+| \(a\) | \(\lambda_{\rm safe}(a)\) | raw \(r_{a,\lambda}(3i)\) | renormalized \(\rho_{a,\lambda}(3i)\) | target error |
+|---:|---:|---:|---:|---:|
+| 0.40 | -7.9675 | -0.13714 | \(-7.2791+0.3016i\) | 7.2806 |
+| 0.72 | -12.5734 | -0.37178 | \(-2.6895+0.0229i\) | 2.6849 |
+| 1.50 | -49.4110 | -0.81513 | \(-1.2268+0.0005i\) | 1.2221 |
+| 3.00 | -243.1637 | -0.99476 | \(-1.0053+0.000002i\) | 1.0005 |
+
+These rows use 4097 quadrature points and 32 Dirichlet modes and are not
+infinite-dimensional certificates. They reject the explicit safety shift as
+the default convergence ansatz; they do not reject the safe-shift construction
+or RH. The reproducible command is
+
+    python -m experiments.theta_pencil.safe_shift_parity_diagnostic
+
+The next admissible shift must therefore remain far enough from scalar
+domination to preserve the nonconstant target, while still being certified
+below the finite-support spectrum. This is the quantitative design constraint
+for the next step.
+
 ## Conditional shifted Herglotz target
 
 There is nevertheless a better route than exact invariance. Let
