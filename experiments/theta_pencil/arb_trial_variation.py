@@ -136,6 +136,7 @@ def certify_prime_remainder_variation_for_prime(
     coefficients: np.ndarray,
     partitions: int = 32,
     precision: int = 1024,
+    derivative_order: int = 1,
 ) -> ArbVariationBound:
     """Upper-bound the weighted variation after removing both jump steps.
 
@@ -148,8 +149,10 @@ def certify_prime_remainder_variation_for_prime(
         raise ValueError("prime must be at least two")
     if not math.log(float(prime)) / 2.0 < half_width:
         raise ValueError("the prime translation must have positive overlap")
-    if len(vector) < 3 or partitions < 1:
-        raise ValueError("need at least three coefficients and one partition")
+    if derivative_order < 1 or len(vector) <= derivative_order + 1:
+        raise ValueError("the derivative order must fit the trial polynomial")
+    if partitions < 1:
+        raise ValueError("need at least one partition")
     if np.any(vector[::2] != 0.0) and np.any(vector[1::2] != 0.0):
         raise ValueError("the registered trial variation requires one parity")
     try:
@@ -164,9 +167,15 @@ def certify_prime_remainder_variation_for_prime(
             arb(float(value)) * (arb(2 * degree + 1) / 2).sqrt()
             for degree, value in enumerate(vector)
         ]
-        first = _differentiate_standard_legendre(standard, arb)
-        second = _differentiate_standard_legendre(first, arb)
-        order = len(vector) - 2
+        retained_derivative = standard
+        for _ in range(derivative_order):
+            retained_derivative = _differentiate_standard_legendre(
+                retained_derivative, arb
+            )
+        remainder_derivative = _differentiate_standard_legendre(
+            retained_derivative, arb
+        )
+        order = len(vector) - derivative_order - 1
         nodes_weights = [arb.legendre_p_root(order, k, weight=True) for k in range(order)]
 
         a = arb(str(half_width))
@@ -183,14 +192,16 @@ def certify_prime_remainder_variation_for_prime(
             square_integral = arb(0)
             for node, weight in nodes_weights:
                 source = midpoint + scale * node + translation
-                value = _legendre_series_value(second, source, arb)
+                value = _legendre_series_value(
+                    remainder_derivative, source, arb
+                )
                 square_integral += scale * weight * value * value
             arcsine_mass = right.asin() - left.asin()
             total += (arcsine_mass * square_integral).sqrt()
 
-        endpoint_derivative = arb(0)
-        for degree in range(1, len(standard)):
-            endpoint_derivative += standard[degree] * degree * (degree + 1) / 2
+        endpoint_derivative = _legendre_series_value(
+            retained_derivative, arb(1), arb
+        )
         cut_weight = (arb(1) - cut * cut).sqrt().sqrt()
         prime_factor = arb(2) * prime_ball.log() / prime_ball.sqrt()
         bound = prime_factor * (total + abs(endpoint_derivative) / cut_weight)
@@ -221,7 +232,7 @@ def certify_prime_remainder_variation(
             "the exact Arb implementation requires log(2)/2 < a <= log(3)/2"
         )
     return certify_prime_remainder_variation_for_prime(
-        half_width, 2, coefficients, partitions, precision
+        half_width, 2, coefficients, partitions, precision, 1
     )
 
 
@@ -231,6 +242,7 @@ def certify_active_prime_remainder_variation(
     primes: tuple[int, ...],
     partitions: int = 32,
     precision: int = 1024,
+    derivative_order: int = 1,
 ) -> ArbVariationBound:
     """Add the certified variation bounds for all active prime jumps."""
 
@@ -238,7 +250,12 @@ def certify_active_prime_remainder_variation(
         raise ValueError("at least one active prime is required")
     bounds = [
         certify_prime_remainder_variation_for_prime(
-            half_width, prime, coefficients, partitions, precision
+            half_width,
+            prime,
+            coefficients,
+            partitions,
+            precision,
+            derivative_order,
         )
         for prime in primes
     ]

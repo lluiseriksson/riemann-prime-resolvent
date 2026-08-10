@@ -65,3 +65,25 @@ def test_active_variation_dominates_each_prime_and_their_sum():
         0.62, coefficients, (2, 3), partitions=8, precision=384
     )
     assert active.upper >= sum(bound.upper for bound in individual)
+
+
+def test_second_order_prime_three_variation_dominates_direct_quadrature():
+    coefficients = np.zeros(12)
+    coefficients[::2] = np.linspace(0.1, 0.6, 6)
+    certified = certify_prime_remainder_variation_for_prime(
+        0.62,
+        3,
+        coefficients,
+        partitions=8,
+        precision=384,
+        derivative_order=2,
+    )
+    direct = _prime_remainder_variation(
+        0.62,
+        coefficients,
+        quadrature_order=256,
+        prime_power=3,
+        derivative_order=2,
+    )
+    assert certified.upper >= direct
+    assert certified.upper < 3.0 * direct

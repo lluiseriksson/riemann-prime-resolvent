@@ -129,13 +129,18 @@ def _prime_remainder_variation(
     coefficients: np.ndarray,
     quadrature_order: int = 3000,
     prime_power: int = 2,
+    derivative_order: int = 1,
 ) -> float:
-    """Weighted variation after removing the two jump steps."""
+    """Weighted variation after retaining ``derivative_order`` endpoint jets."""
+    if derivative_order < 1:
+        raise ValueError("derivative_order must be positive")
     polynomial = coefficients * np.sqrt(
         (2.0 * np.arange(len(coefficients)) + 1.0) / 2.0
     )
-    first = legder(polynomial)
-    second = legder(first)
+    retained_derivative = polynomial
+    for _ in range(derivative_order):
+        retained_derivative = legder(retained_derivative)
+    remainder_derivative = legder(retained_derivative)
     weight = von_mangoldt(prime_power) / math.sqrt(prime_power)
     if weight == 0.0:
         raise ValueError("prime_power must be a prime power")
@@ -147,12 +152,14 @@ def _prime_remainder_variation(
     integral = float(
         np.dot(
             scaled_weights,
-            np.abs(legval(x + shift, second)) / (1.0 - x * x) ** 0.25,
+            np.abs(legval(x + shift, remainder_derivative))
+            / (1.0 - x * x) ** 0.25,
         )
     )
     return 2.0 * weight * (
         integral
-        + abs(float(legval(1.0, first))) / (1.0 - cut * cut) ** 0.25
+        + abs(float(legval(1.0, retained_derivative)))
+        / (1.0 - cut * cut) ** 0.25
     )
 
 
@@ -163,12 +170,15 @@ def run_temple_trial_audit(
     second_floor: float = 0.005,
     trial_parity: int = 0,
     endpoint_constraints: int = 0,
+    prime_jet_count: int = 1,
 ) -> TempleTrialAudit:
     if trial_parity not in (0, 1):
         raise ValueError("trial_parity must be zero or one")
     selected = np.arange(trial_parity, trial_dimension, 2)
     if endpoint_constraints < 0 or endpoint_constraints >= len(selected):
         raise ValueError("endpoint_constraints must fit the parity subspace")
+    if prime_jet_count < 1 or prime_jet_count >= trial_dimension:
+        raise ValueError("prime_jet_count must lie below trial_dimension")
     components = build_legendre_weil_components(
         half_width, trial_dimension, max(1400, 2 * trial_dimension)
     )
@@ -238,29 +248,45 @@ def run_temple_trial_audit(
         (2.0 * np.arange(trial_dimension) + 1.0) / 2.0
     )
     endpoint = float(legval(1.0, polynomial))
-    jump_tail = math.fsum(
-        bernstein_jump_tail_bound(
-            2.0
-            * von_mangoldt(prime_power)
-            / math.sqrt(prime_power)
-            * abs(endpoint),
-            (
-                1.0
-                - (1.0 - math.log(prime_power) / half_width) ** 2
-            )
-            ** 0.25,
-            residual_end,
+    endpoint_jets = []
+    derivative = polynomial
+    for jet in range(prime_jet_count):
+        endpoint_jets.append(
+            float(legval(1.0, derivative)) / math.factorial(jet)
         )
-        for prime_power in components.active_prime_powers
-    )
+        derivative = legder(derivative)
+    jump_terms = []
+    for prime_power in components.active_prime_powers:
+        weight = von_mangoldt(prime_power) / math.sqrt(prime_power)
+        cut = 1.0 - math.log(prime_power) / half_width
+        cut_weight = (1.0 - cut * cut) ** 0.25
+        jump_terms.append(
+            2.0
+            * weight
+            * abs(endpoint_jets[0])
+            * bernstein_jump_tail_bound(1.0, cut_weight, residual_end)
+        )
+        for jet in range(1, prime_jet_count):
+            scalar_tail = wang_normalized_tail_bound(
+                math.factorial(jet) / cut_weight,
+                residual_end,
+                jet,
+            )
+            jump_terms.append(
+                2.0 * weight * abs(endpoint_jets[jet]) * scalar_tail
+            )
+    jump_tail = math.fsum(jump_terms)
     variation = math.fsum(
         _prime_remainder_variation(
-            half_width, coefficients, prime_power=prime_power
+            half_width,
+            coefficients,
+            prime_power=prime_power,
+            derivative_order=prime_jet_count,
         )
         for prime_power in components.active_prime_powers
     )
     prime_remainder_tail = wang_normalized_tail_bound(
-        variation, residual_end, 1
+        variation, residual_end, prime_jet_count
     )
     potential_tail = potential_tail_bound(coefficients, residual_end, 2)
     smooth_tail = 2.0 * smooth_kernel_series_remainder_bound(

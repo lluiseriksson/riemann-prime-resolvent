@@ -40,6 +40,7 @@ class ArbTempleCertificate:
     temple_lower: float
     variation_upper: float
     endpoint_constraints: int
+    prime_jet_count: int
     prime_precision: int
     precision: int
 
@@ -91,6 +92,7 @@ def certify_temple_trial(
     prime_action: ArbPrimeAction | None = None,
     active_primes: tuple[int, ...] = (2,),
     endpoint_constraints: int = 0,
+    prime_jet_count: int = 1,
 ) -> ArbTempleCertificate:
     """Certify positivity of the lowest point assuming the supplied gap floor."""
     if trial_parity not in (0, 1):
@@ -99,6 +101,8 @@ def certify_temple_trial(
         raise ValueError("at least one active prime is required")
     if any(math.log(float(prime)) >= 2 * half_width for prime in active_primes):
         raise ValueError("every active prime must have positive translation overlap")
+    if prime_jet_count < 1 or prime_jet_count >= dimension:
+        raise ValueError("prime_jet_count must lie below dimension")
     if dimension < 4 or residual_end <= dimension:
         raise ValueError("require 4 <= dimension < residual_end")
     minimum_prime_precision = _minimum_prime_precision(dimension, residual_end)
@@ -126,6 +130,7 @@ def certify_temple_trial(
         second_floor=second_floor,
         trial_parity=trial_parity,
         endpoint_constraints=endpoint_constraints,
+        prime_jet_count=prime_jet_count,
     )
     coefficients = floating.coefficients.copy()
     coefficients[1 - trial_parity :: 2] = 0.0
@@ -162,6 +167,7 @@ def certify_temple_trial(
         active_primes,
         variation_partitions,
         precision,
+        prime_jet_count,
     )
 
     previous_precision = ctx.prec
@@ -254,36 +260,64 @@ def certify_temple_trial(
         finite_residual = residual_square.sqrt() / norm_squared.sqrt()
         finite_residual_upper = _float_upper(finite_residual)
 
-        endpoint = sum(
-            (
-                vector[degree] * (arb(2 * degree + 1) / 2).sqrt()
-                for degree in range(trial_parity, dimension, 2)
-            ),
-            arb(0),
-        )
+        endpoint_jets = []
+        for jet in range(prime_jet_count):
+            endpoint_jet = arb(0)
+            for degree in range(trial_parity, dimension, 2):
+                if degree < jet:
+                    continue
+                derivative = arb(1)
+                for factor in range(degree - jet + 1, degree + jet + 1):
+                    derivative *= factor
+                derivative /= arb(2) ** jet * math.factorial(jet) ** 2
+                endpoint_jet += (
+                    vector[degree]
+                    * (arb(2 * degree + 1) / 2).sqrt()
+                    * derivative
+                )
+            endpoint_jets.append(endpoint_jet)
         jump_constant = (arb(8) / (3 * arb.pi())).sqrt()
         jump_tail = arb(0)
         for active_prime in active_primes:
             prime_ball = arb(active_prime)
             cut = arb(1) - prime_ball.log() / a
             cut_weight = (arb(1) - cut * cut).sqrt().sqrt()
-            jump_total = (
+            value_jump = (
                 arb(2)
                 * prime_ball.log()
                 / prime_ball.sqrt()
-                * abs(endpoint)
+                * abs(endpoint_jets[0])
             )
-            jump_tail += jump_constant * jump_total / (
+            jump_tail += jump_constant * value_jump / (
                 cut_weight * arb(residual_end - 1).sqrt()
             )
+            for jet in range(1, prime_jet_count):
+                scalar_tail = (
+                    arb(2) ** (jet + 1)
+                    * math.factorial(jet)
+                    / (
+                        arb.pi().sqrt()
+                        * arb(2 * jet + 1).sqrt()
+                        * arb(residual_end - 1) ** (jet + arb("0.5"))
+                        * cut_weight
+                    )
+                )
+                jump_tail += (
+                    arb(2)
+                    * prime_ball.log()
+                    / prime_ball.sqrt()
+                    * abs(endpoint_jets[jet])
+                    * scalar_tail
+                )
 
         variation_ball = arb(str(variation.upper))
         prime_remainder_tail = (
-            arb(4)
+            arb(2) ** (prime_jet_count + 1)
             * variation_ball
             / (
-                (arb(3) * arb.pi()).sqrt()
-                * arb(residual_end - 1) ** arb("1.5")
+                (arb((2 * prime_jet_count + 1)) * arb.pi()).sqrt()
+                * arb(residual_end - 1)
+                ** (prime_jet_count + arb("0.5"))
             )
         )
 
@@ -384,6 +418,7 @@ def certify_temple_trial(
         temple_lower=temple_lower,
         variation_upper=variation.upper,
         endpoint_constraints=endpoint_constraints,
+        prime_jet_count=prime_jet_count,
         prime_precision=prime_precision,
         precision=precision,
     )

@@ -61,7 +61,9 @@ def test_second_window_pipeline_includes_two_active_primes():
         precision=256,
         prime_precision=1536,
         active_primes=(2, 3),
+        prime_jet_count=2,
     )
     assert result.rayleigh_lower > 0.0
     assert result.variation_upper > 0.0
     assert result.total_residual_upper > 0.0
+    assert result.prime_jet_count == 2

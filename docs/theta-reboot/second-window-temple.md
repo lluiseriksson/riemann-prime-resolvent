@@ -64,3 +64,35 @@ second-window point certificate still requires two independent ingredients:
 2. rigorous second-mode floors from the seven-block Schur comparison.
 
 Neither ingredient is equivalent to RH, but neither is complete yet.
+
+## Higher jets and the first Feshbach response
+
+The variation certificate and Temple tail now accept any retained jet order
+$m\ge1$.  The Arb implementation differentiates the fixed trial exactly,
+certifies the weighted variation of order $m$, and adds the explicit tails of
+jets $0,\ldots,m-1$.  A prime-three, order-two result is checked against an
+independent quadrature.
+
+This generalization does not by itself solve the even pilot.  At dimension
+512 and terminal degree 8192, increasing $m$ from one to two makes the tail
+larger: endpoint derivatives grow faster than the extra powers of 8192 help.
+The value jump remains the asymptotically dominant term.
+
+A genuine Feshbach response is different.  In a floating 1024-mode even
+section, start from the 512-mode Ritz vector, let $r$ be its residual in modes
+512--1023, and put
+
+\[
+ u_n=-\frac{r_n}{A_{nn}-\lambda}.
+\]
+
+The resulting normalized vector has finite-section residual
+$8.80\,10^{-7}$; solving the full high block instead gives
+$3.59\,10^{-7}$.  Both are well below the approximately $7\,10^{-6}$ target
+set by the even Rayleigh quotient and the provisional $10^{-3}$ gap.
+
+These are diagnostics, not interval bounds.  They identify the next precise
+lemma: extend the diagonal response to the infinite high block and bound the
+residual created by the bounded off-diagonal perturbation.  Merely increasing
+the polynomial trial dimension leaves the value jump in the residual and is
+much more expensive to certify.
