@@ -1753,9 +1753,172 @@ The next coupling is also explicit.  With
 
 Hence the first genuinely new tail obstruction is not the nearest-neighbour
 slope but the weighted curvature in (E105), followed by the longer Jacobi
-bands.  This supplies a concrete continuation target: bound the full row sum
-of these weighted finite differences by \(2\ell_n\), or find a signed
-factorization that avoids absolute row sums.
+bands.  In fact every band has a closed finite formula.  Write
+
+\[
+ p_n(t)=\sum_{k=1}^n a_{n,k}t^k,
+\]
+
+where
+
+\[
+ a_{n,k}=(-1)^{n-k}\binom{n-1}{k-1}
+ \frac{(n+k)!}
+ {(n-1)!(k+1)!\binom{2n}{n-1}}.                    \tag{E106}
+\]
+
+The projection of a monomial onto the monic Jacobi polynomial is
+
+\[
+ r_{m,k}:=\frac{\langle p_m,t^k\rangle}{h_m}
+ =\frac{(2m+1)!(k+1)!}{(m+1)!(k+m+1)!}
+   \binom{k-1}{m-1}.                                \tag{E107}
+\]
+
+Therefore, for \(m<n\), the complete upper triangle is
+
+\[
+ \boxed{
+ B_{m,n}=\sqrt{\frac{h_m}{h_n}}
+ \sum_{k=m}^n a_{n,k}r_{m,k}\ell_k.}               \tag{E108}
+\]
+
+The coefficients in the sum vanish on constant sequences when \(m<n\), so
+(E108) is an explicit weighted finite-difference hierarchy.  Equations
+(E100) and (E105) are its first two cases.
+
+An absolute row-sum proof, however, is already too strong for the elementary
+positive-real atoms which generate the RH-side kernel.  Take
+
+\[
+ f_a(x)=\frac{2x}{x^2+a^2}\qquad(a>0).
+\]
+
+Its kernel has the rank-two Gram factorization
+
+\[
+ \boxed{
+ \frac{f_a(x)+f_a(y)}{x+y}
+ =2\frac{xy+a^2}{(x^2+a^2)(y^2+a^2)}.}             \tag{E109}
+\]
+
+Thus it is positive semidefinite on every finite set.  Nevertheless, choose
+\(a=1\) and the first three arithmetic nodes.  Then
+
+\[
+ (\ell_1,\ell_2,\ell_3)
+ =\left(\frac{12}{13},\frac{20}{29},\frac{28}{53}\right).
+\]
+
+In the orthonormal Jacobi basis, exact rational arithmetic gives
+
+\[
+ B_{22}=\frac{40}{29},\qquad
+ B_{12}^2=\frac{116160}{142129}>\frac{81}{100},
+ \qquad
+ B_{23}^2=\frac{2152640}{2362369}>\frac{81}{100}.   \tag{E110}
+\]
+
+Both off-diagonal entries are negative, so
+
+\[
+ |B_{12}|+|B_{23}|>\frac95>\frac{40}{29}=B_{22}.   \tag{E111}
+\]
+
+The matrix is PSD by (E109) but is not diagonally dominant.  Consequently a
+full absolute row-sum estimate cannot be extracted from positivity of the
+individual spectral atoms and is not a necessary feature of the target.
+The continuation target after (E108) must preserve cancellations between
+Jacobi bands--for example through a block Gram factorization--rather than
+replace every band by its absolute value.
+
+There is nevertheless enough decay to close the next *fixed* local block.
+Let
+
+\[
+ g(\sigma)=\frac d{d\sigma}\frac{\xi'(\sigma)}{\xi(\sigma)},
+ \qquad r(\sigma)=g(\sigma)-\frac1{2\sigma}.
+\]
+
+The series formulas for \(\psi_1\) and \(\psi_2\), together with the same
+integral test used in (E102)--(E103), give for \(\sigma\ge233\)
+
+\[
+ \boxed{
+ |r(\sigma)|\le\frac3{(\sigma-1)^2},
+ \qquad 0\le r'(\sigma)\le\frac4{(\sigma-1)^3}.}     \tag{E112}
+\]
+
+For the derivative bound, the remaining prime term is at most
+
+\[
+ E_2(\sigma)=\frac{(\log2)^3}{2^\sigma}
+ +2^{1-\sigma}\left(
+ \frac{(\log2)^3}{\sigma-1}
+ +\frac{3(\log2)^2}{(\sigma-1)^2}
+ +\frac{6\log2}{(\sigma-1)^3}
+ +\frac6{(\sigma-1)^4}\right),
+\]
+
+and \(E_2(233)<2/232^3\).  This supplies the lower sign in the second
+inequality of (E112); the upper sign follows from the integral bounds for
+\(-\psi_2\).  Likewise \(E_1(233)<1/232^2\); the relevant products with
+\(\sigma\) are decreasing, so these comparisons persist throughout the
+tail.
+
+Write \(d_n=\int_n^{n+1}r(\sigma)\,d\sigma\).  Then
+
+\[
+ \Delta_n=\frac12\log\left(1+\frac1n\right)+d_n,
+\]
+
+and (E112) yields
+
+\[
+ \Delta_n\le\frac1{2n}+\frac3{(n-1)^2},                         \tag{E113}
+\]
+
+\[
+ \left|n\Delta_n-(n-1)\Delta_{n-1}\right|
+ \le\frac1{4(n-1)^2}+\frac{7n-6}{(n-2)^3}.                     \tag{E114}
+\]
+
+Indeed \(x\log(1+1/x)\) has derivative between zero and
+\(1/(2x^2)\), while
+\(|d_n-d_{n-1}|\le4/(n-2)^3\).  It follows from (E100) and (E105) that,
+for \(k\ge233\) and \(n\ge234\),
+
+\[
+ |B_{k-1,k}|<A_*:=1+\frac{6\cdot233}{232^2}
+ =1.025974\ldots,
+\]
+
+\[
+ |B_{n-2,n}|<C_*:=2\cdot234\left(
+ \frac1{4\cdot233^2}+\frac{7\cdot234-6}{232^3}\right)
+ =0.063321\ldots.                                      \tag{E115}
+\]
+
+On the other hand (E102), now at \(233\), gives
+
+\[
+ B_{jj}=2\ell_j>3.62178\qquad(j\ge232).
+\]
+
+Every consecutive \(3\times3\) block with largest index at least \(234\)
+is therefore strictly diagonally dominant, since even the deliberately
+overcounted row sum \(2A_*+C_*<2.116\).  Blocks ending at index at most
+\(233\) are compressions of (E71).  Hence
+
+\[
+ \boxed{
+ B[\{n-2,n-1,n\}]\succeq0\quad\text{for every }n\ge3.}           \tag{E116}
+\]
+
+This is a second unconditional infinite-band theorem.  It still does not
+control nonconsecutive triples or blocks whose bandwidth grows with their
+degree.  Those long-range couplings are now the first remaining Jacobi
+obstruction.
 
 Thus no finite verification height can make this particular absolute-value
 argument uniform in \(n\). Raising \(T\) only moves the finite cutoff.  The
@@ -1780,8 +1943,10 @@ The algebraic Fourier and prime identities (E73)--(E79) are checked by
 (E89)--(E98), including the exact Hilbert-multiplier identity and the
 indefiniteness of the positive prime-moment block, is checked by
 `arithmetic_pick_sequence.py`.
-The Jacobi normalization, the first two off-diagonal formulas
-(E99)--(E105), and the large-degree Euler bounds are checked by
+The Jacobi normalization, the full band formula, the first two
+off-diagonal formulas, the row-sum counterexample, the consecutive
+three-band theorem (E99)--(E116), and the large-degree Euler bounds are
+checked by
 `jacobi_band_pick.py`.
 The floating-point checks elsewhere in this audit are not used in place of
 the displayed analytic inequalities. Global claims still require all
