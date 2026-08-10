@@ -5,6 +5,7 @@ from experiments.theta_pencil.parity_weyl_derivative import (
     imaginary_axis_parity_ratio_audit,
     parity_ratio_from_target_derivative,
     parity_weyl_derivative_audit,
+    schwarz_pick_parity_interval,
 )
 
 
@@ -58,3 +59,17 @@ def test_imaginary_axis_ratio_is_a_real_even_odd_resolvent_quotient():
     assert abs(audit.even_cross_mass) < 1.0e-15
     assert abs(audit.odd_cross_mass) < 1.0e-15
     assert audit.parity_identity_residual < 1.0e-15
+
+
+def test_schwarz_pick_interval_has_the_exact_eta_kappa_endpoints():
+    derivative = -0.9968019520324009
+    kappa = parity_ratio_from_target_derivative(derivative)
+    lower, upper = schwarz_pick_parity_interval(derivative, 3.0)
+    assert lower == pytest.approx(-3.0 * kappa)
+    assert upper == pytest.approx(-kappa / 3.0)
+    assert lower < -0.0047202431666865455 < upper
+    assert schwarz_pick_parity_interval(derivative, 1.0) == pytest.approx(
+        (-kappa, -kappa)
+    )
+    with pytest.raises(ValueError):
+        schwarz_pick_parity_interval(derivative, 0.9)

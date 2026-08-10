@@ -858,18 +858,66 @@ ordinary Fourier transform nor convergence on a two-dimensional open set is
 required. The audit function \`imaginary_axis_parity_ratio_audit\` checks
 (IR) against the direct Fourier-channel ratio.
 
+There is an exact universal constraint on every such one-point calibration.
+Let \(m\) be a real-symmetric Herglotz function with \(m(i)=i\), put
+\(d=m'(i)\in(-1,1)\), and set
+
+\[
+ \kappa=\frac{1+d}{1-d},\qquad
+ w=\frac{z-i}{z+i},\qquad
+ g(w)=\frac{m(z)-i}{m(z)+i},\qquad h(w)=\frac{g(w)}w.
+\]
+
+Schwarz's lemma makes \(h\) a Schur function and \(h(0)=d\).  At
+\(z=i\eta\), \(\eta\ge1\), the disk coordinate
+\(w=(\eta-1)/(\eta+1)\) is real.  Real symmetry and Schwarz--Pick give
+
+\[
+ \frac{d-w}{1-dw}\le h(w)\le\frac{d+w}{1+dw}.
+\]
+
+Substitution in the Cayley inverse and then in (PI) yields the sharp interval
+
+\[
+ \boxed{-\eta\kappa\le r(i\eta)\le-\frac{\kappa}{\eta}.} \tag{SP}
+\]
+
+Consequently, agreement at a second imaginary point is not by itself an
+arithmetic prediction: every calibrated Herglotz function is already confined
+to (SP).  The lower endpoint is an extremal, not merely a Taylor
+approximation.  Equality at one \(\eta>1\) forces equality in Schwarz--Pick and
+hence the unique real disk automorphism
+
+\[
+ h_*(w)=\frac{d+w}{1+dw},\qquad g_*(w)=w h_*(w).          \tag{SE}
+\]
+
+Thus the quantity with actual discriminatory content is the nonnegative
+Schwarz--Pick excess
+
+\[
+ \Delta_m(\eta)=r(i\eta)+\eta\kappa.                    \tag{SX}
+\]
+
+For the Riemann target at \(\eta=3\), the certified value is strictly inside
+(SP):
+
+\[
+ \Delta_\Xi(3)=r_\Xi(3i)+3\kappa_\Xi
+ =8.4511702985\ldots\,10^{-5}>0.                         \tag{SR}
+\]
+
 The first predictive Galerkin test calibrates only at \(i\) and then evaluates
-the untouched ratio at \(3i\). It must be compared with a kinematic baseline.
-For small support,
+the untouched ratio at \(3i\).  For small support one additionally has
 
 \[
  \sinh(\eta x)=\eta\sinh x+O_\eta(a^3),\qquad
  \cosh(\eta x)=\cosh x+O_\eta(a^2),
 \]
 
-so the calibration \(r_a(i)=-\kappa_\Xi\) alone suggests
-\(r_a(i\eta)\approx-\eta\kappa_\Xi\), before any arithmetic mechanism is
-used. At \(\eta=3\), this baseline is
+so small-support geometry drives the finite ratio toward the lower
+Schwarz--Pick extremal \(-\eta\kappa_\Xi\), before any arithmetic mechanism is
+used. At \(\eta=3\), this extremal is
 \(-0.004804754869671527\ldots\), already within
 \(8.4512\cdot10^{-5}\) of the certified Riemann target. The apparent
 multi-point agreement at small support must therefore be judged only by its
@@ -885,12 +933,17 @@ improvement over this baseline.
 These rows use 4097 points and 32 modes. Refinements through 8193/48 change
 the displayed prediction by less than \(6\cdot10^{-7}\) on this support
 range, but the error does not decrease toward zero; most of the agreement is
-the hyperbolic-source geometry. Beyond this range the spectral gap falls
+the universal calibration geometry.  In excess coordinates the four rows are
+approximately \(3.40,1.46,1.65,0.80\) times \(10^{-5}\), whereas the target
+excess is \(8.45\cdot10^{-5}\).  The observed trend is toward the wrong object,
+the extremal (SE), although these finite computations do not prove an
+infinite-support limit. Beyond this range the spectral gap falls
 below the discretization error. The command
 
     python -m experiments.theta_pencil.calibrated_parity_diagnostic
 
-records the target, the kinematic baseline, and the incremental improvement.
+records the target, the Schwarz--Pick lower extremal, and the incremental
+excess.
 It is a falsifier for claimed predictive power, not an asymptotic theorem.
 
 There is a sharp guardrail for the explicit safety shift. From (CT), for any

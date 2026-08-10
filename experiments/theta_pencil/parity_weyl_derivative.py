@@ -40,6 +40,27 @@ def parity_ratio_from_target_derivative(target_derivative: float) -> float:
     return (1.0 + derivative) / (1.0 - derivative)
 
 
+def schwarz_pick_parity_interval(
+    target_derivative: float,
+    imaginary_height: float,
+) -> tuple[float, float]:
+    """Return the sharp parity interval forced by one-point calibration.
+
+    For a real-symmetric Herglotz function with ``m(i)=i`` and
+    ``m'(i)=d``, Schwarz--Pick implies, at ``eta >= 1``,
+
+    ``-eta*kappa <= r(i*eta) <= -kappa/eta``,
+
+    where ``kappa=(1+d)/(1-d)`` and ``r`` is the Fourier parity ratio.
+    """
+
+    eta = float(imaginary_height)
+    if eta < 1.0:
+        raise ValueError("imaginary_height must be at least one")
+    kappa = parity_ratio_from_target_derivative(target_derivative)
+    return -eta * kappa, -kappa / eta
+
+
 def parity_weyl_derivative_audit(
     operator: np.ndarray,
     metric: np.ndarray,
