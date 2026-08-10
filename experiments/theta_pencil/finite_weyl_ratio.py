@@ -36,6 +36,26 @@ def projective_cross_ratio(values: tuple[complex, complex, complex, complex]) ->
     return (first - third) * (second - fourth) / denominator
 
 
+def canonical_weyl_from_channels(
+    plus_transform: complex,
+    minus_transform: complex,
+    z: complex,
+) -> complex:
+    """Return the canonical ``m(i)=i`` Weyl value from Suzuki's channels.
+
+    With ``A=(z-i)*plus_transform`` and
+    ``B=(z+i)*minus_transform``, the Livsic function is ``Theta=-A/B``.
+    Its Cayley transform is equivalently ``-i*W_pi/W_0``.
+    """
+
+    a_value = (z - 1j) * plus_transform
+    b_value = (z + 1j) * minus_transform
+    denominator = a_value + b_value
+    if abs(denominator) == 0.0:
+        raise ZeroDivisionError("the reference extension has an eigenvalue")
+    return 1j * (b_value - a_value) / denominator
+
+
 def shifted_herglotz_value(value: complex, shift: float) -> complex:
     """Apply the real Möbius shift ``m -> m/(1-shift*m)``."""
 
@@ -67,6 +87,120 @@ def exact_unshift_error(value: complex, error: complex, shift: float) -> complex
     if abs(denominator) == 0.0:
         raise ZeroDivisionError("the perturbed inverse normalization has a pole")
     return error * factor * factor / denominator
+
+
+def unshift_error_bound(
+    target_abs_bound: float,
+    raw_error_abs_bound: float,
+    shift: float,
+) -> float:
+    """Bound the error after undoing a real Herglotz shift.
+
+    Suppose ``abs(m) <= target_abs_bound`` and a shifted approximation differs
+    from ``m/(1-shift*m)`` by at most ``raw_error_abs_bound``.  If the
+    perturbation is small enough to keep the inverse Möbius denominator at
+    distance at least one half from zero, then the returned number bounds the
+    error after unshifting.  This is the pointwise quantitative form of the
+    ``o(abs(shift)**-2)`` convergence gate.
+    """
+
+    if target_abs_bound < 0.0 or raw_error_abs_bound < 0.0:
+        raise ValueError("bounds must be nonnegative")
+    amplification = 1.0 + abs(shift) * target_abs_bound
+    denominator_loss = abs(shift) * raw_error_abs_bound * amplification
+    if denominator_loss > 0.5:
+        raise ValueError("raw error does not control the inverse denominator")
+    return 2.0 * raw_error_abs_bound * amplification**2
+
+
+def canonically_normalized_shifted_value(
+    value: complex,
+    shift: float,
+    base_imaginary_value: float,
+) -> complex:
+    """Shift a Herglotz value and normalize its value at ``z=i`` to ``i``.
+
+    The input family is assumed to have ``m(i) = i*c`` with
+    ``c = base_imaginary_value > 0``.  The real Möbius map
+
+    ``(m + shift*c**2) / (c*(1-shift*m))``
+
+    is the unique affine normalization of the ordinary shifted value that
+    sends its value at ``i`` back to ``i``.
+    """
+
+    c = base_imaginary_value
+    if c <= 0.0:
+        raise ValueError("base_imaginary_value must be positive")
+    denominator = c * (1.0 - shift * value)
+    if abs(denominator) == 0.0:
+        raise ZeroDivisionError("the normalized shifted value has a pole")
+    return (value + shift * c * c) / denominator
+
+
+def undo_canonically_normalized_shift(
+    value: complex,
+    shift: float,
+    base_imaginary_value: float,
+) -> complex:
+    """Invert :func:`canonically_normalized_shifted_value`."""
+
+    c = base_imaginary_value
+    if c <= 0.0:
+        raise ValueError("base_imaginary_value must be positive")
+    denominator = 1.0 + c * shift * value
+    if abs(denominator) == 0.0:
+        raise ZeroDivisionError("the inverse normalized shift has a pole")
+    return c * (value - shift * c) / denominator
+
+
+def exact_normalized_unshift_error(
+    value: complex,
+    error: complex,
+    shift: float,
+    base_imaginary_value: float,
+) -> complex:
+    """Return the exact inverse error in the canonical ``m(i)=i`` gauge."""
+
+    c = base_imaginary_value
+    if c <= 0.0:
+        raise ValueError("base_imaginary_value must be positive")
+    factor = 1.0 - shift * value
+    denominator = (
+        1.0
+        + shift * shift * c * c
+        + c * shift * error * factor
+    )
+    if abs(denominator) == 0.0:
+        raise ZeroDivisionError("the perturbed normalized inverse has a pole")
+    return c * error * factor * factor / denominator
+
+
+def normalized_unshift_error_bound(
+    target_abs_bound: float,
+    raw_error_abs_bound: float,
+    shift: float,
+    base_imaginary_value: float,
+) -> float:
+    """Uniform inverse-error bound in the canonical ``m(i)=i`` gauge."""
+
+    c = base_imaginary_value
+    if c <= 0.0:
+        raise ValueError("base_imaginary_value must be positive")
+    if target_abs_bound < 0.0 or raw_error_abs_bound < 0.0:
+        raise ValueError("bounds must be nonnegative")
+    factor_bound = 1.0 + abs(shift) * target_abs_bound
+    principal_denominator = 1.0 + shift * shift * c * c
+    loss = abs(c * shift) * raw_error_abs_bound * factor_bound
+    if loss > 0.5 * principal_denominator:
+        raise ValueError("raw error does not control the normalized inverse")
+    return (
+        2.0
+        * c
+        * raw_error_abs_bound
+        * factor_bound**2
+        / principal_denominator
+    )
 
 
 @dataclass(frozen=True)

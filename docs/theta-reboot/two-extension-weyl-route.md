@@ -231,7 +231,63 @@ The production diagnostic is reproducible with
 The captured JSON artifact has SHA-256
 `8E8635066E31E7FC952D0102BBDD37CBE572031C2CD5CC59B81344AA8C0F14BB`.
 
-## Shifted Herglotz targets remove the near-zero-shift requirement
+## Common-factor cancellation: the full-line multiplier is not the Weyl ratio
+
+There is a structural cancellation that must be imposed before using the
+shifted target below.  In the continuous-kernel formulation, write
+
+\[
+ S_{a,\lambda}v_{a,\pm}=h_{a,\pm},
+ \qquad h_{a,\pm}(x)=e^{\pm x}\pm i\quad (|x|<a).
+\]
+
+After extending the left-hand convolution to the full line, the formal
+Fourier equations are
+
+\[
+ \widehat v_{a,\pm}(z)
+ =\frac{\widehat h_{a,\pm}(z)}{\widehat S_\lambda(z)},
+ \qquad
+ \widehat S_\lambda(z)
+ =z^{-2}\left(\frac{\Xi'(z)}{\Xi(z)}-\lambda\right).
+\]
+
+Put
+
+\[
+ F_{a,\theta}(z)=(z-i)\widehat h_{a,+}(z)
+ +e^{i\theta}(z+i)\widehat h_{a,-}(z).
+\]
+
+Then the characteristic functions have the common factor
+
+\[
+ W(a,\theta;z)=
+ z^2\frac{\Xi(z)}{\Xi'(z)-\lambda\Xi(z)}F_{a,\theta}(z). \tag{CF}
+\]
+
+Consequently, for every two extension parameters,
+
+\[
+ \boxed{
+ \frac{W(a,\theta_0;z)}{W(a,\theta_1;z)}
+ =\frac{F_{a,\theta_0}(z)}{F_{a,\theta_1}(z)}.}          \tag{FC}
+\]
+
+The reciprocal logarithmic derivative cancels exactly.  This does not make
+the quotient arithmetically trivial: the continuation of (h_{a,\pm})
+outside the interval depends on (S_{a,\lambda}).  It does show that the
+full-line multiplier alone cannot identify the two-extension quotient with
+\(M_\lambda\).  A boundary-continuation theorem would be needed to recover a
+specific limiting Weyl function from the right-hand side of (FC).
+
+This corrects the previous inference from analytic type.  The two-extension
+quotient is unconditionally Herglotz, and (M_\Xi) is the right *kind* of
+possible limit, but no convergence to (M_\Xi) follows from Suzuki's Fourier
+multiplier formula.  In particular, the estimate (BE) below is a conditional
+renormalization lemma, not yet the boundary estimate of the actual quotient.
+
+## Conditional shifted Herglotz target
 
 There is nevertheless a better route than exact invariance. Let
 
@@ -342,7 +398,7 @@ is an explicit unconditional choice for every \(a>0\). It uses neither zero
 locations nor RH. Its magnitude is
 \((2+16\log2)e^a(1+o(1))\).
 
-This matters because Section 8 of Suzuki writes the continuous-kernel shift
+Section 8 of Suzuki writes the continuous-kernel shift
 as \(S_a=G_a-\lambda R_a\), with the inverse Laplacian \(R_a\). Formally on
 the full line its Fourier multiplier changes from
 \(z^{-2}\xi'/\xi\) to \(z^{-2}(\xi'/\xi-\lambda)\). The corresponding
@@ -381,27 +437,127 @@ convergence scale is \(o(|\lambda(a)|^{-2})\). This is the new quantitative
 gate: prove a boundary/full-line resolvent estimate at that scale, or the
 renormalized route does not close.
 
-For the explicit choice (SS), this becomes the concrete target
+The compact-uniform statement has explicit constants.  On a compact set
+\(K\Subset\mathbb C_+\), put
+\(B_K=\sup_{z\in K}|M_0(z)|\) and
+\(A_{K,a}=1+|\lambda(a)|B_K\).  If
+
+\[
+ \sup_K|\varepsilon_a|\le
+ \frac{1}{2|\lambda(a)|A_{K,a}},                       \tag{DG}
+\]
+
+then the denominator in (AE) has modulus at least \(1/2\), and hence
+
+\[
+ \boxed{\sup_K|\widetilde m_a-M_0|
+ \le 2A_{K,a}^2\sup_K|\varepsilon_a|.}                \tag{UB}
+\]
+
+Consequently \(\sup_K|\varepsilon_a|=o(|\lambda(a)|^{-2})\) implies local
+uniform convergence after unshifting.  This is a theorem about the final
+renormalization step, not an estimate for the finite-interval boundary error.
+The latter remains the analytic obligation.
+
+For the explicit choice (SS), the *unnormalized* gauge would require
 
 \[
  \boxed{\varepsilon_a(z)=o\!\left(e^{-2a}\right)}
  \quad\text{locally uniformly on }\mathbb C_+.           \tag{BE}
 \]
 
-The module safe_weil_shift.py implements (AF)--(SS) and the corresponding
+The module safe_weil_shift.py implements (AF)--(SS) and this unnormalized
 inverse-Mobius error scale.
+
+### Canonical boundary normalization removes the exponential precision tax
+
+The preceding (e^{-2a}) loss is not intrinsic.  The characteristic function
+gives the Livsic function
+
+\[
+ \Theta_{a,\lambda}(z)=-\frac{A_a(z)}{B_a(z)},
+\]
+
+which satisfies \(\Theta_{a,\lambda}(i)=0\).  Its canonical Weyl function is
+
+\[
+ \mathfrak m_{a,\lambda}(z)
+ =i\frac{1+\Theta_{a,\lambda}(z)}
+        {1-\Theta_{a,\lambda}(z)}
+ =-i\frac{W(a,\pi;z)}{W(a,0;z)},
+ \qquad \mathfrak m_{a,\lambda}(i)=i.                  \tag{CN}
+\]
+
+Thus the limiting target must be put in the same gauge.  Write
+
+\[
+ M_0(i)=ic,\qquad c>0.
+\]
+
+For the Riemann xi function, numerical evaluation gives
+\(c=21.6750814829\ldots\); its positivity can also be reduced by the
+functional equation to the sign of \(\xi'(3/2)\).  The canonically normalized
+shift is the real Möbius map
+
+\[
+ \boxed{\mathcal T_{\lambda,c}(m)
+ =\frac{m+\lambda c^2}{c(1-\lambda m)}.}               \tag{CT}
+\]
+
+It has positive determinant \(c(1+\lambda^2c^2)\), preserves the upper
+half-plane, and sends \(M_0(i)=ic\) to (i).  Its inverse is
+
+\[
+ \mathcal T_{\lambda,c}^{-1}(y)
+ =\frac{c(y-\lambda c)}{1+c\lambda y}.                 \tag{CI}
+\]
+
+If \(\widehat y=\mathcal T_{\lambda,c}(m)+\varepsilon\), direct algebra gives
+
+\[
+ \mathcal T_{\lambda,c}^{-1}(\widehat y)-m
+ =\frac{c\varepsilon(1-\lambda m)^2}
+ {1+\lambda^2c^2+c\lambda\varepsilon(1-\lambda m)}.  \tag{CE}
+\]
+
+On a compact (K), let (B_K=\sup_K|M_0|).  If
+
+\[
+ |c\lambda|\sup_K|\varepsilon|
+ (1+|\lambda|B_K)\le\frac12(1+\lambda^2c^2),
+\]
+
+then
+
+\[
+ \sup_K|\mathcal T_{\lambda,c}^{-1}(\widehat y)-M_0|
+ \le
+ \frac{2c(1+|\lambda|B_K)^2}{1+\lambda^2c^2}
+ \sup_K|\varepsilon|.                                \tag{CB}
+\]
+
+The amplification factor tends to (2B_K^2/c), not infinity.  Therefore
+ordinary (o(1)) convergence to the canonically normalized shifted target
+is sufficient even for the explicit \(|\lambda(a)|\asymp e^a\).  The earlier
+\(o(e^{-2a})\) gate was a gauge artifact.  The functions
+`canonically_normalized_shifted_value` and
+`normalized_unshift_error_bound` implement (CT)--(CB).
 
 ## New proof obligation
 
-The viable branch is now more precise:
+The conditional implication is now precise:
 
 1. use the explicit safety shift (SS);
 2. fix a canonical boundary triple and hence a canonical Herglotz
    \(m_{a,\lambda(a)}\);
-3. prove the full-line shifted target and a boundary error
-   \(o(|\lambda(a)|^{-2})\) on compact subsets of \(\mathbb C_+\);
-4. apply (UN) and prove local uniform convergence to \(\Xi/\Xi'\).
+3. prove from the boundary continuations in (FC), not merely from the common
+   multiplier, that this particular function differs by (o(1)) from
+   \(\mathcal T_{\lambda(a),c}(M_0)\) on compact subsets of
+   \(\mathbb C_+\);
+4. apply (CI) and (CB) to obtain local uniform convergence to
+   \(\Xi/\Xi'\).
 
 Step 4 would prove RH. No near-zero admissible shift may be assumed in its
-proof, by the lemma above. The missing theorem is no longer exact shift
-invariance: it is the quantitative boundary-resolvent estimate in step 3.
+proof, by the lemma above.  Formula (FC) shows that step 3 is not an ordinary
+full-line resolvent estimate: it is an arithmetic boundary-continuation
+theorem, and it remains wholly open.
