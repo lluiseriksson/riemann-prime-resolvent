@@ -1474,6 +1474,166 @@ rules out using generic positive-kernel or PF\(_\infty\) machinery as the
 missing sign theorem.  Any successful theta argument must exploit a weaker,
 source-specific property that acts directly on (E82) or (E85).
 
+### A single arithmetic uniqueness sequence
+
+The accumulation-set formulation (EC) is not the smallest exact data set.
+There is a useful discrete replacement which keeps every sample in the Euler
+half-plane.  Put
+
+\[
+ \eta_n=n+\frac12,\qquad n=1,2,\ldots,
+\]
+
+and let \(\mathsf H_N\) be the leading \(N\times N\) matrix
+
+\[
+ \boxed{(\mathsf H_N)_{ij}
+   =\frac{L(i+\frac12)+L(j+\frac12)}{i+j+1},
+   \qquad 1\le i,j\le N.}                            \tag{E89}
+\]
+
+Then
+
+\[
+ \boxed{\mathrm{RH}\quad\Longleftrightarrow\quad
+        \mathsf H_N\succeq0\quad\hbox{for every }N\ge1.}           \tag{E90}
+\]
+
+Here is the point that makes the sparse sequence complete.  Positivity of
+all leading matrices is equivalent, by (E5), to positivity of every finite
+Pick matrix for the data
+\(F_\Xi(i\eta_n)\).  Nevanlinna--Pick compactness therefore gives a
+Herglotz function \(h\) which interpolates the whole sequence.  Restrict to
+the half-plane \(\mathbb H_1=\{\operatorname{Im}z>1\}\).  Both \(h\) and
+\(F_\Xi\) are of bounded type there: for the latter this follows after the
+functional equation from
+
+\[
+ F_\Xi(z)=\frac{i}{c_\Xi}
+ \left(\frac{\xi'}{\xi}\!\left(\frac12-iz\right)\right)^{-1}
+\]
+
+and the bounded-type property of \(\xi'/\xi\) in every half-plane
+\(\operatorname{Re}s>1+\delta\).  But the shifted nodes violate the
+Blaschke condition, since
+
+\[
+ \sum_{n\ge1}
+ \frac{\eta_n-1}{1+(\eta_n-1)^2}
+ =\sum_{n\ge1}\frac{n-\frac12}{1+(n-\frac12)^2}=\infty.             \tag{E91}
+\]
+
+Consequently the bounded-type meromorphic function \(h-F_\Xi\), which
+vanishes at every node, is identically zero.  Analytic continuation makes
+\(F_\Xi\) Herglotz on \(\mathbb C_+\), and hence gives RH.  This is the
+non-Blaschke uniqueness mechanism developed by Hinkkanen (1997); it replaces
+an interior accumulation point by an arithmetic uniqueness set at infinity.
+It does not prove the required matrix positivity.
+
+The benefit of the half-integer choice is algebraic.  Set
+
+\[
+ \ell_n=L\!\left(n+\frac12\right)=a_n-m_n,
+\]
+
+where
+
+\[
+ a_n=\frac1n+\frac1{n+1}-\frac12\log\pi
+      +\frac12\psi\!\left(\frac{n+1}{2}\right),
+ \qquad
+ m_n=\sum_{r\ge2}\frac{\Lambda(r)}{r^{n+1}}.                       \tag{E92}
+\]
+
+Thus \((m_n)_{n\ge1}\) is an ordinary Hausdorff moment sequence after an
+index shift.  Indeed the positive measure
+
+\[
+ d\mu(u)=\sum_{r\ge2}\frac{\Lambda(r)}{r^2}\,\delta_{1/r}(du),
+ \qquad m_n=\int_{(0,1/2]}u^{n-1}\,d\mu(u)                       \tag{E93}
+\]
+
+is finite, with total mass \(m_1=-\zeta'(2)/\zeta(2)\).
+
+Let \(C_{ij}=1/(i+j+1)\), the shifted Hilbert moment matrix, and let
+\(D_\ell=\operatorname{diag}(\ell_1,\ell_2,\ldots)\).  Equation (E89)
+is the exact anticommutator
+
+\[
+ \mathsf H=D_\ell C+CD_\ell.                                     \tag{E94}
+\]
+
+Equivalently, on \(t\mathbb R[t]\subset L^2(0,1)\), define the diagonal
+Euler multiplier
+
+\[
+ \mathcal L(t^n)=\ell_n t^n,
+ \qquad
+ \mathcal A(t^n)=a_n t^n,
+ \qquad
+ (\mathcal D_u p)(t)=p(ut).
+\]
+
+For \(p(t)=\sum_{n=1}^N c_nt^n\), direct integration gives
+
+\[
+ c^T\mathsf H_Nc=2\langle p,\mathcal Lp\rangle_{L^2(0,1)},
+ \qquad
+ \mathcal L=\mathcal A-
+   \sum_{r\ge2}\frac{\Lambda(r)}r\mathcal D_{1/r}.                \tag{E95}
+\]
+
+Therefore (E90) is the single explicit accretivity statement
+
+\[
+ \boxed{
+ \langle p,\mathcal A p\rangle
+ \ge \sum_{r\ge2}\frac{\Lambda(r)}r
+        \langle p,\mathcal D_{1/r}p\rangle
+ \quad\text{for every }p\in t\mathbb R[t].}                       \tag{E96}
+\]
+
+This form connects the Euler product to the transfer-matrix language without
+introducing zero data.  Indeed the unitary map
+
+\[
+ (Up)(v)=e^{-v/2}p(e^{-v}):L^2(0,1)\longrightarrow L^2(0,\infty)
+\]
+
+satisfies
+
+\[
+ U\mathcal D_{1/r}U^{-1}=\sqrt r\,S_{\log r},
+ \qquad U(t\partial_t)U^{-1}=-\partial_v-\frac12.                 \tag{E97}
+\]
+
+Thus (E96) is the lattice-exponential restriction of the translation gate
+(E84)--(E85).  The non-Blaschke argument proves that this restricted trial
+space is already complete for RH; it does not make its accretivity automatic.
+
+There is also an exact warning against treating the prime moments as a
+positive block.  For
+
+\[
+ P_{ij}=\frac{m_i+m_j}{i+j+1},\qquad i,j\in\{1,2\},
+\]
+
+write \(q=m_2/m_1\).  Since the support in (E93) lies in \((0,1/2]\),
+one has \(0<q\le1/2\), while
+
+\[
+ \boxed{\det P
+ =m_1^2\frac{-15q^2+34q-15}{240}<0.}                       \tag{E98}
+\]
+
+The polynomial in (E98) is increasing on \([0,1/2]\) and is still
+\(-7/4\) at \(q=1/2\).  Hence the positive Hausdorff measure of the prime
+powers produces an *indefinite* symmetrized dilation block already in size
+two.  Positivity of the weights, Catalan closure, or a generic moment theorem
+cannot prove (E96) termwise.  Any successful proof must couple the
+archimedean multiplier to the prime dilations and recover their signed
+cancellation.
+
 Thus no finite verification height can make this particular absolute-value
 argument uniform in \(n\). Raising \(T\) only moves the finite cutoff.  The
 column-sum argument removes the \(n^5\) loss of (E55), but its
@@ -1493,6 +1653,10 @@ in (E46)--(E48). The generalized budget and its cutoff are reproduced by
 `chebyshev_cardinal_l1_checkpoint.json` records the exploratory numerical
 observation that led to (E59), but that observation is not used in the proof.
 The algebraic Fourier and prime identities (E73)--(E79) are checked by
-`prime_side_pick_identity.py`.  These
-floating-point checks are not used in place of the displayed analytic
-inequalities. Global claims still require all separated principal minors.
+`prime_side_pick_identity.py`.  The arithmetic uniqueness reduction
+(E89)--(E98), including the exact Hilbert-multiplier identity and the
+indefiniteness of the positive prime-moment block, is checked by
+`arithmetic_pick_sequence.py`.
+The floating-point checks elsewhere in this audit are not used in place of
+the displayed analytic inequalities. Global claims still require all
+separated principal minors.
