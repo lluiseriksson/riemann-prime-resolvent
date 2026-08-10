@@ -198,12 +198,12 @@ The source-normalized Galerkin diagnostic at \(a=0.72\), 32 Dirichlet modes,
 
 | \(\lambda\) | characteristic quotient | \(S_\lambda/C_\lambda\) |
 |---:|---:|---:|
-| -0.1 | \(-0.0542640+0.3443723i\) | \(-0.0390826+0.0318106i\) |
-| -1 | \(-0.0792823+0.2960457i\) | \(-0.1038478+0.0838308i\) |
-| -10 | \(-0.0871021+0.2778648i\) | \(-0.1297620+0.1042172i\) |
+| -0.1 | \(-0.0842316+0.2858732i\) | \(-0.1180225+0.0959359i\) |
+| -1 | \(-0.0866869+0.2794367i\) | \(-0.1273774+0.1028080i\) |
+| -10 | \(-0.0880132+0.2756963i\) | \(-0.1329035+0.1067382i\) |
 
-The relative spread is \(0.21276\). Formula (SD) closes to
-\(4.6\cdot10^{-14}\), and (PS) to \(1.4\cdot10^{-15}\). This is a finite
+The relative spread is \(0.0364293\). Formula (SD) closes to
+\(1.4\cdot10^{-14}\), and (PS) to \(1.3\cdot10^{-15}\). This is a finite
 diagnostic, not a theorem about the infinite operator, but it falsifies
 automatic shift invariance as an algebraic principle.
 
@@ -213,12 +213,12 @@ pre-registered upper-half-plane probes, the cross-ratios for shifts
 \(-0.1,-1,-10\) are respectively
 
 \[
- 0.6036746-0.2287135i,\quad
- 0.6103380-0.2268093i,\quad
- 0.6145658-0.2255171i.
+ 0.6045327-0.2287167i,\quad
+ 0.6104453-0.2268132i,\quad
+ 0.6145781-0.2255178i.
 \]
 
-The largest defect is \(0.0113506\). Thus any Möbius covariance needed in
+The largest defect is \(0.0105424\). Thus any Möbius covariance needed in
 the limit must emerge asymptotically after a canonical boundary
 normalization; it is not present exactly in the raw finite quotient.
 
@@ -229,7 +229,7 @@ The production diagnostic is reproducible with
       --z-real 0.7 --z-imag 0.8 --shifts -0.1 -1 -10
 
 The captured JSON artifact has SHA-256
-`04C337EE4339CD9268179CB0EE237180985FDDAC015D23FC1E4D52013B8AAE81`.
+`8E8635066E31E7FC952D0102BBDD37CBE572031C2CD5CC59B81344AA8C0F14BB`.
 
 ## Shifted Herglotz targets remove the near-zero-shift requirement
 
@@ -253,6 +253,94 @@ The forward implication follows from the corresponding property of \(M_0\).
 Conversely, every off-real zero \(\rho\) of multiplicity \(m\) gives
 \(M_\tau(z)=(z-\rho)/m+O((z-\rho)^2)\), an interior zero impossible for a
 nonconstant Herglotz function.
+
+### An explicit admissible shift for every support
+
+The safe shift need not be existential. The archimedean Fourier multiplier is
+
+\[
+ h(t)=\operatorname{Re}\psi\!\left(\frac14+\frac{it}{2}\right)-\log\pi.
+\]
+
+The series for the digamma function shows term by term that
+\(h(t)\ge h(0)\), with
+
+\[
+ h(0)=\psi(1/4)-\log\pi
+ =-\gamma-\frac{\pi}{2}-3\log2-\log\pi.                 \tag{AF}
+\]
+
+The polar contribution is
+\(2\operatorname{Re}(V_+\overline{V_-})\), so
+Cauchy--Schwarz gives
+
+\[
+ 2\operatorname{Re}(V_+\overline{V_-})
+ \ge-|V_+|^2-|V_-|^2\ge-4\sinh(a)\|v\|_2^2.
+\]
+
+For every active prime power, the same inequality bounds its two translation
+correlations below by \(-2\Lambda(n)\|v\|_2^2/\sqrt n\). Therefore
+
+\[
+ \lambda_a\ge h(0)-4\sinh a
+ -2\sum_{2\le n\le e^{2a}}\frac{\Lambda(n)}{\sqrt n}.   \tag{LB1}
+\]
+
+This already gives a finite computable shift. A closed elementary version
+follows from
+
+\[
+ \Lambda(n)\le\log n\le2a,\qquad
+ \sum_{n=2}^{N}\frac1{\sqrt n}
+ \le\int_1^N\frac{dx}{\sqrt x}=2(\sqrt N-1).
+\]
+
+Namely,
+
+\[
+ \sum_{2\le n\le e^{2a}}\frac{\Lambda(n)}{\sqrt n}
+ \le4a(e^a-1),
+\]
+
+There is a better elementary estimate for large support. Let
+\(\psi(X)=\sum_{n\le X}\Lambda(n)\). For powers of two, the fact that the
+prime-power product in \((N,2N]\) divides the central binomial coefficient
+gives
+
+\[
+ \psi(2N)-\psi(N)\le\log {2N\choose N}\le2N\log2.
+\]
+
+Dyadic summation followed by comparison with the next power of two yields
+\(\psi(X)\le4X\log2\) for every \(X\ge1\). Partial summation then gives
+
+\[
+\begin{aligned}
+ \sum_{n\le X}\frac{\Lambda(n)}{\sqrt n}
+ &=\frac{\psi(X)}{\sqrt X}
+   +\frac12\int_1^X\frac{\psi(t)}{t^{3/2}}\,dt\\
+ &\le8\log2\,\sqrt X.
+\end{aligned}
+\]
+
+Taking the better of the two bounds, we obtain
+
+\[
+ \boxed{\lambda_a\ge
+ L(a):=h(0)-4\sinh a
+ -2\min\{4a(e^a-1),\,8\log2\,e^a\}.}                   \tag{LB2}
+\]
+
+Thus
+
+\[
+ \lambda_{\mathrm{safe}}(a)=L(a)-1<\lambda_a            \tag{SS}
+\]
+
+is an explicit unconditional choice for every \(a>0\). It uses neither zero
+locations nor RH. Its magnitude is
+\((2+16\log2)e^a(1+o(1))\).
 
 This matters because Section 8 of Suzuki writes the continuous-kernel shift
 as \(S_a=G_a-\lambda R_a\), with the inverse Laplacian \(R_a\). Formally on
@@ -293,11 +381,21 @@ convergence scale is \(o(|\lambda(a)|^{-2})\). This is the new quantitative
 gate: prove a boundary/full-line resolvent estimate at that scale, or the
 renormalized route does not close.
 
+For the explicit choice (SS), this becomes the concrete target
+
+\[
+ \boxed{\varepsilon_a(z)=o\!\left(e^{-2a}\right)}
+ \quad\text{locally uniformly on }\mathbb C_+.           \tag{BE}
+\]
+
+The module safe_weil_shift.py implements (AF)--(SS) and the corresponding
+inverse-Mobius error scale.
+
 ## New proof obligation
 
 The viable branch is now more precise:
 
-1. choose an explicit, provably admissible safety shift \(\lambda(a)\);
+1. use the explicit safety shift (SS);
 2. fix a canonical boundary triple and hence a canonical Herglotz
    \(m_{a,\lambda(a)}\);
 3. prove the full-line shifted target and a boundary error

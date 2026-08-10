@@ -59,8 +59,10 @@ defining Weil functional directly. For \(f=v*\widetilde v\),
 \[
 \begin{aligned}
 Q_W(v)={}&
-\left|\int v(x)e^{x/2}\,dx\right|^2+
-\left|\int v(x)e^{-x/2}\,dx\right|^2\\
+2\operatorname{Re}\!\left[
+\left(\int v(x)e^{x/2}\,dx\right)
+\overline{\left(\int v(x)e^{-x/2}\,dx\right)}
+\right]\\
 &-(\log 4\pi+\gamma)\lVert v\rVert_2^2\\
 &-\int_0^\infty
 \frac{e^{-t/2}(f(t)+f(-t))-2e^{-t}f(0)}{1-e^{-2t}}\,dt\\
@@ -80,6 +82,13 @@ orthonormal Dirichlet modes
 
 This eliminates the \(10^8\)-scale Gram conditioning seen in a raw
 polynomial-times-bump basis.
+
+The polar block is consequently
+\(p_+p_-^*+p_-p_+^*\). The previously used
+\(p_+p_+^*+p_-p_-^*\) agrees on even functions but has the wrong sign on odd
+functions. The direct discretization now uses the cross Gram. The rigorous
+Legendre certificates use the independent \(r''\)-kernel decomposition and
+already had the cross term with the correct sign.
 
 ## Reproducible audit
 

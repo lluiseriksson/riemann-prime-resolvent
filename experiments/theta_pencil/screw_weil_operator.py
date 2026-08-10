@@ -122,7 +122,11 @@ def build_screw_weil_components(
     t_weights = _simpson_weights(grid_points - 1) * (dt / 3.0)
     plus = basis @ (t_weights * np.exp(t / 2.0))
     minus = basis @ (t_weights * np.exp(-t / 2.0))
-    polar = np.outer(plus, plus) + np.outer(minus, minus)
+    # For f = v * tilde(v), the two polar evaluations are
+    # V_+ conjugate(V_-) + V_- conjugate(V_+), not the two squared norms.
+    # The distinction vanishes on the even sector and reverses sign on the
+    # odd sector.
+    polar = np.outer(plus, minus) + np.outer(minus, plus)
 
     prime_matrix = np.zeros_like(gram)
     active = []

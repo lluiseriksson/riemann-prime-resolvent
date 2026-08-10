@@ -36,6 +36,32 @@ def test_source_normalized_component_identity() -> None:
     assert np.linalg.eigvalsh(components.gram)[0] > 0.999999999
 
 
+def test_polar_component_is_the_cross_gram_from_weil_convolution() -> None:
+    half_width = 0.4
+    grid_points = 2049
+    basis_size = 6
+    components = build_screw_weil_components(
+        half_width=half_width,
+        grid_points=grid_points,
+        basis_size=basis_size,
+    )
+    coordinate = np.linspace(-half_width, half_width, grid_points)
+    spacing = float(coordinate[1] - coordinate[0])
+    from experiments.theta_pencil.semilocal_weil_matrix import _simpson_weights
+    from experiments.theta_pencil.screw_weil_operator import dirichlet_basis
+
+    weights = _simpson_weights(grid_points - 1) * (spacing / 3.0)
+    basis = dirichlet_basis(coordinate, half_width, basis_size)
+    plus = basis @ (weights * np.exp(coordinate / 2.0))
+    minus = basis @ (weights * np.exp(-coordinate / 2.0))
+    expected = np.outer(plus, minus) + np.outer(minus, plus)
+    assert components.polar == pytest.approx(expected)
+
+    odd = np.zeros(basis_size)
+    odd[1] = 1.0
+    assert float(odd @ components.polar @ odd) < 0.0
+
+
 def test_lowest_ritz_value_is_grid_stable_at_first_two_primes() -> None:
     # This eigenvalue is an 8-digit cancellation.  Coarser grids are useful
     # falsifiers but are not fine enough to certify its leading digits.

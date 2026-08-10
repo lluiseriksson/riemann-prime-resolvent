@@ -19,6 +19,12 @@ Extension by zero of the test space therefore gives
 This is an unconditional bounded-support theorem. It is not RH: Suzuki's
 criterion requires nonnegativity for every support radius.
 
+The certified source uses the exact Legendre logarithmic operator together
+with the signed smooth kernel \(r''(t)=-2\cosh(t/2)+\cdots\). Thus its polar
+piece is the cross Gram \(p_+p_-^*+p_-p_+^*\). It does not depend on the older
+direct-quadrature helper whose odd polar sign was subsequently corrected, so
+that implementation correction does not alter this certificate.
+
 ## Why the former calculation did not close
 
 The first support-0.72 run charged the whole degree band
