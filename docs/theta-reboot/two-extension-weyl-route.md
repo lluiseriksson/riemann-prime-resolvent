@@ -1189,3 +1189,58 @@ Formula (MT) therefore lowers the analytic target from all of
 \(\mathbb C_+\) to one safe open set in the absolutely convergent
 Euler-product region. It does not by itself control the ratio of the two
 boundary continuations in (FC).
+
+### A one-sided tail theorem, and why it does not yet glue
+
+There is an unconditional estimate on either exterior half-line. Let
+\(z=\tau+i\eta\) with \(\eta>1/2\). Swapping the finite source integral with
+the absolutely convergent prime sum gives
+
+\[
+\begin{aligned}
+ \int_a^\infty e^{-\eta x}|P_v(x)|\,dx
+ &\le \int_{-a}^{a}|v(y)|e^{-\eta y}
+ \sum_{n>e^{a-y}}\frac{\Lambda(n)}{n^{\eta+1/2}}\,dy.
+\end{aligned}
+\]
+
+The elementary Chebyshev bound \(\psi(X)\le4(\log2)X\), followed by partial
+summation, implies for \(\sigma>1\)
+
+\[
+ \sum_{n>N}\frac{\Lambda(n)}{n^\sigma}
+ \le4(\log2)\frac{\sigma}{\sigma-1}N^{1-\sigma}.
+\]
+
+With \(\sigma=\eta+1/2\), the two displays give
+
+\[
+ \int_a^\infty e^{-\eta x}|P_v(x)|\,dx
+ \le4(\log2)\frac{\eta+1/2}{\eta-1/2}
+ e^{-(\eta-1/2)a}
+ \int_{-a}^{a}|v(y)|e^{-y/2}\,dy.                       \tag{RT}
+\]
+
+For the explicit safety shift, \(T_{a,\lambda}\ge I\). If
+\(T_{a,\lambda}v=e^{\pm x}\), then
+
+\[
+ \|v\|_2\le\sqrt{\sinh(2a)},\qquad
+ \int_{-a}^{a}|v(y)|e^{-y/2}dy
+ \le\sqrt{2\sinh a\,\sinh(2a)}.
+\]
+
+Thus the right prime tail in (RT) is
+\(O_\eta(e^{-(\eta-2)a})\) and tends to zero on every closed half-plane
+\(\eta>2\). The smooth terms in (EC) obey the same or a better threshold.
+
+This does **not** prove the boundary-continuation theorem. The reflected left
+tail is damped by the same argument only when \(\operatorname{Im}z<-2\).
+There is no common open strip in which both ordinary one-sided transforms
+converge with these estimates. This is exactly where a Wiener--Hopf-type glue,
+an analytic subtraction, or a projective cancellation between the two
+deficiency channels is required. Treating (RT) as a bilateral Fourier bound
+would silently replace the missing theorem. The functions
+\`chebyshev_right_prime_tail_bound\` and
+\`safe_shift_right_prime_tail_bound\` record the rigorous one-sided result
+and its sharp exponent under these elementary norm estimates.

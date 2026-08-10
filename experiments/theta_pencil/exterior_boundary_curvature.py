@@ -154,3 +154,63 @@ def normalized_remainder_pairing(
         - source[-1] * remainder[-1]
         + np.trapezoid(remainder * (slope + 0.5 * source), points)
     )
+
+
+def chebyshev_right_prime_tail_bound(
+    half_width: float,
+    imaginary_part: float,
+    weighted_source_l1: float,
+) -> float:
+    """Bound the right exterior prime tail in an absolute-convergence half-plane.
+
+    With ``eta = Im(z) > 1/2`` and
+
+    ``P_v(x) = sum Lambda(n) / sqrt(n) * v(x-log(n))``, this returns an
+    elementary upper bound for
+
+    ``integral_a^infinity exp(-eta*x) * |P_v(x)| dx``.
+
+    It uses only ``psi(X) <= 4*log(2)*X``.  The source input is
+    ``integral_-a^a |v(y)|*exp(-y/2) dy``.
+    """
+
+    width = float(half_width)
+    eta = float(imaginary_part)
+    source = float(weighted_source_l1)
+    if width <= 0.0:
+        raise ValueError("half_width must be positive")
+    if eta <= 0.5:
+        raise ValueError("imaginary_part must exceed one half")
+    if source < 0.0:
+        raise ValueError("weighted_source_l1 must be nonnegative")
+    sigma = eta + 0.5
+    chebyshev_constant = 4.0 * math.log(2.0)
+    return (
+        chebyshev_constant
+        * sigma
+        / (sigma - 1.0)
+        * math.exp(-(sigma - 1.0) * width)
+        * source
+    )
+
+
+def safe_shift_right_prime_tail_bound(
+    half_width: float,
+    imaginary_part: float,
+) -> float:
+    """Specialize the one-sided bound to a pencil with ``T >= I``.
+
+    If ``T v = exp(plus_or_minus x)`` and ``T >= I``, then
+    ``||v||_2 <= sqrt(sinh(2a))``.  Cauchy--Schwarz gives the weighted source
+    norm used by :func:`chebyshev_right_prime_tail_bound`.
+    """
+
+    width = float(half_width)
+    if width <= 0.0:
+        raise ValueError("half_width must be positive")
+    weighted_source = math.sqrt(
+        math.sinh(2.0 * width) * 2.0 * math.sinh(width)
+    )
+    return chebyshev_right_prime_tail_bound(
+        width, imaginary_part, weighted_source
+    )

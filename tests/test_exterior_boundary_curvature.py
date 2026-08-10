@@ -5,9 +5,11 @@ import pytest
 
 from experiments.theta_pencil.exterior_boundary_curvature import (
     active_exterior_prime_powers,
+    chebyshev_right_prime_tail_bound,
     exterior_curvature,
     normalized_remainder_pairing,
     pnt_centered_prime_window,
+    safe_shift_right_prime_tail_bound,
     smooth_screw_second,
     smooth_screw_second_series,
 )
@@ -37,6 +39,21 @@ def test_normalized_remainder_pairing_annihilates_constants_for_mean_zero_source
         coordinate, values, derivatives, remainder + 17.0
     )
     assert translated == pytest.approx(original, abs=2.0e-14)
+
+
+def test_one_sided_safe_shift_tail_has_the_eta_two_threshold():
+    eta = 2.4
+    first = safe_shift_right_prime_tail_bound(8.0, eta)
+    second = safe_shift_right_prime_tail_bound(12.0, eta)
+    assert second < first
+    expected_asymptotic_ratio = np.exp(-(eta - 2.0) * 4.0)
+    assert second / first == pytest.approx(expected_asymptotic_ratio, rel=2.0e-4)
+
+    direct = chebyshev_right_prime_tail_bound(1.0, 1.5, 3.0)
+    expected = 4.0 * np.log(2.0) * 2.0 * np.exp(-1.0) * 3.0
+    assert direct == pytest.approx(expected)
+    with pytest.raises(ValueError):
+        chebyshev_right_prime_tail_bound(1.0, 0.5, 3.0)
 
 
 def test_smooth_kernel_geometric_decomposition():
