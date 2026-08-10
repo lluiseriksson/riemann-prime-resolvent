@@ -1634,6 +1634,129 @@ cannot prove (E96) termwise.  Any successful proof must couple the
 archimedean multiplier to the prime dilations and recover their signed
 cancellation.
 
+### Jacobi coordinates close the first infinite band
+
+The Hilbert form in (E95) has a canonical orthogonal basis.  Let \(p_n\) be
+the monic degree-\(n\) polynomial obtained from the shifted Jacobi polynomial
+
+\[
+ p_n(t)=\frac{tP_{n-1}^{(0,2)}(2t-1)}{\binom{2n}{n-1}},
+ \qquad n\ge1.
+\]
+
+It is orthogonal to \(t,t^2,\ldots,t^{n-1}\) in \(L^2(0,1)\), and direct
+Jacobi algebra gives
+
+\[
+ [t^{n-1}]p_n=-\frac{n^2-1}{2n},
+ \qquad
+ h_n:=\|p_n\|_2^2
+ =\frac1{(2n+1)\binom{2n}{n-1}^2}.                 \tag{E99}
+\]
+
+Put \(e_n=p_n/\sqrt{h_n}\), and write the symmetric matrix of the real part
+of \(\mathcal L\) in this basis as
+
+\[
+ B_{mn}=\langle e_m,\mathcal Le_n\rangle
+       +\langle\mathcal Le_m,e_n\rangle.
+\]
+
+Since \(\mathcal L\) preserves degree and is diagonal on monomials, its
+matrix in the \(p_n\) basis is triangular.  Equations (E92) and (E99) then
+give the exact first band
+
+\[
+ \boxed{B_{nn}=2\ell_n,\qquad
+ B_{n-1,n}=\sqrt{4n^2-1}\,(\ell_n-\ell_{n-1}).}     \tag{E100}
+\]
+
+Consequently every adjacent principal block is positive semidefinite exactly
+when
+
+\[
+ \boxed{
+ 4\ell_{n-1}\ell_n
+ -(4n^2-1)(\ell_n-\ell_{n-1})^2\ge0.}              \tag{E101}
+\]
+
+This whole infinite family can be closed unconditionally.  For
+\(2\le n\le233\), it is a compression of the finite matrices already proved
+positive in (E71).  For \(n\ge234\), write
+\(\ell_{n-1}=\xi'(n)/\xi(n)\).  The standard inequalities
+
+\[
+ \psi(x)\ge\log x-\frac1x,qquad
+ \psi_1(x)\le\frac1x+\frac1{x^2}
+\]
+
+and \(\Lambda(r)\le\log r\), followed by the integral test, give
+
+\[
+ \ell_{n-1}\ge
+ \frac1{n-1}+\frac12\log\frac n{2\pi}-E_0(n)>1,                 \tag{E102}
+\]
+
+where
+
+\[
+ E_0(n)=\frac{\log2}{2^n}
+ +2^{1-n}\left(\frac{\log2}{n-1}+\frac1{(n-1)^2}\right),
+\]
+
+and, throughout \(\sigma\in[n,n+1]\),
+
+\[
+ 0<L'(\sigma-\tfrac12)
+ \le\frac1{2\sigma}+\frac1{\sigma^2}+E_1(\sigma)
+ <\frac1\sigma.                                                   \tag{E103}
+\]
+
+Here an explicit decreasing majorant is
+
+\[
+E_1(\sigma)=\frac{(\log2)^2}{2^\sigma}
+ +2^{1-\sigma}\left(
+ \frac{(\log2)^2}{\sigma-1}
+ +\frac{2\log2}{(\sigma-1)^2}
++\frac2{(\sigma-1)^3}\right).
+\]
+
+The function \(\sigma E_1(\sigma)\) is decreasing on this range and its
+value at \(234\) is less than \(1/4\).  Together with
+\(1/\sigma^2<1/(4\sigma)\), this proves the final strict inequality in
+(E103).  The lower bound in (E102) is increasing for \(n\ge234\) and equals
+\(1.8130138\ldots\) at the endpoint.
+
+Integrating (E103) yields
+\(0<\ell_n-\ell_{n-1}<1/n\).  Substitution in (E101) gives the strict
+lower bound
+
+\[
+ 4\ell_{n-1}\ell_n-(4n^2-1)(\ell_n-\ell_{n-1})^2
+ >4-\frac{4n^2-1}{n^2}=\frac1{n^2}>0.              \tag{E104}
+\]
+
+Thus every adjacent \(2\times2\) Jacobi block is unconditionally positive,
+at every degree.  This is stronger than a finite-order computation but is
+still not RH: positive adjacent blocks do not imply positivity of the whole
+matrix.
+
+The next coupling is also explicit.  With
+\(\Delta_n=\ell_n-\ell_{n-1}\), the same triangular calculation gives
+
+\[
+ \boxed{
+ B_{n-2,n}=\sqrt{(2n-3)(2n+1)}
+ \bigl(n\Delta_n-(n-1)\Delta_{n-1}\bigr).}          \tag{E105}
+\]
+
+Hence the first genuinely new tail obstruction is not the nearest-neighbour
+slope but the weighted curvature in (E105), followed by the longer Jacobi
+bands.  This supplies a concrete continuation target: bound the full row sum
+of these weighted finite differences by \(2\ell_n\), or find a signed
+factorization that avoids absolute row sums.
+
 Thus no finite verification height can make this particular absolute-value
 argument uniform in \(n\). Raising \(T\) only moves the finite cutoff.  The
 column-sum argument removes the \(n^5\) loss of (E55), but its
@@ -1657,6 +1780,9 @@ The algebraic Fourier and prime identities (E73)--(E79) are checked by
 (E89)--(E98), including the exact Hilbert-multiplier identity and the
 indefiniteness of the positive prime-moment block, is checked by
 `arithmetic_pick_sequence.py`.
+The Jacobi normalization, the first two off-diagonal formulas
+(E99)--(E105), and the large-degree Euler bounds are checked by
+`jacobi_band_pick.py`.
 The floating-point checks elsewhere in this audit are not used in place of
 the displayed analytic inequalities. Global claims still require all
 separated principal minors.
