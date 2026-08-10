@@ -6,6 +6,7 @@ import pytest
 from experiments.theta_pencil.exterior_boundary_curvature import (
     active_exterior_prime_powers,
     exterior_curvature,
+    normalized_remainder_pairing,
     pnt_centered_prime_window,
     smooth_screw_second,
     smooth_screw_second_series,
@@ -22,6 +23,20 @@ def test_pnt_centering_is_the_exact_growing_smooth_counterterm():
     assert remainder == pytest.approx(prime - main)
     moment = np.trapezoid(np.exp(-coordinate / 2.0) * values, coordinate)
     assert main == pytest.approx(np.exp(exterior / 2.0) * moment)
+
+
+def test_normalized_remainder_pairing_annihilates_constants_for_mean_zero_source():
+    coordinate = np.linspace(-0.7, 0.7, 4001)
+    values = coordinate
+    derivatives = np.ones_like(coordinate)
+    remainder = np.sin(1.3 * coordinate) + 0.2 * coordinate**2
+    original = normalized_remainder_pairing(
+        coordinate, values, derivatives, remainder
+    )
+    translated = normalized_remainder_pairing(
+        coordinate, values, derivatives, remainder + 17.0
+    )
+    assert translated == pytest.approx(original, abs=2.0e-14)
 
 
 def test_smooth_kernel_geometric_decomposition():

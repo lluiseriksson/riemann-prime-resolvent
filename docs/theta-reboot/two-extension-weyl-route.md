@@ -1094,15 +1094,44 @@ the precise analytic input still missing from the Weyl route: signed control
 of the normalized PNT remainder against the resolvent source, together with
 its endpoint traces.
 
-This also closes the naive absolute-value route. Known unconditional PNT
-remainders do not make \(R(X)/\sqrt X\) decay; even RH gives only the classical
-von-Koch scale \(R(X)=O(\!\sqrt X\log^2 X)\). Taking absolute values in (PR)
-therefore asks for essentially RH-strength arithmetic control and cannot be
-used as an unconditional proof step. Any viable continuation must exploit
-signed cancellation in this specific pairing or a structural identity for
-the endpoint traces. The helper \`pnt_centered_prime_window\` checks the exact
-main-term subtraction numerically without treating it as evidence for that
-missing estimate.
+There is one further exact cancellation. Set
+
+\[
+ r(u)=e^{-u/2}R(e^u).
+\]
+
+Because \(\int_{-a}^{a}v=0\), the right-hand side of (PR) is unchanged when
+\(r\) is replaced by \(r-C\) for any constant \(C\). Indeed, the coefficient
+of \(C\) is
+
+\[
+ v(-a)-v(a)+\int_{-a}^{a}(v'(y)+\tfrac12v(y))\,dy=0.
+\]
+
+For real \(r\), choosing the midpoint of its range as \(C\) therefore yields
+the quantitative oscillation gate
+
+\[
+ |\mathcal R_v(x)|\le\frac12
+ \operatorname{osc}_{[x-a,x+a]}r\,
+ \left(
+ |v(-a)|+|v(a)|+
+ \|v'+\tfrac12v\|_{L^1(-a,a)}
+ \right).                                               \tag{OG}
+\]
+
+Thus a raw bound for \(|R(X)|/\sqrt X\) is not the correct target: the
+mean-zero source removes its locally constant component. The remaining
+absolute-value route nevertheless requires a shrinking local oscillation in
+(OG), weighted by the actual resolvent source. Standard unconditional PNT
+remainder bounds control the size of \(r\), not this shrinking product, and
+do not close (OG); even RH gives only the classical von-Koch size estimate
+\(R(X)=O(\!\sqrt X\log^2 X)\). A viable continuation must therefore prove the
+oscillation-source product directly, exploit stronger signed cancellation,
+or find a structural identity for the endpoint traces. The helpers
+\`pnt_centered_prime_window\` and \`normalized_remainder_pairing\` check the
+two exact cancellations without treating them as evidence for the missing
+asymptotic estimate.
 
 ### Mellin closure and a one-open-set reduction
 

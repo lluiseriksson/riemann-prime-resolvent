@@ -118,3 +118,39 @@ def pnt_centered_prime_window(
         np.trapezoid(np.exp(-points / 2.0) * source, points)
     )
     return prime, main, prime - main
+
+
+def normalized_remainder_pairing(
+    coordinate: np.ndarray,
+    values: np.ndarray,
+    derivatives: np.ndarray,
+    normalized_remainder: np.ndarray,
+) -> float:
+    """Evaluate the integration-by-parts remainder functional.
+
+    The last input samples
+
+    ``r_x(y) = exp(-(x-y)/2) * R(exp(x-y))``
+
+    on the same increasing ``y`` grid as the source.  For a mean-zero source,
+    the functional is invariant under adding a constant to ``r_x``.  This is
+    the exact cancellation behind the local-oscillation bound in the notes.
+    """
+
+    points = np.asarray(coordinate, dtype=float)
+    source = np.asarray(values, dtype=float)
+    slope = np.asarray(derivatives, dtype=float)
+    remainder = np.asarray(normalized_remainder, dtype=float)
+    if points.ndim != 1 or len(points) < 3:
+        raise ValueError("coordinate must be a one-dimensional grid")
+    if source.shape != points.shape:
+        raise ValueError("values has the wrong shape")
+    if slope.shape != points.shape:
+        raise ValueError("derivatives has the wrong shape")
+    if remainder.shape != points.shape:
+        raise ValueError("normalized_remainder has the wrong shape")
+    return float(
+        source[0] * remainder[0]
+        - source[-1] * remainder[-1]
+        + np.trapezoid(remainder * (slope + 0.5 * source), points)
+    )
