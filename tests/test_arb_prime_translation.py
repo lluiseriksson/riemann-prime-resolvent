@@ -3,6 +3,7 @@ import pytest
 from numpy.polynomial.legendre import leggauss
 
 from experiments.theta_pencil.arb_prime_translation import (
+    _restarted_arb_legendre_values,
     build_arb_prime_two_action,
     build_arb_prime_two_matrix,
 )
@@ -58,3 +59,12 @@ def test_prime_two_formula_rejects_widths_outside_first_prime_window(half_width)
         build_arb_prime_two_matrix(half_width, 4, 8)
     with pytest.raises(ValueError, match="prime-2-only"):
         build_arb_prime_two_action(half_width, coefficients, 8)
+
+
+def test_restarted_legendre_recurrence_encloses_direct_values():
+    from flint import arb
+
+    cut = arb("-0.2836046756755068", "1e-30")
+    values = _restarted_arb_legendre_values(cut, 24, arb, stride=5)
+    for degree, value in enumerate(values):
+        assert (value - cut.legendre_p(degree)).contains(0)

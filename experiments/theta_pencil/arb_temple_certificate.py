@@ -8,6 +8,7 @@ from dataclasses import dataclass
 import numpy as np
 
 from experiments.theta_pencil.arb_prime_translation import (
+    ArbPrimeAction,
     _arb_radius_as_float,
     build_arb_prime_two_action,
 )
@@ -55,6 +56,28 @@ def _float_lower(value) -> float:
     return math.nextafter(float(value.lower()), -math.inf)
 
 
+def _trial_build_residual_end(dimension: int, residual_end: int) -> int:
+    """Small auxiliary cutoff sufficient to construct the finite trial."""
+
+    return min(residual_end, max(8192, dimension + 1))
+
+
+def _minimum_prime_precision(dimension: int, residual_end: int) -> int:
+    """Conservative preflight precision for the endpoint-jet cancellation.
+
+    The stable integration-by-parts recurrence removes growth with the target
+    cutoff.  The remaining cancellation recombines endpoint derivatives of a
+    degree-``dimension`` trial and is governed by the source dimension.  This
+    guard is not used as an error estimate (the returned balls provide that);
+    it keeps an under-resolved computation from spending a long time only to
+    export an infinite radius.  ``residual_end`` remains in the signature so
+    callers need not maintain a second preflight interface.
+    """
+
+    del residual_end
+    return 2 * dimension * math.ceil(math.log2(dimension)) + 1024
+
+
 def certify_temple_trial(
     half_width: float = 0.4,
     trial_parity: int = 0,
@@ -64,29 +87,54 @@ def certify_temple_trial(
     variation_partitions: int = 32,
     precision: int = 1024,
     prime_precision: int = 10240,
+    prime_action: ArbPrimeAction | None = None,
 ) -> ArbTempleCertificate:
     """Certify positivity of the lowest point assuming the supplied gap floor."""
     if trial_parity not in (0, 1):
         raise ValueError("trial_parity must be zero or one")
     if dimension < 4 or residual_end <= dimension:
         raise ValueError("require 4 <= dimension < residual_end")
+    minimum_prime_precision = _minimum_prime_precision(dimension, residual_end)
+    if prime_precision < minimum_prime_precision:
+        raise ValueError(
+            "prime_precision is too small for the endpoint-jet preflight: "
+            f"need at least {minimum_prime_precision} bits"
+        )
     try:
         from flint import arb, ctx
     except ImportError as error:  # pragma: no cover
         raise RuntimeError("python-flint is required") from error
 
+    # The finite trial vector depends only on ``dimension``.  Asking the
+    # floating audit to follow a very long certified tail would construct a
+    # dense Gauss rule of order O(residual_end), even though only its
+    # coefficients are used below.  Cap this auxiliary build; all residual
+    # coefficients through ``residual_end`` are subsequently recomputed in
+    # Arb by the linear-memory recurrence.
+    trial_build_end = _trial_build_residual_end(dimension, residual_end)
     floating = run_temple_trial_audit(
         half_width=half_width,
         trial_dimension=dimension,
-        residual_end=residual_end,
+        residual_end=trial_build_end,
         second_floor=second_floor,
         trial_parity=trial_parity,
     )
     coefficients = floating.coefficients.copy()
     coefficients[1 - trial_parity :: 2] = 0.0
-    prime = build_arb_prime_two_action(
-        half_width, coefficients, residual_end, prime_precision
-    )
+    if prime_action is None:
+        prime = build_arb_prime_two_action(
+            half_width, coefficients, residual_end, prime_precision
+        )
+    else:
+        prime = prime_action
+        if len(prime.midpoint) != residual_end or len(prime.radius) != residual_end:
+            raise ValueError("the cached prime action has the wrong degree cutoff")
+        if prime.precision != prime_precision:
+            raise ValueError("the cached prime action has the wrong precision")
+        if not np.all(np.isfinite(prime.midpoint)) or not np.all(
+            np.isfinite(prime.radius)
+        ):
+            raise ValueError("the cached prime action is not finite")
     smooth_power = 23
     # The kernel |x-y|^p maps an input polynomial of degree < dimension to
     # a polynomial of degree at most dimension+p.  Hence the truncated smooth
@@ -162,7 +210,7 @@ def certify_temple_trial(
         low_residual_square = arb(0)
         for degree in range(dimension):
             residual = low_action[degree] - rayleigh_truncated * vector[degree]
-            low_residual_square += residual * residual
+            low_residual_square += residual.abs_upper() ** 2
 
         weighted = [
             vector[degree] * arb(2 * degree + 1).sqrt()
@@ -184,7 +232,8 @@ def certify_temple_trial(
                 arb, prime.midpoint[high], prime.radius[high]
             )
             smooth_value = smooth_action[high] if high < smooth_extent else arb(0)
-            high_residual_square += (prime_value + potential + smooth_value) ** 2
+            high_value = prime_value + potential + smooth_value
+            high_residual_square += high_value.abs_upper() ** 2
         residual_square = low_residual_square + high_residual_square
         finite_residual = residual_square.sqrt() / norm_squared.sqrt()
         finite_residual_upper = _float_upper(finite_residual)

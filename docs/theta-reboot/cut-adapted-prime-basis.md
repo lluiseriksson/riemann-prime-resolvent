@@ -323,3 +323,24 @@ the regularized adjacent-block image, retain its endpoint trace as another
 finite-rank flux Gram, and bound the twice-regular remainder.  This targets
 the measured loss directly and avoids treating local degree bands as reducing
 subspaces.
+
+## Second Green gate closed at 0.54
+
+The second integration has now been carried out with exact singular
+coefficients and an Arb/Wang bound for the analytic remainder. At $a=0.54$
+the global regularized map is below $33.440871$, comfortably inside the Schur
+budget. The shifted endpoint certificate leaves exactly one negative
+direction in each parity block and proves second-point floors $0.0011$ and
+$0.1$.
+
+Combined with the degree-512/131072 even Kato--Temple certificate and the
+degree-256/8192 odd certificate, this proves
+
+\[
+ A_{0.54}\succeq7.13337959131472\cdot10^{-9}I.
+\]
+
+The detailed constants and the boundary of the claim are recorded in
+`support-054-certificate.md`. The next obligation is no longer the second
+Green tail: it is to turn this pointwise margin into a certified interval in
+$a$, before changing the partition when the prime-3 translation enters.

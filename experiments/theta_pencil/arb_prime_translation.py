@@ -36,6 +36,31 @@ def _arb_radius_as_float(value) -> float:
     return float(midpoint)
 
 
+def _restarted_arb_legendre_values(cut, count: int, arb, stride: int = 4096):
+    """Enclose ``P_n(cut)`` without long interval-dependency growth.
+
+    A single three-term interval recurrence eventually widens even though the
+    underlying Legendre values remain bounded.  Direct Arb seeds at each block
+    make every subsequent recurrence short while preserving exact enclosure.
+    """
+
+    if count < 1 or stride < 2:
+        raise ValueError("require a positive count and restart stride at least two")
+    values = [arb(0) for _ in range(count)]
+    for start in range(0, count, stride):
+        stop = min(count, start + stride)
+        values[start] = cut.legendre_p(start)
+        if start + 1 >= stop:
+            continue
+        values[start + 1] = cut.legendre_p(start + 1)
+        for degree in range(start + 1, stop - 1):
+            values[degree + 1] = (
+                (2 * degree + 1) * cut * values[degree]
+                - degree * values[degree - 1]
+            ) / (degree + 1)
+    return values
+
+
 def build_arb_prime_two_matrix(
     half_width: float,
     low_dimension: int,
@@ -63,34 +88,42 @@ def build_arb_prime_two_matrix(
         jet_count = low_dimension
         padded = maximum_degree + jet_count
 
-        legendre = [arb(0)] * (padded + 2)
-        legendre[0] = 1
-        legendre[1] = cut
-        for degree in range(1, padded + 1):
-            legendre[degree + 1] = (
-                (2 * degree + 1) * cut * legendre[degree]
-                - degree * legendre[degree - 1]
-            ) / (degree + 1)
+        legendre = _restarted_arb_legendre_values(cut, padded + 2, arb)
 
+        normalizations = [
+            (arb(2 * degree + 1) / 2).sqrt()
+            for degree in range(padded + 1)
+        ]
         rows: list[list] = []
         step = [arb(0)] * padded
         step[0] = (cut + 1) / two.sqrt()
         for degree in range(1, padded):
             step[degree] = (
-                (arb(2 * degree + 1) / 2).sqrt()
+                normalizations[degree]
                 * (legendre[degree + 1] - legendre[degree - 1])
                 / (2 * degree + 1)
             )
         rows.append(step)
-        for _ in range(1, jet_count):
+        for jet in range(1, jet_count):
             previous = rows[-1]
-            following = [-cut * value for value in previous]
-            for degree in range(padded - 1):
-                link = arb(degree + 1) / arb(
-                    (2 * degree + 1) * (2 * degree + 3)
-                ).sqrt()
-                following[degree] += link * previous[degree + 1]
-                following[degree + 1] += link * previous[degree]
+            following = [arb(0) for _ in previous]
+            following[0] = -(-arb(1) - cut) ** (jet + 1) / (
+                (jet + 1) * two.sqrt()
+            )
+            # Integration by parts using
+            # (2n+1)P_n = P'_{n+1}-P'_{n-1}.  Unlike repeated application
+            # of X-cut, this computes the small high-mode truncated-power
+            # coefficients directly and does not destroy bits by cancellation.
+            for degree in range(1, padded - 1):
+                following[degree] = (
+                    -arb(jet)
+                    * normalizations[degree]
+                    / (2 * degree + 1)
+                    * (
+                        previous[degree + 1] / normalizations[degree + 1]
+                        - previous[degree - 1] / normalizations[degree - 1]
+                    )
+                )
             rows.append(following)
 
         endpoint = []
@@ -165,14 +198,7 @@ def build_arb_prime_two_action(
         a = arb(str(half_width))
         cut = 1 - two.log() / a
         padded = maximum_degree + dimension
-        legendre = [arb(0)] * (padded + 2)
-        legendre[0] = 1
-        legendre[1] = cut
-        for degree in range(1, padded + 1):
-            legendre[degree + 1] = (
-                (2 * degree + 1) * cut * legendre[degree]
-                - degree * legendre[degree - 1]
-            ) / (degree + 1)
+        legendre = _restarted_arb_legendre_values(cut, padded + 2, arb)
 
         endpoint_action = []
         for jet in range(dimension):
@@ -187,24 +213,35 @@ def build_arb_prime_two_action(
                 value += arb(float(vector[degree])) * normalization * derivative
             endpoint_action.append(value)
 
+        normalizations = [
+            (arb(2 * degree + 1) / 2).sqrt()
+            for degree in range(padded + 1)
+        ]
         row = [arb(0)] * padded
         row[0] = (cut + 1) / two.sqrt()
         for degree in range(1, padded):
             row[degree] = (
-                (arb(2 * degree + 1) / 2).sqrt()
+                normalizations[degree]
                 * (legendre[degree + 1] - legendre[degree - 1])
                 / (2 * degree + 1)
             )
         action = [endpoint_action[0] * value for value in row]
         for jet in range(1, dimension):
             previous = row
-            row = [-cut * value for value in previous]
-            for degree in range(padded - 1):
-                link = arb(degree + 1) / arb(
-                    (2 * degree + 1) * (2 * degree + 3)
-                ).sqrt()
-                row[degree] += link * previous[degree + 1]
-                row[degree + 1] += link * previous[degree]
+            row = [arb(0) for _ in previous]
+            row[0] = -(-arb(1) - cut) ** (jet + 1) / (
+                (jet + 1) * two.sqrt()
+            )
+            for degree in range(1, padded - 1):
+                row[degree] = (
+                    -arb(jet)
+                    * normalizations[degree]
+                    / (2 * degree + 1)
+                    * (
+                        previous[degree + 1] / normalizations[degree + 1]
+                        - previous[degree - 1] / normalizations[degree - 1]
+                    )
+                )
             factor = endpoint_action[jet]
             for degree in range(maximum_degree):
                 action[degree] += factor * row[degree]
@@ -214,8 +251,17 @@ def build_arb_prime_two_action(
         radius = np.zeros_like(midpoint)
         for degree in range(parity, maximum_degree, 2):
             value = coefficient * action[degree]
-            midpoint[degree] = float(value.mid())
-            radius[degree] = _arb_radius_as_float(value)
+            exported_midpoint = float(value.mid())
+            exported_radius = _arb_radius_as_float(value)
+            if not math.isfinite(exported_midpoint) or not math.isfinite(
+                exported_radius
+            ):
+                raise ArithmeticError(
+                    "non-finite prime-action enclosure at degree "
+                    f"{degree}; increase precision above {precision} bits"
+                )
+            midpoint[degree] = exported_midpoint
+            radius[degree] = exported_radius
     finally:
         ctx.prec = previous_precision
     return ArbPrimeAction(midpoint=midpoint, radius=radius, precision=precision)

@@ -9,6 +9,9 @@ from fractions import Fraction
 from experiments.theta_pencil.regularized_tail_gate import (
     maximum_regularized_map_bound,
 )
+from experiments.theta_pencil.arb_second_green_tail import (
+    certify_first_window_second_green_tails,
+)
 
 
 @dataclass(frozen=True)
@@ -19,6 +22,7 @@ class RegularizedMapBound:
     local_polynomial_frobenius_upper: float
     local_regularized_tail_upper: float
     derivative_upper: float
+    adjacent_whole_upper: float
     adjacent_upper: float
     distant_upper: float
     global_upper: float
@@ -236,13 +240,15 @@ def certify_regularized_map_bound(
         if not local_regularized_tail.upper() < 14:
             raise ArithmeticError("the regularized self-tail bound did not close")
 
+        second_green = certify_first_window_second_green_tails(half_width)
+        adjacent_tail = arb(str(second_green.maximum_adjacent_upper))
+
         # The symmetric three-by-three block comparison has diagonal bounded
-        # by the self tail, two adjacent edges, and one separated edge.  Its
-        # norm is at most self + sqrt(2)*adjacent + separated.  Use the
-        # certified geometry-dependent values themselves: fixed constants
-        # from a=1/2 would cease to be upper bounds near log(3)/2.
+        # by the self tail, two adjacent tails, and one separated edge.  The
+        # second Green decomposition is essential here: the whole adjacent
+        # map is hundreds of times larger than its Q_128 tail.
         global_bound = (
-            local_regularized_tail + arb(2).sqrt() * touching + separated
+            local_regularized_tail + arb(2).sqrt() * adjacent_tail + separated
         )
         if not global_bound.upper() < 1035:
             raise ArithmeticError("the global regularized map bound did not close")
@@ -265,7 +271,8 @@ def certify_regularized_map_bound(
         local_polynomial_frobenius_upper=float(polynomial_frobenius.upper()),
         local_regularized_tail_upper=float(local_regularized_tail.upper()),
         derivative_upper=float(derivative_upper.upper()),
-        adjacent_upper=float(touching.upper()),
+        adjacent_whole_upper=float(touching.upper()),
+        adjacent_upper=second_green.maximum_adjacent_upper,
         distant_upper=float(separated.upper()),
         global_upper=float(global_bound.upper()),
         even_gate=even_gate,
