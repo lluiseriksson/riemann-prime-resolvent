@@ -793,7 +793,7 @@ Markov's inequality and the choice of \(\delta\) give
 
 \[
  \|R\|_{I_Y}
- \le3\left(\max_k|R(\lambda_k)|+rac1{12}\|R\|_{I_Y}\right),
+ \le3\left(\max_k|R(\lambda_k)|+\frac1{12}\|R\|_{I_Y}\right),
 \]
 
 hence
@@ -957,12 +957,269 @@ and therefore
  \Theta_n\sim226.314\ldots\,I_n n^5\frac{\log T}{T}.} \tag{E55}
 \]
 
+### An \(L^1\) column-sum refinement: every order through 233
+
+The maximum in (E46) throws away the fact that all sampled numerator values
+are nonnegative.  Keeping them separately removes two powers of the degree.
+The argument is given with explicit constants because an asymptotic
+Marcinkiewicz--Zygmund slogan would not suffice at the endpoint.
+
+Put
+
+\[
+ m=4n-1,\qquad d=m-1,\qquad q=\frac1m,
+ \qquad I_Y=[Y,(1+q)Y],\qquad L=\frac Ym.
+\]
+
+Let \(\tau_1,\ldots,\tau_m\) be the transported roots of \(T_m\).  The
+Riemann--von Mangoldt envelope already used above gives, for every \(u\ge T\),
+
+\[
+ \begin{aligned}
+ &N(u+2)-N(u-2)\\
+ &\quad\ge M(u+2)-M(u-2)-E(u+2)-E(u-2)>0,
+ \end{aligned}                                      \tag{E56}
+\]
+
+where the lower bound at \(T\) is \(2.04669\ldots\).  Its derivative is
+positive: use
+\(\log((u+2)/(u-2))\ge4/u\) and the displayed formula for \(E'\).
+Thus one may choose a positive zero height \(\lambda_k\) with
+\(|\lambda_k-\tau_k|\le2\).  For \(n\le233\) these intervals are disjoint
+and remain inside their bands.  Even at order 234 their first-band endpoint
+clearance is \(2263.94\ldots\), and their minimum separation is
+\(18111.53\ldots\).
+
+Every interval \([a,b]\subset[T,\infty)\) of length at most one contains at
+most
+
+\[
+ \begin{aligned}
+ N(b)-N(a)
+ &\le \frac1{2\pi}\log\frac b{2\pi}+2E(b)\\
+ &<0.69\log b                                      \tag{E57}
+ \end{aligned}
+\]
+
+positive zeros, counted with multiplicity.  Indeed the coefficient obtained
+after division by \(\log b\) is at most
+
+\[
+ \frac1{2\pi}+0.224
+ +0.556\frac{\log\log T}{\log T}
+ +\frac{6.77}{\log T}+\frac{0.4}{T\log T}
+ =0.6837857\ldots,
+\]
+
+and every nonconstant quotient here decreases for \(b\ge T\).
+
+Let \(\ell_k\) be the cardinal polynomial at the exact Chebyshev roots on
+\([-1,1]\).  Its expansion is
+
+\[
+ \ell_k(x)=\frac1m+\frac2m\sum_{r=1}^{m-1}
+ \cos(r\theta_k)T_r(x),\qquad
+ \theta_k=\frac{(2k+1)\pi}{2m}.                    \tag{E58}
+\]
+
+The following elementary column bounds are the key improvement:
+
+\[
+ \boxed{
+ \begin{aligned}
+ U_2(m)&:=\max_k\int_{-1}^1|\ell_k''(x)|\,dx
+ \le\frac23m^2\left(2\log(2m)+\frac73\right),\\
+ U_3(m)&:=\max_k\int_{-1}^1|\ell_k'''(x)|\,dx
+ \le\frac{56}{5}m^4.                              \tag{E59}
+ \end{aligned}}
+\]
+
+For completeness, write \(x=\cos\theta\).  Since
+
+\[
+ T_r'(\cos\theta)=r\frac{\sin(r\theta)}{\sin\theta},
+\]
+
+splitting at \(\theta=1/r\), using the endpoint Markov value
+\(T_r''(1)=r^2(r^2-1)/3\), and integrating \(\csc\theta\) and
+\(\csc^2\theta\) gives
+
+\[
+ \int_{-1}^1|T_r''(x)|\,dx
+ \le r^2\left(2\log(2r)+\frac73\right).            \tag{E60}
+\]
+
+Also
+
+\[
+ \frac d{d\theta}T_r''(\cos\theta)
+ =\frac{r(r^2-1)\sin(r\theta)}{\sin^2\theta}
+ -\frac{3r(\sin(r\theta)\cos\theta-r\cos(r\theta)\sin\theta)
+          \cos\theta}{\sin^4\theta}.
+\]
+
+The same split, with
+\(\int_{1/r}^{\pi/2}\csc^j\theta\,d\theta\) bounded by
+\((\pi/2)^j\int_{1/r}^{\infty}\theta^{-j}\,d\theta\), gives
+\(\int|T_r'''|\le28r^4\).  Inserting these two estimates in (E58) and using
+\(\sum_{r<m}r^2<m^3/3\), \(\sum_{r<m}r^4<m^5/5\) proves (E59).
+The companion sup-norm bounds used below are
+
+\[
+ M_1\le\frac23m^2,\quad M_2\le\frac2{15}m^4,
+ \quad M_3\le\frac2{105}m^6,
+ \quad M_4\le\frac2{945}m^8,                       \tag{E61}
+\]
+
+obtained from the endpoint values of \(T_r^{(j)}\) and (E58).
+
+Return now to the physical band.  Markov's inequality gives
+
+\[
+ \varepsilon=\frac{4d^2}{L},\qquad
+ I=\frac{\Lambda_d}{1-\Lambda_d\varepsilon},
+ \qquad J=1+m\varepsilon I.                        \tag{E62}
+\]
+
+Consequently
+
+\[
+ \|R\|\le I\max_k R(\lambda_k),\qquad
+ \sum_kR(\tau_k)\le J\sum_kR(\lambda_k).          \tag{E63}
+\]
+
+This is where nonnegativity of \(R=S_c(w^2)\) is essential.  In contrast,
+the maximum-based proof paid the number of zeros in the whole band.
+
+Set \(\mu=d^2/L\).  Repeated Markov followed by Taylor gives, for every
+degree-\(d\) polynomial \(p\),
+
+\[
+ \sup_{\substack{-1\le x\le1\\|v|\le1/L}}|p(x+iv)|
+ \le e^\mu\|p\|_{[-1,1]}.                          \tag{E64}
+\]
+
+Using the vertical fundamental theorem of calculus with (E59)--(E61), define
+
+\[
+ \begin{aligned}
+ a_0&=LI+e^\mu M_1J,\\
+ a_1&=J\left(2m+\frac{2e^\mu M_2}{L}\right),\\
+ a_2&=J\left(\frac{2U_2}{L}+\frac{4e^\mu M_3}{L^2}\right),\\
+ a_3&=J\left(\frac{4U_3}{L^2}+\frac{8e^\mu M_4}{L^3}\right).             \tag{E65}
+ \end{aligned}
+\]
+
+Then \(a_j\sum_kR(\lambda_k)\) bounds
+\(\int_{I_Y}\sup_{|v|\le1/2}|R^{(j)}(u+iv)|\,du\) for \(j=0,1,2,3\).
+
+Let \(D(w)=P(w^2)^2\), \(h=D'/D\), and put
+
+\[
+ \begin{gathered}
+ \kappa=\left(1-\frac1{4T^2}\right)^{-1},\\
+ \kappa_0=\left(1+\frac1{2T}\right)\kappa,
+ \quad
+ \kappa_1=\left(1+\frac1T+\frac1{4T^2}\right)\kappa^2,\\
+ \kappa_2=\left(1+\frac1{2T}\right)
+ \left(1+\frac1T+\frac1{4T^2}\right)\kappa^3,\\
+ H_0=\frac{4\kappa_0n}{Y},\qquad
+ H_1=\frac{4\kappa_1n}{Y^2},\qquad
+ H_2=\frac{24\kappa_2n}{Y^3},\\
+ A_n=\kappa^{2n}\left(1+\frac1m\right)^{4n}.       \tag{E66}
+ \end{gathered}
+\]
+
+Direct differentiation of
+\(h(w)=4w\sum_i(w^2+x_i^2)^{-1}\) gives the bounds \(H_0,H_1,H_2\).
+Since
+
+\[
+ \begin{aligned}
+ Q''&=D^{-1}\{R''-2hR'+(h^2-h')R\},\\
+ Q'''&=D^{-1}\{R'''-3hR''+3(h^2-h')R'
+                 +(-h^3+3hh'-h'')R\},
+ \end{aligned}
+\]
+
+we obtain
+
+\[
+ \begin{aligned}
+ C_2&=A_n\{a_2+2H_0a_1+(H_0^2+H_1)a_0\},\\
+ C_3&=A_n\{a_3+3H_0a_2+3(H_0^2+H_1)a_1
+ +(H_0^3+3H_0H_1+H_2)a_0\}.                       \tag{E67}
+ \end{aligned}
+\]
+
+Thus \(C_j\sum_kQ_c(\lambda_k)\) bounds the corresponding integrated
+strip supremum of \(Q_c^{(j)}\).
+
+Finally partition \(I_Y\) into \(\lceil L\rceil\) equal intervals.  Their
+lengths lie between \(1/2\) and \(1\).  For a nonnegative absolutely
+continuous function \(H\) on such an interval,
+
+\[
+ \sup H\le2\int H+\int|H'|.                        \tag{E68}
+\]
+
+Apply this to
+\(H(u)=\sup_{|v|\le1/2}|Q_c''(u+iv)|\).  Each off-line pair accounts for two
+positive zeros and \(2\alpha^2\int_0^1(1-t)dt\le1/4\).  Equations
+(E57), (E67), and (E68) therefore bound the contribution of one band to the
+left side of (E44) by
+
+\[
+ \boxed{
+ \Omega_n(Y)\sum_{k=1}^mQ_c(\lambda_k),\qquad
+ \Omega_n(Y)=\frac{0.69\log((1+1/m)Y)}8(2C_2+C_3).} \tag{E69}
+\]
+
+Every factor after multiplication by the logarithm decreases with
+\(Y\ge T\), so the first band is worst.  A deliberately rounded rational
+certificate, uniform for \(4\le n\le233\), uses
+
+\[
+ \begin{gathered}
+ m\le931,\quad \Lambda_d<5.356,\quad I<5.39,\quad J<6.39,\\
+ e^\mu<1.0011,\quad A_n<2.820003,\quad
+ 0.69\log(16T/15)<19.872.
+ \end{gathered}
+\]
+
+Substitution in (E59)--(E69), using \(T/15\) only for the harmless \(a_0\)
+term and \(T/931\) for all derivative terms, gives exactly
+
+\[
+ \boxed{\Omega_n(T)<0.986931<1\qquad(4\le n\le233).} \tag{E70}
+\]
+
+The arithmetic in (E70) is performed with rational numbers in
+`l1_column_sampling_budget.py`; floating point is printed only as a readable
+decimal.  Summing the disjoint sampled zeros over all bands proves
+
+\[
+ \boxed{K^{(n)}\succeq0\quad\text{for every }n\le233.} \tag{E71}
+\]
+
+This supersedes (E54), but it is still not RH.  The unrounded scalar formula
+is below one at order 234, but no claim is made from that floating diagnostic.
+More importantly, in the regime where the fixed-radius perturbation is small,
+
+\[
+ \Omega_n(T)=O\!\left(n^3\log n\frac{\log T}{T}\right),                \tag{E72}
+\]
+
+and the perturbation factor \(J\) eventually grows as well.  Hence every
+finite verified height still produces only a finite-order theorem.
+
 Thus no finite verification height can make this particular absolute-value
-argument uniform in \(n\). Raising \(T\) only moves the finite cutoff. A route
-to RH must remove the \(n^5\) Markov loss (for example by a discrete
-\(L^2\) sampling/frame inequality) or exploit signed prime--archimedean
-cancellation rather than bounding every hypothetical off-line orbit
-absolutely.
+argument uniform in \(n\). Raising \(T\) only moves the finite cutoff.  The
+column-sum argument removes the \(n^5\) loss of (E55), but its
+\(n^3\log n\) loss and node-perturbation factor remain.  A route to RH must
+obtain a genuinely uniform frame inequality or exploit signed
+prime--archimedean cancellation rather than bounding every hypothetical
+off-line orbit absolutely.
 
 The module `euler_axis_pick.py` implements the orbit algebra and the exact
 interval-rapidity form (E30)--(E31), while `zero_band_variance.py` audits the
@@ -970,6 +1227,10 @@ constants in (E26)--(E28), and `order_four_rapidity_counterexample.py`
 records the first open gate (E35). The script `order_four_verified_gram.py`
 checks (E38)--(E45), and `degree_seven_sampling_audit.py` records the constants
 in (E46)--(E48). The generalized budget and its cutoff are reproduced by
-`finite_order_sampling_budget.py`. These
+`finite_order_sampling_budget.py`.  The sharper column-sum proof
+(E56)--(E71) is audited by `l1_column_sampling_budget.py`.  The separate
+`chebyshev_cardinal_l1_checkpoint.json` records the exploratory numerical
+observation that led to (E59), but that observation is not used in the proof.
+These
 floating-point checks are not used in place of the displayed analytic
 inequalities. Global claims still require all separated principal minors.

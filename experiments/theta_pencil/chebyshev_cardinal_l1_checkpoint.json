@@ -1,0 +1,17 @@
+{
+  "status": "exploratory_only_not_a_proof",
+  "environment": "local Windows run stopped by resource gate; do not resume locally",
+  "method": "theta-grid trapezoidal integration of abs(second derivative) for first-kind Chebyshev cardinal polynomials",
+  "grid_rule": "nt=max(200000,2000*m)",
+  "elapsed_seconds": 95.2,
+  "rows": [
+    {"m": 8, "max_l1": 43.938835, "max_l1_over_m2": 0.68654429, "argmax_k": 2},
+    {"m": 16, "max_l1": 153.50409, "max_l1_over_m2": 0.59962534, "argmax_k": 2},
+    {"m": 32, "max_l1": 581.33315, "max_l1_over_m2": 0.56770816, "argmax_k": 2},
+    {"m": 64, "max_l1": 2283.77, "max_l1_over_m2": 0.55756104, "argmax_k": 1},
+    {"m": 128, "max_l1": 9102.934, "max_l1_over_m2": 0.555599, "argmax_k": 126},
+    {"m": 160, "max_l1": 14216.417, "max_l1_over_m2": 0.55532879, "argmax_k": 1}
+  ],
+  "observed_scaling": "max_k integral_-1^1 |ell_k''(x)| dx is approximately 0.555*m^2 over the measured range",
+  "warning": "The observed scaling motivates an analytic bound; it is not used as theorem evidence."
+}
