@@ -562,7 +562,7 @@ If \(\widehat y=\mathcal T_{\lambda,c}(m)+\varepsilon\), direct algebra gives
  {1+\lambda^2c^2+c\lambda\varepsilon(1-\lambda m)}.  \tag{CE}
 \]
 
-On a compact (K), let (B_K=\sup_K|M_0|).  If
+On a compact \(K\), let \(B_K=\sup_K|M_0|\).  If
 
 \[
  |c\lambda|\sup_K|\varepsilon|
@@ -578,8 +578,8 @@ then
  \sup_K|\varepsilon|.                                \tag{CB}
 \]
 
-The amplification factor tends to (2B_K^2/c), not infinity.  Therefore
-ordinary (o(1)) convergence to the canonically normalized shifted target
+The amplification factor tends to \(2B_K^2/c\), not infinity.  Therefore
+ordinary \(o(1)\) convergence to the canonically normalized shifted target
 is sufficient even for the explicit \(|\lambda(a)|\asymp e^a\).  The earlier
 \(o(e^{-2a})\) gate was a gauge artifact.  The functions
 `canonically_normalized_shifted_value` and
@@ -593,7 +593,7 @@ The conditional implication is now precise:
 2. fix a canonical boundary triple and hence a canonical Herglotz
    \(m_{a,\lambda(a)}\);
 3. prove from the boundary continuations in (FC), not merely from the common
-   multiplier, that this particular function differs by (o(1)) from
+   multiplier, that this particular function differs by \(o(1)\) from
    \(\mathcal T_{\lambda(a),c}(M_0)\) on compact subsets of
    \(\mathbb C_+\);
 4. apply (CI) and (CB) to obtain local uniform convergence to
@@ -603,3 +603,43 @@ Step 4 would prove RH. No near-zero admissible shift may be assumed in its
 proof, by the lemma above.  Formula (FC) shows that step 3 is not an ordinary
 full-line resolvent estimate: it is an arithmetic boundary-continuation
 theorem, and it remains wholly open.
+
+## Exact exterior-curvature equation
+
+The boundary continuation in (FC) is not featureless. For \(t>0\), away
+from prime-power thresholds, differentiating Suzuki's explicit formula for
+the screw function gives
+
+\[
+ g''(t)=
+ -e^{t/2}-e^{-t/2}
+ +\frac{e^{-t/2}}{1-e^{-2t}}
+ +\sum_{n\ge2}\frac{\Lambda(n)}{\sqrt n}
+   \delta(t-\log n).                                  \tag{GK}
+\]
+
+Let \(v\) be a mean-zero source supported on \([-a,a]\), and extend
+\(h=S_{a,\lambda}v\) by the same convolution formula to \(x>a\). The
+inverse-Neumann part has zero second derivative there: for the polynomial
+kernel its remaining constant is multiplied by \(\int v=0\). Consequently
+
+\[
+\begin{aligned}
+ h''(x)={}&
+ -e^{x/2}\int_{-a}^a e^{-y/2}v(y)\,dy
+ -e^{-x/2}\int_{-a}^a e^{y/2}v(y)\,dy\\
+ &+\sum_{j\ge0}e^{-(2j+1/2)x}
+   \int_{-a}^a e^{(2j+1/2)y}v(y)\,dy\\
+ &+\sum_{e^{x-a}<n<e^{x+a}}
+   \frac{\Lambda(n)}{\sqrt n}\,v(x-\log n).           \tag{EC}
+\end{aligned}
+\]
+
+The identity holds classically between thresholds and distributionally
+across them. It is independent of the safety shift outside the interval.
+Thus the arithmetic data in the Weyl quotient reside in a moving
+prime-power window of logarithmic width \(2a\), not in the common multiplier
+that cancels in (FC). Equation (EC) is an exact reformulation of the missing
+boundary theorem; it does not establish the required convergence or a sign.
+The module \`exterior_boundary_curvature.py\` checks the smooth geometric
+series and evaluates the moving-window term on sampled sources.
