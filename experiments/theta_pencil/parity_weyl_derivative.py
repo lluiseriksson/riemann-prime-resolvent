@@ -61,6 +61,62 @@ def schwarz_pick_parity_interval(
     return -eta * kappa, -kappa / eta
 
 
+def second_schur_parameter_from_parity_ratio(
+    target_derivative: float,
+    imaginary_height: float,
+    parity_ratio: float,
+) -> float:
+    """Recover the second Schur parameter from ``r(i*eta)``.
+
+    With ``w=(eta-1)/(eta+1)``, ``h=(r+1)/(r-1)``, and
+    ``d=m'(i)``, this is
+
+    ``q=(h-d)/(w*(1-d*h))``.
+
+    Calibrated Herglotz functions have ``q in [-1, 1]`` on this real radius.
+    The lower Schwarz--Pick extremal for ``r`` corresponds to ``q=1``.
+    """
+
+    derivative = float(target_derivative)
+    parity_ratio_from_target_derivative(derivative)
+    eta = float(imaginary_height)
+    if eta <= 1.0:
+        raise ValueError("imaginary_height must exceed one")
+    ratio = float(parity_ratio)
+    if ratio == 1.0:
+        raise ZeroDivisionError("the parity ratio gives an infinite h value")
+    w = (eta - 1.0) / (eta + 1.0)
+    h_value = (ratio + 1.0) / (ratio - 1.0)
+    denominator = w * (1.0 - derivative * h_value)
+    if denominator == 0.0:
+        raise ZeroDivisionError("the second Schur parameter has a pole")
+    return (h_value - derivative) / denominator
+
+
+def schwarz_pick_excess_from_second_schur_parameter(
+    target_derivative: float,
+    imaginary_height: float,
+    second_schur_parameter: float,
+) -> float:
+    """Evaluate the exact Schwarz--Pick excess from the second parameter.
+
+    The identity is
+
+    ``Delta = kappa*(eta-1)*(1-q)/(1-w*q)``.
+    """
+
+    eta = float(imaginary_height)
+    if eta <= 1.0:
+        raise ValueError("imaginary_height must exceed one")
+    q_value = float(second_schur_parameter)
+    w = (eta - 1.0) / (eta + 1.0)
+    denominator = 1.0 - w * q_value
+    if denominator == 0.0:
+        raise ZeroDivisionError("the Schwarz--Pick excess has a pole")
+    kappa = parity_ratio_from_target_derivative(target_derivative)
+    return kappa * (eta - 1.0) * (1.0 - q_value) / denominator
+
+
 def parity_weyl_derivative_audit(
     operator: np.ndarray,
     metric: np.ndarray,

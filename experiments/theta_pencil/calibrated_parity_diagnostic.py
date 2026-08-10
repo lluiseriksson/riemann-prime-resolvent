@@ -13,6 +13,9 @@ from scipy.optimize import brentq
 from experiments.theta_pencil.arb_riemann_weyl_basepoint import (
     certify_riemann_schwarz_pick_excess,
 )
+from experiments.theta_pencil.parity_weyl_derivative import (
+    second_schur_parameter_from_parity_ratio,
+)
 from experiments.theta_pencil.safe_weil_shift import explicit_safe_shift
 from experiments.theta_pencil.screw_weil_operator import (
     build_screw_weil_matrix,
@@ -30,6 +33,7 @@ class CalibratedParityRow:
     gap_multiple: float
     predicted_parity_ratio: float
     predicted_schwarz_pick_excess: float
+    predicted_second_schur_parameter: float
     target_error: float
     kinematic_baseline_improvement: float
 
@@ -43,6 +47,7 @@ class CalibratedParityDiagnostic:
     kinematic_baseline_error: float
     target_schwarz_pick_excess: float
     target_schwarz_pick_upper_slack: float
+    target_second_schur_parameter: float
     grid_points: int
     basis_size: int
     rows: tuple[CalibratedParityRow, ...]
@@ -73,6 +78,7 @@ def run_calibrated_parity_diagnostic(
     target_excess = float(target.target_excess.mid())
     target_upper_slack = float(target.upper_slack.mid())
     baseline_error = target_excess
+    target_second_schur = float(target.target_second_schur_parameter.mid())
     rows: list[CalibratedParityRow] = []
 
     for width in half_widths:
@@ -143,6 +149,13 @@ def run_calibrated_parity_diagnostic(
                 gap_multiple=float((ground - shift) / gap),
                 predicted_parity_ratio=float(predicted),
                 predicted_schwarz_pick_excess=float(predicted - baseline),
+                predicted_second_schur_parameter=(
+                    second_schur_parameter_from_parity_ratio(
+                        float(target.normalized_weyl_derivative.mid()),
+                        imaginary_height,
+                        predicted,
+                    )
+                ),
                 target_error=float(error),
                 kinematic_baseline_improvement=float(
                     baseline_error - error
@@ -158,6 +171,7 @@ def run_calibrated_parity_diagnostic(
         kinematic_baseline_error=float(baseline_error),
         target_schwarz_pick_excess=target_excess,
         target_schwarz_pick_upper_slack=target_upper_slack,
+        target_second_schur_parameter=target_second_schur,
         grid_points=grid_points,
         basis_size=basis_size,
         rows=tuple(rows),

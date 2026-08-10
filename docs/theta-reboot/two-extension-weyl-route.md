@@ -899,12 +899,39 @@ Schwarz--Pick excess
  \Delta_m(\eta)=r(i\eta)+\eta\kappa.                    \tag{SX}
 \]
 
+It has an exact Schur-algorithm coordinate.  Define
+
+\[
+ q_m(w)=\frac{h(w)-d}{w(1-dh(w))},\qquad
+ w=\frac{\eta-1}{\eta+1}.                              \tag{SQ}
+\]
+
+For real \(w\in(0,1)\), Schwarz--Pick says \(-1\le q_m(w)\le1\), and direct
+algebra gives
+
+\[
+ \boxed{
+ \Delta_m(\eta)=\kappa(\eta-1)
+ \frac{1-q_m(w)}{1-wq_m(w)}.}                           \tag{SD}
+\]
+
+The dangerous universal collapse is therefore exactly \(q_m(w)\to1\), not
+merely qualitative proximity of two Weyl values.  Equality \(q_m(w)=1\) at
+one interior real point is the rigidity case (SE).
+
 For the Riemann target at \(\eta=3\), the certified value is strictly inside
 (SP):
 
 \[
  \Delta_\Xi(3)=r_\Xi(3i)+3\kappa_\Xi
  =8.4511702985\ldots\,10^{-5}>0.                         \tag{SR}
+\]
+
+The same Arb calculation certifies
+
+\[
+ q_\Xi(1/2)=0.9866317619939\ldots,qquad
+ 1-q_\Xi(1/2)=0.0133682380060\ldots>0.                  \tag{SG}
 \]
 
 The first predictive Galerkin test calibrates only at \(i\) and then evaluates
@@ -936,7 +963,9 @@ range, but the error does not decrease toward zero; most of the agreement is
 the universal calibration geometry.  In excess coordinates the four rows are
 approximately \(3.40,1.46,1.65,0.80\) times \(10^{-5}\), whereas the target
 excess is \(8.45\cdot10^{-5}\).  The observed trend is toward the wrong object,
-the extremal (SE), although these finite computations do not prove an
+the extremal (SE).  Equivalently, their second Schur parameters are about
+\(0.99466,0.99772,0.99742,0.99875\), all closer to (1) than the certified
+Riemann value.  These finite computations do not prove an
 infinite-support limit. Beyond this range the spectral gap falls
 below the discretization error. The command
 

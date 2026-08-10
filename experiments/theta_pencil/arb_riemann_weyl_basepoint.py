@@ -30,12 +30,15 @@ class RiemannFourierParityTargetCertificate:
 class RiemannSchwarzPickExcessCertificate:
     precision_bits: int
     imaginary_height: object
+    normalized_weyl_derivative: object
     odd_even_balance: object
     target_fourier_parity_ratio: object
     lower_extremal: object
     upper_extremal: object
     target_excess: object
     upper_slack: object
+    target_second_schur_parameter: object
+    second_schur_gap: object
 
 
 def _xi_series_at(variable, arb):
@@ -160,15 +163,31 @@ def certify_riemann_schwarz_pick_excess(
         upper = -base.odd_even_balance / eta
         excess = target.target_fourier_parity_ratio - lower
         upper_slack = upper - target.target_fourier_parity_ratio
+        disk_coordinate = (eta - 1) / (eta + 1)
+        h_value = (
+            (target.target_fourier_parity_ratio + 1)
+            / (target.target_fourier_parity_ratio - 1)
+        )
+        schur_denominator = disk_coordinate * (
+            1 - base.normalized_weyl_derivative * h_value
+        )
+        if schur_denominator.contains(0):
+            raise ZeroDivisionError("the target second Schur parameter has a pole")
+        second_schur = (
+            h_value - base.normalized_weyl_derivative
+        ) / schur_denominator
         return RiemannSchwarzPickExcessCertificate(
             precision_bits=precision_bits,
             imaginary_height=eta,
+            normalized_weyl_derivative=base.normalized_weyl_derivative,
             odd_even_balance=base.odd_even_balance,
             target_fourier_parity_ratio=target.target_fourier_parity_ratio,
             lower_extremal=lower,
             upper_extremal=upper,
             target_excess=excess,
             upper_slack=upper_slack,
+            target_second_schur_parameter=second_schur,
+            second_schur_gap=1 - second_schur,
         )
     finally:
         ctx.prec = old_precision

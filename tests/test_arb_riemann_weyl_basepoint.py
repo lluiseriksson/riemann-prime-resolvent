@@ -59,6 +59,13 @@ def test_riemann_target_is_strictly_inside_the_schwarz_pick_interval():
         assert certificate.target_excess.lower() > arb("0.0000845117029")
         assert certificate.target_excess.upper() < arb("0.0000845117031")
         assert certificate.upper_slack.lower() > arb("0.00418")
+        assert certificate.target_second_schur_parameter.lower() > arb(
+            "0.9866317619"
+        )
+        assert certificate.target_second_schur_parameter.upper() < arb(
+            "0.9866317621"
+        )
+        assert certificate.second_schur_gap.lower() > arb("0.0133682379")
         assert certificate.lower_extremal < certificate.target_fourier_parity_ratio
         assert certificate.target_fourier_parity_ratio < certificate.upper_extremal
     finally:
