@@ -1418,6 +1418,62 @@ spans.  Positivity of an unrelated transfer kernel does not imply this
 statement.  Conversely, accretivity here for every finite span is already
 the Pick criterion, so it may not be imported as an assumption.
 
+### What the positive theta kernel does, and does not, supply
+
+Up to an irrelevant positive normalization, Riemann's Fourier formula gives
+an even positive measure \(\mu\) such that
+
+\[
+ A(x)=\xi(1/2+x)=\int_{\mathbb R}e^{xt}\,d\mu(t),
+ \qquad
+ L(x)=\frac{A'(x)}{A(x)}.                            \tag{E86}
+\]
+
+If \(\mu_x=A(x)^{-1}e^{xt}\mu\), then
+
+\[
+ L(x)=\mathbb E_{\mu_x}T,\qquad
+ L'(x)=\operatorname{Var}_{\mu_x}(T)>0.             \tag{E87}
+\]
+
+These identities are unconditional and explain the first covariance layer.
+They do not imply positivity of
+\((L(x)+L(y))/(x+y)\).  This failure is already visible for a two-frequency
+positive measure.  Take
+
+\[
+ A_{1/10}(x)=\cosh x+\frac1{10}\cosh(2x).
+\]
+
+It is the bilateral Laplace transform of a positive even four-atom measure.
+Writing \(z=\cosh x\), its zeros satisfy
+
+\[
+ 2z^2+10z-1=0,\qquad
+ z_-=\frac{-5-3\sqrt3}{2}<-1.
+\]
+
+Hence it has zeros
+
+\[
+ x=\pm\operatorname{arcosh}\left(\frac{5+3\sqrt3}{2}\right)
+   +(2k+1)i\pi,\qquad k\in\mathbb Z,                \tag{E88}
+\]
+
+off the imaginary axis.  Positivity of the underlying measure, moment
+convexity, and the variance identity (E87) therefore stop strictly before the
+Pick property.
+
+There is also a source-specific obstruction to strengthening this route to
+total positivity.  Micha\l{}owski (2026) gives an interval-arithmetic
+certificate that the classical de Bruijn--Newman kernel \(\Phi(|u|)\) is not
+PF\(_5\), via a negative \(5\times5\) Toeplitz minor.  That external
+certificate has not been independently rerun in this repository, so it is a
+literature gate rather than evidence for (E71).  Together with (E88), it
+rules out using generic positive-kernel or PF\(_\infty\) machinery as the
+missing sign theorem.  Any successful theta argument must exploit a weaker,
+source-specific property that acts directly on (E82) or (E85).
+
 Thus no finite verification height can make this particular absolute-value
 argument uniform in \(n\). Raising \(T\) only moves the finite cutoff.  The
 column-sum argument removes the \(n^5\) loss of (E55), but its
