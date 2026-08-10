@@ -66,6 +66,7 @@ nav:
       - Support-derivative no-go: theta-reboot/support-derivative-no-go.md
       - Support 0.72 historical non-closure: theta-reboot/support-072-no-close.md
       - Certified support 0.72: theta-reboot/support-072-certificate.md
+      - Harmonic Schur stratification: theta-reboot/harmonic-schur-stratification.md
       - Falsifiers: theta-reboot/falsifiers.md
   - Criterion layer site: https://lluiseriksson.github.io/riemann-prime-resolvent/criterion/
   - Programme contract: PROGRAMME_RELATION.md

@@ -151,6 +151,7 @@ It does not authorize changing the success condition.
 - [No form-level differential propagation in the support](support-derivative-no-go.md)
 - [Historical common-denominator non-closure at support 0.72](support-072-no-close.md)
 - [Certified localized positivity through support 0.72](support-072-certificate.md)
+- [Uniform harmonic stratification of the Schur correction](harmonic-schur-stratification.md)
 - [Cut-adapted exact prime basis](cut-adapted-prime-basis.md)
 - [Support-extension audit](support-extension-audit.md)
 - [Falsifiers and abandonment conditions](falsifiers.md)
