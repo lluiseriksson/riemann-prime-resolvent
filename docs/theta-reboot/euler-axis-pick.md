@@ -866,7 +866,7 @@ The dyadic choice above was made for readability, not efficiency. For a real
 vector on \(n\) nodes, the construction (E42)--(E45) gives
 
 \[
- \deg_z S_c\le2n-1,qquad \deg_w S_c(w^2)\le d_n:=4n-2.
+ \deg_z S_c\le2n-1,\qquad \deg_w S_c(w^2)\le d_n:=4n-2.
 \]
 
 Use multiplicative bands \([Y,(1+q_n)Y]\) with
@@ -882,7 +882,7 @@ and \(d_n+1\) Chebyshev roots. Take sampling radius
  \Lambda_{d_n}\le1+\frac2\pi\log(d_n+1)
 \]
 
-and the perturbed-node Markov estimate replace the interpolation factor (4)
+and the perturbed-node Markov estimate replace the interpolation factor \(4\)
 in (E46) by
 
 \[
