@@ -68,6 +68,7 @@ nav:
       - Certified support 0.72: theta-reboot/support-072-certificate.md
       - Harmonic Schur stratification: theta-reboot/harmonic-schur-stratification.md
       - Two-extension Weyl ratio: theta-reboot/two-extension-weyl-route.md
+      - Euler-axis Pick criterion: theta-reboot/euler-axis-pick.md
       - Falsifiers: theta-reboot/falsifiers.md
   - Criterion layer site: https://lluiseriksson.github.io/riemann-prime-resolvent/criterion/
   - Programme contract: PROGRAMME_RELATION.md
