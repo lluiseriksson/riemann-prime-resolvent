@@ -6,6 +6,8 @@ import math
 
 
 VERIFIED_HEIGHT = 3.0e12
+COMPLEX_STRIP_FACTOR = 1.01
+ZERO_COUNT_FACTOR = 0.161
 
 
 def zero_count_main(height: float) -> float:
@@ -51,6 +53,20 @@ def minimum_sampling_interval_count(order: int) -> float:
     return min(lower_counts)
 
 
+def first_band_zero_count_ratio(order: int) -> float:
+    """Return the explicit upper count divided by q*T*log(T)."""
+
+    band_ratio = 1.0 / (4 * order - 1)
+    height = VERIFIED_HEIGHT
+    upper = (
+        zero_count_main((1.0 + band_ratio) * height)
+        - zero_count_main(height)
+        + zero_count_error((1.0 + band_ratio) * height)
+        + zero_count_error(height)
+    )
+    return upper / (band_ratio * height * math.log(height))
+
+
 def order_budget(order: int) -> dict[str, float]:
     """Return constants (E49)--(E52) for one matrix order."""
 
@@ -67,16 +83,17 @@ def order_budget(order: int) -> dict[str, float]:
         + 4.0 * order
     )
     sampling = (
-        4.0
+        COMPLEX_STRIP_FACTOR
         * interpolation
         * (1.0 + band_ratio) ** (4 * order)
         * derivative
     )
     fraction = (
-        sampling
+        ZERO_COUNT_FACTOR
+        * sampling
         * band_ratio
         * math.log(VERIFIED_HEIGHT)
-        / (4.0 * VERIFIED_HEIGHT)
+        / (8.0 * VERIFIED_HEIGHT)
     )
     return {
         "order": float(order),
@@ -90,23 +107,34 @@ def order_budget(order: int) -> dict[str, float]:
 
 
 def audit() -> dict[str, object]:
-    """Verify that the conservative method closes exactly through order 19."""
+    """Verify that the conservative method closes exactly through order 40."""
 
-    rows = [order_budget(order) for order in range(4, 21)]
+    rows = [order_budget(order) for order in range(4, 42)]
     interval_counts = {
-        order: minimum_sampling_interval_count(order) for order in range(4, 20)
+        order: minimum_sampling_interval_count(order) for order in range(4, 41)
+    }
+    count_ratios = {
+        order: first_band_zero_count_ratio(order) for order in range(4, 42)
     }
     assert all(row["budget_fraction"] < 1.0 for row in rows[:-1])
-    assert rows[-2]["order"] == 19.0
-    assert rows[-2]["budget_fraction"] < 0.956
-    assert rows[-1]["order"] == 20.0
-    assert rows[-1]["budget_fraction"] > 1.25
-    assert min(interval_counts.values()) > 6.25e5
+    assert rows[-2]["order"] == 40.0
+    assert rows[-2]["budget_fraction"] < 0.972
+    assert rows[-1]["order"] == 41.0
+    assert rows[-1]["budget_fraction"] > 1.105
+    assert min(interval_counts.values()) > 6.46e4
+    assert max(count_ratios.values()) < 0.15
+    assert max(
+        (4 * order - 2) ** 2
+        * (4 * order - 1)
+        / VERIFIED_HEIGHT
+        for order in range(4, 42)
+    ) < 1.5e-6
     return {
         "last_closed": rows[-2],
         "first_unclosed": rows[-1],
-        "order_18": rows[-3],
+        "order_39": rows[-3],
         "minimum_sampling_zero_count": min(interval_counts.values()),
+        "maximum_first_band_count_ratio": max(count_ratios.values()),
     }
 
 

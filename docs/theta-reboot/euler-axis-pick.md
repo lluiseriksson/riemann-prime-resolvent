@@ -860,7 +860,7 @@ rapidity curvature argument. It still does not prove RH: the polynomial
 degree and the Markov/sampling constant grow with matrix order, and no
 uniform-in-order estimate has been established.
 
-### The same proof closes every order up to nineteen
+### The same proof closes every order up to forty
 
 The dyadic choice above was made for readability, not efficiency. For a real
 vector on \(n\) nodes, the construction (E42)--(E45) gives
@@ -899,39 +899,43 @@ The real derivative bookkeeping on a band of length \(q_nY\) is
  +(4n)^2+4n.                                         \tag{E50}
 \]
 
-Allowing the same factor (4) for the vertical displacement as in (E47), a
-valid sampling constant is
+For \(n\le40\), iterated Markov bounds along
+\(|\operatorname{Im}w|\le1/2\) enlarge the real estimate by less than
+\(1.01\): indeed \(d_n^2/(q_nT)<1.4\cdot10^{-6}\), and every denominator
+factor changes by less than \(10^{-12}\). Thus a valid sampling constant is
 
 \[
- C_n=4I_n(1+q_n)^{4n}B_n.                            \tag{E51}
+ C_n=1.01I_n(1+q_n)^{4n}B_n.                         \tag{E51}
 \]
 
-The explicit count gives fewer than \(q_nY\log Y\) zeros per band. Hence the
-analogue of (E48) closes whenever
+The explicit count gives fewer than
+\(0.161q_nY\log Y\) positive zeros per band. Every off-line orbit accounts
+for two of them, so the number of off-line pairs is at most half this value.
+Hence the analogue of (E48) closes whenever
 
 \[
  \boxed{
- \Theta_n:=\frac{C_nq_n\log T}{4T}<1.}               \tag{E52}
+ \Theta_n:=\frac{0.161C_nq_n\log T}{8T}<1.}          \tag{E52}
 \]
 
 All sampling intervals contain zeros; even in the worst case
-\(n=19,Y=T\), the smallest lower count exceeds (6.25\cdot10^5\). Direct
+\(n=40,Y=T\), the smallest lower count exceeds \(6.46\cdot10^4\). Direct
 evaluation of the explicit constants gives
 
 \[
- \Theta_{18}=0.7173\ldots,qquad
- \Theta_{19}=0.9555\ldots,qquad
- \Theta_{20}=1.2538\ldots.                           \tag{E53}
+ \Theta_{39}=0.8512\ldots,\qquad
+ \Theta_{40}=0.9715\ldots,\qquad
+ \Theta_{41}=1.1051\ldots.                           \tag{E53}
 \]
 
 Therefore
 
 \[
- \boxed{K^{(n)}\succeq0\quad\text{for every }n\le19} \tag{E54}
+ \boxed{K^{(n)}\succeq0\quad\text{for every }n\le40} \tag{E54}
 \]
 
-unconditionally. The cutoff (19) is a limitation of these deliberately
-coarse constants, not evidence of a failure at order (20). More
+unconditionally. The cutoff \(40\) is a limitation of these deliberately
+coarse constants, not evidence of a failure at order \(41\). More
 importantly, proving every fixed order separately is not RH: (EC) requires a
 single argument valid for unbounded (n). The next mathematical target is to
 replace the Markov growth in (E50) by a sampling inequality whose constant is
