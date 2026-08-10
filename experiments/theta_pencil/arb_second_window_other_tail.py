@@ -29,6 +29,7 @@ class SecondWindowOtherTail:
     comparison_matrix: np.ndarray
     spectral_norm_upper: float
     row_column_upper: float
+    includes_self_blocks: bool
     precision: int
 
 
@@ -40,6 +41,7 @@ def certify_second_window_other_tail(
     first_degree: int = 1024,
     explicit_end: int = 4096,
     precision: int = 512,
+    include_self_blocks: bool = True,
 ) -> SecondWindowOtherTail:
     """Bound self-regularized, adjacent-analytic and separated tails.
 
@@ -77,17 +79,21 @@ def certify_second_window_other_tail(
             for source in range(7):
                 source_degree = degrees[source]
                 if target == source:
-                    key = ("self", source_degree)
-                    if key not in cache:
-                        cache[key] = (
-                            certify_second_green_self_tail(
-                                source_degree,
-                                first_degree,
-                                explicit_end,
-                                precision,
-                            ).total_upper
-                            / (first_degree * (first_degree + 1))
-                        )
+                    if include_self_blocks:
+                        key = ("self", source_degree)
+                        if key not in cache:
+                            cache[key] = (
+                                certify_second_green_self_tail(
+                                    source_degree,
+                                    first_degree,
+                                    explicit_end,
+                                    precision,
+                                ).total_upper
+                                / (first_degree * (first_degree + 1))
+                            )
+                    else:
+                        key = ("self-removed", source_degree)
+                        cache[key] = 0.0
                 elif abs(target - source) == 1:
                     key = (
                         "adjacent-analytic",
@@ -138,13 +144,22 @@ def certify_second_window_other_tail(
                 comparison_arb[row, column] = arb(
                     str(comparison[row, column])
                 )
-        gram = comparison_arb.transpose() * comparison_arb
-        eigenvalues = gram.eig(multiple=True, algorithm="rump")
-        spectral = max(value.real.upper() for value in eigenvalues).sqrt()
         row_column = (
             arb(str(np.max(np.sum(comparison, axis=1))))
             * arb(str(np.max(np.sum(comparison, axis=0))))
         ).sqrt()
+        gram = comparison_arb.transpose() * comparison_arb
+        try:
+            eigenvalues = gram.eig(multiple=True, algorithm="rump")
+            spectral = min(
+                max(value.real.upper() for value in eigenvalues).sqrt(),
+                row_column,
+            )
+        except ValueError:
+            # Near the zero matrix Rump isolation can fail because every
+            # eigenvalue is multiple.  Schur's row--column bound remains a
+            # rigorous operator-norm bound and is sharper in this regime.
+            spectral = row_column
     finally:
         ctx.prec = previous_precision
 
@@ -155,5 +170,6 @@ def certify_second_window_other_tail(
         comparison_matrix=comparison,
         spectral_norm_upper=math.nextafter(float(spectral.upper()), math.inf),
         row_column_upper=math.nextafter(float(row_column.upper()), math.inf),
+        includes_self_blocks=include_self_blocks,
         precision=precision,
     )

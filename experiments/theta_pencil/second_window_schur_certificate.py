@@ -20,6 +20,9 @@ from experiments.theta_pencil.arb_second_window_other_tail import (
 from experiments.theta_pencil.arb_second_window_singular_gram import (
     build_arb_second_window_singular_gram,
 )
+from experiments.theta_pencil.arb_second_window_self_gram import (
+    build_arb_second_window_self_gram,
+)
 from experiments.theta_pencil.arb_second_window_source import (
     build_arb_second_window_source,
 )
@@ -56,6 +59,8 @@ class SecondWindowSchurCertificate:
     low_degree_count: int
     tail_start: int
     explicit_end: int
+    retain_self_tail: bool
+    residual_balance: float
     precision: int
 
 
@@ -81,6 +86,8 @@ def _assemble_parity_schur(
     complement_floor,
     other_tail_norm,
     tail_balance,
+    self_gram=None,
+    residual_balance=0.01,
 ):
     """Assemble one rigorous lower Schur matrix from Arb components."""
 
@@ -100,6 +107,8 @@ def _assemble_parity_schur(
         singular_gram,
         other_tail_norm,
         tail_balance,
+        self_gram,
+        residual_balance,
     )
     result -= coupling_upper / denominator
     return result
@@ -112,14 +121,24 @@ def _coupling_gram_upper(
     singular_gram,
     other_tail_norm,
     tail_balance,
+    self_gram=None,
+    residual_balance=0.01,
 ):
     """Return the positive Gram majorant used in the Schur correction."""
 
     structured = 2 * (flux_gram + singular_gram)
     balance = arb(str(tail_balance))
     other = arb(str(other_tail_norm))
-    result = band_gram + (1 + balance) * structured
-    scalar_tail = (1 + 1 / balance) * other**2
+    if self_gram is None:
+        result = band_gram + (1 + balance) * structured
+        scalar_tail = (1 + 1 / balance) * other**2
+    else:
+        residual = arb(str(residual_balance))
+        if not residual.lower() > 0:
+            raise ValueError("residual_balance must be positive")
+        combined = (1 + balance) * structured + (1 + 1 / balance) * self_gram
+        result = band_gram + (1 + residual) * combined
+        scalar_tail = (1 + 1 / residual) * other**2
     for index in range(result.nrows()):
         result[index, index] += scalar_tail
     return result
@@ -178,6 +197,9 @@ def certify_second_window_schur(
     explicit_end: int = 4096,
     maximum_smooth_power: int = 23,
     tail_balance: float = 0.1,
+    retain_self_tail: bool = False,
+    residual_balance: float = 0.01,
+    self_remainder_end: int = 16384,
     precision: int = 512,
     comparison_subdivisions: int = 80,
     expected_negative_count: int = 1,
@@ -192,6 +214,8 @@ def certify_second_window_schur(
 
     if tail_balance <= 0:
         raise ValueError("tail_balance must be positive")
+    if residual_balance <= 0:
+        raise ValueError("residual_balance must be positive")
     if expected_negative_count not in (0, 1):
         raise ValueError("expected_negative_count must be zero or one")
     if tail_start <= low_degree_count or explicit_end <= tail_start:
@@ -246,7 +270,17 @@ def certify_second_window_schur(
         tail_start,
         explicit_end,
         precision,
+        include_self_blocks=not retain_self_tail,
     )
+    self_tail = None
+    if retain_self_tail:
+        self_tail = build_arb_second_window_self_gram(
+            low_degree_count,
+            tail_start,
+            explicit_end,
+            self_remainder_end,
+            precision,
+        )
     floor = certify_second_window_complement_floor(
         half_width,
         low_degree_count,
@@ -287,6 +321,14 @@ def certify_second_window_schur(
                 getattr(singular, f"{name}_midpoint"),
                 getattr(singular, f"{name}_radius"),
             )
+            self_ball = None
+            if self_tail is not None:
+                self_ball = _matrix_from_export(
+                    arb,
+                    arb_mat,
+                    getattr(self_tail, f"{name}_midpoint"),
+                    getattr(self_tail, f"{name}_radius"),
+                )
             schur = _assemble_parity_schur(
                 arb,
                 arb_mat,
@@ -299,6 +341,8 @@ def certify_second_window_schur(
                 floor.complement_floor,
                 other.spectral_norm_upper,
                 tail_balance,
+                self_ball,
+                residual_balance,
             )
             complement_lower = (
                 arb(str(floor.complement_floor))
@@ -312,6 +356,8 @@ def certify_second_window_schur(
                 singular_ball,
                 other.spectral_norm_upper,
                 tail_balance,
+                self_ball,
+                residual_balance,
             )
             midpoint = np.empty((schur.nrows(), schur.ncols()), dtype=float)
             radius = np.empty_like(midpoint)
@@ -379,5 +425,7 @@ def certify_second_window_schur(
         low_degree_count=low_degree_count,
         tail_start=tail_start,
         explicit_end=explicit_end,
+        retain_self_tail=retain_self_tail,
+        residual_balance=residual_balance,
         precision=precision,
     )
