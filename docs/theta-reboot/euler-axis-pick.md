@@ -361,12 +361,142 @@ but zero-free sufficient bound
  <2.8\cdot10^{-26}.}                                  \tag{E23}
 \]
 
-The tiny constant is not itself a proof: a uniform positive lower bound for
-this variance has not been established, and replacing it by numerical
-evidence would be circular. A sharper route may compare its decay directly
-with the \(\eta\)-dependent off-line penalty using unconditional zero-counting
-bounds.
+The tiny constant is not itself a proof; it only identifies the remaining
+task. The next argument supplies a much larger analytic variance floor from
+two zero-height bands.
 
-The module `euler_axis_pick.py` implements (EP)--(E23) as floating-point
-algebra for falsification and cross-checking. Rigorous claims require interval
-evaluation of (E1) and all relevant principal minors.
+### The local order-three gate is unconditional
+
+In fact the missing variance bound can be obtained very coarsely. First, the
+upper curvature inequality is automatic. For one orbit, direct algebra gives
+\(-1<p_j<1\): the inequality \(p_j>-1\) has numerator
+
+\[
+ cA^2+4\alpha^2\gamma^2(2\eta^2+c)>0,
+ \qquad c=\gamma^2-\alpha^2,
+\]
+
+and \(p_j<1\) is equivalent to
+\(A^2>4\alpha^2\gamma^2\). The latter is immediate on the line and, off the
+line, follows with enormous room from \(|\alpha|<1/2\) and
+\(|\gamma|>3\cdot10^{12}\). Using (E18) in the mixture identity yields
+
+\[
+ \boxed{
+ 2(1-p^2)-q=
+ 4\sum_jw_j(1-p_j^2)+
+ \sum_{j\,\mathrm{off}}w_j\delta_j>0.}                \tag{E24}
+\]
+
+For the lower inequality, use
+
+\[
+ \operatorname{Var}_w(p_j)=
+ \frac12\sum_{i,j}w_iw_j(p_i-p_j)^2.                 \tag{E25}
+\]
+
+When \(1/2<\eta\le100\), take the certified on-line zeros in
+\(14<\gamma_1<15\) and \(21<\gamma_2<22\). The positive-kernel argument gives
+\(L'(\eta)>0\). For \(\eta\le1\), therefore, \(L(\eta)\le L(1)\). For
+\(1\le\eta\le100\), (E1), \(\psi(x)<\log x\), and the negative sign of the
+prime sum give
+
+\[
+ L(\eta)\le
+ \frac1s+\frac1{s-1}-\frac12\log\pi+
+ \frac12\log\frac{s}{2}<2,
+ \qquad s=\eta+\frac12.
+\]
+
+Writing \(r=\eta^2\), the two selected weights and slopes in (E25) then give
+the entirely rational bound
+
+\[
+ \operatorname{Var}_w(p_j)
+ \ge
+ \frac{432^2r^3}{(r+225)^3(r+484)^3}
+ >2.24\cdot10^{-12}.                                 \tag{E26}
+\]
+
+The last minimum on \(1/4<r\le10^4\) occurs at an endpoint; the smaller
+endpoint value is \(2.2469\ldots\cdot10^{-12}\).
+
+For \(\eta\ge100\), no individual zero table is needed. The explicit
+Riemann--von Mangoldt error bound following from
+[Trudgian's bound on \(S(T)\)](https://arxiv.org/abs/1208.5846) gives, by
+direct differentiation,
+
+\[
+ \begin{aligned}
+ N(3\eta/4)-N(\eta/2)&\ge10^{-3}\eta\log\eta,\\
+ N(2\eta)-N(3\eta/2)&\ge2\cdot10^{-2}\eta\log\eta.
+ \end{aligned}                                      \tag{E27}
+\]
+
+For completeness, these inequalities remain valid after replacing the exact
+zero-counting error in
+\(N(T)-\frac{T}{2\pi}\log\frac{T}{2\pi e}\) by the envelope
+
+\[
+ 0.112\log T+0.278\log\log T+3.385+0.2/T.
+\]
+
+Both margins are positive at \(\eta=100\), by more than \(0.16\) and
+\(8.39\), respectively. Their first derivatives there exceed \(0.12\) and
+\(0.22\). A second differentiation gives the elementary lower bound
+
+\[
+ F''_{a,b,k}(\eta)\ge
+ \frac{(b-a)/(2\pi)-k}{\eta}
+ -\frac{0.4(a^{-1}+b^{-1})}{\eta^3}>0,
+\]
+
+for \((a,b,k)=(1/2,3/4,10^{-3})\) and
+\((3/2,2,2\cdot10^{-2})\), proving both inequalities for every
+\(\eta\ge100\).
+
+Count each positive-height zero with multiplicity. In the first band, its
+orbit mass per counted zero is at least \(512/(769\eta)\); in the second it is
+at least \(6/(29\eta)\). Also (E1) gives
+\(L(\eta)\le\tfrac12\log\eta\). In the dimensionless variables
+\(u=\gamma/\eta\), \(e=\alpha^2/\eta^2\), the orbit slope is
+
+\[
+ p(u,e)=1+\frac2{1+u^2-e}
+ -\frac{4(1+u^2-e)}{(1+u^2-e)^2+4eu^2}.
+\]
+
+Here \(0\le e\le2.5\cdot10^{-5}\). Elementary denominator bounds give
+\(p<-0.279\) in \(1/2\le u\le3/4\) and \(p>0.383\) in
+\(3/2\le u\le2\). Thus the two bands are separated by more than \(0.6\),
+their total weights satisfy
+
+\[
+ w_1\ge\frac{1024}{769000},\qquad
+ w_2\ge\frac{0.24}{29},
+\]
+
+and (E25) gives
+
+\[
+ \operatorname{Var}_w(p_j)
+ \ge0.6^2w_1w_2
+ >3.96\cdot10^{-6}.                                  \tag{E28}
+\]
+
+Combining (E22), (E24), (E26), and (E28) proves
+
+\[
+ \boxed{|v''(t)|<2(1-v'(t)^2)\quad(t>\tfrac12\log(1/2))} \tag{E29}
+\]
+
+unconditionally. The two external inputs are the rigorous verification to
+height \(3\cdot10^{12}\) and the explicit zero-counting error bound. This is
+only the *coalescing-node* order-three condition. It makes every sufficiently
+small symmetric triple positive, but it does not prove positivity for three
+separated nodes, let alone the full hierarchy (EC).
+
+The module `euler_axis_pick.py` implements the orbit algebra, and
+`zero_band_variance.py` audits the constants in (E26)--(E28). These
+floating-point checks are not used in place of the displayed analytic
+inequalities. Global claims still require all separated principal minors.

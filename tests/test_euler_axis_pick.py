@@ -117,3 +117,19 @@ def test_orbit_mixture_slack_is_component_defect_plus_four_variances():
     )
     assert direct == pytest.approx(decomposed)
     assert direct > 0.0
+
+    masses = np.asarray([row[0] for row in profiles])
+    slopes = np.asarray([row[1] for row in profiles])
+    curvatures = np.asarray([row[2] for row in profiles])
+    weights = masses / masses.sum()
+    slope = weights @ slopes
+    variance = weights @ (slopes * slopes) - slope * slope
+    curvature = 2.0 * variance + weights @ curvatures
+    upper_slack = 2.0 * (1.0 - slope * slope) - curvature
+    component_defects = -(curvatures + 2.0 * (1.0 - slopes * slopes))
+    upper_decomposition = (
+        4.0 * weights @ (1.0 - slopes * slopes)
+        + weights @ component_defects
+    )
+    assert upper_slack == pytest.approx(upper_decomposition)
+    assert upper_slack > 0.0
