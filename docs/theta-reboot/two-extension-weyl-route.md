@@ -326,20 +326,23 @@ The series for the digamma function shows term by term that
  =-\gamma-\frac{\pi}{2}-3\log2-\log\pi.                 \tag{AF}
 \]
 
-The polar contribution is
-\(2\operatorname{Re}(V_+\overline{V_-})\), so
-Cauchy--Schwarz gives
+The polar contribution is the rank-two operator
+\(u\otimes v+v\otimes u\), where \(u(x)=e^{x/2}\) and
+\(v(x)=e^{-x/2}\). Since
+\(\|u\|^2=\|v\|^2=2\sinh a\) and
+\(\langle u,v\rangle=2a\), its two nonzero eigenvalues are
+\(2a\pm2\sinh a\). Therefore the exact lower bound is
 
 \[
  2\operatorname{Re}(V_+\overline{V_-})
- \ge-|V_+|^2-|V_-|^2\ge-4\sinh(a)\|v\|_2^2.
+ \ge-2(\sinh a-a)\|v\|_2^2.
 \]
 
 For every active prime power, the same inequality bounds its two translation
 correlations below by \(-2\Lambda(n)\|v\|_2^2/\sqrt n\). Therefore
 
 \[
- \lambda_a\ge h(0)-4\sinh a
+ \lambda_a\ge h(0)-2(\sinh a-a)
  -2\sum_{2\le n\le e^{2a}}\frac{\Lambda(n)}{\sqrt n}.   \tag{LB1}
 \]
 
@@ -384,7 +387,7 @@ Taking the better of the two bounds, we obtain
 
 \[
  \boxed{\lambda_a\ge
- L(a):=h(0)-4\sinh a
+ L(a):=h(0)-2(\sinh a-a)
  -2\min\{4a(e^a-1),\,8\log2\,e^a\}.}                   \tag{LB2}
 \]
 
@@ -396,7 +399,7 @@ Thus
 
 is an explicit unconditional choice for every \(a>0\). It uses neither zero
 locations nor RH. Its magnitude is
-\((2+16\log2)e^a(1+o(1))\).
+\((1+16\log2)e^a(1+o(1))\).
 
 Section 8 of Suzuki writes the continuous-kernel shift
 as \(S_a=G_a-\lambda R_a\), with the inverse Laplacian \(R_a\). Formally on

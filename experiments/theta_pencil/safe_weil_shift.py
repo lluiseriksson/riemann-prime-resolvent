@@ -33,13 +33,26 @@ def prime_weight_upper_bound(half_width: float) -> float:
     return min(direct, chebyshev)
 
 
+def exact_polar_lower_cost(half_width: float) -> float:
+    """Return the exact magnitude of the negative polar eigenvalue.
+
+    The polar operator is ``u tensor v + v tensor u`` for
+    ``u=exp(x/2)`` and ``v=exp(-x/2)`` on ``(-a,a)``.  Their squared norms
+    are ``2*sinh(a)`` and their inner product is ``2*a``.  Hence the two
+    nonzero eigenvalues are ``2*a +/- 2*sinh(a)``.
+    """
+
+    if half_width <= 0.0:
+        raise ValueError("half_width must be positive")
+    return 2.0 * (math.sinh(half_width) - half_width)
+
+
 def localized_weil_lower_bound(half_width: float) -> float:
     """Return a rigorous scalar lower bound for the localized Weil form."""
 
-    polar_lower_cost = 4.0 * math.sinh(half_width)
     return (
         archimedean_multiplier_floor()
-        - polar_lower_cost
+        - exact_polar_lower_cost(half_width)
         - 2.0 * prime_weight_upper_bound(half_width)
     )
 

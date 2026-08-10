@@ -5,6 +5,7 @@ from scipy.linalg import eigh
 
 from experiments.theta_pencil.safe_weil_shift import (
     archimedean_multiplier_floor,
+    exact_polar_lower_cost,
     explicit_safe_shift,
     inverse_mobius_error_scale,
     localized_weil_lower_bound,
@@ -38,6 +39,15 @@ def test_chebyshev_branch_removes_the_support_factor():
         )
 
 
+def test_polar_cost_is_exact_rank_two_negative_eigenvalue():
+    half_width = 0.72
+    norm_squared = 2.0 * math.sinh(half_width)
+    inner_product = 2.0 * half_width
+    assert exact_polar_lower_cost(half_width) == pytest.approx(
+        norm_squared - inner_product
+    )
+
+
 def test_safe_shift_lies_below_galerkin_spectrum():
     half_width = 0.72
     gram, weil, _, _ = build_screw_weil_matrix(
@@ -52,7 +62,7 @@ def test_safe_shift_lies_below_galerkin_spectrum():
 
 
 def test_inverse_mobius_scale_has_expected_large_support_asymptotic():
-    coefficient = 2.0 + 16.0 * math.log(2.0)
+    coefficient = 1.0 + 16.0 * math.log(2.0)
     values = [
         inverse_mobius_error_scale(half_width)
         * coefficient**2
