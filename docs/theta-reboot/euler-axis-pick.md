@@ -492,11 +492,93 @@ Combining (E22), (E24), (E26), and (E28) proves
 
 unconditionally. The two external inputs are the rigorous verification to
 height \(3\cdot10^{12}\) and the explicit zero-counting error bound. This is
-only the *coalescing-node* order-three condition. It makes every sufficiently
-small symmetric triple positive, but it does not prove positivity for three
-separated nodes, let alone the full hierarchy (EC).
+initially only the *coalescing-node* order-three condition. The next argument
+shows that, in this particular hyperbolic kernel, it integrates globally.
 
-The module `euler_axis_pick.py` implements the orbit algebra, and
-`zero_band_variance.py` audits the constants in (E26)--(E28). These
+### From local curvature to every separated triple
+
+Let \(t_1<t_2<t_3\), put
+
+\[
+ x=t_2-t_1,\quad y=t_3-t_2,\quad
+ u=v(t_2)-v(t_1),\quad z=v(t_3)-v(t_2),
+\]
+
+and normalize the \(3\times3\) kernel to correlations. Its three off-diagonal
+entries are
+
+\[
+ a=\frac{\cosh u}{\cosh x},\qquad
+ b=\frac{\cosh z}{\cosh y},\qquad
+ c=\frac{\cosh(u+z)}{\cosh(x+y)}.
+\]
+
+Since \(0<v'<1\), define the interval rapidity
+
+\[
+ \mathcal A(x,u)=
+ \operatorname{artanh}\!\left(\frac{\tanh u}{\tanh x}\right)
+ =\frac12\log\frac{\sinh(x+u)}{\sinh(x-u)}.           \tag{E30}
+\]
+
+The correlation determinant factors exactly as
+
+\[
+ \det R=(1-a^2)(1-b^2)-(c-ab)^2.
+\]
+
+Writing \(X=\tanh x\), \(Y=\tanh y\), \(U=\tanh u\), and
+\(Z=\tanh z\), division by the positive factor
+\(\cosh^2u\cosh^2zX^2Y^2\) shows
+
+\[
+ \boxed{
+ \det R\ge0\quad\Longleftrightarrow\quad
+ |\mathcal A(x,u)-\mathcal A(y,z)|\le x+y.}           \tag{E31}
+\]
+
+Indeed,
+
+\[
+ \frac{1-(U/X)(Z/Y)}
+ {\sqrt{(1-(U/X)^2)(1-(Z/Y)^2)}}
+ =\cosh\bigl(\mathcal A(x,u)-\mathcal A(y,z)\bigr).
+\]
+
+It remains to integrate (E29), and here the constant \(2\) is exact. Put
+\(g(t)=\operatorname{artanh}v'(t)\). Then (E29) says \(|g'|<2\).
+For an interval of length \(h\) ending at \(t_0\), monotonicity of \(\tanh\)
+gives
+
+\[
+ \int_0^h\tanh(g(t_0)-2r)\,dr
+ \le v(t_0)-v(t_0-h)
+ \le\int_0^h\tanh(g(t_0)+2r)\,dr.                    \tag{E32}
+\]
+
+The map \(u\mapsto\mathcal A(h,u)\) is increasing, and direct integration
+gives the sharp endpoint identity
+
+\[
+ \mathcal A\!\left(
+ h,\int_0^h\tanh(g_0\mathbin\pm2r)\,dr\right)
+ =g_0\mathbin\pm h.                                  \tag{E33}
+\]
+
+Consequently the rapidity of either interval adjacent to \(t_0\) lies in
+\([g(t_0)-h,g(t_0)+h]\). Applying this to the left interval of length \(x\)
+and the right interval of length \(y\) proves
+
+\[
+ |\mathcal A(x,u)-\mathcal A(y,z)|\le x+y.            \tag{E34}
+\]
+
+By (E31), every \(3\times3\) principal Pick matrix on the Euler axis is
+therefore positive semidefinite, unconditionally. This closes order three,
+not RH: matrices of order four and higher remain uncontrolled.
+
+The module `euler_axis_pick.py` implements the orbit algebra and the exact
+interval-rapidity form (E30)--(E31), while `zero_band_variance.py` audits the
+constants in (E26)--(E28). These
 floating-point checks are not used in place of the displayed analytic
 inequalities. Global claims still require all separated principal minors.

@@ -5,6 +5,54 @@ from __future__ import annotations
 import numpy as np
 
 
+def interval_rapidity(length: float, image_increment: float) -> float:
+    """Return atanh(tanh(image_increment)/tanh(length))."""
+
+    interval = float(length)
+    increment = float(image_increment)
+    if interval <= 0.0 or abs(increment) >= interval:
+        raise ValueError("require length > 0 and abs(image_increment) < length")
+    return float(np.arctanh(np.tanh(increment) / np.tanh(interval)))
+
+
+def hyperbolic_three_point_determinant(
+    left_length: float,
+    right_length: float,
+    left_increment: float,
+    right_increment: float,
+) -> float:
+    """Return the determinant of the normalized three-point kernel."""
+
+    x = float(left_length)
+    y = float(right_length)
+    u = float(left_increment)
+    z = float(right_increment)
+    if x <= 0.0 or y <= 0.0 or not (0.0 <= u < x and 0.0 <= z < y):
+        raise ValueError("require positive lengths and contractive increments")
+    left = np.cosh(u) / np.cosh(x)
+    right = np.cosh(z) / np.cosh(y)
+    outer = np.cosh(u + z) / np.cosh(x + y)
+    return float(1.0 + 2.0 * left * right * outer - left**2 - right**2 - outer**2)
+
+
+def hyperbolic_three_point_rapidity_margin(
+    left_length: float,
+    right_length: float,
+    left_increment: float,
+    right_increment: float,
+) -> float:
+    """Return the exact rapidity margin equivalent to 3x3 positivity."""
+
+    return float(
+        left_length
+        + right_length
+        - abs(
+            interval_rapidity(left_length, left_increment)
+            - interval_rapidity(right_length, right_increment)
+        )
+    )
+
+
 def off_line_orbit_defect_ceiling(verified_height: float) -> float:
     """Return the uniform defect ceiling above a verified RH height.
 

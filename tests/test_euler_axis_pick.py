@@ -6,6 +6,9 @@ from experiments.theta_pencil.euler_axis_pick import (
     centered_zero_orbit_gate_margin,
     euler_axis_log_derivative_kernel,
     euler_axis_pick_matrix,
+    hyperbolic_three_point_determinant,
+    hyperbolic_three_point_rapidity_margin,
+    interval_rapidity,
     off_line_orbit_defect_ceiling,
     local_three_point_curvature_gate,
     normalized_log_derivative_correlation,
@@ -80,6 +83,20 @@ def test_local_three_point_gate_is_the_h6_determinant_coefficient():
         values = slope * points + 0.5 * curvature * points**2
         correlation = np.cosh(values[:, None] - values[None, :]) / np.cosh(
             points[:, None] - points[None, :]
+        )
+
+
+def test_three_point_determinant_has_the_exact_interval_rapidity_gate():
+    for x, y, u, z in (
+        (0.4, 0.7, 0.2, 0.5),
+        (1.3, 0.2, 1.1, 0.03),
+        (0.05, 0.08, 0.049, 0.079),
+    ):
+        determinant = hyperbolic_three_point_determinant(x, y, u, z)
+        margin = hyperbolic_three_point_rapidity_margin(x, y, u, z)
+        assert (determinant >= 0.0) == (margin >= 0.0)
+        assert interval_rapidity(x, u) == pytest.approx(
+            0.5 * np.log(np.sinh(x + u) / np.sinh(x - u))
         )
         assert np.linalg.det(correlation) / step**6 == pytest.approx(
             target, rel=5.0e-4
