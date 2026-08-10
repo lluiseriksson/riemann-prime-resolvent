@@ -14,5 +14,9 @@ def test_riemann_weyl_basepoint_values_are_rigorously_enclosed():
         assert certificate.normalized_weyl_derivative.lower() > arb("-0.9968019520324010")
         assert certificate.odd_even_balance.lower() > arb("0.0016015849565571")
         assert certificate.odd_even_balance.upper() < arb("0.0016015849565573")
+        assert certificate.target_fourier_parity_ratio.overlaps(
+            -certificate.odd_even_balance
+        )
+        assert certificate.target_fourier_parity_ratio.upper() < 0
     finally:
         ctx.prec = old_precision

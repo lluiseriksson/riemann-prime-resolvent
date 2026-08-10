@@ -15,6 +15,7 @@ class RiemannWeylBasepointCertificate:
     xi_second_derivative: object
     normalized_weyl_derivative: object
     odd_even_balance: object
+    target_fourier_parity_ratio: object
 
 
 def certify_riemann_weyl_basepoint(
@@ -59,6 +60,7 @@ def certify_riemann_weyl_basepoint(
             xi_second_derivative=xi_second,
             normalized_weyl_derivative=derivative,
             odd_even_balance=balance,
+            target_fourier_parity_ratio=-balance,
         )
     finally:
         ctx.prec = old_precision
@@ -85,6 +87,9 @@ def main() -> None:
                         result.normalized_weyl_derivative
                     ),
                     "odd_even_balance": str(result.odd_even_balance),
+                    "target_fourier_parity_ratio": str(
+                        result.target_fourier_parity_ratio
+                    ),
                 },
                 indent=2,
             )

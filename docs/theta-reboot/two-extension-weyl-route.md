@@ -77,10 +77,20 @@ an off-real zero \(\rho\) of multiplicity \(m\) gives
 \(\Xi/\Xi'=(z-\rho)/m+O((z-\rho)^2)\), an interior zero impossible for a
 nonconstant Herglotz function.
 
-Consequently, a nondegenerate locally uniform limit
+The extension pair used below has the canonical normalization \(m_a(i)=i\).
+Set
 
 \[
- m_a(z)\longrightarrow M_\Xi(z),\qquad z\in\mathbb C_+,
+ c_\Xi=\frac{M_\Xi(i)}{i}>0,
+ \qquad F_\Xi(z)=\frac{M_\Xi(z)}{c_\Xi}.
+\]
+
+Positive scaling preserves the Herglotz class, so RH is equally equivalent to
+\(F_\Xi\) being Herglotz. Consequently, the correctly normalized locally
+uniform limit is
+
+\[
+ m_a(z)\longrightarrow F_\Xi(z),\qquad z\in\mathbb C_+,
 \]
 
 of the two-extension Weyl functions would prove RH by closure of the
@@ -767,6 +777,27 @@ finite-section boundary transfer that changes \(S_a/C_a\). The functions
 \`canonical_weyl_from_fourier_parity_ratio\` and
 \`fourier_parity_ratio_from_canonical_weyl\` verify (PF)--(PI) independently
 against the original two-channel formula.
+
+For the normalized Riemann target, (PI) defines
+
+\[
+ r_\Xi(z)=\frac{1+zF_\Xi(z)}{i(F_\Xi(z)-z)}.             \tag{PX}
+\]
+
+Both numerator and denominator vanish at \(z=i\), but the singularity is
+removable. L'Hopital's rule and (XD)--(KB) give
+
+\[
+ \boxed{r_\Xi(i)=
+ \frac{1+F_\Xi'(i)}{F_\Xi'(i)-1}=-\kappa_\Xi.}          \tag{PV}
+\]
+
+On the finite side, evaluation of the Fourier parity split at \(i\) gives
+\(C_a(i)=E_a(\lambda)\) and \(S_a(i)=-O_a(\lambda)\).
+Thus (PV) proves that the scalar calibration (KB) is precisely
+\(r_a(i)=r_\Xi(i)\): it is the base-point value of the full projective target,
+not an independent surrogate for it. The Arb certificate records the same
+identity with outward-rounded intervals.
 
 ## Conditional shifted Herglotz target
 
