@@ -643,3 +643,60 @@ that cancels in (FC). Equation (EC) is an exact reformulation of the missing
 boundary theorem; it does not establish the required convergence or a sign.
 The module \`exterior_boundary_curvature.py\` checks the smooth geometric
 series and evaluates the moving-window term on sampled sources.
+
+### Mellin closure and a one-open-set reduction
+
+Write the arithmetic term in (EC) on the whole logarithmic line as
+
+\[
+ P_v(x)=\sum_{n\ge2}\frac{\Lambda(n)}{\sqrt n}\,
+ v(x-\log n).
+\]
+
+Since \(v\) is compactly supported, this is pointwise a finite moving-window
+sum. For \(\operatorname{Im}z>1/2\), absolute convergence permits termwise
+Fourier transformation and gives
+
+\[
+\begin{aligned}
+ \int_{\mathbb R}P_v(x)e^{izx}\,dx
+ &=\widehat v(z)
+   \sum_{n\ge2}\frac{\Lambda(n)}{n^{1/2-iz}}\\
+ &=-\widehat v(z)\,
+   \frac{\zeta'}{\zeta}\!\left(\frac12-iz\right).       \tag{MT}
+\end{aligned}
+\]
+
+Thus the moving window is exactly the Euler-product part of the full-line
+multiplier in the half-plane where the Dirichlet series is honest. The polar
+and archimedean terms in (EC) provide the completion and cancel the pole at
+\(s=1\) only after the full expression is assembled.
+
+There is also a useful normal-family reduction. Define
+
+\[
+ \widetilde{\mathfrak m}_a
+ =\mathcal T_{\lambda(a),c}^{-1}
+   (\mathfrak m_{a,\lambda(a)}).
+\]
+
+Every \(\widetilde{\mathfrak m}_a\) is Herglotz and
+\(\widetilde{\mathfrak m}_a(i)=ic\). Hence
+
+\[
+ \frac{\widetilde{\mathfrak m}_a-ic}
+      {\widetilde{\mathfrak m}_a+ic}
+\]
+
+is a disk-valued family vanishing at \(i\), and Montel's theorem makes the
+family normal. Consequently it is enough to prove convergence to \(M_0\) on
+one nonempty open set \(U\Subset\mathbb C_+\) where \(M_0\) is holomorphic.
+Every subsequential Herglotz limit then agrees with \(M_0\) on \(U\); the
+identity theorem forces the same meromorphic continuation, makes every
+putative pole in \(\mathbb C_+\) removable, and gives convergence throughout
+\(\mathbb C_+\). This would prove RH.
+
+Formula (MT) therefore lowers the analytic target from all of
+\(\mathbb C_+\) to one safe open set in the absolutely convergent
+Euler-product region. It does not by itself control the ratio of the two
+boundary continuations in (FC).
