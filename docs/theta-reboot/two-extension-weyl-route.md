@@ -270,6 +270,84 @@ that the arithmetic part remains visible at leading order after canonical
 normalization; mere domination by the safety shift kills the signal.  The
 module `dominant_shift_limit.py` evaluates (DL) directly.
 
+### The first operator-sensitive coefficient
+
+The first correction can be separated exactly. In a weak Galerkin basis with
+metric \(G\), write the negative shift as \(\lambda=-R\), \(R>0\), and set
+
+\[
+ u_\pm^{(0)}=G^{-1}f_\pm,\qquad
+ u_\pm^{(1)}=G^{-1}AG^{-1}f_\pm.
+\]
+
+For \(N_j=L_z(u_+^{(j)})\) and \(D_j=L_z(u_-^{(j)})\),
+
+\[
+ (A+RG)^{-1}f_\pm
+ =R^{-1}u_\pm^{(0)}-R^{-2}u_\pm^{(1)}+O(R^{-3}),
+\]
+
+so
+
+\[
+ q_R=q_0+\frac{q_1}{R}+O(R^{-2}),\qquad
+ q_0=\frac{N_0}{D_0},\quad
+ q_1=\frac{N_0D_1-N_1D_0}{D_0^2}.                    \tag{LS}
+\]
+
+After the fixed characteristic prefactor \(p(z)=-(z-i)/(z+i)\), the
+canonical Weyl expansion is
+
+\[
+ \mathfrak m_R
+ =i\frac{1+pq_0}{1-pq_0}
+ +\frac{2ipq_1}{(1-pq_0)^2}\frac1R+O(R^{-2}).         \tag{LC}
+\]
+
+The coefficient in (LC) is linear in \(A\). It therefore splits without
+approximation into polar, archimedean and prime pieces. The source-normalized
+diagnostic at \(z=0.7+0.8i\), 32 modes and 4097 grid points gives:
+
+| \(a\) | relative component cancellation | total signal \( |m_1|/R\) | prime signal \( |m_{1,P}|/R\) | first-order residual |
+|---:|---:|---:|---:|---:|
+| 0.40 | \(7.88\cdot10^{-2}\) | \(2.14\cdot10^{-3}\) | \(3.11\cdot10^{-3}\) | \(3.62\cdot10^{-4}\) |
+| 0.72 | \(1.79\cdot10^{-2}\) | \(1.42\cdot10^{-3}\) | \(2.02\cdot10^{-2}\) | \(1.41\cdot10^{-4}\) |
+| 1.50 | \(1.17\cdot10^{-3}\) | \(1.23\cdot10^{-4}\) | \(4.24\cdot10^{-2}\) | \(8.84\cdot10^{-6}\) |
+| 3.00 | \(4.87\cdot10^{-4}\) | \(5.10\cdot10^{-5}\) | \(5.16\cdot10^{-2}\) | \(9.68\cdot10^{-7}\) |
+
+At \(a=3\), the absolute first-coefficient sizes of the polar,
+archimedean and prime pieces are respectively \(12.7381\), \(0.2226\) and
+\(12.5437\), while their vector sum has size \(0.0124\). Thus the prime
+window is individually visible but cancels against the completed
+archimedean/polar contribution. This is the finite-operator manifestation of
+the explicit-formula/PNT cancellation. It also explains why the total
+safe-shift Weyl function approaches the universal limit even though the
+prime block itself does not become small.
+
+The next coefficient repeats the same phenomenon. At \(a=3\), the total
+second-order signal is \(9.93\cdot10^{-7}\), whereas the change in that
+coefficient caused by inserting the prime block is
+\(1.30\cdot10^{-3}\). Adding the polar and archimedean pieces cancels more
+than three further orders of magnitude. The second-order approximation then
+matches the finite resolvent to \(2.46\cdot10^{-8}\). Thus neither of the
+first two operator-sensitive orders supplies an uncancelled \(O(1)\) limit.
+
+These numbers are a diagnostic, not an asymptotic theorem. The exact
+coefficient identity (LS)--(LC) is implemented in
+<code>large_negative_shift_channel_expansion</code>; the component audit is
+<code>safe_shift_signal_diagnostic.py</code>.
+
+There is a geometric restriction on any attempted repair. Automorphisms of
+\(\mathbb C_+\) are hyperbolic isometries. After fixing the canonical
+basepoint value \(m(i)=i\) (or \(ic\) after unshifting), the remaining
+automorphisms correspond to rotations of the disk and cannot magnify a
+family converging locally uniformly to the basepoint. Therefore, once the
+dominant-shift collapse \(\mathfrak m_a\to i\) is established, no
+positivity-preserving Möbius renormalization can recover a nonconstant
+Riemann target from its vanishing Euclidean residual. One must either prove
+that the arithmetic term prevents this collapse or choose a substantially
+less dominant admissible shift.
+
 ## Common-factor cancellation: the full-line multiplier is not the Weyl ratio
 
 There is a structural cancellation that must be imposed before using the

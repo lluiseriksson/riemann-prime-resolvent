@@ -9,6 +9,7 @@ from experiments.theta_pencil.finite_weyl_ratio import (
     exact_normalized_unshift_error,
     exact_unshift_error,
     finite_weyl_function,
+    large_negative_shift_channel_expansion,
     normalized_unshift_error_bound,
     projective_cross_ratio,
     shifted_herglotz_value,
@@ -66,6 +67,40 @@ def test_cross_ratio_is_invariant_under_constant_mobius_map():
 def test_canonical_channel_weyl_value_has_basepoint_normalization():
     value = canonical_weyl_from_channels(3.0 - 2.0j, 0.7 + 0.1j, 1j)
     assert value == pytest.approx(1j)
+
+
+def test_large_negative_shift_expansion_has_second_order_remainder():
+    operator = np.array([[1.0, 0.2], [0.2, 3.0]])
+    plus = np.array([1.0, 0.4])
+    minus = np.array([0.3, 1.2])
+    observation = np.array([1.0 + 0.2j, -0.3 + 0.5j])
+    z = 0.7 + 0.8j
+    expansion = large_negative_shift_channel_expansion(
+        operator, plus, minus, observation, z
+    )
+    first_order_errors = []
+    second_order_errors = []
+    for scale in (1.0e3, 2.0e3):
+        pencil = operator + scale * np.eye(2)
+        plus_value = complex(observation @ np.linalg.solve(pencil, plus))
+        minus_value = complex(observation @ np.linalg.solve(pencil, minus))
+        exact = canonical_weyl_from_channels(plus_value, minus_value, z)
+        first_approximation = (
+            expansion.canonical_leading
+            + expansion.canonical_first_coefficient / scale
+        )
+        second_approximation = (
+            first_approximation
+            + expansion.canonical_second_coefficient / scale**2
+        )
+        first_order_errors.append(abs(exact - first_approximation))
+        second_order_errors.append(abs(exact - second_approximation))
+    assert first_order_errors[0] / first_order_errors[1] == pytest.approx(
+        4.0, rel=0.02
+    )
+    assert second_order_errors[0] / second_order_errors[1] == pytest.approx(
+        8.0, rel=0.03
+    )
 
 
 def test_shifted_herglotz_map_and_exact_error_formula():

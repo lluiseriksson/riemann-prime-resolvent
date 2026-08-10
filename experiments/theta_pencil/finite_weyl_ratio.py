@@ -215,6 +215,107 @@ class ResolventShiftAudit:
 
 
 @dataclass(frozen=True)
+class LargeShiftChannelExpansion:
+    """First three coefficients of the large-negative-shift Weyl function."""
+
+    characteristic_leading: complex
+    characteristic_first_coefficient: complex
+    characteristic_second_coefficient: complex
+    canonical_leading: complex
+    canonical_first_coefficient: complex
+    canonical_second_coefficient: complex
+
+
+def large_negative_shift_channel_expansion(
+    operator: np.ndarray,
+    plus_vector: np.ndarray,
+    minus_vector: np.ndarray,
+    observation: np.ndarray,
+    z: complex,
+    metric: np.ndarray | None = None,
+) -> LargeShiftChannelExpansion:
+    """Expand the canonical channel Weyl function for ``shift=-L``.
+
+    In a weak Galerkin basis,
+
+    ``(A + L G)^-1 f = L^-1 G^-1 f - L^-2 G^-1 A G^-1 f + ...``.
+
+    The returned first and second coefficients multiply ``1/L`` and
+    ``1/L**2``.  The first is linear in the operator and is therefore the
+    first place where the prime block can be separated from the universal
+    source geometry; the second also records component interactions.
+    """
+
+    matrix = np.asarray(operator, dtype=float)
+    plus = np.asarray(plus_vector, dtype=float)
+    minus = np.asarray(minus_vector, dtype=float)
+    functional = np.asarray(observation, dtype=complex)
+    if matrix.ndim != 2 or matrix.shape[0] != matrix.shape[1]:
+        raise ValueError("operator must be square")
+    dimension = matrix.shape[0]
+    if plus.shape != (dimension,) or minus.shape != (dimension,):
+        raise ValueError("channel vectors have the wrong shape")
+    if functional.shape != (dimension,):
+        raise ValueError("observation has the wrong shape")
+    gram = np.eye(dimension) if metric is None else np.asarray(metric, dtype=float)
+    if gram.shape != matrix.shape:
+        raise ValueError("metric has the wrong shape")
+
+    plus_leading = np.linalg.solve(gram, plus)
+    minus_leading = np.linalg.solve(gram, minus)
+    plus_first = np.linalg.solve(gram, matrix @ plus_leading)
+    minus_first = np.linalg.solve(gram, matrix @ minus_leading)
+    plus_second = np.linalg.solve(gram, matrix @ plus_first)
+    minus_second = np.linalg.solve(gram, matrix @ minus_first)
+    numerator_zero = complex(functional @ plus_leading)
+    denominator_zero = complex(functional @ minus_leading)
+    numerator_one = complex(functional @ plus_first)
+    denominator_one = complex(functional @ minus_first)
+    numerator_two = complex(functional @ plus_second)
+    denominator_two = complex(functional @ minus_second)
+    if abs(denominator_zero) == 0.0:
+        raise ZeroDivisionError("the leading denominator channel vanishes")
+
+    ratio_zero = numerator_zero / denominator_zero
+    ratio_one = (
+        numerator_zero * denominator_one
+        - numerator_one * denominator_zero
+    ) / (denominator_zero * denominator_zero)
+    ratio_two = (
+        numerator_two * denominator_zero * denominator_zero
+        - numerator_one * denominator_one * denominator_zero
+        + numerator_zero * denominator_one * denominator_one
+        - numerator_zero * denominator_two * denominator_zero
+    ) / (denominator_zero**3)
+    prefactor = -((z - 1j) / (z + 1j))
+    characteristic_zero = prefactor * ratio_zero
+    characteristic_one = prefactor * ratio_one
+    characteristic_two = prefactor * ratio_two
+    if abs(1.0 - characteristic_zero) == 0.0:
+        raise ZeroDivisionError("the leading reference characteristic vanishes")
+    canonical_zero = 1j * (1.0 + characteristic_zero) / (
+        1.0 - characteristic_zero
+    )
+    canonical_one = (
+        2j
+        * characteristic_one
+        / (1.0 - characteristic_zero) ** 2
+    )
+    canonical_two = (
+        2j * characteristic_two / (1.0 - characteristic_zero) ** 2
+        + 2j * characteristic_one**2 / (1.0 - characteristic_zero) ** 3
+    )
+    return LargeShiftChannelExpansion(
+        characteristic_leading=characteristic_zero,
+        characteristic_first_coefficient=characteristic_one,
+        characteristic_second_coefficient=characteristic_two,
+        canonical_leading=canonical_zero,
+        canonical_first_coefficient=canonical_one,
+        canonical_second_coefficient=canonical_two,
+    )
+
+
+@dataclass(frozen=True)
 class TwoChannelShiftAudit:
     """Exact shift law for a quotient of two resolvent matrix elements.
 
