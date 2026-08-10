@@ -69,6 +69,30 @@ window \(4<q\le5\), where \(S_q=\{\infty,2,3\}\), then to arbitrary finite
 \(S\), with uniform support bookkeeping. See
 [the semilocal programme](semilocal-weil.md).
 
+## Current quantitative frontier
+
+The semilocal programme has produced a concrete continuous realization that
+is now the active numerical-analytic track: Suzuki's localized Weil operator
+\(A_a\).  Exact cut-adapted Legendre sources, Arb tail Grams and a full Schur
+reconstruction prove
+
+\[
+ A_{0.65}\succeq4.3679506990984787\cdot10^{-13}I>0.
+\]
+
+Domain monotonicity then gives the unconditional interval theorem
+
+\[
+ \lambda_a>0\qquad(0<a\le0.65).
+\]
+
+This does not prove RH: Suzuki's criterion requires nonnegativity for every
+support.  The registered attempt at \(a=0.675\) leaves three negative
+directions in the conservative Schur lower matrix.  The immediate gate is to
+retain cross directions among the endpoint-flux, adjacent-singular and
+self-regularized tails.  Beyond \(a=\log2\), the prime-power 4 translation
+also requires a new closed cut partition.
+
 ## Why this track is different
 
 - The coefficients are explicit theta functions, not guessed zero locations.
@@ -117,6 +141,9 @@ It does not authorize changing the success condition.
 - [Quantitative support continuity and its logarithmic barrier](support-parameter-continuity.md)
 - [Certified localized positivity at support one half](support-05-certificate.md)
 - [Certified localized positivity at support 0.51](support-051-certificate.md)
+- [Certified second-window Schur frontier through support 0.65](second-window-schur.md)
+- [Directional self-tail Gram](directional-self-tail.md)
+- [Registered non-closure at support 0.675](support-0675-no-close.md)
 - [Cut-adapted exact prime basis](cut-adapted-prime-basis.md)
 - [Support-extension audit](support-extension-audit.md)
 - [Falsifiers and abandonment conditions](falsifiers.md)
