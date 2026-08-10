@@ -2025,6 +2025,44 @@ positive-real/Herglotz property of \(L\): that larger property is exactly the
 RH-side Pick criterion.  The obstruction is specifically to obtaining its
 positivity for free from the Bernstein subclass.
 
+The Hardy-space boundary of the translation model does not provide a weaker
+positive density.  Let \(\mathscr P:L^2(0,\infty)\to H^2(\mathbb C_+)\) be
+the Paley--Wiener Laplace transform.  If
+\(A_0=d/dv\) has domain \(H^1_0(0,\infty)\), then
+
+\[
+ \mathscr P A_0\mathscr P^{-1}=M_z,
+ \qquad \mathfrak D=A_0^*,
+ \qquad \mathscr P\mathfrak D\mathscr P^{-1}=M_z^*.             \tag{E123}
+\]
+
+The exponentials in (E117) become the reproducing kernels
+\(k_x(z)=1/(z+x)\), and
+
+\[
+ M_L^*k_x=L(x)k_x,qquad
+ \langle k_x,k_y\rangle=\frac1{x+y}.                            \tag{E124}
+\]
+
+Thus the real part of \(M_L^*\) on finite kernel spans is exactly the Pick
+matrix (E4), not a relaxation of it.  More sharply, put
+\(\Xi(\tau)=\xi(1/2+i\tau)\).  This is real on the real axis and, wherever
+\(\Xi(\tau)\ne0\),
+
+\[
+ \boxed{L(i\tau)=-i\frac{\Xi'(\tau)}{\Xi(\tau)},
+ \qquad \operatorname {Re}L(i\tau)=0.}                         \tag{E125}
+\]
+
+The ordinary boundary real part is therefore zero almost everywhere,
+unconditionally.  On RH, the positive Herglotz measure is singular and its
+atoms sit at the critical zeros; if RH fails, \(L\) instead has poles inside
+\(\mathbb C_+\).  A proof based only on an ordinary nonnegative boundary
+density consequently loses the entire distinction.  It must either recover
+the singular atoms or first exclude the interior poles, and the latter is
+already RH.  The Hardy model clarifies the location of the missing sign but
+does not weaken the Volterra gate (E85).
+
 Thus no finite verification height can make this particular absolute-value
 argument uniform in \(n\). Raising \(T\) only moves the finite cutoff.  The
 column-sum argument removes the \(n^5\) loss of (E55), but its
@@ -2053,8 +2091,8 @@ off-diagonal formulas, the row-sum counterexample, the consecutive
 three-band theorem (E99)--(E116), and the large-degree Euler bounds are
 checked by
 `jacobi_band_pick.py`.
-The translation-generator identity (E117)--(E119) and the failure of the
-Bernstein shortcut (E120)--(E122) are audited by
+The translation/Hardy-generator identities (E117)--(E119), (E123)--(E125)
+and the failure of the Bernstein shortcut (E120)--(E122) are audited by
 `bernstein_functional_calculus_gate.py`; its finite sum is enclosed by the
 displayed elementary analytic tail rather than treated as evidence for RH.
 The floating-point checks elsewhere in this audit are not used in place of
