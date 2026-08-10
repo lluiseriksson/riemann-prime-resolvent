@@ -16,6 +16,7 @@ from experiments.theta_pencil.finite_weyl_ratio import (
     normalized_unshift_error_bound,
     projective_cross_ratio,
     rank_one_channel_weyl_limit,
+    renormalized_fourier_parity_ratio,
     shifted_herglotz_value,
     undo_canonically_normalized_shift,
     unshift_error_bound,
@@ -133,6 +134,22 @@ def test_fourier_parity_ratio_is_the_exact_two_channel_reduction():
 def test_fourier_parity_inverse_detects_the_basepoint_indeterminacy():
     with pytest.raises(ZeroDivisionError):
         fourier_parity_ratio_from_canonical_weyl(1j, 1j)
+
+
+def test_shifted_parity_ratio_renormalizes_back_to_the_unshifted_target():
+    z = 0.8 + 1.3j
+    c = 2.7
+    shift = -4.2
+    normalized_target = 0.4 + 1.1j
+    raw_target = c * normalized_target
+    shifted = canonically_normalized_shifted_value(raw_target, shift, c)
+    shifted_ratio = fourier_parity_ratio_from_canonical_weyl(shifted, z)
+    expected = fourier_parity_ratio_from_canonical_weyl(
+        normalized_target, z
+    )
+    assert renormalized_fourier_parity_ratio(
+        shifted_ratio, z, shift, c
+    ) == pytest.approx(expected)
 
 
 def test_large_negative_shift_expansion_has_second_order_remainder():

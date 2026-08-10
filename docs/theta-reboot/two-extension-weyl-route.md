@@ -799,6 +799,65 @@ Thus (PV) proves that the scalar calibration (KB) is precisely
 not an independent surrogate for it. The Arb certificate records the same
 identity with outward-rounded intervals.
 
+### A countable real-correlation criterion
+
+The projective target can be evaluated without a bilateral transform. For
+\(z=i\eta\), \(\eta>0\), reflection and parity separation give the exact real
+formula
+
+\[
+ \boxed{
+ r_{a,\lambda}(i\eta)=
+ -\frac{\langle\sinh(\eta x),
+ R_{a,\lambda}\sinh x\rangle}
+ {\langle\cosh(\eta x),
+ R_{a,\lambda}\cosh x\rangle}.}                         \tag{IR}
+\]
+
+The denominator is required to be nonzero. At \(\eta=1\), (IR) reduces to
+\(-O_a/E_a\), as above. For \(\eta>1/2\), put
+
+\[
+ f_\Xi(\eta)=\frac{1}{c_\Xi}
+ \frac{\xi(1/2+\eta)}{\xi'(1/2+\eta)}.
+\]
+
+All quantities in this expression lie in the absolutely convergent
+Euler-product half-plane, and
+
+\[
+ F_\Xi(i\eta)=if_\Xi(\eta),\qquad
+ r_\Xi(i\eta)=\frac{1-\eta f_\Xi(\eta)}{\eta-f_\Xi(\eta)}. \tag{IT}
+\]
+
+For a nonzero safe shift, the raw ratio in (IR) must first be converted by
+(PF), the canonical shift must be undone by (CI), and the result divided by
+\(c_\Xi\). Applying (PI) to that normalized unshifted value defines
+\(\rho_{a,\lambda}\). This composition is implemented exactly by
+\`renormalized_fourier_parity_ratio\`.
+
+Let \(a_j\to\infty\), use any explicit admissible shifts \(\lambda(a_j)\),
+and let \(E\subset(1/2,\infty)\) have an accumulation point in that interval;
+for example, \(E=\{3+1/k:k\ge1\}\). Then
+
+\[
+ \boxed{
+ \rho_{a_j,\lambda(a_j)}(i\eta)\longrightarrow r_\Xi(i\eta)
+ \quad(\eta\in E)
+ \quad\Longrightarrow\quad\mathrm{RH}.}                \tag{CC}
+\]
+
+Indeed, undoing the real Möbius shift and dividing by \(c_\Xi>0\) preserves
+the Herglotz class and restores the normalization \(m(i)=i\). The normalized
+family is therefore normal. Formula (PF) turns the assumed convergence into
+pointwise convergence to \(F_\Xi\) on a uniqueness set. Every subsequential
+limit equals \(F_\Xi\) by the identity theorem, so \(F_\Xi\) is Herglotz and
+RH follows. Thus the next arithmetic obligation is only a countable family of
+real resolvent-correlation ratios in the Euler region; neither a bilateral
+ordinary Fourier transform nor convergence on a two-dimensional open set is
+required. The audit function \`imaginary_axis_parity_ratio_audit\` checks
+(IR) against the direct Fourier-channel ratio.
+
 ## Conditional shifted Herglotz target
 
 There is nevertheless a better route than exact invariance. Let

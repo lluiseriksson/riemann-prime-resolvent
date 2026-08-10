@@ -334,6 +334,34 @@ def undo_canonically_normalized_shift(
     return c * (value - shift * c) / denominator
 
 
+def renormalized_fourier_parity_ratio(
+    raw_odd_even_ratio: complex,
+    z: complex,
+    shift: float,
+    base_imaginary_value: float,
+) -> complex:
+    """Undo the pencil shift and return the normalized Fourier parity ratio.
+
+    The raw parity ratio first gives the canonical shifted Weyl value through
+    :func:`canonical_weyl_from_fourier_parity_ratio`.  We then undo the real
+    Möbius shift, divide by ``c`` so that the result again takes value ``i`` at
+    the base point, and apply the inverse projective map.
+    """
+
+    c = float(base_imaginary_value)
+    if c <= 0.0:
+        raise ValueError("base_imaginary_value must be positive")
+    shifted_weyl = canonical_weyl_from_fourier_parity_ratio(
+        raw_odd_even_ratio, z
+    )
+    normalized_unshifted = (
+        undo_canonically_normalized_shift(shifted_weyl, shift, c) / c
+    )
+    return fourier_parity_ratio_from_canonical_weyl(
+        normalized_unshifted, z
+    )
+
+
 def exact_normalized_unshift_error(
     value: complex,
     error: complex,
