@@ -539,6 +539,107 @@ The module <code>gap_normalized_weyl.py</code> records only the exact
 construction and its affine invariance; it deliberately makes no convergence
 claim.
 
+### A scalar parity-balance calibration
+
+The first derivative at the canonical base point has an exact parity-sector
+form. At $z=i$, the observation channel is $f_-=e^{-x}$. Put
+
+\[
+ c(x)=\cosh x,\qquad s(x)=\sinh x,\qquad
+ R_{a,\lambda}=(A_a-\lambda I)^{-1},
+\]
+
+and, for an admissible real shift, define
+
+\[
+ E_a(\lambda)=\langle c,R_{a,\lambda}c\rangle,
+ \qquad
+ O_a(\lambda)=\langle s,R_{a,\lambda}s\rangle.
+\]
+
+Reflection symmetry kills the mixed parity term. Since
+$f_+=c+s$ and $f_-=c-s$, direct differentiation of the characteristic
+prefactor at $i$ gives
+
+\[
+ \boxed{
+ \mathfrak m_{a,\lambda}'(i)
+ =-q_{a,\lambda}(i)
+ =-\frac{E_a(\lambda)-O_a(\lambda)}
+ {E_a(\lambda)+O_a(\lambda)}.}                       \tag{PB}
+\]
+
+This supplies a scalar calibration derived from the Riemann target itself.
+Let $F_\Xi=M_0/c_0$ with $c_0=M_0(i)/i$. In terms of derivatives of the
+classical completed function with respect to $s$,
+
+\[
+ F_\Xi'(i)
+ =\frac{\xi'}{\xi}\!\left(\frac32\right)
+  -\frac{\xi''}{\xi'}\!\left(\frac32\right)
+ =-0.9968019520324009035\ldots                       \tag{XD}
+\]
+
+and hence matching the first derivative is equivalent to
+
+\[
+ \boxed{
+ \frac{O_a(\lambda)}{E_a(\lambda)}
+ =\kappa_\Xi
+ :=\frac{1+F_\Xi'(i)}{1-F_\Xi'(i)}
+ =0.0016015849565571757\ldots.}                     \tag{KB}
+\]
+
+The value in (XD)--(KB) is evaluated wholly in the absolutely convergent
+half-plane at $s=3/2$; no zero data or RH assumption enters it.
+
+There is also an existence statement. Suppose the ground state at support
+$a$ is simple and even. As $\lambda\uparrow\mu_0(a)$, its pole occurs only
+in the even sector, so $O_a(\lambda)/E_a(\lambda)\to0$. As
+$\lambda\to-\infty$,
+
+\[
+ \frac{O_a(\lambda)}{E_a(\lambda)}
+ \longrightarrow
+ \frac{\|\sinh\|_{L^2(-a,a)}^2}
+ {\|\cosh\|_{L^2(-a,a)}^2}.
+\]
+
+The last ratio is exactly
+
+\[
+ \frac{\sinh(2a)-2a}{\sinh(2a)+2a},
+\]
+
+and exceeds $\kappa_\Xi$ for
+$a>0.0693385697853391\ldots$. On that range, continuity supplies at least
+one admissible derivative-calibrated shift $\lambda_*(a)$ whenever the
+ground state is simple and even. This is a genuine construction from the
+finite operator, but it does not prove convergence of the Weyl functions.
+
+It does yield a sharp sufficient criterion:
+
+\[
+ \boxed{
+ \lambda_*(a_j)\longrightarrow0
+ \text{ along some }a_j\to\infty
+ \quad\Longrightarrow\quad \mathrm{RH}.}            \tag{SC}
+\]
+
+Indeed $\lambda_*(a_j)<\mu_0(a_j)$, while $a\mapsto\mu_0(a)$ is
+nonincreasing. Passing to the limit gives $\mu_0(a)\ge0$ for every fixed
+$a$, which is Weil positivity. Thus (SC) is not yet a proof: establishing
+the zero limit is the entire remaining arithmetic estimate in scalar form.
+
+At the reliable small-support points, the finite model is consistent with
+this calibration: the root is about $-3.03\cdot10^{-4}$ at $a=0.4$ and the
+resulting Weyl values agree with the normalized target to roughly
+$10^{-5}$ across three probes. From $a=0.72$ onward the root is governed by
+gaps below the discretization error, so the apparent approach to zero cannot
+be used as evidence for (SC). The module
+<code>parity_weyl_derivative.py</code> implements the exact identity (PB) and
+the derivative-to-balance conversion in (KB).
+
 ## Common-factor cancellation: the full-line multiplier is not the Weyl ratio
 
 There is a structural cancellation that must be imposed before using the
