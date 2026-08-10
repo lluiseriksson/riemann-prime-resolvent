@@ -27,6 +27,24 @@ class CutAdaptedPrimeMatrix:
     diagonal: np.ndarray
 
 
+@dataclass(frozen=True)
+class SecondPrimePartition:
+    half_width: float
+    displacement_two: float
+    displacement_three: float
+    intervals: tuple[tuple[float, float], ...]
+    prime_two_pairs: tuple[tuple[int, int], ...]
+    prime_three_pairs: tuple[tuple[int, int], ...]
+
+
+@dataclass(frozen=True)
+class SecondWindowPrimeMatrix:
+    partition: SecondPrimePartition
+    interval_degrees: tuple[int, ...]
+    offsets: tuple[int, ...]
+    matrix: np.ndarray
+
+
 def first_prime_partition(half_width: float) -> FirstPrimePartition:
     """Partition the whole prime-2-only window into edges and complement.
 
@@ -44,6 +62,95 @@ def first_prime_partition(half_width: float) -> FirstPrimePartition:
         left=(-1.0, cut),
         center=(cut, -cut),
         right=(-cut, 1.0),
+    )
+
+
+def second_prime_partition(half_width: float) -> SecondPrimePartition:
+    """Seven-interval closure for the active prime powers two and three.
+
+    Merely inserting the two pairs of translation cuts gives five intervals
+    but is not closed under the prime-two translation. The images of the
+    prime-three cuts add the pair ``+/- (1-h_3+h_2)``, yielding seven blocks.
+    """
+
+    if not math.log(3.0) / 2.0 < half_width < math.log(2.0):
+        raise ValueError("the seven-block partition is for the second prime window")
+    h_two = math.log(2.0) / half_width
+    h_three = math.log(3.0) / half_width
+    breakpoints = (
+        -1.0,
+        1.0 - h_three,
+        h_three - h_two - 1.0,
+        1.0 - h_two,
+        h_two - 1.0,
+        1.0 - h_three + h_two,
+        h_three - 1.0,
+        1.0,
+    )
+    if not all(
+        breakpoints[index] < breakpoints[index + 1]
+        for index in range(len(breakpoints) - 1)
+    ):
+        raise ArithmeticError("the second-window cut ordering did not close")
+    intervals = tuple(zip(breakpoints[:-1], breakpoints[1:]))
+    return SecondPrimePartition(
+        half_width=half_width,
+        displacement_two=h_two,
+        displacement_three=h_three,
+        intervals=intervals,
+        prime_two_pairs=((0, 4), (1, 5), (2, 6)),
+        prime_three_pairs=((0, 6),),
+    )
+
+
+def build_second_window_prime_matrix(
+    half_width: float,
+    edge_degree: int,
+    bridge_degree: int,
+    center_degree: int,
+) -> SecondWindowPrimeMatrix:
+    """Exact finite prime graph in the seven-interval local Legendre basis."""
+
+    if edge_degree < 1 or bridge_degree < 1 or center_degree < 0:
+        raise ValueError(
+            "edge and bridge degrees must be positive; center may be zero"
+        )
+    partition = second_prime_partition(half_width)
+    degrees = (
+        edge_degree,
+        bridge_degree,
+        edge_degree,
+        center_degree,
+        edge_degree,
+        bridge_degree,
+        edge_degree,
+    )
+    offsets = [0]
+    for degree in degrees:
+        offsets.append(offsets[-1] + degree)
+    matrix = np.zeros((offsets[-1], offsets[-1]))
+
+    def add_translation(left: int, right: int, coefficient: float) -> None:
+        degree = degrees[left]
+        if degrees[right] != degree:
+            raise ArithmeticError("translated intervals have unequal local degrees")
+        left_slice = slice(offsets[left], offsets[left + 1])
+        right_slice = slice(offsets[right], offsets[right + 1])
+        block = -coefficient * np.eye(degree)
+        matrix[left_slice, right_slice] += block
+        matrix[right_slice, left_slice] += block
+
+    coefficient_two = math.log(2.0) / math.sqrt(2.0)
+    coefficient_three = math.log(3.0) / math.sqrt(3.0)
+    for left, right in partition.prime_two_pairs:
+        add_translation(left, right, coefficient_two)
+    for left, right in partition.prime_three_pairs:
+        add_translation(left, right, coefficient_three)
+    return SecondWindowPrimeMatrix(
+        partition=partition,
+        interval_degrees=degrees,
+        offsets=tuple(offsets),
+        matrix=matrix,
     )
 
 

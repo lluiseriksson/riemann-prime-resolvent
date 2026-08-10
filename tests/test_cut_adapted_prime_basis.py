@@ -2,7 +2,9 @@ import numpy as np
 
 from experiments.theta_pencil.cut_adapted_prime_basis import (
     build_cut_adapted_prime_matrix,
+    build_second_window_prime_matrix,
     first_prime_partition,
+    second_prime_partition,
 )
 
 
@@ -32,3 +34,48 @@ def test_prime_block_diagonalizes_without_a_tail():
 def test_first_prime_partition_reaches_point_54():
     partition = first_prime_partition(0.54)
     assert partition.center[1] > partition.center[0]
+
+
+def test_second_prime_partition_is_closed_under_both_translations():
+    for half_width in (
+        np.log(3.0) / 2.0 + 1e-6,
+        0.56,
+        0.65,
+        np.log(2.0) - 1e-6,
+    ):
+        partition = second_prime_partition(half_width)
+        for left, right in partition.prime_two_pairs:
+            source = partition.intervals[left]
+            target = partition.intervals[right]
+            assert np.allclose(
+                np.asarray(source) + partition.displacement_two, target
+            )
+        for left, right in partition.prime_three_pairs:
+            source = partition.intervals[left]
+            target = partition.intervals[right]
+            assert np.allclose(
+                np.asarray(source) + partition.displacement_three, target
+            )
+        lengths = np.array(
+            [right - left for left, right in partition.intervals]
+        )
+        assert np.all(lengths > 0)
+        assert np.allclose(lengths, lengths[::-1])
+        assert np.isclose(lengths[0], lengths[2])
+        assert np.isclose(lengths[0], lengths[4])
+        assert np.isclose(lengths[0], lengths[6])
+
+
+def test_second_window_prime_matrix_is_exact_translation_graph():
+    result = build_second_window_prime_matrix(0.56, 3, 2, 1)
+    assert result.matrix.shape == (17, 17)
+    assert np.array_equal(result.matrix, result.matrix.T)
+    assert np.max(np.abs(np.linalg.eigvalsh(result.matrix))) > 0
+
+    coefficient_two = np.log(2.0) / np.sqrt(2.0)
+    coefficient_three = np.log(3.0) / np.sqrt(3.0)
+    offsets = result.offsets
+    block_04 = result.matrix[offsets[0] : offsets[1], offsets[4] : offsets[5]]
+    block_06 = result.matrix[offsets[0] : offsets[1], offsets[6] : offsets[7]]
+    assert np.allclose(block_04, -coefficient_two * np.eye(3))
+    assert np.allclose(block_06, -coefficient_three * np.eye(3))

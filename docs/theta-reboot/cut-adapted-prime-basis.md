@@ -344,3 +344,9 @@ The detailed constants and the boundary of the claim are recorded in
 `support-054-certificate.md`. The next obligation is no longer the second
 Green tail: it is to turn this pointwise margin into a certified interval in
 $a$, before changing the partition when the prime-3 translation enters.
+
+That interval and the next partition are now explicit. The relative-form
+modulus is recorded in `support-054-interval.md`. Above $a=\log3/2$, closure
+under the simultaneous prime-two and prime-three translations yields the
+seven-block geometry in `second-prime-partition.md`; a naive five-block split
+is not invariant under prime two.
