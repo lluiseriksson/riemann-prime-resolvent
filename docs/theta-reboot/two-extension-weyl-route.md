@@ -231,6 +231,45 @@ The production diagnostic is reproducible with
 The captured JSON artifact has SHA-256
 `8E8635066E31E7FC952D0102BBDD37CBE572031C2CD5CC59B81344AA8C0F14BB`.
 
+### The dominant-shift limit is universal
+
+There is a second guardrail on very negative shifts.  If the resolvent is
+dominated by its scalar leading term
+
+\[
+ (A_a-\lambda I)^{-1}=-\lambda^{-1}I+o(|\lambda|^{-1})
+\]
+
+on the two source vectors, then the transforms reduce to those of
+\(e^{\pm x}\).  Direct integration gives
+
+\[
+ \Theta_a^{(\infty)}(z)
+ =-\frac{\sinh(a(1+iz))}{\sinh(a(-1+iz))},             \tag{DL}
+\]
+
+and hence
+
+\[
+ \mathfrak m_a^{(\infty)}(z)
+ =i\frac{1+\Theta_a^{(\infty)}(z)}
+        {1-\Theta_a^{(\infty)}(z)}.
+\]
+
+For every compact (K\Subset\mathbb C_+\), (DL) tends uniformly to zero,
+with exponential scale
+
+\[
+ |\Theta_a^{(\infty)}(z)|
+ =O_K\!\left(e^{-2a\min\{\operatorname{Im}z,1\}}\right).
+\]
+
+Therefore \(\mathfrak m_a^{(\infty)}\to i\), a universal limit containing no
+zeta information.  A successful safe-shift argument must consequently prove
+that the arithmetic part remains visible at leading order after canonical
+normalization; mere domination by the safety shift kills the signal.  The
+module `dominant_shift_limit.py` evaluates (DL) directly.
+
 ## Common-factor cancellation: the full-line multiplier is not the Weyl ratio
 
 There is a structural cancellation that must be imposed before using the
