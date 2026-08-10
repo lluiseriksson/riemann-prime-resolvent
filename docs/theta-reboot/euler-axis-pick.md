@@ -937,10 +937,32 @@ Therefore
 unconditionally. The cutoff \(40\) is a limitation of these deliberately
 coarse constants, not evidence of a failure at order \(41\). More
 importantly, proving every fixed order separately is not RH: (EC) requires a
-single argument valid for unbounded (n). The next mathematical target is to
+single argument valid for unbounded \(n\). The next mathematical target is to
 replace the Markov growth in (E50) by a sampling inequality whose constant is
 uniform, or grows slowly enough to be absorbed without a finite verification
 height.
+
+The obstruction has a precise scale. In the range where the perturbed
+Chebyshev factor (E49) is used,
+
+\[
+ d_n\sim4n,\qquad q_n\sim\frac1{4n},\qquad
+ B_n\sim16384n^6,
+\]
+
+and therefore
+
+\[
+ \boxed{
+ \Theta_n\sim226.314\ldots\,I_n n^5\frac{\log T}{T}.} \tag{E55}
+\]
+
+Thus no finite verification height can make this particular absolute-value
+argument uniform in \(n\). Raising \(T\) only moves the finite cutoff. A route
+to RH must remove the \(n^5\) Markov loss (for example by a discrete
+\(L^2\) sampling/frame inequality) or exploit signed prime--archimedean
+cancellation rather than bounding every hypothetical off-line orbit
+absolutely.
 
 The module `euler_axis_pick.py` implements the orbit algebra and the exact
 interval-rapidity form (E30)--(E31), while `zero_band_variance.py` audits the

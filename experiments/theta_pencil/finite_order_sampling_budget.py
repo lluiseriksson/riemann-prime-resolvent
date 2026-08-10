@@ -8,6 +8,9 @@ import math
 VERIFIED_HEIGHT = 3.0e12
 COMPLEX_STRIP_FACTOR = 1.01
 ZERO_COUNT_FACTOR = 0.161
+ASYMPTOTIC_COEFFICIENT = (
+    ZERO_COUNT_FACTOR / 8.0 * COMPLEX_STRIP_FACTOR * math.e * 4096.0
+)
 
 
 def zero_count_main(height: float) -> float:
@@ -129,12 +132,14 @@ def audit() -> dict[str, object]:
         / VERIFIED_HEIGHT
         for order in range(4, 42)
     ) < 1.5e-6
+    assert 226.3 < ASYMPTOTIC_COEFFICIENT < 226.4
     return {
         "last_closed": rows[-2],
         "first_unclosed": rows[-1],
         "order_39": rows[-3],
         "minimum_sampling_zero_count": min(interval_counts.values()),
         "maximum_first_band_count_ratio": max(count_ratios.values()),
+        "asymptotic_n5_coefficient": ASYMPTOTIC_COEFFICIENT,
     }
 
 
