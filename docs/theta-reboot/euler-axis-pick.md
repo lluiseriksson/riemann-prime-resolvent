@@ -2063,6 +2063,138 @@ the singular atoms or first exclude the interior poles, and the latter is
 already RH.  The Hardy model clarifies the location of the missing sign but
 does not weaken the Volterra gate (E85).
 
+### One Jacobi polynomial controls every prime-dilation band
+
+The long-range sum in (E108) has an exact compression on each individual
+dilation.  For \(1\le m<n\), put \(d=n-m\) and
+
+\[
+ Q_{m,n}(u):=\langle e_m,\mathcal D_u e_n\rangle.
+\]
+
+Combining (E106)--(E107), and using
+\(\binom{n-1}{k-1}\binom{k-1}{m-1}
+=\binom{n-1}{m-1}\binom{n-m}{k-m}\), gives
+
+\[
+ \boxed{
+ Q_{m,n}(u)=\sqrt{\frac{h_m}{h_n}},a_{n,m}u^m
+ {}_2F_1(-d,m+n+1;2m+2;u).}                       \tag{E126}
+\]
+
+The terminating contiguous relation for this hypergeometric polynomial is
+
+\[
+ \boxed{
+ Q_{m,n}(u)=\sqrt{\frac{h_m}{h_n}},a_{n,m}
+ \frac{(d-1)!}{(2m+2)_{d-1}}u^m(1-u)
+ P_{d-1}^{(2m+1,1)}(1-2u).}                       \tag{E127}
+\]
+
+This identity is coefficientwise rational.  It replaces an alternating sum
+of \(d+1\) terms by one Jacobi polynomial and exposes a nontrivial constant
+sign window for the prime part.
+
+Indeed set \(\alpha=2m+1\).  The zeros of
+\(P_{d-1}^{(\alpha,1)}\) are the eigenvalues of its symmetric Jacobi
+recurrence matrix.  Its diagonal and off-diagonal recurrence coefficients
+are
+
+\[
+ b_k=\frac{1-\alpha^2}
+ {(2k+\alpha+1)(2k+\alpha+3)},
+\]
+
+\[
+ c_k=\frac2{2k+\alpha+1}
+ \sqrt{\frac{k(k+\alpha)(k+1)(k+\alpha+1)}
+ {(2k+\alpha)(2k+\alpha+2)}}.
+\]
+
+For the truncated matrix of order \(d-1\), elementary bounds give
+
+\[
+ |b_k|\ge\frac{\alpha^2-1}{(\alpha+2d)^2},
+ \qquad c_k+c_{k+1}le
+ \frac{4d(\alpha+d)}{\alpha^2}.                    \tag{E128}
+\]
+
+If \(d\ge2\) and \(\alpha\ge16d\), then \(\alpha\ge32\), and
+
+\[
+ \frac{\alpha^2-1}{(\alpha+2d)^2}>\frac34,
+ \qquad
+ \frac{4d(\alpha+d)}{\alpha^2}\le\frac{17}{64}.   \tag{E129}
+\]
+
+Gershgorin therefore puts every zero of
+\(P_{d-1}^{(\alpha,1)}\) strictly in \((-1,0)\).  Since the polynomial is
+positive at \(1\), (E127) and
+\(\operatorname {sgn}a_{n,m}=(-1)^d\) imply the exact sign theorem
+
+\[
+ \boxed{
+ (-1)^d Q_{m,n}(u)>0
+ \quad\left(0<u\le\frac12,\quad
+ d\le\frac{2m+1}{16}\right).}                     \tag{E130}
+\]
+
+Consequently all prime powers agree in sign throughout this linearly growing
+band.  If
+
+\[
+ \mathcal P=\sum_{r\ge2}\frac{\Lambda(r)}r\mathcal D_{1/r},
+\]
+
+then
+
+\[
+ \operatorname {sgn}\langle e_m,\mathcal P e_n\rangle=(-1)^d,
+ \qquad
+ \operatorname {sgn}B^{\rm prime}_{m,n}=(-1)^{d+1}.             \tag{E131}
+\]
+
+There is also an exact source-side formula for what must cancel that signed
+prime band.  The elementary digamma integral
+
+\[
+ \frac12\psi\!\left(\frac{k+1}{2}\right)
+ =-\frac\gamma2+
+ \int_0^1\frac{u(1-u^{k-1})}{1-u^2}\,du
+\]
+
+and \(Q_{m,n}(1)=0\) give, coefficient by coefficient,
+
+\[
+ \boxed{
+ B_{m,n}=\int_0^1\omega(u)Q_{m,n}(u)\,du
+ -\sum_{r\ge2}\frac{\Lambda(r)}rQ_{m,n}(1/r),
+ \qquad
+ \omega(u)=\frac{1-u^2-u^3}{u(1-u^2)}.}            \tag{E132}
+\]
+
+The apparent endpoint singularities are removable in the pairing because
+(E127) contains both \(u^m\) and \(1-u\).  The weight \(\omega\) is positive
+on the whole prime support \((0,1/2]\), changes sign only at
+
+\[
+ u_*=0.754877666246693\ldots,
+ \qquad u_*^3+u_*^2=1,                              \tag{E133}
+\]
+
+and is negative thereafter.  Thus, inside (E130), cancellation among prime
+powers is no longer available: (E132) is literally a quadrature discrepancy
+between one continuous archimedean weight and same-signed von Mangoldt atoms.
+The symbolic audit evaluates both sides as an exact rational number plus an
+exact rational multiple of \(\log2\); no numerical integration enters.
+
+At the analytic cutoff \(m=232\), (E130) already covers every gap
+\(d\le29\), rather than only the first two bands.  This does not yet prove
+positivity of the corresponding full blocks: the archimedean contribution
+must be compared with the signed pattern (E131).  It does remove absolute
+values from the prime part over a growing bandwidth and makes that comparison
+the next explicit target.
+
 Thus no finite verification height can make this particular absolute-value
 argument uniform in \(n\). Raising \(T\) only moves the finite cutoff.  The
 column-sum argument removes the \(n^5\) loss of (E55), but its
@@ -2095,6 +2227,10 @@ The translation/Hardy-generator identities (E117)--(E119), (E123)--(E125)
 and the failure of the Bernstein shortcut (E120)--(E122) are audited by
 `bernstein_functional_calculus_gate.py`; its finite sum is enclosed by the
 displayed elementary analytic tail rather than treated as evidence for RH.
+The exact dilation connection formula, the constant-sign prime window, and
+the bandwise archimedean--prime discrepancy (E126)--(E133) are checked
+coefficientwise over rational numbers (with a symbolic \(\log2\) component) by
+`jacobi_dilation_connection.py`.
 The floating-point checks elsewhere in this audit are not used in place of
 the displayed analytic inequalities. Global claims still require all
 separated principal minors.
