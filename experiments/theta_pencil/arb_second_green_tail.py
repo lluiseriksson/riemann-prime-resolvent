@@ -30,6 +30,9 @@ class SecondGreenAdjacentTail:
     singular_frobenius_upper: float
     analytic_frobenius_upper: float
     total_upper: float
+    weighted_singular_frobenius_upper: float
+    weighted_analytic_frobenius_upper: float
+    weighted_total_upper: float
     maximum_variation_upper: float
     precision: int
     subdivisions: int
@@ -47,6 +50,29 @@ class SecondGreenSeparatedTail:
     maximum_variation_upper: float
     precision: int
     subdivisions: int
+
+
+@dataclass(frozen=True)
+class SecondGreenSeparatedGeometricTail:
+    target_length: float
+    source_length: float
+    gap: float
+    first_degree: int
+    eta_lower: float
+    ratio_upper: float
+    total_upper: float
+    precision: int
+
+
+@dataclass(frozen=True)
+class SecondGreenAdjacentConstantGeometricTail:
+    target_length: float
+    source_length: float
+    first_degree: int
+    eta_lower: float
+    ratio_upper: float
+    total_upper: float
+    precision: int
 
 
 @dataclass(frozen=True)
@@ -419,6 +445,176 @@ def certify_second_green_separated_tail(
     )
 
 
+def certify_second_green_separated_geometric_tail(
+    target_length: float,
+    source_length: float,
+    gap: float,
+    first_degree: int = 128,
+    precision: int = 512,
+) -> SecondGreenSeparatedGeometricTail:
+    """Bound a separated ``Q_N D L`` block by Legendre ``Q_n`` decay.
+
+    In normalized local coordinates the target coefficient of the kernel
+    ``-1 / (2 (gap + u + v))`` is
+
+    ``-sqrt((2n+1)/a) Q_n(1 + 2(gap+v)/a)``.
+
+    Heine's positive integral for ``Q_n(cosh eta)`` and
+    ``cosh(t) >= 1+t^2/2`` imply
+
+    ``Q_n(cosh eta) <= sqrt(pi exp(eta)/(2 n sinh(eta))) exp(-(n+1)eta)``.
+
+    The source projection is a contraction, so summing the resulting
+    Hilbert--Schmidt envelope bounds every retained source degree at once.
+    A geometric majorant handles the infinite polynomially weighted tail.
+    """
+
+    if isinstance(target_length, (int, float)) and target_length <= 0:
+        raise ValueError("interval lengths must be positive")
+    if isinstance(source_length, (int, float)) and source_length <= 0:
+        raise ValueError("interval lengths must be positive")
+    if isinstance(gap, (int, float)) and gap <= 0:
+        raise ValueError("the separation gap must be positive")
+    if first_degree < 1:
+        raise ValueError("first_degree must be positive")
+    try:
+        from flint import arb, ctx
+    except ImportError as error:  # pragma: no cover
+        raise RuntimeError("python-flint is required") from error
+
+    previous_precision = ctx.prec
+    try:
+        ctx.prec = precision
+        a = (
+            arb(str(target_length))
+            if isinstance(target_length, (int, float))
+            else arb(target_length)
+        )
+        b = (
+            arb(str(source_length))
+            if isinstance(source_length, (int, float))
+            else arb(source_length)
+        )
+        separation = (
+            arb(str(gap)) if isinstance(gap, (int, float)) else arb(gap)
+        )
+        if not a.lower() > 0 or not b.lower() > 0 or not separation.lower() > 0:
+            raise ValueError("length and gap balls must be strictly positive")
+
+        eta = (1 + 2 * separation / a).acosh()
+        if not eta.lower() > 0:
+            raise ArithmeticError("the separated-block ellipse was unresolved")
+        q = (-2 * eta).exp()
+        n = arb(first_degree)
+        constant = b / a * arb.pi() * eta.exp() / (2 * eta.sinh())
+        first_term = (
+            constant
+            * n
+            * (n + 1) ** 2
+            * (2 * n + 1)
+            * q ** (first_degree + 1)
+        )
+        ratio = (
+            q
+            * (1 + arb(2) / n) ** 2
+            * (1 + arb(2) / (2 * n + 1))
+        )
+        if not ratio.upper() < 1:
+            raise ArithmeticError("the geometric Legendre-Q tail ratio is not below one")
+        total = (first_term / (1 - ratio)).sqrt()
+    finally:
+        ctx.prec = previous_precision
+
+    return SecondGreenSeparatedGeometricTail(
+        target_length=float(a.mid()),
+        source_length=float(b.mid()),
+        gap=float(separation.mid()),
+        first_degree=first_degree,
+        eta_lower=math.nextafter(float(eta.lower()), -math.inf),
+        ratio_upper=_float_upper(ratio),
+        total_upper=_float_upper(total),
+        precision=precision,
+    )
+
+
+def certify_second_green_adjacent_constant_geometric_tail(
+    target_length: float,
+    source_length: float,
+    first_degree: int = 128,
+    precision: int = 512,
+) -> SecondGreenAdjacentConstantGeometricTail:
+    """Bound a touching block with one retained constant source mode.
+
+    Integrating the exact target coefficient over the normalized constant
+    source gives a flux term plus
+
+    ``sqrt(a/b)/2 * n(n+1)/sqrt(2n+1) * (Q_(n-1)(z)-Q_(n+1)(z))``,
+
+    where ``z=1+2b/a``.  The first Green flux removes the nondecaying term.
+    Bounding the remaining difference by ``Q_(n-1)`` and applying the same
+    Heine envelope as the separated-block certificate gives a geometric
+    Hilbert--Schmidt tail.  This avoids derivative bounds that are singular
+    when the source interval is short.
+    """
+
+    if isinstance(target_length, (int, float)) and target_length <= 0:
+        raise ValueError("interval lengths must be positive")
+    if isinstance(source_length, (int, float)) and source_length <= 0:
+        raise ValueError("interval lengths must be positive")
+    if first_degree < 2:
+        raise ValueError("first_degree must be at least two")
+    try:
+        from flint import arb, ctx
+    except ImportError as error:  # pragma: no cover
+        raise RuntimeError("python-flint is required") from error
+
+    previous_precision = ctx.prec
+    try:
+        ctx.prec = precision
+        a = (
+            arb(str(target_length))
+            if isinstance(target_length, (int, float))
+            else arb(target_length)
+        )
+        b = (
+            arb(str(source_length))
+            if isinstance(source_length, (int, float))
+            else arb(source_length)
+        )
+        if not a.lower() > 0 or not b.lower() > 0:
+            raise ValueError("interval-length balls must be strictly positive")
+
+        eta = (1 + 2 * b / a).acosh()
+        if not eta.lower() > 0:
+            raise ArithmeticError("the adjacent-block ellipse was unresolved")
+        q = (-2 * eta).exp()
+        n = arb(first_degree)
+        constant = a / b * arb.pi() * eta.exp() / (8 * eta.sinh())
+        first_term = (
+            constant
+            * n**2
+            * (n + 1) ** 2
+            / ((2 * n + 1) * (n - 1))
+            * q**first_degree
+        )
+        ratio = q * (1 + arb(2) / n) ** 2
+        if not ratio.upper() < 1:
+            raise ArithmeticError("the adjacent Legendre-Q tail ratio is not below one")
+        total = (first_term / (1 - ratio)).sqrt()
+    finally:
+        ctx.prec = previous_precision
+
+    return SecondGreenAdjacentConstantGeometricTail(
+        target_length=float(a.mid()),
+        source_length=float(b.mid()),
+        first_degree=first_degree,
+        eta_lower=math.nextafter(float(eta.lower()), -math.inf),
+        ratio_upper=_float_upper(ratio),
+        total_upper=_float_upper(total),
+        precision=precision,
+    )
+
+
 def certify_second_green_self_tail(
     degree_count: int = 16,
     first_degree: int = 128,
@@ -483,6 +679,7 @@ def certify_second_green_adjacent_tail(
     subdivisions: int = 128,
     precision: int = 256,
     moment_order: int = 8,
+    analytic_method: str = "wang",
 ) -> SecondGreenAdjacentTail:
     """Certify one oriented touching-block tail after the first Green flux."""
 
@@ -499,6 +696,8 @@ def certify_second_green_adjacent_tail(
         or moment_order < 1
     ):
         raise ValueError("invalid derivative order, explicit end, or subdivisions")
+    if analytic_method not in {"wang", "geometric"}:
+        raise ValueError("analytic_method must be 'wang' or 'geometric'")
     try:
         from flint import arb, arb_mat, ctx
     except ImportError as error:  # pragma: no cover
@@ -546,6 +745,7 @@ def certify_second_green_adjacent_tail(
                 singular_map[target_degree, source_degree] = integral
 
         singular_square = arb(0)
+        weighted_singular_square = arb(0)
         maximum_eigenvalue = (degree_count - 1) * degree_count
         for degree in range(first_degree, explicit_end):
             eigenvalue = degree * (degree + 1)
@@ -560,21 +760,25 @@ def certify_second_green_adjacent_tail(
                     ),
                     arb(0),
                 )
-            singular_square += sum(
+            row_square = sum(
                 (
                     row[0, source].abs_upper() ** 2
                     for source in range(degree_count)
                 ),
                 arb(0),
             )
+            singular_square += row_square
+            weighted_singular_square += row_square / eigenvalue**2
 
         singular_explicit = singular_square.sqrt()
+        weighted_singular_explicit = weighted_singular_square.sqrt()
 
         # Preserve signed endpoint moments in the expansion
         # 1/(lambda_n-lambda_k).  An absolute Frobenius bound on R itself is
         # catastrophically lossy because its large polynomial values at the
         # opposite endpoint cancel from every low moment.
         singular_remainder = arb(0)
+        weighted_singular_remainder = arb(0)
         for order in range(moment_order):
             moment_square = arb(0)
             for source in range(degree_count):
@@ -595,6 +799,18 @@ def certify_second_green_adjacent_tail(
                 / ((exponent - 1) * explicit_end ** (exponent - 1))
             )
             singular_remainder += (3 * scalar_tail * moment_square).sqrt()
+            weighted_exponent = exponent + 4
+            weighted_scalar_tail = (
+                arb(1) / explicit_end**weighted_exponent
+                + arb(1)
+                / (
+                    (weighted_exponent - 1)
+                    * explicit_end ** (weighted_exponent - 1)
+                )
+            )
+            weighted_singular_remainder += (
+                3 * weighted_scalar_tail * moment_square
+            ).sqrt()
 
         absolute_moment_square = arb(0)
         for source in range(degree_count):
@@ -617,53 +833,117 @@ def certify_second_green_adjacent_tail(
         singular_remainder += (
             3 * scalar_tail * absolute_moment_square
         ).sqrt() / (1 - ratio)
-        singular_upper = singular_explicit + singular_remainder
-
-        variations = []
-        requested_derivative = derivative_order + 1
-        scale = (a / 2) ** requested_derivative * (a / 2).sqrt()
-        for polynomial, reflected in decompositions:
-            derivative_supremum = arb(0)
-            for part in range(subdivisions):
-                lower = a * part / subdivisions
-                upper = a * (part + 1) / subdivisions
-                midpoint = (lower + upper) / 2
-                point = midpoint + arb(0, (upper - lower) / 2)
-                jet = _regular_jet(
-                    polynomial,
-                    reflected,
-                    a,
-                    b,
-                    point,
-                    requested_derivative,
-                    arb,
-                )
-                derivative = (
-                    math.factorial(requested_derivative)
-                    * jet[requested_derivative]
-                    * scale
-                )
-                derivative_supremum = max(
-                    derivative_supremum, derivative.abs_upper()
-                )
-            variations.append(2 * derivative_supremum)
-
-        wang_constant = (
-            2 ** (derivative_order + 1)
+        weighted_exponent = exponent + 4
+        weighted_scalar_tail = (
+            arb(1) / explicit_end**weighted_exponent
+            + arb(1)
             / (
-                arb.pi().sqrt()
-                * arb(2 * derivative_order + 1).sqrt()
-                * arb(first_degree - 1) ** (derivative_order + arb("0.5"))
+                (weighted_exponent - 1)
+                * explicit_end ** (weighted_exponent - 1)
             )
         )
-        analytic_upper = sum(
-            (
-                (wang_constant * variation).abs_upper() ** 2
-                for variation in variations
-            ),
-            arb(0),
-        ).sqrt()
+        weighted_singular_remainder += (
+            3 * weighted_scalar_tail * absolute_moment_square
+        ).sqrt() / (1 - ratio)
+        singular_upper = singular_explicit + singular_remainder
+        weighted_singular_upper = (
+            weighted_singular_explicit + weighted_singular_remainder
+        )
+
+        if analytic_method == "geometric":
+            # Above the source polynomial degree, the regular analytic
+            # coefficient is -lambda_n/2 times the coefficient of
+            # q(u) log(u+b). Multiplication by a degree-k polynomial is
+            # (2k+1)-banded in the Legendre basis. Two banded Cauchy bounds,
+            # ||q||_infinity <= sqrt((2k+1)/b), and Heine decay for the
+            # coefficients of log(u+b) give the following column envelope.
+            eta = (1 + 2 * b / a).acosh()
+            if not eta.lower() > 0:
+                raise ArithmeticError("the adjacent analytic ellipse was unresolved")
+            q_decay = (-2 * eta).exp()
+            common = a * arb.pi() * eta.exp() / (8 * b * eta.sinh())
+            analytic_square = arb(0)
+            for source_degree in range(degree_count):
+                first_base = first_degree - source_degree
+                if first_base < 2:
+                    raise ValueError(
+                        "first_degree must exceed the source degree by at least two"
+                    )
+                m = arb(first_base)
+                shifted = m + source_degree
+                # The reflected source polynomial is evaluated on the
+                # target interval, not on its original source interval.
+                # Its normalized supremum therefore contains
+                # P_k(1+2a/b); omitting this extrapolation factor is unsound
+                # when the source block is short.
+                extrapolation = (1 + 2 * a / b).legendre_p(source_degree)
+                first_term = (
+                    common
+                    * (2 * source_degree + 1) ** 3
+                    * extrapolation.abs_upper() ** 2
+                    * (shifted * (shifted + 1)) ** 2
+                    / ((2 * m + 1) * (m - 1))
+                    * q_decay**first_base
+                )
+                ratio = q_decay * (
+                    1 + arb(2) / (m + source_degree)
+                ) ** 2
+                if not ratio.upper() < 1:
+                    raise ArithmeticError(
+                        "the adjacent analytic Legendre-Q ratio is not below one"
+                    )
+                analytic_square += first_term / (1 - ratio)
+            analytic_upper = analytic_square.sqrt()
+            variations = [arb(0)]
+        else:
+            variations = []
+            requested_derivative = derivative_order + 1
+            scale = (a / 2) ** requested_derivative * (a / 2).sqrt()
+            for polynomial, reflected in decompositions:
+                derivative_supremum = arb(0)
+                for part in range(subdivisions):
+                    lower = a * part / subdivisions
+                    upper = a * (part + 1) / subdivisions
+                    midpoint = (lower + upper) / 2
+                    point = midpoint + arb(0, (upper - lower) / 2)
+                    jet = _regular_jet(
+                        polynomial,
+                        reflected,
+                        a,
+                        b,
+                        point,
+                        requested_derivative,
+                        arb,
+                    )
+                    derivative = (
+                        math.factorial(requested_derivative)
+                        * jet[requested_derivative]
+                        * scale
+                    )
+                    derivative_supremum = max(
+                        derivative_supremum, derivative.abs_upper()
+                    )
+                variations.append(2 * derivative_supremum)
+
+            wang_constant = (
+                2 ** (derivative_order + 1)
+                / (
+                    arb.pi().sqrt()
+                    * arb(2 * derivative_order + 1).sqrt()
+                    * arb(first_degree - 1) ** (derivative_order + arb("0.5"))
+                )
+            )
+            analytic_upper = sum(
+                (
+                    (wang_constant * variation).abs_upper() ** 2
+                    for variation in variations
+                ),
+                arb(0),
+            ).sqrt()
         total = singular_upper + analytic_upper
+        first_eigenvalue = first_degree * (first_degree + 1)
+        weighted_analytic_upper = analytic_upper / first_eigenvalue
+        weighted_total = weighted_singular_upper + weighted_analytic_upper
     finally:
         ctx.prec = previous_precision
 
@@ -678,6 +958,9 @@ def certify_second_green_adjacent_tail(
         singular_frobenius_upper=_float_upper(singular_upper),
         analytic_frobenius_upper=_float_upper(analytic_upper),
         total_upper=_float_upper(total),
+        weighted_singular_frobenius_upper=_float_upper(weighted_singular_upper),
+        weighted_analytic_frobenius_upper=_float_upper(weighted_analytic_upper),
+        weighted_total_upper=_float_upper(weighted_total),
         maximum_variation_upper=_float_upper(max(variations)),
         precision=precision,
         subdivisions=subdivisions,

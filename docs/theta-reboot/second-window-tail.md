@@ -72,3 +72,77 @@ falls below $60$.  This is a conditioning fact about the local basis, not a
 positivity theorem: removing edge modes can also hide the near-zero trial
 direction.  Any final certificate must resolve that direction and may not use
 adaptive truncation merely because it improves a tail constant.
+
+## Legendre-Q repair of the short-gap loss
+
+The Taylor/Wang estimate for a separated block is qualitatively wrong when
+the gap $g$ is short: differentiating the kernel produces powers of $g^{-1}$
+even though the original operator remains bounded.  The normalized target
+coefficient has the exact form
+
+\[
+ c_n(v)=-\sqrt{\frac{2n+1}{a}}\,
+ Q_n\!\left(1+\frac{2(g+v)}a\right).
+\]
+
+For $1+2g/a=\cosh\eta$, Heine's positive integral representation and
+$\cosh t\ge 1+t^2/2$ give
+
+\[
+ Q_n(\cosh\eta)
+ \le \sqrt{\frac{\pi e^\eta}{2n\sinh\eta}}
+ e^{-(n+1)\eta}.
+\]
+
+After multiplication by the Legendre eigenvalue $n(n+1)$, the squared
+Hilbert--Schmidt tail is bounded by a polynomial of degree four times
+$e^{-2n\eta}$.  Its successive terms have a certified geometric ratio.
+This bounds all retained source degrees simultaneously because the source
+projection is contractive.  The implementation is checked against an
+independent exact low-degree band.  The integral representation is
+[DLMF 14.25.2](https://dlmf.nist.gov/14.25.E2), after converting Olver's
+normalization to the classical integer-degree $Q_n$.
+
+There is a related exact repair for a touching block whose source space is
+the normalized constant.  After the first Green flux cancels the algebraic
+term, its residual coefficient is
+
+\[
+ \frac12\sqrt{\frac ab}\frac{n(n+1)}{\sqrt{2n+1}}
+ \left(Q_{n-1}(1+2b/a)-Q_{n+1}(1+2b/a)\right),
+\]
+
+and the same geometric argument applies.  This identity is regression-tested
+against the exact moment matrix after subtracting the flux.
+
+At $a=0.551$, local degrees $(1,8,1,24,1,8,1)$ and target degree 128 now give
+
+\[
+ \|Q_{128}DLP\|<44.62567850346515,
+ \qquad
+ \|Q_{128}LP\|<0.002702621033397841.
+\]
+
+The previous derivative estimate for the same short-gap geometry could be
+as large as $10^{15}$.  This is a rigorous removal of that artifact, not yet
+a second-mode certificate: using one edge mode does not by itself provide
+the common complement floor required by Schur.
+
+For general polynomial sources the reflected polynomial is evaluated outside
+its source interval.  A sound envelope must include
+$P_k(1+2a/b)$; omitting this factor gives a false improvement.  The code
+retains that factor and does not automatically replace Wang in this case.
+
+Finally, the signed singular expansion now also accumulates the genuinely
+weighted logarithmic norm
+
+\[
+ \sum_{n\ge N}\frac{\|r_n\|^2}{n^2(n+1)^2},
+\]
+
+rather than dividing the unweighted sum globally by $N^2(N+1)^2$.  This adds
+four powers to every moment-tail exponent and is strictly sharper in the
+registered tests.  At the current near-threshold parameters it is still too
+large by itself (`0.2194` for the worst 16-mode oriented block), so a final
+Schur proof must retain its signed low-rank Gram structure instead of taking
+one Frobenius norm.

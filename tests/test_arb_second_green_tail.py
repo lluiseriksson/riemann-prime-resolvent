@@ -49,6 +49,25 @@ def test_second_green_tail_is_small_on_a_tiny_block():
     assert result.singular_frobenius_upper < 2
     assert result.analytic_frobenius_upper < 1
     assert result.total_upper < 3
+    assert result.weighted_total_upper < result.total_upper / (16 * 17)
+
+
+def test_geometric_adjacent_analytic_tail_handles_a_short_source():
+    pytest.importorskip("flint")
+    result = certify_second_green_adjacent_tail(
+        0.7,
+        0.01,
+        degree_count=4,
+        first_degree=32,
+        derivative_order=4,
+        explicit_end=128,
+        subdivisions=32,
+        precision=256,
+        moment_order=4,
+        analytic_method="geometric",
+    )
+    assert np.isfinite(result.analytic_frobenius_upper)
+    assert result.analytic_frobenius_upper > 0.0
 
 
 def test_first_window_wrapper_keeps_exact_logarithmic_geometry():

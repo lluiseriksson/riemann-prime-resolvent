@@ -9,8 +9,9 @@ import numpy as np
 
 from experiments.theta_pencil.arb_second_green_tail import (
     certify_second_green_adjacent_tail,
+    certify_second_green_adjacent_constant_geometric_tail,
+    certify_second_green_separated_geometric_tail,
     certify_second_green_self_tail,
-    certify_second_green_separated_tail,
 )
 from experiments.theta_pencil.cut_adapted_prime_basis import (
     second_prime_partition,
@@ -111,17 +112,27 @@ def certify_second_window_regularized_tail(
                         first_degrees[target],
                     )
                     if key not in cache:
-                        cache[key] = certify_second_green_adjacent_tail(
-                            lengths[target],
-                            lengths[source],
-                            source_degree,
-                            first_degrees[target],
-                            derivative_order,
-                            explicit_end,
-                            subdivisions,
-                            precision,
-                            moment_order,
-                        ).total_upper
+                        if source_degree == 1:
+                            cache[key] = (
+                                certify_second_green_adjacent_constant_geometric_tail(
+                                    lengths[target],
+                                    lengths[source],
+                                    first_degrees[target],
+                                    precision,
+                                ).total_upper
+                            )
+                        else:
+                            cache[key] = certify_second_green_adjacent_tail(
+                                lengths[target],
+                                lengths[source],
+                                source_degree,
+                                first_degrees[target],
+                                derivative_order,
+                                explicit_end,
+                                subdivisions,
+                                precision,
+                                moment_order,
+                            ).total_upper
                 else:
                     lower = min(target, source)
                     upper = max(target, source)
@@ -136,14 +147,11 @@ def certify_second_window_regularized_tail(
                         first_degrees[target],
                     )
                     if key not in cache:
-                        cache[key] = certify_second_green_separated_tail(
+                        cache[key] = certify_second_green_separated_geometric_tail(
                             lengths[target],
                             lengths[source],
                             gap,
-                            source_degree,
                             first_degrees[target],
-                            derivative_order,
-                            subdivisions,
                             precision,
                         ).total_upper
                 comparison[target, source] = cache[key]
