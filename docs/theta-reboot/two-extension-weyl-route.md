@@ -858,6 +858,41 @@ ordinary Fourier transform nor convergence on a two-dimensional open set is
 required. The audit function \`imaginary_axis_parity_ratio_audit\` checks
 (IR) against the direct Fourier-channel ratio.
 
+The first predictive Galerkin test calibrates only at \(i\) and then evaluates
+the untouched ratio at \(3i\). It must be compared with a kinematic baseline.
+For small support,
+
+\[
+ \sinh(\eta x)=\eta\sinh x+O_\eta(a^3),\qquad
+ \cosh(\eta x)=\cosh x+O_\eta(a^2),
+\]
+
+so the calibration \(r_a(i)=-\kappa_\Xi\) alone suggests
+\(r_a(i\eta)\approx-\eta\kappa_\Xi\), before any arithmetic mechanism is
+used. At \(\eta=3\), this baseline is
+\(-0.004804754869671527\ldots\), already within
+\(8.4512\cdot10^{-5}\) of the certified Riemann target. The apparent
+multi-point agreement at small support must therefore be judged only by its
+improvement over this baseline.
+
+| \(a\) | calibrated \(\lambda\) | gap multiple \((\mu_0-\lambda)/(\mu_1-\mu_0)\) | predicted \(r_a(3i)\) | target error |
+|---:|---:|---:|---:|---:|
+| 0.40 | \(-3.1062\cdot10^{-4}\) | 0.03191 | -0.00477072 | \(5.05\cdot10^{-5}\) |
+| 0.50 | \(-4.9053\cdot10^{-6}\) | 0.02536 | -0.00479019 | \(6.99\cdot10^{-5}\) |
+| 0.55 | \(-3.6477\cdot10^{-7}\) | 0.02409 | -0.00478825 | \(6.80\cdot10^{-5}\) |
+| 0.60 | \(-1.9780\cdot10^{-8}\) | 0.02271 | -0.00479678 | \(7.65\cdot10^{-5}\) |
+
+These rows use 4097 points and 32 modes. Refinements through 8193/48 change
+the displayed prediction by less than \(6\cdot10^{-7}\) on this support
+range, but the error does not decrease toward zero; most of the agreement is
+the hyperbolic-source geometry. Beyond this range the spectral gap falls
+below the discretization error. The command
+
+    python -m experiments.theta_pencil.calibrated_parity_diagnostic
+
+records the target, the kinematic baseline, and the incremental improvement.
+It is a falsifier for claimed predictive power, not an asymptotic theorem.
+
 There is a sharp guardrail for the explicit safety shift. From (CT), for any
 fixed point where \(M_0\ne0\),
 
