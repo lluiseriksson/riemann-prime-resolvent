@@ -78,16 +78,44 @@ def _power_block(
     power: int,
     same_interval: bool,
 ):
+    return _power_block_rectangular(
+        arb,
+        arb_mat,
+        left_length,
+        right_length,
+        gap,
+        degree_count,
+        degree_count,
+        power,
+        same_interval,
+    )
+
+
+def _power_block_rectangular(
+    arb,
+    arb_mat,
+    left_length,
+    right_length,
+    gap,
+    left_degree_count: int,
+    right_degree_count: int,
+    power: int,
+    same_interval: bool,
+):
+    """Power-kernel block for possibly different local degree counts."""
+
+    if same_interval and left_degree_count != right_degree_count:
+        raise ValueError("a diagonal power block must be square")
     left = _local_legendre_coefficients(
-        arb, left_length, degree_count, reversed_=not same_interval
+        arb, left_length, left_degree_count, reversed_=not same_interval
     )
     right = _local_legendre_coefficients(
-        arb, right_length, degree_count, reversed_=False
+        arb, right_length, right_degree_count, reversed_=False
     )
     moments = []
-    for p in range(degree_count):
+    for p in range(left_degree_count):
         row = []
-        for q in range(degree_count):
+        for q in range(right_degree_count):
             if same_interval:
                 value = _absolute_distance_moment(
                     arb, p, q, power, left_length
@@ -105,8 +133,8 @@ def _power_block(
             row.append(value)
         moments.append(row)
     right_transpose = [
-        [right[row][column] for row in range(degree_count)]
-        for column in range(degree_count)
+        [right[row][column] for row in range(right_degree_count)]
+        for column in range(right_degree_count)
     ]
     return arb_mat(left) * arb_mat(moments) * arb_mat(right_transpose)
 

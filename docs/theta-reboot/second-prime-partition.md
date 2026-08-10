@@ -35,7 +35,7 @@ interval lengths are
 where
 
 \[
- e=2-h_3,qquad b=2h_3-h_2-2,qquad c=2(h_2-1).
+e=2-h_3,\qquad b=2h_3-h_2-2,\qquad c=2(h_2-1).
 \]
 
 This is the precise higher-dimensional version of the first-window
@@ -77,8 +77,28 @@ At $a=\log3/2$ the prime-three edge has zero length and the first-window
 architecture applies. At $a=\log2$ the central prime-two interval collapses
 and the prime power $4$ enters, so a new closure is required.
 
-The seven-block arithmetic term is now exact. The remaining work in this
-window is analytic: construct the dominant logarithmic and smooth blocks on
-the three length classes, derive their endpoint fluxes, and reproduce the
-Schur--Kato source-and-tail certificate without replacing cross blocks by
-absolute whole-operator norms.
+The seven-block arithmetic term is now exact.  The finite analytic source is
+also assembled by `arb_second_window_source.py`:
+
+- every self and cross block of the dominant logarithmic form is evaluated
+  with Arb arithmetic in the normalized local Legendre bases;
+- the analytic kernel remainder is evaluated from its rational power series,
+  including rectangular blocks between unequal length classes;
+- the scalar term and the exact prime-two/prime-three graph are then added;
+- reflection, including the factor $(-1)^n$ on local degree $n$, reduces the
+  source to certified even and odd matrices.
+
+Independent Gauss--Legendre checks cover touching and separated rectangular
+blocks, and the union of the two parity spectra reconstructs the full finite
+spectrum.  At local degree count eight, finite Ritz computations at
+$a=0.56$ give smallest even and odd values approximately
+$2.74\,10^{-8}$ and $7.93\,10^{-6}$.  These are upper bounds on the true
+spectral bottoms and are recorded only as diagnostics, not as positivity
+certificates.
+
+The remaining work in this window is the infinite-dimensional part: derive
+the seven-block endpoint fluxes and bound the regularized tails of the seven
+self blocks, six touching pairs, and fifteen separated pairs tightly enough
+to reproduce the Schur--Kato certificate.  Replacing these maps by absolute
+whole-operator norms would lose the small even margin and is not an
+acceptable substitute.
