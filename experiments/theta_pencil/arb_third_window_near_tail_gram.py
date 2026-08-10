@@ -58,7 +58,8 @@ def build_arb_third_window_near_tail_gram(
     last_degree: int = 640,
     precision: int = 512,
     maximum_smooth_power: int | None = 47,
-) -> ArbThirdWindowNearTailGram:
+    band_boundaries: tuple[int, ...] | None = None,
+) -> ArbThirdWindowNearTailGram | tuple[ArbThirdWindowNearTailGram, ...]:
     """Accumulate every source contribution in each exact target row."""
 
     third_prime_partition(half_width)
@@ -67,6 +68,16 @@ def build_arb_third_window_near_tail_gram(
         raise ValueError("the explicit band must start above all source modes")
     if maximum_smooth_power is not None and maximum_smooth_power < 1:
         raise ValueError("maximum_smooth_power must be positive")
+    boundaries = band_boundaries or (first_degree, last_degree)
+    if (
+        len(boundaries) < 2
+        or boundaries[0] != first_degree
+        or boundaries[-1] != last_degree
+        or any(right <= left for left, right in zip(boundaries[:-1], boundaries[1:]))
+    ):
+        raise ValueError(
+            "band_boundaries must strictly partition the explicit band"
+        )
     try:
         from flint import acb, arb, arb_mat, ctx
     except ImportError as error:  # pragma: no cover
@@ -122,7 +133,12 @@ def build_arb_third_window_near_tail_gram(
         smooth_maps = None
         smooth_degree = 0
         if maximum_smooth_power is not None:
-            smooth_degree = maximum_smooth_power + max(degrees) + 2
+            # Only requested target rows are needed.  The former unconditional
+            # ``p + d + 2`` build was correct but made a four-row prefix pay
+            # for dozens of unused polynomial rows.
+            smooth_degree = min(
+                last_degree, maximum_smooth_power + max(degrees) + 2
+            )
             coefficients = smooth_remainder_series_coefficients(
                 maximum_smooth_power
             )
@@ -173,7 +189,9 @@ def build_arb_third_window_near_tail_gram(
         _, _, lengths = _arb_breakpoints_lengths(arb, half_width)
         offsets = _offsets(degrees)
         total = offsets[-1]
-        full = arb_mat(total, total)
+        full_bands = [
+            arb_mat(total, total) for _ in range(len(boundaries) - 1)
+        ]
         cross_maps = {}
         q_cache = {}
         for target in range(13):
@@ -219,8 +237,13 @@ def build_arb_third_window_near_tail_gram(
                 cross_maps[target, source] = cross_maps[geometry]
 
         for target in range(13):
-            local = arb_mat(total, total)
+            local_bands = [
+                arb_mat(total, total) for _ in range(len(boundaries) - 1)
+            ]
+            band_index = 0
             for row, degree in enumerate(range(first_degree, last_degree)):
+                while degree >= boundaries[band_index + 1]:
+                    band_index += 1
                 vector = arb_mat(1, total)
                 for source in range(13):
                     for source_degree in range(degrees[source]):
@@ -246,28 +269,36 @@ def build_arb_third_window_near_tail_gram(
                                 degree, source_degree
                             ]
                         vector[0, offsets[source] + source_degree] = value
-                local += vector.transpose() * vector
-            full += local
+                local_bands[band_index] += vector.transpose() * vector
+            for band, local in zip(full_bands, local_bands):
+                band += local
 
         even_transform, odd_transform = _parity_transforms(
             arb, arb_mat, degrees, offsets
         )
-        even = even_transform.transpose() * full * even_transform
-        odd = odd_transform.transpose() * full * odd_transform
-        even_midpoint, even_radius = _export(even)
-        odd_midpoint, odd_radius = _export(odd)
+        results = []
+        for (band_first, band_last), full in zip(
+            zip(boundaries[:-1], boundaries[1:]), full_bands
+        ):
+            even = even_transform.transpose() * full * even_transform
+            odd = odd_transform.transpose() * full * odd_transform
+            even_midpoint, even_radius = _export(even)
+            odd_midpoint, odd_radius = _export(odd)
+            results.append(
+                ArbThirdWindowNearTailGram(
+                    even_midpoint=even_midpoint,
+                    even_radius=even_radius,
+                    odd_midpoint=odd_midpoint,
+                    odd_radius=odd_radius,
+                    interval_degrees=degrees,
+                    first_degree=band_first,
+                    last_degree=band_last,
+                    precision=precision,
+                    working_precision=working_precision,
+                    maximum_smooth_power=maximum_smooth_power,
+                )
+            )
     finally:
         ctx.prec = previous_precision
 
-    return ArbThirdWindowNearTailGram(
-        even_midpoint=even_midpoint,
-        even_radius=even_radius,
-        odd_midpoint=odd_midpoint,
-        odd_radius=odd_radius,
-        interval_degrees=degrees,
-        first_degree=first_degree,
-        last_degree=last_degree,
-        precision=precision,
-        working_precision=working_precision,
-        maximum_smooth_power=maximum_smooth_power,
-    )
+    return results[0] if band_boundaries is None else tuple(results)

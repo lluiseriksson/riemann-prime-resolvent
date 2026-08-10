@@ -97,6 +97,30 @@ def test_third_window_near_tail_keeps_complete_rows_before_squaring():
     assert result.working_precision >= result.precision
 
 
+def test_multiband_near_tail_sums_to_single_band():
+    pytest.importorskip("flint")
+    kwargs = dict(
+        half_width=0.7,
+        edge_degree=1,
+        bridge_degree=1,
+        center_degree=1,
+        first_degree=2,
+        last_degree=8,
+        precision=256,
+        maximum_smooth_power=3,
+    )
+    single = build_arb_third_window_near_tail_gram(**kwargs)
+    bands = build_arb_third_window_near_tail_gram(
+        **kwargs, band_boundaries=(2, 4, 8)
+    )
+    assert len(bands) == 2
+    for parity in ("even", "odd"):
+        midpoint = sum(getattr(band, f"{parity}_midpoint") for band in bands)
+        radius = sum(getattr(band, f"{parity}_radius") for band in bands)
+        assert midpoint == pytest.approx(getattr(single, f"{parity}_midpoint"))
+        assert np.all(radius >= getattr(single, f"{parity}_radius"))
+
+
 def test_third_window_other_tail_is_finite_after_directional_extraction():
     pytest.importorskip("flint")
     result = certify_third_window_other_tail(
