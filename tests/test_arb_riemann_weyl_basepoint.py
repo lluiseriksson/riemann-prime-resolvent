@@ -3,6 +3,7 @@ from flint import arb, ctx
 
 from experiments.theta_pencil.arb_riemann_weyl_basepoint import (
     certify_riemann_fourier_parity_target,
+    certify_riemann_schwarz_pick_excess,
     certify_riemann_weyl_basepoint,
 )
 
@@ -48,3 +49,22 @@ def test_riemann_fourier_parity_target_is_certified_at_three_i():
 def test_riemann_fourier_parity_target_rejects_the_non_euler_region():
     with pytest.raises(ValueError):
         certify_riemann_fourier_parity_target("0.5", 100)
+
+
+def test_riemann_target_is_strictly_inside_the_schwarz_pick_interval():
+    old_precision = ctx.prec
+    try:
+        certificate = certify_riemann_schwarz_pick_excess("3", 160)
+        ctx.prec = 160
+        assert certificate.target_excess.lower() > arb("0.0000845117029")
+        assert certificate.target_excess.upper() < arb("0.0000845117031")
+        assert certificate.upper_slack.lower() > arb("0.00418")
+        assert certificate.lower_extremal < certificate.target_fourier_parity_ratio
+        assert certificate.target_fourier_parity_ratio < certificate.upper_extremal
+    finally:
+        ctx.prec = old_precision
+
+
+def test_schwarz_pick_excess_rejects_heights_below_the_basepoint():
+    with pytest.raises(ValueError):
+        certify_riemann_schwarz_pick_excess("0.9", 100)

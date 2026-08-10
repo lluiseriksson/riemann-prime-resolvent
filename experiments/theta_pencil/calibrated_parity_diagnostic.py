@@ -11,8 +11,7 @@ from scipy.linalg import eigh
 from scipy.optimize import brentq
 
 from experiments.theta_pencil.arb_riemann_weyl_basepoint import (
-    certify_riemann_fourier_parity_target,
-    certify_riemann_weyl_basepoint,
+    certify_riemann_schwarz_pick_excess,
 )
 from experiments.theta_pencil.safe_weil_shift import explicit_safe_shift
 from experiments.theta_pencil.screw_weil_operator import (
@@ -30,6 +29,7 @@ class CalibratedParityRow:
     calibrated_shift: float
     gap_multiple: float
     predicted_parity_ratio: float
+    predicted_schwarz_pick_excess: float
     target_error: float
     kinematic_baseline_improvement: float
 
@@ -41,6 +41,8 @@ class CalibratedParityDiagnostic:
     target_parity_ratio: float
     kinematic_baseline: float
     kinematic_baseline_error: float
+    target_schwarz_pick_excess: float
+    target_schwarz_pick_upper_slack: float
     grid_points: int
     basis_size: int
     rows: tuple[CalibratedParityRow, ...]
@@ -62,14 +64,15 @@ def run_calibrated_parity_diagnostic(
 
     if not half_widths:
         raise ValueError("at least one half-width is required")
-    base = certify_riemann_weyl_basepoint(precision_bits)
-    target = certify_riemann_fourier_parity_target(
+    target = certify_riemann_schwarz_pick_excess(
         imaginary_height, precision_bits
     )
-    balance = float(base.odd_even_balance.mid())
+    balance = float(target.odd_even_balance.mid())
     target_value = float(target.target_fourier_parity_ratio.mid())
-    baseline = -float(imaginary_height) * balance
-    baseline_error = abs(baseline - target_value)
+    baseline = float(target.lower_extremal.mid())
+    target_excess = float(target.target_excess.mid())
+    target_upper_slack = float(target.upper_slack.mid())
+    baseline_error = target_excess
     rows: list[CalibratedParityRow] = []
 
     for width in half_widths:
@@ -139,6 +142,7 @@ def run_calibrated_parity_diagnostic(
                 calibrated_shift=shift,
                 gap_multiple=float((ground - shift) / gap),
                 predicted_parity_ratio=float(predicted),
+                predicted_schwarz_pick_excess=float(predicted - baseline),
                 target_error=float(error),
                 kinematic_baseline_improvement=float(
                     baseline_error - error
@@ -152,6 +156,8 @@ def run_calibrated_parity_diagnostic(
         target_parity_ratio=target_value,
         kinematic_baseline=baseline,
         kinematic_baseline_error=float(baseline_error),
+        target_schwarz_pick_excess=target_excess,
+        target_schwarz_pick_upper_slack=target_upper_slack,
         grid_points=grid_points,
         basis_size=basis_size,
         rows=tuple(rows),

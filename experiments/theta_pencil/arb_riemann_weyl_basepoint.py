@@ -26,6 +26,18 @@ class RiemannFourierParityTargetCertificate:
     target_fourier_parity_ratio: object
 
 
+@dataclass(frozen=True)
+class RiemannSchwarzPickExcessCertificate:
+    precision_bits: int
+    imaginary_height: object
+    odd_even_balance: object
+    target_fourier_parity_ratio: object
+    lower_extremal: object
+    upper_extremal: object
+    target_excess: object
+    upper_slack: object
+
+
 def _xi_series_at(variable, arb):
     pi = arb.pi()
     return (
@@ -110,6 +122,53 @@ def certify_riemann_fourier_parity_target(
             imaginary_height=eta,
             normalized_reciprocal_log_derivative=normalized,
             target_fourier_parity_ratio=target,
+        )
+    finally:
+        ctx.prec = old_precision
+
+
+def certify_riemann_schwarz_pick_excess(
+    imaginary_height: float | str,
+    precision_bits: int = 200,
+) -> RiemannSchwarzPickExcessCertificate:
+    """Certify the target's position in the calibrated Schwarz--Pick interval.
+
+    For ``eta >= 1`` and ``kappa`` fixed by the derivative at ``i``, every
+    calibrated real-symmetric Herglotz function obeys
+
+    ``-eta*kappa <= r(i*eta) <= -kappa/eta``.
+
+    The returned ``target_excess`` and ``upper_slack`` rigorously measure the
+    distances of the normalized Riemann target from the two endpoints.
+    """
+
+    if precision_bits < 80:
+        raise ValueError("precision_bits must be at least 80")
+    from flint import arb, ctx
+
+    old_precision = ctx.prec
+    try:
+        ctx.prec = precision_bits
+        eta = arb(str(imaginary_height))
+        if eta.lower() < arb(1):
+            raise ValueError("imaginary_height must be at least one")
+        base = certify_riemann_weyl_basepoint(precision_bits)
+        target = certify_riemann_fourier_parity_target(
+            imaginary_height, precision_bits
+        )
+        lower = -eta * base.odd_even_balance
+        upper = -base.odd_even_balance / eta
+        excess = target.target_fourier_parity_ratio - lower
+        upper_slack = upper - target.target_fourier_parity_ratio
+        return RiemannSchwarzPickExcessCertificate(
+            precision_bits=precision_bits,
+            imaginary_height=eta,
+            odd_even_balance=base.odd_even_balance,
+            target_fourier_parity_ratio=target.target_fourier_parity_ratio,
+            lower_extremal=lower,
+            upper_extremal=upper,
+            target_excess=excess,
+            upper_slack=upper_slack,
         )
     finally:
         ctx.prec = old_precision
