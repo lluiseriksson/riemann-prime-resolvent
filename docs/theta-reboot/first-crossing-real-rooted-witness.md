@@ -744,6 +744,75 @@ leading coefficient in the canonical product and yields (PE7).  Expanding
 \(P_0e^{cx}\) proves (PE8); the would-be term of order \(2k_0+1\) vanishes
 because \(P_0x^{k_0}\) and \(P_0x^{k_0+1}\) have opposite parity.
 
+### Proposition 4.1a.3 (the first kernel jet is a Herglotz quotient)
+
+Let
+
+\[
+ H_1(z)=\widehat{P_0x^{k_0+1}}(z).
+\]
+
+Then
+
+\[
+ \boxed{
+  \mathfrak m_1(z)=-\frac1z-
+   \frac{i}{k_0+1}\frac{H_1(z)}{H(z)}}                    \tag{PE9}
+\]
+
+is a meromorphic Herglotz function: it is analytic on \(\mathbb C_+\) and
+\(\operatorname{Im}\mathfrak m_1(z)\ge0\) there.  It is real meromorphic on
+the real axis.  Consequently every pole at a nonzero witness zero is simple.
+If \(\lambda\ne0\) is a simple zero of \(H\), then
+
+\[
+ \boxed{
+  \frac{i}{k_0+1}\frac{H_1(\lambda)}{H'(\lambda)}\ge0,}   \tag{PE10}
+\]
+
+and this number is the mass of the Herglotz measure at \(\lambda\).  At a
+zero of multiplicity \(d\), \(H_1\) must vanish to order at least \(d-1\).
+Thus the next projected monomial satisfies an interlacing/residue constraint
+that is not contained in real-rootedness or PH11 alone.
+
+#### Proof
+
+On compact subsets of \(\mathbb C_+\), where the real-rooted function \(H\)
+does not vanish, write
+
+\[
+ a_1(z)=\frac{H_1(z)}{(k_0+1)H(z)}.
+\]
+
+The expansion of the projected exponential one order beyond (PE4) is
+
+\[
+ U_c(z)=\frac{c^{k_0}}{k_0!}H(z)
+        \{1+c a_1(z)+O(c^2)\}.                            \tag{PE11}
+\]
+
+Because \(H_1\) has the parity opposite to \(H\), the Schur quotient from
+(BG1), with \(s=(-1)^{k_0}\), obeys
+
+\[
+ \Theta_c(z)=\frac{(z-ic)U_c(z)}{(z+ic)U_c(-z)}
+ =s\left[1+2c\left(a_1(z)-\frac{i}{z}\right)+O(c^2)\right].
+                                                               \tag{PE12}
+\]
+
+Proposition 4.9 gives \(|\Theta_c(z)|<1\) for every \(c>0\).  Taking the
+right derivative at \(c=0\) in (PE12) yields
+
+\[
+ \operatorname{Re}\left(\frac{i}{z}-a_1(z)\right)\ge0.
+\]
+
+Multiplication by \(i\) turns this Caratheodory function into (PE9), proving
+the Herglotz assertion.  The parity phases make (PE9) real on the real axis.
+The pole order and residue statements are the standard local consequences of
+the positive-measure representation of a meromorphic Herglotz function.
+\(\square\)
+
 ### Proposition 4.1b (the Hausdorff measure of a pure-parity witness)
 
 Assume there is a pure-parity real-rooted null vector at the first crossing,

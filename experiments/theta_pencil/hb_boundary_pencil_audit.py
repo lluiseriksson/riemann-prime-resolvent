@@ -37,6 +37,10 @@ def gdiv(left: Gaussian, right: Gaussian) -> Gaussian:
     )
 
 
+def gscale(value: Gaussian, scalar: Fraction) -> Gaussian:
+    return value[0] * scalar, value[1] * scalar
+
+
 def parity_factorization(
     y: Fraction, deficiency: Fraction, even: Fraction, odd: Fraction
 ) -> None:
@@ -183,6 +187,52 @@ def kernel_jet_normalization() -> None:
     assert quartic_residue == 7
 
 
+def first_schur_jet_expansion() -> None:
+    # Differentiate the exact quotient in (PE12) at c=0 and compare it with
+    # 2s(H1/((k+1)H) - i/z), using Gaussian rational arithmetic.
+    imaginary_unit: Gaussian = Fraction(0), Fraction(1)
+    samples = [
+        ((Fraction(2), Fraction(3)), (Fraction(5), Fraction(-1))),
+        ((Fraction(-4), Fraction(1)), (Fraction(3), Fraction(7))),
+    ]
+    for parity in (Fraction(-1), Fraction(1)):
+        for order in (1, 2, 5):
+            for z in (
+                (Fraction(2, 3), Fraction(5, 4)),
+                (Fraction(-7, 5), Fraction(3, 2)),
+            ):
+                for h_value, h1_value in samples:
+                    next_coefficient = gscale(h1_value, Fraction(1, order + 1))
+                    numerator_zero = gmul(z, h_value)
+                    denominator_zero = gscale(numerator_zero, parity)
+                    numerator_prime = gsub(
+                        gmul(z, next_coefficient),
+                        gmul(imaginary_unit, h_value),
+                    )
+                    denominator_prime = gscale(
+                        gadd(
+                            gscale(gmul(z, next_coefficient), Fraction(-1)),
+                            gmul(imaginary_unit, h_value),
+                        ),
+                        parity,
+                    )
+                    quotient_prime = gdiv(
+                        gsub(
+                            gmul(numerator_prime, denominator_zero),
+                            gmul(numerator_zero, denominator_prime),
+                        ),
+                        gmul(denominator_zero, denominator_zero),
+                    )
+                    expected = gscale(
+                        gsub(
+                            gdiv(next_coefficient, h_value),
+                            gdiv(imaginary_unit, z),
+                        ),
+                        2 * parity,
+                    )
+                    assert quotient_prime == expected
+
+
 def main() -> None:
     for y in [Fraction(1, 7), Fraction(1), Fraction(5, 2), Fraction(13)]:
         for deficiency in [Fraction(1, 5), Fraction(1), Fraction(11, 3)]:
@@ -198,6 +248,7 @@ def main() -> None:
     parity_sector_squared_node_no_go()
     small_deficiency_pure_parity_limit()
     kernel_jet_normalization()
+    first_schur_jet_expansion()
     print("HB-PENCIL-AUDIT: PASS (exact rational algebra; spectral sanity check)")
 
 
