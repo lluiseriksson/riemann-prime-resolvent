@@ -92,6 +92,15 @@ SPLIT_MAIN_FACTOR_UPPERS = {
     106: Fraction(2321, 10_000),
     107: Fraction(1199, 5000),
 }
+BESSEL_EXTENDED_GAP = 109
+BESSEL_RADIUS_OVERRIDES = {
+    107: Fraction(9897, 10_000),
+    108: Fraction(619, 625),
+    109: Fraction(9911, 10_000),
+    110: Fraction(2479, 2500),
+}
+BESSEL_I0_ORDER = 16
+BESSEL_EXP_ORDER = 24
 
 
 def beta_integer(left: int, right: int) -> Fraction:
@@ -462,6 +471,64 @@ def contour_two_dilation_split_upper(m: int, gap: int) -> Fraction:
     return direct * split_l1_factor_upper(gap)
 
 
+def bessel_concentration_lower(gap: int) -> Fraction:
+    """Tight concentration lower bound at the Bessel-contour radius."""
+
+    radius = BESSEL_RADIUS_OVERRIDES[gap]
+    return (
+        L1_LAMBDA_LOWER
+        * radius
+        * (1 - radius * radius)
+        / (
+            (1 - L1_LAMBDA_LOWER * radius) ** 2
+            * (radius + L1_LAMBDA_UPPER) ** 2
+        )
+    )
+
+
+def rational_bessel_factor_upper(gap: int) -> Fraction:
+    """Rational upper bound for exp(-a) I_0(a), a=d*c/2."""
+
+    a = Fraction(gap, 2) * bessel_concentration_lower(gap)
+    a_square = a * a
+
+    term = Fraction(1)
+    i_zero_partial = term
+    for index in range(1, BESSEL_I0_ORDER + 1):
+        term *= a_square / (4 * index * index)
+        i_zero_partial += term
+    next_term = term * a_square / (
+        4 * (BESSEL_I0_ORDER + 1) ** 2
+    )
+    tail_ratio = a_square / (4 * (BESSEL_I0_ORDER + 2) ** 2)
+    assert tail_ratio < 1
+    i_zero_upper = i_zero_partial + next_term / (1 - tail_ratio)
+
+    term = Fraction(1)
+    exponential_partial = term
+    for index in range(1, BESSEL_EXP_ORDER + 1):
+        term *= a / index
+        exponential_partial += term
+    return i_zero_upper / exponential_partial
+
+
+def contour_two_dilation_bessel_upper(m: int, gap: int) -> Fraction:
+    """Contour bound retaining the full angular exponential integral."""
+
+    radius = BESSEL_RADIUS_OVERRIDES[gap]
+    norm_square = Fraction(2 * m + 2 * gap + 1, 2 * m + 1)
+    assert norm_square < SPLIT_NORM_UPPER**2
+    direct = (
+        SPLIT_NORM_UPPER
+        * Fraction(2 * m + 1, gap)
+        * L1_SQRT_TWO_UPPER
+        * radius ** (2 * m + gap + 1)
+        * (1 - L1_LAMBDA_LOWER * radius) ** gap
+        / (radius - L1_LAMBDA_UPPER) ** gap
+    )
+    return direct * rational_bessel_factor_upper(gap)
+
+
 def exact_two_dilation_square(m: int, gap: int) -> Fraction:
     """Exact square of Q_(m,m+d)(1/2), avoiding every square root."""
 
@@ -536,6 +603,20 @@ def split_extended_prime_upper(m: int, gap: int) -> Fraction:
         * pfaff_mangoldt_tail_upper(m, gap)
     )
     return contour_two_dilation_split_upper(m, gap) / 2 + tail
+
+
+def bessel_extended_prime_upper(m: int, gap: int) -> Fraction:
+    """Prime bound retaining the full angular integral past gap 106."""
+
+    if gap <= SPLIT_EXTENDED_GAP:
+        return split_extended_prime_upper(m, gap)
+    tail = (
+        SPLIT_NORM_UPPER
+        * comb(2 * m + gap, gap)
+        * pfaff_hypergeometric_ratio(m, gap)
+        * pfaff_mangoldt_tail_upper(m, gap)
+    )
+    return contour_two_dilation_bessel_upper(m, gap) / 2 + tail
 
 
 def main() -> None:
@@ -804,6 +885,39 @@ def main() -> None:
         > Fraction(9, 5)
     )
 
+    # The full angular majorant integrates to exp(-a) I_0(a).  Both
+    # factors are enclosed by finite rational series with rigorous tails.
+    for gap in range(SPLIT_EXTENDED_GAP + 1, BESSEL_EXTENDED_GAP + 2):
+        assert rational_bessel_factor_upper(gap) < 1
+        assert exact_two_dilation_square(TAIL_START, gap) < (
+            contour_two_dilation_bessel_upper(TAIL_START, gap) ** 2
+        )
+        assert bessel_extended_prime_upper(TAIL_START + 1, gap) < (
+            bessel_extended_prime_upper(TAIL_START, gap)
+        )
+
+    bessel_totals = list(split_totals)
+    for gap in range(SPLIT_EXTENDED_GAP + 1, BESSEL_EXTENDED_GAP + 1):
+        archimedean = (
+            odd_archimedean_crude_upper(TAIL_START, gap)
+            if gap % 2
+            else even_archimedean_crude_upper(TAIL_START, gap)
+        )
+        bessel_totals.append(
+            bessel_extended_prime_upper(TAIL_START, gap) + archimedean
+        )
+    assert max(bessel_totals) < Fraction(9, 5)
+    assert bessel_totals.index(max(bessel_totals)) + 1 == 106
+    bessel_next_archimedean = even_archimedean_crude_upper(
+        TAIL_START,
+        BESSEL_EXTENDED_GAP + 1,
+    )
+    assert (
+        bessel_extended_prime_upper(TAIL_START, BESSEL_EXTENDED_GAP + 1)
+        + bessel_next_archimedean
+        > Fraction(9, 5)
+    )
+
     print(f"exact_moment_identity_checks={identity_checks}")
     print(f"max_prime_bound={float(max(prime_bounds)):.12e}")
     print("odd_archimedean_bound=1/gap")
@@ -822,6 +936,11 @@ def main() -> None:
     print("l1_tail_local_diameter=101")
     print(f"split_total_bound={float(max(split_totals)):.12e}")
     print("split_tail_local_diameter=106")
+    print(
+        "bessel_new_gap_bound="
+        f"{float(bessel_extended_prime_upper(TAIL_START, 109) + odd_archimedean_crude_upper(TAIL_START, 109)):.12e}"
+    )
+    print("bessel_tail_local_diameter=109")
 
 
 if __name__ == "__main__":

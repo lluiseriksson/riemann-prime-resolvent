@@ -2844,6 +2844,60 @@ At \(d=107\) the same split-arc certificate is
 Gaussian arc, so a further subdivision of the exponentially small tail
 cannot by itself cross this frontier.
 
+The angular majorant itself has an exact one-variable integral, so the
+Gaussian replacement can be avoided.  Put \(a=dc_x/2\).  The defining
+integral and power series of the modified Bessel function give
+
+\[
+ \frac1\pi\int_0^\pi e^{-dc_x(1-\cos\theta)/2}\,d\theta
+ =e^{-a}I_0(a),
+ \qquad
+ I_0(a)=\sum_{q\ge0}\frac{(a^2/4)^q}{(q!)^2}.       \tag{E173}
+\]
+
+No transcendental evaluation is used in the certificate.  The \(I_0\)
+series is stopped after \(q=16\), and its positive tail is bounded by the
+geometric series whose first term is the \(q=17\) term and whose ratio is
+\(a^2/(4\cdot18^2)\).  Since
+\(e^a\ge\sum_{q=0}^{24}a^q/q!\), division by this latter rational sum
+gives a rational upper bound for the whole expression in (E173).
+
+At the rational radii
+
+\[
+\begin{array}{c|rrrr}
+d&107&108&109&110\\ \hline
+x_d&9897/10000&619/625&9911/10000&2479/2500,
+\end{array}
+\]
+
+the resulting exact total bounds for \(d=107,108,109\) are
+
+\[
+1.6215085497\ldots,\qquad
+1.6515948007\ldots,\qquad
+1.7607492038\ldots.
+\]
+
+Consequently the entry and triple theorems improve to
+
+\[
+\boxed{|B_{m,m+d}|<\frac95
+\qquad(m\ge232,\ 1\le d\le109),}                  \tag{E174}
+\]
+
+and
+
+\[
+\boxed{
+B[\{i,j,k\}]\succ0
+\quad(232\le i<j<k,\ k-i\le109).}                 \tag{E175}
+\]
+
+At \(d=110\) the same rational Bessel-series certificate is
+\(1.9251590813\ldots>9/5\).  This is a frontier of this entrywise
+diagonal-dominance estimate, not evidence of a negative entry or minor.
+
 At the analytic cutoff \(m=232\), (E130) already covers every gap
 \(d\le29\), rather than only the first two bands.  This does not yet prove
 positivity of the corresponding full blocks: the archimedean contribution
@@ -2888,7 +2942,7 @@ the bandwise archimedean--prime discrepancy (E126)--(E133) are checked
 coefficientwise over rational numbers (with a symbolic \(\log2\) component) by
 `jacobi_dilation_connection.py`.
 The Rodrigues moment inequalities, closed beta sums, uniform archimedean
-bounds, prime remainder, and local triple theorems (E134)--(E172) are
+bounds, prime remainder, and local triple theorems (E134)--(E175) are
 audited by `jacobi_local_band_bound.py`.
 The floating-point checks elsewhere in this audit are not used in place of
 the displayed analytic inequalities. Global claims still require all

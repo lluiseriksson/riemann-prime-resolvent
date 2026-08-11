@@ -1,6 +1,7 @@
 from fractions import Fraction
 
 from experiments.theta_pencil.jacobi_local_band_bound import (
+    BESSEL_EXTENDED_GAP,
     CONTOUR_EXTENDED_GAP,
     CONTOUR_NORM_UPPER,
     CONTOUR_RADIUS,
@@ -18,6 +19,7 @@ from experiments.theta_pencil.jacobi_local_band_bound import (
     SPLIT_EXTENDED_GAP,
     TAIL_START,
     binomial_one_step_ratio,
+    bessel_extended_prime_upper,
     closed_j_one,
     closed_j_zero_ratio,
     contour_prime_upper,
@@ -25,6 +27,7 @@ from experiments.theta_pencil.jacobi_local_band_bound import (
     contour_two_dilation_l2_upper,
     contour_two_dilation_l1_upper,
     contour_two_dilation_split_upper,
+    contour_two_dilation_bessel_upper,
     crude_prime_upper,
     even_archimedean_rational_upper,
     even_archimedean_crude_upper,
@@ -36,6 +39,7 @@ from experiments.theta_pencil.jacobi_local_band_bound import (
     l1_factor_upper,
     split_extended_prime_upper,
     split_l1_factor_upper,
+    rational_bessel_factor_upper,
     odd_upper_polynomial,
     odd_archimedean_crude_upper,
     normalized_jacobi_coefficients,
@@ -260,5 +264,33 @@ def test_split_width_106_budget_and_uniformity() -> None:
     assert (
         split_extended_prime_upper(TAIL_START, SPLIT_EXTENDED_GAP + 1)
         + odd_archimedean_crude_upper(TAIL_START, SPLIT_EXTENDED_GAP + 1)
+        > Fraction(9, 5)
+    )
+
+
+def test_bessel_width_109_budget_and_uniformity() -> None:
+    totals = []
+    for gap in range(1, BESSEL_EXTENDED_GAP + 1):
+        archimedean = (
+            odd_archimedean_crude_upper(TAIL_START, gap)
+            if gap % 2
+            else even_archimedean_crude_upper(TAIL_START, gap)
+        )
+        totals.append(
+            bessel_extended_prime_upper(TAIL_START, gap) + archimedean
+        )
+        if gap > SPLIT_EXTENDED_GAP:
+            assert rational_bessel_factor_upper(gap) < 1
+            assert exact_two_dilation_square(TAIL_START, gap) < (
+                contour_two_dilation_bessel_upper(TAIL_START, gap) ** 2
+            )
+            assert bessel_extended_prime_upper(TAIL_START + 1, gap) < (
+                bessel_extended_prime_upper(TAIL_START, gap)
+            )
+    assert max(totals) < Fraction(9, 5)
+    assert totals.index(max(totals)) + 1 == 106
+    assert (
+        bessel_extended_prime_upper(TAIL_START, BESSEL_EXTENDED_GAP + 1)
+        + even_archimedean_crude_upper(TAIL_START, BESSEL_EXTENDED_GAP + 1)
         > Fraction(9, 5)
     )
