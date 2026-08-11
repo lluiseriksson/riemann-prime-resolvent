@@ -2188,6 +2188,171 @@ between one continuous archimedean weight and same-signed von Mangoldt atoms.
 The symbolic audit evaluates both sides as an exact rational number plus an
 exact rational multiple of \(\log2\); no numerical integration enters.
 
+The discrepancy can be bounded uniformly over the first 29 tail bands.  Put
+
+\[
+ H_{m,d}(u)={}_2F_1(1-d,2m+d+2;2m+2;u),
+ \qquad
+ J_k=\int_0^1u^{m-1}(1-u)^kH_{m,d}(u)\,du.          \tag{E134}
+\]
+
+The shifted Rodrigues formula writes
+
+\[
+ H_{m,d}(u)=\frac{u^{-2m-1}(1-u)^{-1}}
+ {(2m+2)_{d-1}}
+ \frac{d^{d-1}}{du^{d-1}}
+ \left[u^{2m+d}(1-u)^d\right].                     \tag{E135}
+\]
+
+For \(k\ge1\), integrate (E135) by parts \(d-1\) times.  Every term in
+
+\[
+ (-1)^{d-1}\frac{d^{d-1}}{du^{d-1}}
+ \left[u^{-m-2}(1-u)^{k-1}\right]
+\]
+
+is positive.  Repeating the argument after inserting one extra factor \(u\)
+shows
+
+\[
+ \boxed{J_k>J_{k+1}>0\qquad(k\ge1).}                \tag{E136}
+\]
+
+The first two moments have closed terminating beta sums.  Saalschutz gives
+
+\[
+ \boxed{
+ J_1=\frac{d!(2m+1)!}{m(m+1)(2m+d)!}.}             \tag{E137}
+\]
+
+Writing \(r=(d+1)/2\) when \(d\) is odd, the adjacent beta sum gives
+
+\[
+ \boxed{
+ \frac{J_0}{J_1}=
+ \begin{cases}
+ 1,&d\ \text{even},\\[2mm]
+ \displaystyle\frac1d\left(m+r+\frac{r(r-1)}{m+r}\right),
+    &d\ \text{odd}.
+ \end{cases}}                                      \tag{E138}
+\]
+
+The cancellation in (E132) is now elementary.  With \(y=1-u\),
+
+\[
+ \frac1{1+u}-u^2
+ =-\frac12+\frac94y-\frac78y^2
+ +\sum_{k\ge3}\frac{y^k}{2^{k+1}}.                \tag{E139}
+\]
+
+Define
+
+\[
+ G_{m,d}=\binom{2m+d}{d}
+ \sqrt{\frac{2m+2d+1}{2m+1}},
+ \qquad
+ A_{m,d}:=G_{m,d}J_1
+ =\frac{\sqrt{(2m+1)(2m+2d+1)}}{m(m+1)}.
+\]
+
+Equations (E127), (E132), and (E139) give
+
+\[
+ B^{\rm arch}_{m,m+d}=(-1)^dG_{m,d}
+ \left(-\frac12J_0+\frac94J_1-\frac78J_2+T\right),
+ \qquad 0<T\le\frac18J_1,                         \tag{E140}
+\]
+
+where (E136) bounds the positive geometric tail.  If \(d\) is even,
+(E136), (E138), and (E140) imply
+
+\[
+ 0<B^{\rm arch}_{m,m+d}<\frac{15}{8}A_{m,d}
+ <\frac1{50}
+ \qquad(m\ge232,\ 2\le d\le28).                  \tag{E141}
+\]
+
+For odd \(d\), put
+
+\[
+ R_{m,d}=\frac1d\left(m+r+\frac{r(r-1)}{m+r}\right).
+\]
+
+Then
+
+\[
+ A_{m,d}\left(\frac{R_{m,d}}2-\frac{19}{8}\right)
+ <B^{\rm arch}_{m,m+d}<
+ A_{m,d}\left(\frac{R_{m,d}}2-\frac{11}{8}\right)
+ <\frac1d.                                         \tag{E142}
+\]
+
+For the registered range, \(R_{m,d}\ge m/d\ge232/29>19/4\), so the
+lower bound is positive.  For the last upper bound use
+\(\sqrt{(2m+1)(2m+2d+1)}\le2m+d+1\) and
+\(r(r-1)/(m+r)\le r(r-1)/m\).  After clearing positive denominators, the
+required inequality reduces to
+
+\[
+ 14dm^2+7d(d+1)m-(d-1)(d+1)^2>0,
+\]
+
+which is immediate for \(m\ge232\) and \(1\le d\le29\).
+
+It remains to bound the discrete prime term.  The
+[classical Jacobi endpoint maximum inequality](https://dlmf.nist.gov/18.14.E1),
+applicable because \(2m+1\ge1\), gives
+\(|H_{m,d}(u)|\le1\) on \([0,1]\).  Therefore
+
+\[
+ \begin{aligned}
+ |B^{\rm prime}_{m,m+d}|
+ &\le G_{m,d}\sum_{r\ge2}\frac{\Lambda(r)}{r^{m+1}}\\
+ &<G_{m,d}2^{-m}\\
+ &<2\left(\frac{3(2m+d)}d\right)^d2^{-m}
+ <10^{-20}                                          \tag{E143}
+ \end{aligned}
+\]
+
+for \(m\ge232\) and \(1\le d\le29\).  Here
+\(\Lambda(r)\le\log r\), the integral test makes its moment less than
+\(2^{-m}\), and
+\(\binom{2m+d}{d}\le(e(2m+d)/d)^d\) with \(e<3\).  The last elementary
+majorant decreases with \(m\); checking the 29 exact rational values at
+\(m=232\) gives its maximum
+
+\[
+ 9.585308795674\ldots\,10^{-21}qquad(d=29).
+\]
+
+Combining (E141)--(E143),
+
+\[
+ |B_{m,m+d}|<
+ \begin{cases}
+ d^{-1}+10^{-20},&d\ \text{odd},\\
+ 1/50+10^{-20},&d\ \text{even},
+ \end{cases}
+ \quad(m\ge232,\ 1\le d\le29).                    \tag{E144}
+\]
+
+Every principal \(3\times3\) Jacobi block whose smallest index is at least
+232 and whose diameter is at most 29 is therefore strictly diagonally
+dominant: each off-diagonal row sum is less than
+\(2+2\cdot10^{-20}\), while (E115) gives every diagonal entry greater than
+3.62178.  Hence
+
+\[
+ \boxed{
+ B[\{i,j,k\}]\succ0
+ \quad(232\le i<j<k,\ k-i\le29).}                  \tag{E145}
+\]
+
+This strictly extends (E116) from consecutive triples to every triple in a
+width-29 tail window.  The first unresolved tail triple must now have diameter
+at least 30.
+
 At the analytic cutoff \(m=232\), (E130) already covers every gap
 \(d\le29\), rather than only the first two bands.  This does not yet prove
 positivity of the corresponding full blocks: the archimedean contribution
@@ -2231,6 +2396,9 @@ The exact dilation connection formula, the constant-sign prime window, and
 the bandwise archimedean--prime discrepancy (E126)--(E133) are checked
 coefficientwise over rational numbers (with a symbolic \(\log2\) component) by
 `jacobi_dilation_connection.py`.
+The Rodrigues moment inequalities, closed beta sums, uniform archimedean
+bounds, prime remainder, and width-29 triple theorem (E134)--(E145) are
+audited by `jacobi_local_band_bound.py`.
 The floating-point checks elsewhere in this audit are not used in place of
 the displayed analytic inequalities. Global claims still require all
 separated principal minors.
