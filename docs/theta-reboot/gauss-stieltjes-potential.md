@@ -507,3 +507,70 @@ an exact diagonalization of the commensurate residue graph.  The registered
 Arb entry point now combines this exact dyadic block with the source-level
 chain certificates for 3, 5, and 7.  As before, the interval run is required
 before the displayed decimal is called a deposited certificate.
+
+## A joint 5--7 path has a candidate tail at degree 58
+
+The allocation (GS15) is still separable and therefore pays incompatible
+worst fibers for the translations 5 and 7.  At support one, however, both
+displacements exceed one.  Put
+
+\[
+ h_5=\log5,\qquad h_7=\log7,\qquad \delta=h_7-h_5. \tag{GS27}
+\]
+
+For a left vertex \(x\in[-1,1-h_7]\), the whole connected component is the
+four-vertex path
+
+\[
+ x+h_5\;\xleftrightarrow{c_5}\;x
+ \;\xleftrightarrow{c_7}\;x+h_7
+ \;\xleftrightarrow{c_5}\;x+\delta,
+ \qquad c_n=\frac{\log n}{\sqrt n}.                 \tag{GS28}
+\]
+
+The remaining nontrivial components are prime-5 edges parameterized by
+
+\[
+ x\in[1-h_7,\delta-1],                              \tag{GS29}
+\]
+
+and every other point is isolated.  Thus the incommensurability of
+\(h_5,h_7\) causes no infinite fiber here: the large displacements and the
+finite support force components of size at most four.
+
+Adding the full boundary potential to the diagonal of (GS28), a
+double-precision scan places the least value at the symmetric parameter
+\(x=-h_7/2\):
+
+\[
+ \lambda_{5,7}^{(4)}=-0.2624003509\ldots.           \tag{GS30}
+\]
+
+The two-path family has its observed minimum at \(x=-h_5/2\), equal to
+\(-0.1983071999\ldots\).  These are design values, not interval claims.  The
+pre-registered Arb judge is
+
+\[
+ \boxed{V+T_5+T_7\succeq-0.267,I.}                \tag{GS31}
+\]
+
+The verifier `joint_five_seven_floor.py` covers the full parameter intervals
+in (GS28)--(GS29), replaces each potential by an Arb lower enclosure on each
+cell, and applies Rump eigenvalue enclosures to the resulting \(4\times4\)
+and \(2\times2\) matrices.  No sampled value enters the certificate.
+
+If (GS31) closes, combine it with the exact joint dyadic floor (GS23), the
+prime-3 edge, the scalar, and the smooth loss.  The registered target then
+gives
+
+\[
+ B_1\succeq-4.6456374005,I,
+ \qquad
+ \boxed{Q_{58}L_1Q_{58}\succeq
+ 0.0006171932,Q_{58}.}                             \tag{GS32}
+\]
+
+Since \(H_{57}-4.6456374005<0\), degree 58 is the first possible cut for
+this target.  Equation (GS32) remains conditional on the pending Arb run of
+(GS31); the graph reduction (GS28)--(GS29) and the sufficiency of the
+pre-registered threshold are exact.
