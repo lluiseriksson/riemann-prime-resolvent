@@ -371,3 +371,76 @@ multiband Schur calculation.  A threshold-uniform factorization of that
 combined block would be a genuine route beyond the isolated certificates at
 support 0.70 and 0.72.  Merely asserting its positivity would again rename
 the localized Weil criterion and hence RH.
+
+## Allocating the exact potential lowers the support-one tail to degree 99
+
+The first such combination already improves the common complement
+substantially.  Split the exact boundary potential using the rational weights
+
+\[
+ \theta_5=\frac{173}{500},\qquad
+ \theta_7=\frac{327}{500},\qquad \theta_5+\theta_7=1. \tag{GS15}
+\]
+
+For \(n=5,7\), the displacement \(h_n=\log n\) is larger than one, so every
+nontrivial residue fiber has two vertices.  If the left vertex is \(x\), then
+
+\[
+ x\in[-1,1-h_n],\qquad |x|,|x+h_n|\ge h_n-1.
+\]
+
+Since \(V\) increases with \(|x|\), the two-vertex matrix obeys
+
+\[
+ \begin{pmatrix}
+ \theta_nV(x)&-\Lambda(n)/\sqrt n\\
+ -\Lambda(n)/\sqrt n&\theta_nV(x+h_n)
+ \end{pmatrix}
+ \succeq
+ \left(\theta_nV(h_n-1)-\frac{\Lambda(n)}{\sqrt n}\right)I. \tag{GS16}
+\]
+
+One-vertex fibers contribute a nonnegative diagonal.  Therefore the global
+floor is the minimum of zero and the scalar in (GS16).  At the registered
+weights,
+
+\[
+ \theta_5V(\log5-1)-\frac{\log5}{\sqrt5}
+ =-0.6394414991\ldots,
+\]
+
+whereas
+
+\[
+ \theta_7V(\log7-1)-\frac{\log7}{\sqrt7}
+ =+0.0007159957\ldots.                              \tag{GS17}
+\]
+
+Thus the prime-seven translation costs no negative floor.  Leaving zero
+potential for \(2,3,4\), their exact path spectra give respectively
+
+\[
+ -\log2,\qquad-\frac{\log3}{\sqrt3},\qquad
+ -\frac{\log2}{2}.                                  \tag{GS18}
+\]
+
+With smooth order 95, the analytic smooth loss is
+\(0.4414940136\), and the bounded-part floor becomes
+
+\[
+ B_1\succeq-5.1700331154\,I.                        \tag{GS19}
+\]
+
+Since \(H_{99}=5.1773775176\ldots\), this yields the design margin
+
+\[
+ \boxed{Q_{99}L_1Q_{99}\succeq0.0073444022\,Q_{99}.} \tag{GS20}
+\]
+
+The derivation (GS15)--(GS20) is analytic and uses no zero data.  The decimal
+closure is wired to the existing source-level Arb chain verifier by
+`support_one_allocated_floor.py`; that interval run remains required before
+the displayed decimal is promoted from a design margin to a deposited
+certificate.  Even at design level, the reduction from tail degree 256 to 99
+is robust and changes the cost of the finite source and endpoint jets by a
+large factor.
