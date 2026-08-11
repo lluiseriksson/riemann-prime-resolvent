@@ -23,8 +23,18 @@ MAX_GAP = 29
 EXTENDED_GAP = 45
 PFAFF_EXTENDED_GAP = 68
 PFAFF_NORM_UPPER = Fraction(8, 7)
-CONTOUR_EXTENDED_GAP = 85
+CONTOUR_EXTENDED_GAP = 92
 CONTOUR_RADIUS = Fraction(89, 100)
+CONTOUR_RADIUS_OVERRIDES = {
+    86: Fraction(9, 10),
+    87: Fraction(181, 200),
+    88: Fraction(91, 100),
+    89: Fraction(229, 250),
+    90: Fraction(461, 500),
+    91: Fraction(116, 125),
+    92: Fraction(187, 200),
+    93: Fraction(943, 1000),
+}
 LAMBDA_LOWER = Fraction(7071, 10_000)
 LAMBDA_UPPER = Fraction(7072, 10_000)
 SQRT_TWO_UPPER = Fraction(14_143, 10_000)
@@ -235,22 +245,22 @@ def contour_two_dilation_upper(m: int, gap: int) -> Fraction:
     """Rational contour bound for abs(Q_(m,m+d)(1/2)).
 
     This is the Szehr--Zarouf integral estimate at lambda=1/sqrt(2),
-    alpha=0, beta=1 and the fixed contour radius x=89/100.  Rational
-    brackets for lambda and sqrt(2) make the returned certificate exact.
+    alpha=0 and beta=1.  A short list of rational contour radii retains the
+    cancellation through gap 92.  Rational brackets for lambda and sqrt(2)
+    make the returned certificate exact.
     """
 
     assert gap >= 2
     norm_square = Fraction(2 * m + 2 * gap + 1, 2 * m + 1)
     assert norm_square < CONTOUR_NORM_UPPER**2
-    radius = CONTOUR_RADIUS
+    radius = CONTOUR_RADIUS_OVERRIDES.get(gap, CONTOUR_RADIUS)
     assert LAMBDA_UPPER < radius < 1
     return (
         CONTOUR_NORM_UPPER
         * Fraction(2 * m + 1, gap)
         * SQRT_TWO_UPPER
         * radius ** (2 * m + gap + 1)
-        * (1 + LAMBDA_UPPER * radius) ** 2
-        * (1 - LAMBDA_LOWER * radius) ** (gap - 2)
+        * (1 - LAMBDA_LOWER * radius) ** gap
         / (radius - LAMBDA_UPPER) ** gap
     )
 
@@ -413,7 +423,7 @@ def main() -> None:
         (TAIL_START, 2),
         (TAIL_START, 7),
         (TAIL_START, 68),
-        (TAIL_START, 85),
+        (TAIL_START, 92),
     ):
         assert exact_two_dilation_square(m, gap) < (
             contour_two_dilation_upper(m, gap) ** 2
@@ -441,10 +451,10 @@ def main() -> None:
         contour_totals.append(
             contour_prime_upper(TAIL_START, gap) + archimedean
         )
-    assert max(contour_totals) < Fraction(17, 10)
-    assert contour_totals.index(max(contour_totals)) + 1 == 85
+    assert max(contour_totals) < Fraction(9, 5)
+    assert contour_totals.index(max(contour_totals)) + 1 == 92
 
-    next_archimedean = even_archimedean_crude_upper(
+    next_archimedean = odd_archimedean_crude_upper(
         TAIL_START,
         CONTOUR_EXTENDED_GAP + 1,
     )
@@ -465,7 +475,7 @@ def main() -> None:
     print(f"pfaff_even_prime_bound={float(max(even_pfaff_bounds)):.12e}")
     print("pfaff_tail_local_diameter=68")
     print(f"contour_total_bound={float(max(contour_totals)):.12e}")
-    print("contour_tail_local_diameter=85")
+    print("contour_tail_local_diameter=92")
 
 
 if __name__ == "__main__":

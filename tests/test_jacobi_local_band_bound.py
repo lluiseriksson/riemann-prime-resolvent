@@ -119,7 +119,7 @@ def test_pfaff_width_68_budget_and_uniformity() -> None:
     assert pfaff_prime_upper(TAIL_START, PFAFF_EXTENDED_GAP + 1) > 7
 
 
-def test_contour_width_85_budget_and_uniformity() -> None:
+def test_contour_width_92_budget_and_uniformity() -> None:
     assert LAMBDA_LOWER**2 < Fraction(1, 2) < LAMBDA_UPPER**2
     assert SQRT_TWO_UPPER**2 > 2
     assert LAMBDA_UPPER < CONTOUR_RADIUS < 1
@@ -127,7 +127,7 @@ def test_contour_width_85_budget_and_uniformity() -> None:
         (TAIL_START, 2),
         (TAIL_START, 8),
         (TAIL_START, 68),
-        (TAIL_START, 85),
+        (TAIL_START, 92),
     ):
         assert exact_two_dilation_square(m, gap) < (
             contour_two_dilation_upper(m, gap) ** 2
@@ -151,11 +151,11 @@ def test_contour_width_85_budget_and_uniformity() -> None:
             else even_archimedean_crude_upper(TAIL_START, gap)
         )
         totals.append(contour_prime_upper(TAIL_START, gap) + archimedean)
-    assert max(totals) < Fraction(17, 10)
-    assert totals.index(max(totals)) + 1 == 85
+    assert max(totals) < Fraction(9, 5)
+    assert totals.index(max(totals)) + 1 == 92
     assert (
         contour_prime_upper(TAIL_START, CONTOUR_EXTENDED_GAP + 1)
-        + even_archimedean_crude_upper(
+        + odd_archimedean_crude_upper(
             TAIL_START,
             CONTOUR_EXTENDED_GAP + 1,
         )

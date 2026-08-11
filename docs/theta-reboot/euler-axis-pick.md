@@ -2531,19 +2531,17 @@ integral in their representation vanishes.  Taking absolute values on the
 circle of radius \(x\in(\lambda,1)\) gives
 
 \[
-\begin{aligned}
-&\left|\lambda^{2m+1}(1-\lambda^2)
-P_{d-1}^{(2m+1,1)}(0)\right|\\
-&\quad\le
-\frac{x(1+\lambda x)^2}{(1-\lambda x)(x-\lambda)}
-\cdot\left[
-x^{2m+d}\left(\frac{1-\lambda x}{x-\lambda}\right)^{d-1}
-\right].                                                        \tag{E158}
-\end{aligned}
+\left|\lambda^{2m+1}(1-\lambda^2)
+P_{d-1}^{(2m+1,1)}(0)\right|
+\le
+x^{2m+d+1}\left(\frac{1-\lambda x}{x-\lambda}\right)^d.
+                                                               \tag{E158}
 \]
 
-Here the two displayed factors on the right are multiplied; the brackets
-only make that product unambiguous.  Combining (E158) with (E127),
+This specializes the amplitude before taking the maximum: when \(\beta=1\),
+its remaining Blaschke quotient is the same quotient as in the \(n\)-th
+power, so the general-purpose prefactor can be absorbed as one additional
+power.  Combining (E158) with (E127),
 \(P_{d-1}^{(2m+1,1)}(1)=\binom{2m+d}{d-1}\), and
 \(\binom{2m+d}{d}/\binom{2m+d}{d-1}=(2m+1)/d\), yields
 
@@ -2551,11 +2549,20 @@ only make that product unambiguous.  Combining (E158) with (E127),
 \boxed{
 |Q_{m,m+d}(1/2)|\le
 \sqrt{\frac{2m+2d+1}{2m+1}}\frac{2m+1}{d}\sqrt2\,
-\frac{x^{2m+d+1}(1+\lambda x)^2(1-\lambda x)^{d-2}}
-{(x-\lambda)^d}.}                                  \tag{E159}
+x^{2m+d+1}\left(\frac{1-\lambda x}{x-\lambda}\right)^d.}
+                                                        \tag{E159}
 \]
 
-For a rational certificate choose \(x=89/100\) and use
+For a rational certificate use \(x_d=89/100\) through \(d=85\), followed by
+
+\[
+\begin{array}{c|ccccccc}
+d&86&87&88&89&90&91&92\\ \hline
+x_d&9/10&181/200&91/100&229/250&461/500&116/125&187/200.
+\end{array}
+\]
+
+The exact rational enclosures are
 
 \[
 \frac{7071}{10000}<\lambda<\frac{7072}{10000},
@@ -2565,20 +2572,18 @@ For a rational certificate choose \(x=89/100\) and use
 \sqrt{\frac{2m+2d+1}{2m+1}}<\frac65
 \]
 
-for \(m\ge232\), \(2\le d\le85\).  Replacing each occurrence in (E159)
+for \(m\ge232\), \(2\le d\le92\).  Replacing each occurrence in (E159)
 in the direction that enlarges the right-hand side gives the rational bound
 
 \[
-\begin{aligned}
-U_{m,d}:={}&\frac65\frac{2m+1}{d}\frac{14143}{10000}
-x^{2m+d+1}(1+\overline\lambda x)^2\\
-&\times
-\frac{(1-\underline\lambda x)^{d-2}}
-{(x-\overline\lambda)^d},
-\quad
+\boxed{
+U_{m,d}:=\frac65\frac{2m+1}{d}\frac{14143}{10000}
+x_d^{2m+d+1}
+\left(\frac{1-\underline\lambda x_d}
+{x_d-\overline\lambda}\right)^d,}
+\qquad
 \underline\lambda=\frac{7071}{10000},\quad
 \overline\lambda=\frac{7072}{10000}.              \tag{E160}
-\end{aligned}
 \]
 
 Thus the \(p=2\) contribution is less than \(U_{m,d}/2\).  For \(p\ge3\)
@@ -2587,7 +2592,7 @@ bound decreases with \(m\): explicitly
 
 \[
 \frac{U_{m+1,d}}{U_{m,d}}
-=x^2\frac{2m+3}{2m+1}<1,
+=x_d^2\frac{2m+3}{2m+1}<1,
 \]
 
 while the remaining Mangoldt majorant loses at least a factor \(3\), the
@@ -2596,24 +2601,24 @@ The archimedean bounds in (E146) decrease as well.  Exact rational
 evaluation at \(m=232\) therefore proves
 
 \[
-\boxed{|B_{m,m+d}|<\frac{17}{10}
-\qquad(m\ge232,\ 1\le d\le85).}                   \tag{E161}
+\boxed{|B_{m,m+d}|<\frac95
+\qquad(m\ge232,\ 1\le d\le92).}                   \tag{E161}
 \]
 
 The exact maximum of the registered rational majorants is
-\(1.6883099470354\ldots\), at \(d=85\).  Hence every off-diagonal row sum
-in a three-point compression is less than \(17/5=3.4<3.62178\), and
+\(1.7633293899192\ldots\), at \(d=92\).  Hence every off-diagonal row sum
+in a three-point compression is less than \(18/5=3.6<3.62178\), and
 
 \[
 \boxed{
 B[\{i,j,k\}]\succ0
-\quad(232\le i<j<k,\ k-i\le85).}                  \tag{E162}
+\quad(232\le i<j<k,\ k-i\le92).}                  \tag{E162}
 \]
 
-At \(d=86\) this same fixed-contour majorant is
-\(2.9411632344\ldots\), so the proof budget fails there.  Again this is a
-frontier of the selected radius and absolute majorants, not a negative
-matrix witness.
+At \(d=93\), using the nearby rational radius \(943/1000\), the same contour
+majorant is \(2.3980326048\ldots\), so the proof budget fails there.  Again
+this is a frontier of the selected radii and absolute majorants, not a
+negative matrix witness.
 
 At the analytic cutoff \(m=232\), (E130) already covers every gap
 \(d\le29\), rather than only the first two bands.  This does not yet prove
