@@ -114,6 +114,27 @@ def scalar_amplitude_stieltjes_check() -> None:
         assert (log_derivative_amplitude - order_at_zero / x) / 2 == phi
 
 
+def parity_sector_squared_node_no_go() -> None:
+    # PSD rank-one Loewner data at positive squared nodes can have a negative
+    # kernel-rational zero. Passing back through t=z^2 gives imaginary
+    # z-zeros, so sectorwise Loewner reality is insufficient.
+    matrix = [[Fraction(4), Fraction(2)], [Fraction(2), Fraction(1)]]
+    kernel = [Fraction(1), Fraction(-2)]
+    assert all(
+        sum(matrix[row][column] * kernel[column] for column in range(2)) == 0
+        for row in range(2)
+    )
+    assert matrix[0][0] >= 0
+    assert matrix[0][0] * matrix[1][1] - matrix[0][1] ** 2 == 0
+    nodes = [Fraction(1), Fraction(4)]
+    negative_zero = Fraction(-2)
+    rational_value = sum(
+        residue / (negative_zero - node)
+        for residue, node in zip(kernel, nodes, strict=True)
+    )
+    assert rational_value == 0
+
+
 def main() -> None:
     for y in [Fraction(1, 7), Fraction(1), Fraction(5, 2), Fraction(13)]:
         for deficiency in [Fraction(1, 5), Fraction(1), Fraction(11, 3)]:
@@ -126,6 +147,7 @@ def main() -> None:
     projector_limit()
     simple_kernel_cayley_check()
     scalar_amplitude_stieltjes_check()
+    parity_sector_squared_node_no_go()
     print("HB-PENCIL-AUDIT: PASS (exact rational algebra; spectral sanity check)")
 
 

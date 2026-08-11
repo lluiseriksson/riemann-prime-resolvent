@@ -431,6 +431,49 @@ of Lemma 2. Applying that lemma to its unique null vector gives a vector
 \(v\in K\cap\ker p\subset K\) with real-rooted Fourier transform.
 \(\square\)
 
+### Lemma 2.2 (parity compression does not preserve the real-zero conclusion)
+
+A collision cannot be reduced to the pure branch merely by applying the
+Loewner theorem separately to the cosine and sine sectors.  In the unshifted
+Fourier basis the source function \(\phi\) is odd.  For
+\(C_n=(U_n+U_{-n})/\sqrt2\), \(m,n\ge1\), direct compression gives
+
+\[
+ q(C_m,C_n)=
+ \frac{\phi(m)-\phi(n)}{m-n}
+ +\frac{\phi(m)+\phi(n)}{m+n}
+ =2\frac{m\phi(m)-n\phi(n)}{m^2-n^2}.                     \tag{PC1}
+\]
+
+Thus the even block is a Loewner matrix at the nodes \(d_n=n^2\), generated
+by \(\psi_+(n^2)=2n\phi(n)\).  Similarly, the odd block has the form
+\(D L_{\psi_-}D\), where \(D=\operatorname{diag}(n)\) and
+\(\psi_-(n^2)=2\phi(n)/n\), so it is diagonally congruent to a Loewner matrix
+at the same squared nodes.
+
+The finite theorem therefore controls a rational function in
+\(t=z^2\), not in \(z\).  Reality of its \(t\)-zeros is insufficient: a
+negative \(t\)-zero produces the nonreal pair \(z=\pm i\sqrt{|t|}\).  This
+failure already occurs in dimension two.  At \(d_1=1,d_2=4\), let
+
+\[
+ Q=\begin{pmatrix}4&2\\2&1\end{pmatrix}
+ =\binom21(2\ \ 1)\succeq0,
+ \qquad \ker Q=\mathbb R\binom{1}{-2}.                    \tag{PC2}
+\]
+
+It has the required finite Loewner off-diagonal entry, for example with
+\(b_1=-3,b_2=3\).  But the kernel rational function is
+
+\[
+ R(t)=\frac1{t-1}-\frac2{t-4}
+ =\frac{-t-2}{(t-1)(t-4)},                                \tag{PC3}
+\]
+
+whose zero is \(t=-2\).  Hence a parity-sector argument needs an additional
+theorem forcing the squared spectral zeros to be nonnegative.  Positivity and
+the Loewner divided-difference structure alone do not do so. \(\square\)
+
 ### Corollary 3 (application to the localized Weil operator)
 
 For every \(a>0\), if the lowest eigenvalue of \(A_a\) is simple, then the
