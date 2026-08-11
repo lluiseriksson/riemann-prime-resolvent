@@ -508,7 +508,7 @@ Arb entry point now combines this exact dyadic block with the source-level
 chain certificates for 3, 5, and 7.  As before, the interval run is required
 before the displayed decimal is called a deposited certificate.
 
-## A joint 5--7 path has a candidate tail at degree 58
+## A joint 5--7 path gives a rational tail at degree 58
 
 The allocation (GS15) is still separable and therefore pays incompatible
 worst fibers for the translations 5 and 7.  At support one, however, both
@@ -538,8 +538,8 @@ and every other point is isolated.  Thus the incommensurability of
 \(h_5,h_7\) causes no infinite fiber here: the large displacements and the
 finite support force components of size at most four.
 
-Adding the full boundary potential to the diagonal of (GS28), a
-double-precision scan places the least value at the symmetric parameter
+Adding the full boundary potential to the diagonal of (GS28), an initial
+double-precision scan placed the least value at the symmetric parameter
 \(x=-h_7/2\):
 
 \[
@@ -547,30 +547,70 @@ double-precision scan places the least value at the symmetric parameter
 \]
 
 The two-path family has its observed minimum at \(x=-h_5/2\), equal to
-\(-0.1983071999\ldots\).  These are design values, not interval claims.  The
-pre-registered Arb judge is
+\(-0.1983071999\ldots\).  These values only selected the pre-registered
+judge
 
 \[
- \boxed{V+T_5+T_7\succeq-0.267,I.}                \tag{GS31}
+ \boxed{V+T_5+T_7\succeq-0.267\,I.}               \tag{GS31}
 \]
 
-The verifier `joint_five_seven_floor.py` covers the full parameter intervals
-in (GS28)--(GS29), replaces each potential by an Arb lower enclosure on each
-cell, and applies Rump eigenvalue enclosures to the resulting \(4\times4\)
-and \(2\times2\) matrices.  No sampled value enters the certificate.
-
-If (GS31) closes, combine it with the exact joint dyadic floor (GS23), the
-prime-3 edge, the scalar, and the smooth loss.  The registered target then
-gives
+The judge has now closed without interval-library dependencies.  Use the
+positive rational expansions
 
 \[
- B_1\succeq-4.6456374005,I,
+ \log n=2\sum_{k\ge0}\frac{y_n^{2k+1}}{2k+1},
+ \quad y_n=\frac{n-1}{n+1},
+ \qquad
+ V(z)=\frac12\sum_{k\ge1}\frac{z^{2k}}k.           \tag{GS31a}
+\]
+
+For each logarithm, 96 terms and the geometric tail give rational lower and
+upper bounds.  Divide the two parameter intervals into 64 cells, use 80
+positive terms of the second series for every diagonal lower bound, and
+round the edge weights upward using integer lower bounds for
+\(\sqrt5,\sqrt7\).  After adding \(267/1000\) to the diagonal, the exact
+rational leading-minor lower bounds are
+
+\[
+\begin{array}{c|rrrr}
+\text{four-path}&0.4991416659&0.2564815762&0.3377131466&0.0015294320\\
+\text{two-path}&0.5571495667&0.0957605698&&
+\end{array}                                        \tag{GS31b}
+\]
+
+and are all strictly positive.  These are symmetric Z-matrices.  If an
+actual edge is smaller or an actual diagonal larger than the rational worst
+matrix, its ground-state Rayleigh quotient on a nonnegative Perron vector
+can only increase.  Sylvester's criterion applied to (GS31b) therefore
+proves (GS31).  The executable proof is
+`rational_joint_five_seven_certificate.py`; its integer fixed-point series
+and final `Fraction` determinants contain no sampled or floating value.  The
+Arb implementation in `joint_five_seven_floor.py` remains as an independent
+cross-check, not as a logical dependency.
+
+The remaining constants can be enclosed rationally as well.  The Machin
+formula and alternating arctangent series enclose \(\pi\); (GS31a) encloses
+\(\log(2\pi)\); and the elementary inequality
+
+\[
+ \frac1{2n+1}<H_n-\log n-\gamma
+\]
+
+at \(n=100\) gives a rational upper bound for Euler's constant.  The
+Bernoulli-polynomial majorant already used for the smooth kernel is rational,
+as are `isqrt` enclosures of \(\sqrt3\) and \(\sqrt{17}\).  Combining these
+with (GS23), the prime-3 edge, and (GS31) yields
+
+\[
+ B_1\succeq-4.6456539428\,I,
  \qquad
  \boxed{Q_{58}L_1Q_{58}\succeq
- 0.0006171932,Q_{58}.}                             \tag{GS32}
+ 0.0006006509\,Q_{58}.}                            \tag{GS32}
 \]
 
-Since \(H_{57}-4.6456374005<0\), degree 58 is the first possible cut for
-this target.  Equation (GS32) remains conditional on the pending Arb run of
-(GS31); the graph reduction (GS28)--(GS29) and the sufficiency of the
-pre-registered threshold are exact.
+The same exact calculation gives the degree-57 margin
+\(-0.0166407283\ldots<0\), so degree 58 is the first cut closed by this
+certificate.  Equation (GS32) is unconditional, uses no zeta-zero data, and
+turns support-one positivity into a finite 58-mode source obligation.  It is
+not RH: it closes only the infinite complement at one fixed support; the
+finite source and support-uniform continuation remain separate obligations.
