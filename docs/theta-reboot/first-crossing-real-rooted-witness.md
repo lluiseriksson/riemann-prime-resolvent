@@ -2131,21 +2131,24 @@ entire first-crossing kernel. It does not by itself exclude a parity
 collision. Such a collision must now satisfy both the signed arithmetic
 identity (CI3) and the strict projective inequalities (HB4)--(HB6). This is
 the exact point at which the localized Weil route meets the boundary/Weyl
-route, without taking the conjectural limit \(a\to\infty\).
+route, without taking the conjectural limit \(a\to\infty\).  Proposition
+4.1a.1 uses the small-deficiency limit of this same pencil to show that a
+collision nevertheless contains a pure-parity real-rooted null vector.
 
 ## 5. Updated proof obligation
 
 The first-crossing route now has one explicit gate:
 
 \[
- \boxed{\text{rule out a nonzero }v\in\ker A_a\text{ whose compactly
- supported Fourier transform is real-rooted.}}                 \tag{GATE}
+ \boxed{\text{rule out a nonzero pure-parity }v\in\ker A_a\text{ whose
+ compactly supported Fourier transform is real-rooted.}}       \tag{GATE}
 \]
 
-No simplicity assumption remains in (GATE). The exact identity (HG) remains
-an entry point for understanding parity collisions. Proposition 4.1a shows
-that this is precisely the only mixed-parity branch; otherwise the witness is
-pure even or pure odd. The separate
+No simplicity, multiplicity or mixed-parity branch remains in (GATE):
+Proposition 4.1a.1 makes the Hausdorff product (PH1)--(PH12) available for
+every hypothetical first crossing.  The exact identity (HG) remains useful
+for diagnosing an actual parity collision, but excluding the collision is no
+longer required for the RH implication.  The separate
 [cone no-go](ground-simplicity-cone-no-go.md) proves that ordinary
 Beurling--Deny/Perron--Frobenius theory cannot supply simplicity once
 \(a>1/2\): the off-diagonal form has a positive open band near separation
