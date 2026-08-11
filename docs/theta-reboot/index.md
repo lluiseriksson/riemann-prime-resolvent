@@ -106,9 +106,20 @@ Cartwright theory then upgrades real-rootedness to the exact density law
 \(N(R)=2a_*R/\pi+o(R)\) and a constant-phase conjugate-reflection symmetry.
 Dividing by finite products of these real zeros gives exact rational
 interpolants that isolate any hypothetical off-line zeta quartet with negative
-spectral sign while cancelling an arbitrary finite set of other zeros. The
-remaining analytic gate is a uniform weighted-tail estimate for those
-interpolants, not their finite construction.
+spectral sign while Hermite-cancelling an arbitrary finite set of other zeros
+with their spectral multiplicities. Jensen's formula now quantifies the price
+of an exhaustive cancellation through height \(H\): the Paley--Wiener norm is
+at least
+\(\exp((\log 2/\pi+o(1))H\log H)\). Thus no bounded-norm or merely
+exponential-norm diagonal argument can close the construction. The remaining
+analytic gate is a uniform weighted-tail estimate for these necessarily
+ill-conditioned interpolants, not their finite construction. An explicit
+Riemann--von Mangoldt bound combined with complex Kadec sampling goes further:
+that tail estimate is impossible in \(PW_a\) for
+\(a<0.83525\ldots\). Hence the rational-localization mechanism is now closed
+for a hypothetical first crossing in \(0.72<a_*<0.83525\ldots\); no known
+argument places every hypothetical first crossing in that interval, so larger
+support remains open.
 
 ## Why this track is different
 

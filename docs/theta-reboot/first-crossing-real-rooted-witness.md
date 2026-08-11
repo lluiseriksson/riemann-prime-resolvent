@@ -577,7 +577,7 @@ such that
 \[
  G(\gamma_0)=G(-\bar\gamma_0)=i,qquad
  G(\bar\gamma_0)=G(-\gamma_0)=-i,qquad
- G|_Z=0,                                                      \tag{RL2}
+ \operatorname{ord}_\gamma G\ge m_\gamma\quad(\gamma\in Z), \tag{RL2}
 \]
 
 and \(P/Q_S=O(|z|^{-d})\) at infinity. All apparent poles in (RL1)
@@ -588,20 +588,31 @@ convergent.
 ### Proof
 
 All zeros of \(F\) are real, so \(F\) is nonzero at every member of
-\(\mathcal O\). Points \(\gamma\in Z\) at which \(F(\gamma)=0\) are already
-cancelled, so put \(Z'=\{\gamma\in Z:F(\gamma)\ne0\}\). Choose as many
-distinct members of \(\Lambda\) as needed and form \(Q_S\). On the finite
-conjugation-invariant set \(\mathcal O\cup Z'\), prescribe
+\(\mathcal O\). For \(\gamma\in Z\), put
+
+\[
+ r_\gamma=\max\{0,m_\gamma-\operatorname{ord}_\gamma F\}.
+\]
+
+Choose as many distinct members of \(\Lambda\setminus Z\) as needed and form
+\(Q_S\). On \(\mathcal O\), prescribe
 
 \[
  P(\gamma)=c_\gamma\frac{Q_S(\gamma)}{F(\gamma)},             \tag{RL3}
 \]
 
-where \(c_\gamma\) is the value in (RL2) on \(\mathcal O\) and zero on
-\(Z'\). The data in (RL3) are invariant under conjugation, hence ordinary
-Lagrange interpolation gives a polynomial \(P\) with real coefficients and
-degree smaller than the number \(M=|\mathcal O\cup Z'|\) of interpolation
-conditions. Taking \(|S|\ge M+d\) gives the stated decay.
+where \(c_\gamma\) is the value in (RL2), and at every \(\gamma\in Z\)
+prescribe a zero jet of order \(r_\gamma\) for \(P\). These Hermite data are
+invariant under conjugation. Hence Hermite interpolation gives a polynomial
+\(P\) with real coefficients and degree smaller than
+
+\[
+ M=4+\sum_{\gamma\in Z}r_\gamma.
+\]
+
+Because \(S\cap Z=\varnothing\), multiplication by \(P/Q_S\) raises the zero
+order of \(F\) at \(\gamma\) by at least \(r_\gamma\), proving (RL2). Taking
+\(|S|\ge M+d\) gives the stated decay.
 
 Every factor in \(Q_S\) divides \(F\), so (RL1) is entire. Division by a
 finite polynomial and multiplication by \(P\) do not enlarge the
@@ -636,6 +647,195 @@ large algebraic decay, does not control the growth of its interpolation
 constants, so a diagonal "cancel more zeros" argument is invalid without a
 uniform estimate. This is the exact remaining synthesis cost exposed by the
 real-rooted witness.
+
+### Proposition 4.3 (Jensen cost of exhaustive spectral cancellation)
+
+Fix the off-line orbit \(\mathcal O\) and its member \(\gamma_0\). Suppose
+that, for every sufficiently large \(H\), a function
+\(G_H\in PW_{a_*}\) satisfies
+
+\[
+ G_H(\gamma_0)=i,
+ \qquad
+ \operatorname{ord}_\gamma G_H\ge m_\gamma
+ \quad
+ \left(\gamma\in\Gamma\setminus\mathcal O, |\gamma|\le H\right).
+                                                               \tag{JC1}
+\]
+
+If \(g_H\in L^2[-a_*,a_*]\) is the inverse Fourier transform of \(G_H\),
+then
+
+\[
+ \boxed{
+ \log\|g_H\|_2\ge
+ \frac{\log 2}{\pi}H\log\frac{H}{2\pi}
+ -\left(\frac{\log 2}{\pi}+2a_*\right)H-O(\log H).}
+                                                               \tag{JC2}
+\]
+
+In particular, an exhaustion in (RTL) cannot be obtained from interpolants
+whose Paley--Wiener norms remain bounded, or even grow merely
+exponentially in \(H\).
+
+### Proof
+
+Apply Jensen's formula to \(z\mapsto G_H(z+\gamma_0)\) on the circle of
+radius \(2H\). Every cancelled spectral point with \(|\gamma|\le H\) lies
+at distance at most \(H+O(1)\) from \(\gamma_0\), and therefore contributes
+
+\[
+ \log\frac{2H}{|\gamma-\gamma_0|}
+ \ge \log 2-O(H^{-1})
+\]
+
+for each unit of its multiplicity. The Riemann--von Mangoldt formula, counted
+in both spectral directions, gives
+
+\[
+ \sum_{\substack{\gamma\in\Gamma\\|\gamma|\le H}}m_\gamma
+ =\frac{H}{\pi}\log\frac{H}{2\pi}-\frac{H}{\pi}+O(\log H).     \tag{JC3}
+\]
+
+Deleting the fixed orbit \(\mathcal O\) changes this only by \(O(1)\).
+Since \(|G_H(\gamma_0)|=1\), Jensen's formula and (JC3) imply
+
+\[
+ \max_{|z-\gamma_0|=2H}\log|G_H(z)|
+ \ge (\log 2)\left(
+ \frac{H}{\pi}\log\frac{H}{2\pi}-\frac{H}{\pi}
+ \right)-O(\log H).                                          \tag{JC4}
+\]
+
+The Paley--Wiener evaluation estimate on the same circle gives
+
+\[
+ |G_H(z)|\le C_{a_*,\gamma_0}e^{2a_*H}\|g_H\|_2.
+                                                               \tag{JC5}
+\]
+
+Combining (JC4) and (JC5) proves (JC2). \(\square\)
+
+Proposition 4.3 is a barrier, not a contradiction to (RTL). A sequence may
+have enormous ambient Paley--Wiener norm while its sampled tail is small.
+Thus (JC2) rules out every uniformly controlled interpolation argument, but
+the remaining possibility is precisely a highly ill-conditioned construction
+whose norm escapes between the spectral evaluation functionals. Any proof of
+(RTL) must quantify that exceptional concentration rather than hide it in a
+diagonal limit.
+
+### Proposition 4.4 (low-type sampling obstruction to RTL)
+
+Let \(A_0=0.1038\), and let \(\alpha_{mathrm O}\) be the positive root of
+\(e^x=2x+1\). Define
+
+\[
+ a_{mathrm K}:=
+ \frac{\sqrt{3\alpha_{\mathrm O}/8}}
+ {\sqrt{(2\pi A_0)^2+1/4}}
+ =0.83525\ldots .                                             \tag{KS1}
+\]
+
+For every \(0<a<a_{\mathrm K}\), there are a constant \(C_a>0\) and a
+finite family \(E_a\) of spectral derivative evaluations, supported on
+\(\Gamma\setminus\mathcal O\), such that every \(G=\widehat g\in PW_a\)
+with square-summable spectral samples satisfies
+
+\[
+ \|g\|_2^2\le C_a\left(
+ \sum_{\gamma\in\Gamma\setminus\mathcal O}m_\gamma|G(\gamma)|^2
+ +\sum_{(\eta,j)\in E_a}|G^{(j)}(\eta)|^2
+ \right).                                                     \tag{KS2}
+\]
+
+Consequently, no sequence satisfying (JC1), the corresponding finite
+Hermite cancellations, and (RTL) exists in \(PW_a\) when
+\(a<a_{\mathrm K}\). In particular, the rational-localization route of
+Proposition 4.2 cannot close RH if its hypothetical first crossing lies in
+
+\[
+ 0.72<a_*<0.83525\ldots .                                     \tag{KS3}
+\]
+
+### Proof
+
+The explicit zero-counting estimate of Hasanalizade--Shen--Wong is
+
+\[
+ \left|N(T)-\frac{T}{2\pi}\log\frac{T}{2\pi e}\right|
+ \le A_0\log T+0.2573\log\log T+9.3675.                       \tag{KS4}
+\]
+
+Hence, for every fixed \(L>4\pi A_0\), every interval of length \(L\) at
+sufficiently large positive height contains a zeta zero: subtracting (KS4)
+at the two endpoints leaves the positive leading coefficient
+\(L/(2\pi)-2A_0\). The same holds at negative height by symmetry.
+
+Put \(D=\pi/a\). In every sufficiently remote interval
+\([nD-L/2,nD+L/2]\), choose one spectral point \(\gamma_n\). Since the
+spectral coordinate of a nontrivial zero lies in
+\(|\operatorname{Im}\gamma|<1/2\),
+
+\[
+ |\gamma_n-nD|\le\delta_L,
+ \qquad
+ \delta_L:=\sqrt{L^2/4+1/4}.                                  \tag{KS5}
+\]
+
+The complex Kadec theorem of Avantaggiati--Loreti--Vellucci says that
+\(\{e^{i\lambda_nt}\}_{n\in\mathbb Z}\) is a Riesz basis of
+\(L^2[-\pi,\pi]\) whenever
+
+\[
+ \sup_n|\lambda_n-n|<
+ \frac1\pi\sqrt{\frac{3\alpha_{\mathrm O}}8}.               \tag{KS6}
+\]
+
+After scaling from \([-\pi,\pi]\) to \([-a,a]\), (KS5)--(KS6) apply
+provided
+
+\[
+ a\delta_L<\sqrt{3\alpha_{\mathrm O}/8}.                     \tag{KS7}
+\]
+
+The definition (KS1) is exactly the limiting condition obtained by letting
+\(L\downarrow4\pi A_0\). Thus, for \(a<a_{\mathrm K}\), choose \(L\)
+so that (KS7) holds and fill the finitely many central indices with their
+unperturbed lattice frequencies. Complex Kadec then shows that the remote
+spectral evaluation kernels form a Riesz basis for a closed subspace of
+finite codimension in \(L^2[-a,a]\).
+
+It remains only to fill that finite defect. The complete family of spectral
+derivative kernels
+
+\[
+ \left\{G\mapsto G^{(j)}(\gamma):
+ \gamma\in\Gamma\setminus\mathcal O, 0\le j<m_\gamma\right\} \tag{KS8}
+\]
+
+has trivial common kernel. Indeed, a nonzero \(PW_a\) function has only
+\(O(R)\) zeros in \(|z|\le R\), counted with multiplicity, whereas a common
+kernel vector in (KS8) would have
+\(R\log R/\pi+O(R)\) zeros there by Riemann--von Mangoldt. Since the Kadec
+tail has finite codimension, finitely many members of (KS8) span its missing
+orthogonal complement. Call that finite family \(E_a\). The Riesz lower
+bound for the tail plus this finite-dimensional completion gives (KS2).
+
+Now let the Hermite cancellation set exhaust \(\Gamma\setminus\mathcal O\).
+For all sufficiently large stages the evaluations in \(E_a\) vanish exactly,
+while (RTL) makes the remaining value-sample sum tend to zero. Equation (KS2)
+would force \(\|g_H\|_2\to0\). Paley--Wiener evaluation at the fixed point
+\(\gamma_0\) would then give \(G_H(\gamma_0)\to0\), contradicting
+\(G_H(\gamma_0)=i\). \(\square\)
+
+The two numerical constants used here come from
+[the explicit Riemann--von Mangoldt bound](https://arxiv.org/abs/2107.06506)
+and
+[the complex Kadec theorem](https://arxiv.org/abs/1603.08762).
+Proposition 4.4 does not exclude (RTL) when \(a\ge a_{\mathrm K}\), and no
+upper bound \(a_*<a_{\mathrm K}\) for a hypothetical first crossing is known.
+It therefore closes a genuine parameter range of the proposed mechanism, not
+the Riemann hypothesis.
 
 ## 4. Exact parity-gap identity
 
@@ -714,6 +914,9 @@ one. The remaining gate must use the explicit prime--archimedean formula;
 real-rootedness alone is not a contradiction. Proposition 4.2 gives one
 fully explicit route into that gate: prove the uniform tail localization
 (RTL) for the rational division family. The finite interpolation and every
-algebraic cancellation required by that route are already unconditional; only
-the norm control of the moving infinite tail remains. Neither (RTL) nor an
-alternative exclusion is declared solved here.
+algebraic cancellation required by that route are already unconditional.
+Proposition 4.3 forces superexponential norm growth for any exhaustive
+cancellation, and Proposition 4.4 rules out (RTL) altogether below
+\(a=0.83525\ldots\). For larger support the moving infinite tail remains
+uncontrolled. Neither that surviving case nor an alternative exclusion is
+declared solved here.
