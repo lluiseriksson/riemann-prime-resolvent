@@ -132,6 +132,48 @@ The infinite Schur correction is positive semidefinite before subtraction and
 can reduce the positive index.  The certificate therefore narrows the raw
 near-null cluster but does not discharge the actual Schur gate.
 
+The rational complement proof also yields a strictly stronger Schur
+majorant than the single floor in (GS32).  Write the tail operator as
+
+\[
+ D=\operatorname{diag}(H_n)_{n\ge58}+R,
+ \qquad R\succeq\beta I,
+\]
+
+where the exact rational number
+`beta = complement_margin - harmonic_floor` is extracted from the registered
+certificate.  Operator monotonicity of inversion then gives
+
+\[
+ D^{-1}\preceq
+ \operatorname{diag}\bigl((H_n+\beta)^{-1}\bigr)_{n\ge58}. \tag{ZT5}
+\]
+
+Thus, if $b_n$ is the cross column into degree $n$, the true Schur
+correction is bounded above by
+
+\[
+ CD^{-1}C^*\preceq
+ \sum_{n\ge58}\frac{b_nb_n^*}{H_n+\beta}.          \tag{ZT6}
+\]
+
+`support_one_degreewise_schur.py` computes every denominator in (ZT5) as an
+exact `Fraction`.  The first is exactly the degree-58 rational margin and the
+next differs by exactly `1/59`; no floating input enters this step.  Its
+recoverable finite audit is run with
+
+```console
+python -m experiments.theta_pencil.support_one_degreewise_schur \
+  --matrix-cache support-one-256.npz --output support-one-256.json
+```
+
+The 256-mode production run is intentionally not reported here: it exceeded
+the registered local resource envelope and the available Colab browser is
+permission-blocked.  The executable and atomic post-build cache are deposited
+so that the first remote run yields a reproducible falsifier rather than a transient
+screen value.  Even a positive finite result would still require an interval
+enclosure of the entries and the infinite sum in (ZT6).
+
 The failure of the two moments is sharp, not merely a weak estimate.  For
 dimension \(n\), trace \(t>0\), squared Frobenius norm \(f\), and
 \(p=\lceil t^2/f\rceil<n\), put \(q=n-p\),

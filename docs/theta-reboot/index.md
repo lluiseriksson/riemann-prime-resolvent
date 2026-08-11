@@ -326,6 +326,11 @@ in each parity, leaving a three-dimensional near-null complement per block.
 This is a rigorous statement about the uncorrected source, not the Schur
 complement: the remaining gate is to enclose the cross-tail subtraction on
 the full 26+3 decomposition before transferring inertia.
+The rational tail proof has now been lifted from one scalar denominator to
+the exact degreewise minorant $D\succeq\operatorname{diag}(H_n+\beta)$.
+This gives a cached multiband falsifier with exact denominators; its
+256-mode matrix run is assigned to the remote compute plane, while the
+infinite cross-tail enclosure remains the proof obligation.
 
 ## Why this track is different
 
