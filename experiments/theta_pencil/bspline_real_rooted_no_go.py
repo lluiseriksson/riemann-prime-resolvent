@@ -33,6 +33,13 @@ def main() -> None:
         multiplicity_over_normalized_spacing = Fraction(order, order)
         assert multiplicity_over_normalized_spacing == Fraction(1)
 
+        # With a=1 and h=2/m, Var(sum of m uniforms)=1/(3m).
+        # The registered interval radius 2/sqrt(3m) therefore has the exact
+        # Chebyshev tail bound Var/radius^2 = 1/4.
+        variance = Fraction(1, 3 * order)
+        radius_squared = Fraction(4, 3 * order)
+        assert variance / radius_squared == Fraction(1, 4)
+
     print("BSPLINE-REAL-ROOTED-NO-GO: PASS (exact binomial arithmetic, orders 2..64)")
 
 

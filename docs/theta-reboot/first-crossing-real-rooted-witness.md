@@ -1945,6 +1945,44 @@ Pólya-frequency argument can assign a usable sign to the integral in (ET4).
 Such a contradiction must use the specific arithmetic weight
 \(\mathcal B_{a,c}\), not merely the zero geometry of \(F\).
 
+### Corollary 4.9f (there is no uniform moment margin)
+
+Even in the even branch with \(r=0\), the positive first moment in (PH11)
+has no lower bound in terms of the \(L^2\)-norm, support saturation and
+real-rootedness.  To see this, keep \(a\) fixed, put \(h=2a/m\), and normalize
+the box by \(p_1=h^{-1}\chi_h\).  Then
+
+\[
+ p_m=p_1^{*m},\qquad \int p_m=1,\qquad
+ \widehat p_m(z)=\left(\frac{\sin(hz/2)}{hz/2}\right)^m.   \tag{BM1}
+\]
+
+Thus \(p_m\) is even, has full support \([-a,a]\), and has only real Fourier
+zeros with the same maximal density \(2a/\pi\).  Regard it as the density of
+the sum of \(m\) independent uniforms on \([-h/2,h/2]\).  Its variance is
+\(a^2/(3m)\), so Chebyshev's inequality gives
+
+\[
+ \int_{|x|\le2a/\sqrt{3m}}p_m(x)\,dx\ge\frac34.
+\]
+
+Cauchy--Schwarz on this interval, whose length is
+\(4a/\sqrt{3m}\), yields
+
+\[
+ \|p_m\|_2\ge\frac{3(3m)^{1/4}}{8\sqrt a},
+ \qquad
+ \boxed{
+  \int\frac{p_m(x)}{\|p_m\|_2}\,dx
+  \le\frac{8\sqrt a}{3(3m)^{1/4}}\longrightarrow0.}       \tag{BM2}
+\]
+
+Consequently the strict coefficient signs in (PH11) have no uniform
+quantitative margin on the normalized real-rooted class.  A proof based on
+approximating \(\mathcal B_{a,c}\) by a positive-coefficient polynomial would
+therefore also need a new operator-specific lower bound; an uncontrolled
+approximation error cannot be absorbed by zero geometry alone.
+
 Proposition 4.9 is stronger than the existence of one real-rooted null
 witness: it places a canonical family of real-rooted pencils, parametrized
 by the deficiency scale \(c>0\), on the

@@ -156,7 +156,10 @@ can have real-rooted transforms, saturated support, maximal Cartwright zero
 density and arbitrarily many physical-space sign changes simultaneously.
 Thus zero geometry alone cannot give the sign needed in the exponential
 identity; the remaining argument must use its explicit prime--archimedean
-weight.
+weight.  Normalized even B-splines further show that the first positive
+physical moment can tend to zero like \(m^{-1/4}\) within the same
+real-rooted, full-support, maximal-density class.  Hence a cone-approximation
+argument also needs a new operator-specific margin.
 Dividing by finite products of these real zeros gives exact rational
 interpolants that isolate any hypothetical off-line zeta quartet with negative
 spectral sign while Hermite-cancelling an arbitrary finite set of other zeros
