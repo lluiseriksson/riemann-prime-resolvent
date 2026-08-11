@@ -40,6 +40,25 @@ def main() -> None:
             - (1.0 + kadec_defect) * even_vertical_defect
         )
 
+    def centered_paired_margin(pw_type: float) -> float:
+        """Margin after centering every even vertical coefficient.
+
+        For |y_n| <= 1/2, the coefficient y_n^(2k) lies in
+        [0, 2^(-2k)]. Subtracting its midpoint halves the worst coefficient
+        error. The common midpoint series is the positive multiplier
+        (1 + cosh(t/2))/2, whose minimum on the real interval is one.
+        """
+
+        phase = pw_type * limiting_interval / 2.0
+        kadec_defect = 1.0 - math.cos(phase) + math.sin(phase)
+        centered_vertical_defect = 0.5 * (
+            math.cosh(pw_type / 2.0) - 1.0
+        )
+        return (
+            (1.0 - kadec_defect)
+            - (1.0 + kadec_defect) * centered_vertical_defect
+        )
+
     paired_lo = 0.0
     paired_hi = math.pi / (2.0 * limiting_interval)
     for _ in range(80):
@@ -48,6 +67,15 @@ def main() -> None:
             paired_lo = paired_mid
         else:
             paired_hi = paired_mid
+
+    centered_lo = 0.0
+    centered_hi = math.pi / (2.0 * limiting_interval)
+    for _ in range(80):
+        centered_mid = (centered_lo + centered_hi) / 2.0
+        if centered_paired_margin(centered_mid) > 0.0:
+            centered_lo = centered_mid
+        else:
+            centered_hi = centered_mid
 
     # A strict, usable pair on the proved side of the limiting inequalities.
     test_interval = 1.27
@@ -61,6 +89,8 @@ def main() -> None:
         "scaled_complex_kadec_radius": scaled_kadec_radius,
         "critical_paley_wiener_type": critical_type,
         "conjugate_pair_paley_wiener_type": paired_lo,
+        "centered_conjugate_pair_paley_wiener_type": centered_lo,
+        "real_kadec_type_ceiling": math.pi / (2.0 * limiting_interval),
         "strict_test": {
             "interval_length": test_interval,
             "type": test_type,
@@ -82,6 +112,9 @@ def main() -> None:
     assert 0.9908 < paired_lo < 0.9910
     assert paired_margin(0.99) > 0.0
     assert paired_margin(1.00) < 0.0
+    assert 1.0839 < centered_lo < 1.0841
+    assert centered_paired_margin(1.08) > 0.0
+    assert centered_paired_margin(1.09) < 0.0
 
 
 if __name__ == "__main__":

@@ -118,9 +118,12 @@ Riemann--von Mangoldt bound combined with complex Kadec sampling goes further:
 that tail estimate is impossible in \(PW_a\) for
 \(a<0.8508610646\ldots\). Pairing the conjugate spectral samples cancels the
 vertical perturbation to first order and raises the rigorous obstruction to
-\(a<0.9908731338\ldots\). Hence the rational-localization mechanism is now
-closed for a hypothetical first crossing in
-\(0.72<a_*<0.9908731338\ldots\); no known argument places every hypothetical
+\(a<0.9908731338\ldots\). Centering every even vertical coefficient at the
+midpoint of its allowed interval halves the perturbation and raises the
+rigorous obstruction again to \(a<1.0839780274\ldots\). Hence the
+exhaustive-Hermite rational-localization mechanism is now closed for a
+hypothetical first crossing in
+\(0.72<a_*<1.0839780274\ldots\); no known argument places every hypothetical
 first crossing in that interval, so larger support remains open.
 
 ## Why this track is different

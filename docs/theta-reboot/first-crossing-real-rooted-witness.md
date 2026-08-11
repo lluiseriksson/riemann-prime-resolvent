@@ -931,7 +931,66 @@ tail appearing in (RTL). Exhaustive Hermite cancellation would again force
 
 The improvement from \(a_{\mathrm K}\) to \(a_{\mathrm P}\) uses the full
 quartet symmetry rather than treating the imaginary displacement as noise.
-It still leaves \(a_*\ge a_{\mathrm P}\) open. Extending the argument by
+The comparison with the constant multiplier in (KP7) is not optimal, however.
+
+### Proposition 4.6 (centered conjugate-pair improvement)
+
+Let \(L_0=4\pi A_0\), let \(q_a\) be as in (KP1), and let
+\(a_{\mathrm C}=1.0839780274\ldots\) be the first positive solution of
+
+\[
+ (1-q_a)-\frac{1+q_a}{2}\bigl(\cosh(a/2)-1\bigr)=0.          \tag{KC1}
+\]
+
+Then the sampling inequality (KS2), with a finite defect family, and hence
+the impossibility of the exhaustive Hermite version of (RTL), hold for every
+
+\[
+ \boxed{0<a<a_{\mathrm C}.}                                  \tag{KC2}
+\]
+
+#### Proof
+
+Retain the conjugate-pair synthesis family in (KP6). For every \(k\ge1\),
+
+\[
+ 0\le y_n^{2k}\le 2^{-2k}.
+\]
+
+Instead of comparing all these coefficients with zero, subtract the midpoint
+\(2^{-2k-1}\). The resulting common multiplier is
+
+\[
+ h_0(t)=1+\frac12\sum_{k\ge1}\frac{(t/2)^{2k}}{(2k)!}
+       =\frac{1+\cosh(t/2)}2\ge1.                            \tag{KC3}
+\]
+
+Consequently the centered reference synthesis operator
+\(c\mapsto h_0T_xc\) has lower bound \(1-q_{a,L}\). At every even order the
+centered coefficient error has modulus at most \(2^{-2k-1}\). The same
+Kadec upper bound used in (KP7), now applied to those centered coefficient
+sequences, gives
+
+\[
+ \left\|\sum_n c_ne^{ix_nt}\bigl(\cosh(y_nt)-h_0(t)\bigr)\right\|_2
+ \le\frac{1+q_{a,L}}2\bigl(\cosh(a/2)-1\bigr)\|c\|_{\ell^2}. \tag{KC4}
+\]
+
+Thus the paired family has a positive lower Riesz bound whenever the
+left-hand side of (KC1), with \(L\) in place of \(L_0\), is positive. The
+first root remains below the real-Kadec ceiling
+\(\pi/(2L_0)=1.2405716554\ldots\), so the real-frequency basis estimate used
+above is valid. Letting \(L\downarrow L_0\) yields (KC1)--(KC2), and the
+finite-dimensional completion and contradiction with (RTL) are exactly as
+in Propositions 4.4--4.5. \(\square\)
+
+Coefficientwise midpoint centering is optimal within this perturbative proof:
+for an interval \([0,2^{-2k}]\), no other scalar center has smaller worst-case
+deviation. The calculation is audited by
+`experiments/theta_pencil/kadec_sampling_threshold.py` and performs no zero
+search.
+
+It still leaves \(a_*\ge a_{\mathrm C}\) open. Extending the argument by
 packing several value samples into each lattice cell would require uniform
 control of distinct, separated spectral points. Riemann--von Mangoldt counts
 multiplicity, while (RTL) controls values rather than derivative samples;
@@ -1017,8 +1076,9 @@ fully explicit route into that gate: prove the uniform tail localization
 (RTL) for the rational division family. The finite interpolation and every
 algebraic cancellation required by that route are already unconditional.
 Proposition 4.3 forces superexponential norm growth for any exhaustive
-cancellation. Proposition 4.4 gives the first sampling obstruction and the
-conjugate-pair refinement in Proposition 4.5 rules out (RTL) altogether below
-\(a=0.9908731338\ldots\). For larger support the moving infinite tail remains
+cancellation. Proposition 4.4 gives the first sampling obstruction,
+Proposition 4.5 uses conjugate pairs, and the centered refinement in
+Proposition 4.6 rules out the exhaustive Hermite version of (RTL) below
+\(a=1.0839780274\ldots\). For larger support the moving infinite tail remains
 uncontrolled. Neither that surviving case nor an alternative exclusion is
 declared solved here.
