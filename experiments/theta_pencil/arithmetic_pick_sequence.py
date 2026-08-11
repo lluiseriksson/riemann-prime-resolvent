@@ -1,6 +1,6 @@
 """Exact finite algebra for the arithmetic non-Blaschke Pick sequence.
 
-The script audits (E93)--(E98).  It does not test or assume RH.  Rational
+The script audits (E93)--(E98a).  It does not test or assume RH.  Rational
 weights stand in for arbitrary positive prime-power weights because every
 identity checked here is coefficientwise in those weights.
 """
@@ -67,6 +67,37 @@ def prime_block_determinant(first: Fraction, second: Fraction) -> Fraction:
     )
 
 
+def archimedean_two_by_two_upper() -> Fraction:
+    """Rigorous rational upper bound for the determinant in (E98a)."""
+
+    scale = 10**16
+    euler_lower = Fraction(5_772_156_649_015_328, scale)
+    euler_upper = Fraction(5_772_156_649_015_329, scale)
+    log_two_lower = Fraction(6_931_471_805_599_453, scale)
+    log_two_upper = Fraction(6_931_471_805_599_454, scale)
+    log_pi_lower = Fraction(11_447_298_858_494_001, scale)
+    log_pi_upper = Fraction(11_447_298_858_494_002, scale)
+
+    a_one_lower = Fraction(3, 2) - (euler_upper + log_pi_upper) / 2
+    a_one_upper = Fraction(3, 2) - (euler_lower + log_pi_lower) / 2
+    a_two_lower = (
+        Fraction(11, 6)
+        - (euler_upper + log_pi_upper) / 2
+        - log_two_upper
+    )
+    a_two_upper = (
+        Fraction(11, 6)
+        - (euler_lower + log_pi_lower) / 2
+        - log_two_lower
+    )
+    assert Fraction(6_390, 10_000) < a_one_lower < a_one_upper < Fraction(6_391, 10_000)
+    assert Fraction(2_792, 10_000) < a_two_lower < a_two_upper < Fraction(2_793, 10_000)
+    return (
+        Fraction(4, 15) * a_one_upper * a_two_upper
+        - Fraction(1, 16) * (a_one_lower + a_two_lower) ** 2
+    )
+
+
 def audit() -> dict[str, object]:
     """Verify the exact multiplier identities and the size-two obstruction."""
 
@@ -118,6 +149,9 @@ def audit() -> dict[str, object]:
     assert 0 < ratio <= Fraction(1, 2)
     assert determinant < 0
 
+    archimedean_determinant_upper = archimedean_two_by_two_upper()
+    assert archimedean_determinant_upper < Fraction(-509, 100_000)
+
     partial_blaschke = sum(
         (n - 0.5) / (1.0 + (n - 0.5) ** 2) for n in range(1, 100_001)
     )
@@ -126,6 +160,10 @@ def audit() -> dict[str, object]:
         "prime_moment_ratio": str(ratio),
         "prime_block_determinant": str(determinant),
         "prime_block_is_indefinite": determinant < 0,
+        "archimedean_block_determinant_upper": str(
+            archimedean_determinant_upper
+        ),
+        "archimedean_block_is_indefinite": True,
         "non_blaschke_partial_sum_N_100000": partial_blaschke,
         "partial_sum_over_log_N": partial_blaschke / math.log(100_000),
     }

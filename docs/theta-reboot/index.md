@@ -69,6 +69,15 @@ window \(4<q\le5\), where \(S_q=\{\infty,2,3\}\), then to arbitrary finite
 \(S\), with uniform support bookkeeping. See
 [the semilocal programme](semilocal-weil.md).
 
+The parallel [Euler-axis Pick audit](euler-axis-pick.md) now has an exact
+finite-place Jacobi reduction at every matrix gap.  Its latest tail theorem
+also rules out a tempting completion: for every fixed dilation,
+\(\|P_M\mathcal D_{1/r}P_M\|=\sqrt r\), and every fixed finite prime window
+retains a nonzero symmetrized operator norm uniformly in the Jacobi cutoff
+((E187)--(E190)).  Entrywise Jacobi decay therefore cannot yield an
+operator-norm-small tail; the remaining gate is a joint signed
+archimedean--prime quadratic-form estimate.
+
 ## Current quantitative frontier
 
 The semilocal programme has produced a concrete continuous realization that

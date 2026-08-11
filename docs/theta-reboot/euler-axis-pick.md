@@ -1634,6 +1634,38 @@ cannot prove (E96) termwise.  Any successful proof must couple the
 archimedean multiplier to the prime dilations and recover their signed
 cancellation.
 
+The complementary shortcut fails just as early: the archimedean block is
+not positive by itself.  At the first two Euler nodes,
+
+\[
+ a_1=\frac32-\frac{\gamma+\log\pi}{2},\qquad
+ a_2=\frac{11}{6}-\frac{\gamma+\log\pi}{2}-\log2.
+\]
+
+Hence its leading determinant is
+
+\[
+ \boxed{
+ \det\left[\frac{a_i+a_j}{i+j+1}\right]_{i,j=1}^2
+ =\frac{4a_1a_2}{15}-\frac{(a_1+a_2)^2}{16}<0.}   \tag{E98a}
+\]
+
+For a fully elementary enclosure, the standard decimal bounds on
+\(\gamma,\log2,\log\pi\) give
+\(0.6390<a_1<0.6391\) and \(0.2792<a_2<0.2793\).  Therefore the displayed
+determinant is less than
+
+\[
+ \frac{4(0.6391)(0.2793)}{15}
+ -\frac{(0.6390+0.2792)^2}{16}
+ <-0.00509.
+\]
+
+Thus neither summand in (E95) supplies a positive background form.  The
+successful low-order matrices already rely on signed archimedean--prime
+cancellation; a relative-bound proof cannot begin by discarding that
+cancellation on either side.
+
 ### Jacobi coordinates close the first infinite band
 
 The Hilbert form in (E95) has a canonical orthogonal basis.  Let \(p_n\) be
@@ -3148,6 +3180,109 @@ suffices.  Thus the dilation cutoff is essentially quadratic in
 \(1+d/(2m+1)\); for \(m\ge232\), the power is at most
 \(2+1/464\).
 
+There is a sharp obstruction to turning this entrywise cutoff into an
+operator-norm tail argument.  Let
+
+\[
+ \mathcal H_M=\overline{\operatorname {span}}\{e_n:n\ge M\},
+ \qquad P_M:L^2(0,1)\to\mathcal H_M
+\]
+
+and recall that \((\mathcal D_u f)(t)=f(ut)\) for \(0<u<1\).  Then
+
+\[
+ \boxed{\|P_M\mathcal D_uP_M\|=u^{-1/2}
+ \qquad(M\ge1,\ 0<u<1).}                          \tag{E187}
+\]
+
+The upper bound is immediate from
+
+\[
+ \|\mathcal D_uf\|_2^2
+ =u^{-1}\int_0^u|f(s)|^2\,ds\le u^{-1}\|f\|_2^2.
+\]
+
+For the reverse inequality, work in the infinite-dimensional space
+\(L^2(0,u)\), extended by zero to \((0,1)\).  Choose a nonzero \(f\)
+orthogonal to the finite family
+
+\[
+ \left\{e_j(s),\ u^{-1}e_j(s/u):1\le j<M\right\}.
+\]
+
+Then \(f\in\mathcal H_M\), and the change of variables \(s=ut\) shows
+that \(\mathcal D_uf\in\mathcal H_M\) as well.  Since \(f\) is supported
+in \((0,u)\), equality holds in the preceding norm formula.  Hence
+\(P_M\mathcal D_uP_Mf=\mathcal D_uf\) and the lower bound follows.
+
+In particular, for every fixed integer \(r\ge2\),
+
+\[
+ \boxed{\|P_M\mathcal D_{1/r}P_M\|=\sqrt r,\qquad
+ \left\|P_M\frac{\Lambda(r)}r\mathcal D_{1/r}P_M\right\|
+ =\frac{\Lambda(r)}{\sqrt r},}                    \tag{E188}
+\]
+
+independently of \(M\).  Thus (E182) and (E185) are genuinely entrywise
+finite-place reductions; they do not imply that the extracted dilation
+operators become a small perturbation on the Jacobi tail.  Any infinite
+block proof must use cancellation between the archimedean operator and the
+finite signed dilation sum (or a stronger common quadratic form).  It
+cannot be obtained by declaring the off-diagonal Jacobi blocks small after
+raising the degree cutoff.
+
+The obstruction persists for every fixed finite arithmetic window, even
+after symmetrization.  If \(F\subset\{2,3,\ldots\}\) is finite and nonempty,
+\(c_r\ge0\), and
+
+\[
+ T_F=\sum_{r\in F}c_r\mathcal D_{1/r},
+\]
+
+then
+
+\[
+ \boxed{
+ \|P_M(T_F+T_F^*)P_M\|
+ \ge\left(\sum_{r\in F}r c_r^2\right)^{1/2}.}     \tag{E189}
+\]
+
+To prove this, choose an interval \(I\Subset(0,1)\) so small that the
+intervals \(nI\), indexed by the distinct integers in
+\(\{1\}\cup F\cup(F\cdot F)\), are pairwise disjoint and remain in
+\((0,1)\).  Inside
+\(L^2(I)\), impose the finitely many moment conditions that put a unit
+vector \(f_0\), and every normalized image
+\(g_r=r^{-1/2}\mathcal D_{1/r}f_0\), in \(\mathcal H_M\).  Such an
+\(f_0\ne0\) exists because only finitely many continuous linear conditions
+are imposed on an infinite-dimensional space.  The vectors
+\(f_0,(g_r)_{r\in F}\) are orthonormal and
+
+\[
+ \langle g_r,\mathcal D_{1/r}f_0\rangle=\sqrt r.
+\]
+
+Put \(w_r=c_r\sqrt r\), choose
+\(a=2^{-1/2}\), and
+\(b_r=w_r/(\sqrt2\|w\|_2)\).  For
+\(x=af_0+\sum_rb_rg_r\), the root-to-first-generation terms give
+\(\langle x,(T_F+T_F^*)x\rangle=\|w\|_2\), plus only nonnegative
+overlaps among later integer multiples.  Since \(x\in\mathcal H_M\) and
+\(\|x\|=1\), (E189) follows.  Taking
+\(c_r=\Lambda(r)/r\) gives the cutoff-independent lower bound
+
+\[
+ \boxed{
+ \left\|P_M\sum_{r\in F}\frac{\Lambda(r)}r
+ (\mathcal D_{1/r}+\mathcal D_{1/r}^*)P_M\right\|
+ \ge\left(\sum_{r\in F}\frac{\Lambda(r)^2}{r}\right)^{1/2}.}  \tag{E190}
+\]
+
+Thus even a fixed extracted prime window does not disappear in the tail.
+What may still be positive is the *combined* archimedean--arithmetic form;
+(E190) says that proving this requires its signed structure, not compactness
+or tail norm decay of the arithmetic summand.
+
 The exact implementation, with target \(2^{-m}\), returns the following
 registered (not claimed minimal) cutoffs:
 
@@ -3165,7 +3300,9 @@ at every gap: inside the linear wedge, (E182) leaves the fixed dilations
 \(2\le r\le145\); outside it, (E185) leaves a finite but gap-dependent
 set \(2\le r<R(m,d)\).  This is not RH.  A global argument must still
 preserve the signed cancellation of those finite dilations with the
-archimedean term and prove coercivity uniformly in \((m,d)\).
+archimedean term and prove coercivity uniformly in \((m,d)\).  Equations
+(E187)--(E188) show that this requirement cannot be replaced by an
+operator-norm-small Jacobi tail.
 
 At the analytic cutoff \(m=232\), (E130) already covers every gap
 \(d\le29\), rather than only the first two bands.  This does not yet prove
@@ -3194,8 +3331,8 @@ in (E46)--(E48). The generalized budget and its cutoff are reproduced by
 observation that led to (E59), but that observation is not used in the proof.
 The algebraic Fourier and prime identities (E73)--(E79) are checked by
 `prime_side_pick_identity.py`.  The arithmetic uniqueness reduction
-(E89)--(E98), including the exact Hilbert-multiplier identity and the
-indefiniteness of the positive prime-moment block, is checked by
+(E89)--(E98a), including the exact Hilbert-multiplier identity and the
+indefiniteness of both separated blocks, is checked by
 `arithmetic_pick_sequence.py`.
 The Jacobi normalization, the full band formula, the first two
 off-diagonal formulas, the row-sum counterexample, the consecutive
@@ -3211,9 +3348,12 @@ the bandwise archimedean--prime discrepancy (E126)--(E133) are checked
 coefficientwise over rational numbers (with a symbolic \(\log2\) component) by
 `jacobi_dilation_connection.py`.
 The Rodrigues moment inequalities, closed beta sums, uniform archimedean
-bounds, prime remainder, local triple theorems, and the uniform extracted
-tail estimate (E134)--(E182) are
+bounds, prime remainder, local triple theorems, and the extracted
+finite-place estimates (E134)--(E186) are
 audited by `jacobi_local_band_bound.py`.
+The compression-norm identities (E187)--(E190) are proved directly by the
+finite-codimension and disjoint-support constructions displayed above; no
+floating-point experiment is used in those claims.
 The floating-point checks elsewhere in this audit are not used in place of
 the displayed analytic inequalities. Global claims still require all
 separated principal minors.
