@@ -120,10 +120,12 @@ that tail estimate is impossible in \(PW_a\) for
 vertical perturbation to first order and raises the rigorous obstruction to
 \(a<0.9908731338\ldots\). Centering every even vertical coefficient at the
 midpoint of its allowed interval halves the perturbation and raises the
-rigorous obstruction again to \(a<1.0839780274\ldots\). Hence the
+rigorous obstruction again to \(a<1.0839780274\ldots\). Replacing the lattice
+basis argument by a direct max-gap Poincare--Wirtinger sampling frame raises
+the final rigorous obstruction to \(a<1.8868645429\ldots\). Hence the
 exhaustive-Hermite rational-localization mechanism is now closed for a
 hypothetical first crossing in
-\(0.72<a_*<1.0839780274\ldots\); no known argument places every hypothetical
+\(0.72<a_*<1.8868645429\ldots\); no known argument places every hypothetical
 first crossing in that interval, so larger support remains open.
 
 ## Why this track is different

@@ -990,7 +990,120 @@ deviation. The calculation is audited by
 `experiments/theta_pencil/kadec_sampling_threshold.py` and performs no zero
 search.
 
-It still leaves \(a_*\ge a_{\mathrm C}\) open. Extending the argument by
+### Proposition 4.7 (max-gap frame improvement)
+
+Let \(L_0=4\pi A_0\), and let \(a_{\mathrm G}=1.8868645429\ldots\) be the
+first positive solution of
+
+\[
+ \left(1-\left(\frac{aL_0}{\pi}\right)^2\right)
+ -\frac12\left(1+\frac{aL_0}{\pi}\right)
+  \bigl(\cosh(a/2)-1\bigr)=0.                              \tag{KG1}
+\]
+
+Then the sampling inequality (KS2), with a finite defect family and harmless
+bounded positive sample weights, and hence the impossibility of the exhaustive
+Hermite version of (RTL), hold for every
+
+\[
+ \boxed{0<a<a_{\mathrm G}.}                                \tag{KG2}
+\]
+
+#### Proof
+
+We first record a self-contained max-gap sampling estimate. Let
+\(X=\{x_n\}_{n\in\mathbb Z}\subset\mathbb R\) be increasing with
+\(x_{n+1}-x_n\le L\). Divide the real line into the Voronoi cells of the
+\(x_n\), write \(w_n\le L\) for the length of the cell of \(x_n\), and let
+\(Q_XG\) equal \(G(x_n)\) on that cell. On each half-cell the function
+\(G-G(x_n)\) vanishes at one endpoint. The sharp one-endpoint
+Poincare--Wirtinger inequality and the Bernstein inequality for \(PW_a\) give
+
+\[
+ \|G-Q_XG\|_2\le\frac{L}{\pi}\|G'\|_2
+ \le\frac{aL}{\pi}\|G\|_2.                                \tag{KG3}
+\]
+
+The same construction supplies the upper sample bound. For the lower bound,
+let \(I_XG\) be the piecewise-linear interpolant through consecutive samples.
+On \([x_n,x_{n+1}]\), the error \(E=G-I_XG\) has two zero endpoints, its
+derivative has mean zero, and \(E''=G''\). The Dirichlet and mean-zero
+Poincare inequalities, followed by Bernstein, give
+
+\[
+ \|G-I_XG\|_2\le\left(\frac L\pi\right)^2\|G''\|_2
+ \le\left(\frac{aL}\pi\right)^2\|G\|_2.                    \tag{KG3a}
+\]
+
+Moreover, convexity of the squared modulus on each linear segment gives
+\(\|I_XG\|_2^2\le\sum_nw_n|G(x_n)|^2\). Combining this with (KG3), and writing
+\(\|Q_XG\|_2^2=\sum_nw_n|G(x_n)|^2\), yields
+
+\[
+ \left(1-\left(\frac{aL}{\pi}\right)^2\right)\|G\|_2
+ \le\left(\sum_nw_n|G(x_n)|^2\right)^{1/2}
+ \le\left(1+\frac{aL}{\pi}\right)\|G\|_2,                 \tag{KG4}
+\]
+
+whenever \(aL<\pi\).
+
+By (KS4), for every \(L>L_0\) every sufficiently remote real interval of
+length \(L\) contains the ordinate of a zeta zero. Select conjugate spectral
+points \(x_n\pm iy_n\), \(|y_n|<1/2\), so that their real parts have gaps at
+most \(L\) on both remote half-lines, and insert finitely many artificial real
+nodes across the central interval. Apply (KG4) to this augmented real
+sequence.
+
+For \(G=\widehat g\), replace the real samples by the paired spectral samples
+
+\[
+ P_nG=\frac{G(x_n+iy_n)+G(x_n-iy_n)}2
+     =\int_{-a}^a g(t)e^{ix_nt}\cosh(y_nt)\,dt.              \tag{KG5}
+\]
+
+Use the centered multiplier \(h_0\) from (KC3), with the common Plancherel
+normalization understood. The lower bound in (KG4)
+applied to the inverse transform \(h_0g\), together with \(h_0\ge1\), is
+\((1-(aL/\pi)^2)\|g\|_2\). For the difference between (KG5) and this centered
+reference, expand in even powers. At order \(2k\), the diagonal coefficient
+has modulus at most \(2^{-2k-1}\); applying the upper bound in (KG4) to
+\(t^{2k}g\) and summing gives
+
+\[
+ \left(\sum_nw_n
+  |P_nG-\widehat{h_0g}(x_n)|^2\right)^{1/2}
+ \le\frac12\left(1+\frac{aL}{\pi}\right)
+       \bigl(\cosh(a/2)-1\bigr)\|g\|_2.                    \tag{KG6}
+\]
+
+The difference of the two sides of (KG1), with \(L\) in place of \(L_0\),
+is therefore a lower frame bound for the paired samples. The first root in
+(KG1) lies below the max-gap ceiling
+\(\pi/L_0=2.4811433108\ldots\). Letting \(L\downarrow L_0\) proves the bound
+for every \(a<a_{\mathrm G}\).
+
+Removing the finitely many artificial central nodes leaves a closed analysis
+operator with only a finite-dimensional defect. As in Proposition 4.4, finitely
+many genuine spectral derivative evaluations fill that defect, and exhaustive
+Hermite cancellation eventually kills them. Finally \(w_n\le L\), and (KP9)
+shows
+
+\[
+ \sum_n w_n|P_nG|^2
+ \le \frac L2\sum_n\bigl(|G(x_n+iy_n)|^2+|G(x_n-iy_n)|^2\bigr), \tag{KG7}
+\]
+
+so (RTL) drives the paired weighted tail to zero. This contradicts the lower
+frame bound and the fixed normalization \(G(\gamma_0)=i\), exactly as before.
+\(\square\)
+
+Unlike Proposition 4.6, this argument does not require a Riesz basis or a
+frequency-by-frequency perturbation of a lattice. It uses only the eventual
+maximum-gap consequence of the explicit zero count. The scalar constants in
+(KG1) are audited by `kadec_sampling_threshold.py`; the theorem itself is the
+direct estimate (KG3)--(KG7).
+
+It still leaves \(a_*\ge a_{\mathrm G}\) open. Extending the argument by
 packing several value samples into each lattice cell would require uniform
 control of distinct, separated spectral points. Riemann--von Mangoldt counts
 multiplicity, while (RTL) controls values rather than derivative samples;
@@ -1078,7 +1191,8 @@ algebraic cancellation required by that route are already unconditional.
 Proposition 4.3 forces superexponential norm growth for any exhaustive
 cancellation. Proposition 4.4 gives the first sampling obstruction,
 Proposition 4.5 uses conjugate pairs, and the centered refinement in
-Proposition 4.6 rules out the exhaustive Hermite version of (RTL) below
-\(a=1.0839780274\ldots\). For larger support the moving infinite tail remains
+Proposition 4.6 improves their lattice perturbation. The direct max-gap frame
+in Proposition 4.7 rules out the exhaustive Hermite version of (RTL) below
+\(a=1.8868645429\ldots\). For larger support the moving infinite tail remains
 uncontrolled. Neither that surviving case nor an alternative exclusion is
 declared solved here.

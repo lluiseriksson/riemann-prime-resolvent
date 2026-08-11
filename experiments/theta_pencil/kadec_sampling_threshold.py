@@ -59,6 +59,30 @@ def main() -> None:
             - (1.0 + kadec_defect) * centered_vertical_defect
         )
 
+    def max_gap_centered_margin(pw_type: float) -> float:
+        """Centered-pair margin from the direct max-gap sampling frame."""
+
+        gap_defect = pw_type * limiting_interval / math.pi
+        centered_vertical_defect = 0.5 * (
+            math.cosh(pw_type / 2.0) - 1.0
+        )
+        return (
+            (1.0 - gap_defect)
+            - (1.0 + gap_defect) * centered_vertical_defect
+        )
+
+    def max_gap_linear_centered_margin(pw_type: float) -> float:
+        """Margin with piecewise-linear lower sampling reconstruction."""
+
+        gap_defect = pw_type * limiting_interval / math.pi
+        centered_vertical_defect = 0.5 * (
+            math.cosh(pw_type / 2.0) - 1.0
+        )
+        return (
+            (1.0 - gap_defect * gap_defect)
+            - (1.0 + gap_defect) * centered_vertical_defect
+        )
+
     paired_lo = 0.0
     paired_hi = math.pi / (2.0 * limiting_interval)
     for _ in range(80):
@@ -77,6 +101,24 @@ def main() -> None:
         else:
             centered_hi = centered_mid
 
+    max_gap_lo = 0.0
+    max_gap_hi = math.pi / limiting_interval
+    for _ in range(80):
+        max_gap_mid = (max_gap_lo + max_gap_hi) / 2.0
+        if max_gap_centered_margin(max_gap_mid) > 0.0:
+            max_gap_lo = max_gap_mid
+        else:
+            max_gap_hi = max_gap_mid
+
+    max_gap_linear_lo = 0.0
+    max_gap_linear_hi = math.pi / limiting_interval
+    for _ in range(80):
+        max_gap_linear_mid = (max_gap_linear_lo + max_gap_linear_hi) / 2.0
+        if max_gap_linear_centered_margin(max_gap_linear_mid) > 0.0:
+            max_gap_linear_lo = max_gap_linear_mid
+        else:
+            max_gap_linear_hi = max_gap_linear_mid
+
     # A strict, usable pair on the proved side of the limiting inequalities.
     test_interval = 1.27
     test_type = 0.84
@@ -91,6 +133,9 @@ def main() -> None:
         "conjugate_pair_paley_wiener_type": paired_lo,
         "centered_conjugate_pair_paley_wiener_type": centered_lo,
         "real_kadec_type_ceiling": math.pi / (2.0 * limiting_interval),
+        "max_gap_centered_pair_paley_wiener_type": max_gap_lo,
+        "max_gap_linear_centered_pair_paley_wiener_type": max_gap_linear_lo,
+        "max_gap_sampling_type_ceiling": math.pi / limiting_interval,
         "strict_test": {
             "interval_length": test_interval,
             "type": test_type,
@@ -115,6 +160,12 @@ def main() -> None:
     assert 1.0839 < centered_lo < 1.0841
     assert centered_paired_margin(1.08) > 0.0
     assert centered_paired_margin(1.09) < 0.0
+    assert 1.6904 < max_gap_lo < 1.6907
+    assert max_gap_centered_margin(1.69) > 0.0
+    assert max_gap_centered_margin(1.70) < 0.0
+    assert 1.8867 < max_gap_linear_lo < 1.8870
+    assert max_gap_linear_centered_margin(1.88) > 0.0
+    assert max_gap_linear_centered_margin(1.89) < 0.0
 
 
 if __name__ == "__main__":
