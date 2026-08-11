@@ -1516,6 +1516,80 @@ exists at least in
 but there (GT1) merely becomes the signed archimedean ground-state
 inequality.  No sign contradicting (GT2) follows from lag annihilation alone.
 
+### Corollary 4.1a.12 (approximate annihilation is ultraviolet)
+
+For every fixed support \(a\) and every real null vector \(0\ne w\in\ker A_a\),
+there is a sequence \(t_j\to\infty\) for which
+
+\[
+ 1-\cos(t_j\log n)\longrightarrow0                         \tag{PA4}
+\]
+
+simultaneously for every active prime power \(n\le e^{2a}\).  Along every
+such sequence the modulation energy in (MG2) satisfies
+
+\[
+ \boxed{\mathcal E_w(t_j)=\|w\|_2^2\log t_j+\kappa_{a,w}+o(1),} \tag{PA5}
+\]
+
+where, with the zero extension of \(w\) and
+
+\[
+ C_w(u)=\int_{\mathbb R}w(x+u)w(x)\,dx\qquad(0\le u\le2a),
+\]
+
+the finite constant is
+
+\[
+ \kappa_{a,w}=\|w\|_2^2\{\gamma+\log(2a)\}
+ +\int_0^{2a}\frac{C_w(u)-C_w(0)}u\,du
+ +2\int_0^{2a}r''(u)C_w(u)\,du .                         \tag{PA6}
+\]
+
+#### Proof
+
+Only finitely many rational primes occur among the active prime powers.
+Dirichlet's simultaneous approximation theorem gives unbounded positive
+integers \(t_j\) for which \(t_j\log p/(2\pi)\) approaches an integer for
+each of them.  Every active \(\log n\) is an integral combination of these
+prime logarithms, proving (PA4).
+
+The singular line of (MG2) is exactly
+
+\[
+ I_w(t)=\int_0^{2a}\frac{1-\cos(tu)}u C_w(u)\,du.          \tag{PA7}
+\]
+
+Membership of the zero extension of \(w\) in the logarithmic form domain
+gives
+
+\[
+ \int_0^{2a}\frac{C_w(0)-C_w(u)}u\,du<\infty;             \tag{PA8}
+\]
+
+equivalently, use
+\(2\{C_w(0)-C_w(u)\}=\|w(\,\cdot+u)-w\|_2^2\) and the
+Fourier characterization of \(H^{\log}\).  The cosine-integral asymptotic
+and the Riemann--Lebesgue lemma therefore give
+
+\[
+ I_w(t)=\|w\|_2^2\log t+
+ \|w\|_2^2\{\gamma+\log(2a)\}
+ +\int_0^{2a}\frac{C_w(u)-C_w(0)}u\,du+o(1).              \tag{PA9}
+\]
+
+Since \(r''\) is bounded on the compact difference interval, the smooth
+line of (MG2) converges to the last term of (PA6).  Its oscillatory part
+vanishes by Riemann--Lebesgue.  The finite prime line tends to zero by
+(PA4), proving (PA5). \(\square\)
+
+In a simple kernel, \(K_w(t_j)\to0\), so the right side of (MG3) tends only
+to \(\Delta\|w\|_2^2\), while (PA5) diverges.  Thus simultaneous Diophantine
+suppression of all active prime phases makes the inequality easier, not
+harder.  A successful multiplier must remain at controlled frequency and
+exploit a signed cut or an operator-specific nodal estimate; recurrence on
+the prime torus cannot close the first-crossing gate.
+
 ### Proposition 4.1b (the Hausdorff measure of a pure-parity witness)
 
 Assume there is a pure-parity real-rooted null vector at the first crossing,
