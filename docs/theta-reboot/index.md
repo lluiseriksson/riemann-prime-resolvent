@@ -108,6 +108,11 @@ Splitting that symmetry into real and imaginary parts gives an exact
 dichotomy: either the witness has pure parity, or the even and odd ground
 levels collide at zero at the first crossing; a mixed witness is not a third
 branch.
+In the pure branch, pairing the real zeros produces a canonical Stieltjes
+transform in the radial variable and an explicit Hausdorff measure with atoms
+\(x/(x+\lambda_j^2)\). These are witness zeros, not xi zeros; identifying the
+two measures is now a sharply stated prime--theta obligation rather than an
+implicit analogy.
 Dividing by finite products of these real zeros gives exact rational
 interpolants that isolate any hypothetical off-line zeta quartet with negative
 spectral sign while Hermite-cancelling an arbitrary finite set of other zeros

@@ -590,6 +590,128 @@ certificate of a parity collision. Excluding such a collision would reduce
 the first-crossing gate to the pure even/odd real-rooted branches, but no such
 exclusion is asserted here.
 
+### Proposition 4.1b (the Hausdorff measure of a pure-parity witness)
+
+Assume the pure-parity alternative of Proposition 4.1a. Put
+\(F=\widehat v_*\), let \(r=\operatorname{ord}_0F\), and normalize
+
+\[
+ E(z)=\frac{F(z)}{c z^r},\qquad E(0)=1.                    \tag{PH1}
+\]
+
+Then \(E\) is even and has a paired canonical product
+
+\[
+ E(z)=\prod_{j\ge1}\left(1-\frac{z^2}{\lambda_j^2}\right),
+ \qquad 0<\lambda_1\le\lambda_2\le\cdots,                 \tag{PH2}
+\]
+
+where zeros are repeated according to multiplicity and
+\(\sum_j\lambda_j^{-2}<\infty\). For \(x>0\), define
+
+\[
+ \Phi(x)=\frac{d}{dx}\log E(i\sqrt x),
+ \qquad
+ b_n(x)=\frac{x^{n+1}}{n!}(-1)^n\Phi^{(n)}(x).             \tag{PH3}
+\]
+
+Then
+
+\[
+ \boxed{
+ \Phi(x)=\sum_{j\ge1}\frac1{x+\lambda_j^2},qquad
+ b_n(x)=\sum_{j\ge1}
+ \left(\frac{x}{x+\lambda_j^2}\right)^{n+1}.}             \tag{PH4}
+\]
+
+In particular, with \(D b_n=b_n-b_{n+1}\),
+
+\[
+ D^k b_n(x)=\sum_{j\ge1}v_j^{n+1}(1-v_j)^k\ge0,
+ \qquad v_j=\frac{x}{x+\lambda_j^2}\in(0,1).              \tag{PH5}
+\]
+
+Thus \((b_n(x))_{n\ge0}\) is the Hausdorff moment sequence of the finite
+positive measure
+
+\[
+ \mu_x=\sum_{j\ge1}v_j\,\delta_{v_j}.                     \tag{PH6}
+\]
+
+Finally, the support saturation in Proposition 4.1 gives the Abelian
+asymptotic
+
+\[
+ \Phi(x)\sim\frac{a_*}{2\sqrt x}\qquad(x\to\infty).       \tag{PH7}
+\]
+
+### Proof
+
+In the even branch \(r\) is even, and in the odd branch it is odd; division
+by \(z^r\) therefore makes \(E\) even in either case. The Cartwright product
+of Proposition 4.1 has only real zeros. Pairing the nonzero zeros
+\(\pm\lambda_j\) cancels the genus-one exponential factors, and evenness
+removes any remaining linear exponential. The zero count is \(O(R)\), so
+\(\sum_j\lambda_j^{-2}<\infty\), proving the locally uniform product (PH2).
+
+Substitution \(z=i\sqrt x\) changes every factor to
+\(1+x/\lambda_j^2\). Logarithmic differentiation is locally uniform on
+\(x>0\) and gives the first identity in (PH4); repeated differentiation gives
+the second. Formula (PH5) follows by taking finite differences term by term,
+and (PH6) is its moment representation. Its total mass is
+\(b_0(x)<\infty\).
+
+By (ZD), the positive nonzero zeros satisfy
+\(N_+(R)\sim a_*R/\pi\). Writing the first sum in (PH4) as the Stieltjes
+integral \(\int_0^\infty(t^2+x)^{-1}\,dN_+(t)\), scaling
+\(t=\sqrt x\,u\), and using the standard Abelian consequence of this linear
+count gives
+
+\[
+ \Phi(x)\sim\frac{a_*}{\pi\sqrt x}
+  \int_0^\infty\frac{du}{1+u^2}
+ =\frac{a_*}{2\sqrt x},
+\]
+
+which is (PH7). \(\square\)
+
+The atoms in (PH6) are the real zeros of the **first-crossing witness**, not
+the spectral points of the Riemann xi function. Hausdorff determinacy makes
+this distinction rigid: identifying \(\mu_x\) with the Riemann resolvent
+measure would require a new prime--theta identity and cannot be inferred from
+real-rootedness or parity. Proposition 4.1b therefore turns the pure branch
+into a concrete measure-comparison problem; it does not solve that problem.
+
+There is also an unconditional density warning about any proposed direct
+identification. Let \(\gamma>0\) run through the positive ordinates of all
+nontrivial zeta zeros with multiplicity (this height multiset is defined
+without RH) and put
+
+\[
+ M_\Xi(x)=\sum_{\gamma>0}\frac{x}{x+\gamma^2}.
+\]
+
+Riemann--von Mangoldt and Stieltjes partial summation give
+
+\[
+ M_\Xi(x)=\frac{\sqrt x}{4}
+ \log\frac{\sqrt x}{2\pi}+O(\log x)
+ =\frac{\sqrt x}{8}\log x+O(\sqrt x).                     \tag{PH8}
+\]
+
+By contrast, (PH4) and (PH7) give
+\(\mu_x((0,1))=b_0(x)\sim(a_*/2)\sqrt x\). Hence
+
+\[
+ \frac{M_\Xi(x)}{\mu_x((0,1))}\sim\frac{\log x}{4a_*}
+ \longrightarrow\infty.                                  \tag{PH9}
+\]
+
+Under RH this is exactly the total mass of the canonical xi resolvent measure.
+Thus equality with the witness measure is impossible even at the level of
+total-mass growth. A surviving bridge must explicitly change the density or
+renormalize it; merely relabelling the witness zeros as xi zeros is false.
+
 ### Proposition 4.2 (finite rational localization of an off-line quartet)
 
 Let \(F\) be the constant-phase real entire transform supplied by Proposition
