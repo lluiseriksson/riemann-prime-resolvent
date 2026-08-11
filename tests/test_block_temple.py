@@ -3,6 +3,11 @@ import numpy as np
 from experiments.theta_pencil.block_temple import (
     block_temple_audit,
     generalized_block_temple_audit,
+    inflate_residual_gram,
+)
+from experiments.theta_pencil.arb_block_temple import (
+    certify_arb_block_temple_from_residual_gram,
+    certify_arb_generalized_block_temple,
 )
 
 
@@ -52,3 +57,59 @@ def test_generalized_formula_is_congruent_to_isometric_formula():
     congruent = change.T @ direct.lower_matrix @ change
     assert np.max(np.abs(generalized.lower_matrix - congruent)) < 5e-15
     assert generalized.lower_eigenvalues[0] > 0.0
+
+
+def test_arb_generalized_certificate_when_flint_is_available():
+    try:
+        import flint  # noqa: F401
+    except ImportError:
+        return
+    operator = np.array(
+        [
+            [1.4, 0.1, 0.2, 0.0],
+            [0.1, 1.1, -0.1, 0.15],
+            [0.2, -0.1, 3.0, 0.2],
+            [0.0, 0.15, 0.2, 2.8],
+        ]
+    )
+    trial = np.eye(4)[:, :2] @ np.array([[2.0, 0.25], [-0.5, 1.5]])
+    gram = trial.T @ trial
+    compression = trial.T @ operator @ trial
+    action = trial.T @ operator @ operator @ trial
+    beta = float(np.linalg.eigvalsh(operator[2:, 2:])[0])
+    certificate = certify_arb_generalized_block_temple(
+        gram,
+        1e-30,
+        compression,
+        1e-30,
+        action,
+        1e-30,
+        beta,
+        precision=256,
+    )
+    assert certificate.trial_gram_lower > 0.0
+    assert certificate.lower_certificate.original_spectral_lower > 0.0
+
+    inverse_gram = np.linalg.inv(gram)
+    residual = action - compression @ inverse_gram @ compression
+    direct = certify_arb_block_temple_from_residual_gram(
+        gram,
+        1e-30,
+        compression,
+        1e-30,
+        residual,
+        1e-29,
+        beta,
+        precision=256,
+    )
+    assert direct.lower_certificate.original_spectral_lower > 0.0
+
+
+def test_scalar_residual_inflation_dominates_every_cross_term():
+    explicit = np.array([[0.2, -0.1], [0.4, 0.3], [-0.2, 0.5]])
+    omitted = np.array([[0.01, -0.02], [0.0, 0.015], [-0.01, 0.0]])
+    delta = float(np.linalg.norm(omitted, 2))
+    inflated, amount = inflate_residual_gram(explicit.T @ explicit, delta)
+    exact = (explicit + omitted).T @ (explicit + omitted)
+    assert amount > 0.0
+    assert np.linalg.eigvalsh(inflated - exact)[0] > -2e-16

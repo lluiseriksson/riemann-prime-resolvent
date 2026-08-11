@@ -11,6 +11,7 @@ test used by the existing localized certificates.
 
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass
 
 import numpy as np
@@ -132,3 +133,29 @@ def generalized_block_temple_audit(
         lower_eigenvalues=np.linalg.eigvalsh(lower),
         complement_floor=complement_floor,
     )
+
+
+def inflate_residual_gram(
+    explicit_residual_gram: np.ndarray, remainder_operator_norm: float
+) -> tuple[np.ndarray, float]:
+    """Add a scalar upper bound for an omitted residual operator.
+
+    If ``R = R0 + E`` and ``||E|| <= delta``, then
+
+    ``R*R <= R0*R0 + (2 ||R0|| delta + delta^2) I``.
+
+    The returned scalar is the diagonal inflation.
+    """
+
+    gram = np.asarray(explicit_residual_gram, dtype=float)
+    if gram.ndim != 2 or gram.shape[0] != gram.shape[1] or gram.shape[0] < 1:
+        raise ValueError("residual Gram must be nonempty and square")
+    if remainder_operator_norm < 0.0:
+        raise ValueError("remainder norm must be nonnegative")
+    gram = 0.5 * (gram + gram.T)
+    maximum = max(0.0, float(np.linalg.eigvalsh(gram)[-1]))
+    inflation = (
+        2.0 * math.sqrt(maximum) * remainder_operator_norm
+        + remainder_operator_norm**2
+    )
+    return gram + inflation * np.eye(len(gram)), inflation
