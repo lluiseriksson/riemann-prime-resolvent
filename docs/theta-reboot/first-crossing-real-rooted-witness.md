@@ -633,9 +633,110 @@ certificate of a parity collision. Excluding such a collision would reduce
 the first-crossing gate to the pure even/odd real-rooted branches, but no such
 exclusion is asserted here.
 
+### Proposition 4.1a.1 (symmetric-evaluation purification of most collisions)
+
+Let
+
+\[
+ K_+=\ker A_{a_*}\cap L^2_{\rm even}(-a_*,a_*),\qquad
+ K_-=\ker A_{a_*}\cap L^2_{\rm odd}(-a_*,a_*),
+ \qquad p=\dim K_+,\qquad q=\dim K_- .                   \tag{PE1}
+\]
+
+Assume that both parity sectors are nonzero.  If \(p\ne q\), then the
+first-crossing kernel contains a nonzero **pure-parity** vector whose Fourier
+transform has only real zeros.  The same conclusion holds when \(p=q\) and
+
+\[
+ f\longmapsto \widehat f(0)=\int_{-a_*}^{a_*}f(x)\,dx
+ \quad\hbox{is not identically zero on }K_+.              \tag{PE2}
+\]
+
+Consequently the Hausdorff measure and the sign-coherent moments in
+Proposition 4.1b and Corollary 4.1c apply not only to an a priori pure
+crossing, but also to every collision except the sharply delimited case
+
+\[
+ \boxed{p=q\quad\hbox{and}\quad \widehat f(0)=0
+        \text{ for every }f\in K_+.}                       \tag{PE3}
+\]
+
+Every purified vector still saturates \([-a_*,a_*]\): the translation and
+smaller-support contradiction in Proposition 4.1 applies verbatim to every
+nonzero member of \(\ker A_{a_*}\), not only to the initially selected witness.
+
+#### Proof
+
+For real \(t\), write \(L_t(f)=\widehat f(t)\).  On a finite interval the
+functional \(L_t\) is bounded on \(L^2\).  For \(t\) away from the Fourier
+lattice, the calculation in Lemma 2.1 shows that the positive rank-one form
+\(|L_t|^2\) has a Cauchy--Loewner matrix.  Hence so does the
+reflection-invariant positive form
+
+\[
+ P_T(f)=\sum_{t\in T}\bigl(|L_t(f)|^2+|L_{-t}(f)|^2\bigr), \tag{PE4}
+\]
+
+where \(T\) is any finite set avoiding that lattice.  Adding \(P_T\) to
+\(Q_W^{a_*}\) preserves closedness, the trigonometric form core, discreteness
+and the matrix hypothesis of Lemma 2.
+
+For this matrix statement, translate \([-a_*,a_*]\) unitarily to
+\([0,2a_*]\), exactly as in Lemma 2.1.  Translation multiplies each \(L_t\)
+by one scalar phase and therefore leaves \(|L_t|^2\) unchanged, while its
+Fourier coefficients become a constant multiple of \((n-s)^{-1}\).  Thus no
+alternating endpoint phase is being hidden in the Loewner assertion.
+
+The restrictions \(L_t|_{K_+}\), as \(t\) ranges over the real line, span
+\(K_+^*\); otherwise a nonzero even null vector would have an entire Fourier
+transform vanishing on the real axis.  The analogous assertion holds on
+\(K_-\).  Moreover, if \(f=e+o\) with \(e\in K_+\) and \(o\in K_-\), then
+
+\[
+ L_t(f)=L_{-t}(f)=0
+ \quad\Longleftrightarrow\quad
+ L_t(e)=0\ \hbox{ and }\ L_t(o)=0.                         \tag{PE5}
+\]
+
+It follows that generic tuples of \(k\) nonzero real points give evaluation
+rank \(\min(k,p)\) on \(K_+\) and \(\min(k,q)\) on \(K_-\), simultaneously.
+Indeed the relevant minors are nonzero real-analytic functions of the tuple;
+the intersection of their open dense nonvanishing sets is nonempty and can
+be chosen off the Fourier lattice.
+
+If \(p>q\), take \(k=p-1\).  Equations (PE4)--(PE5) give
+
+\[
+ \operatorname{rad}(Q_W^{a_*}+P_T)
+ =K_+\cap\ker P_T,\qquad
+ \dim\operatorname{rad}(Q_W^{a_*}+P_T)=1.                 \tag{PE6}
+\]
+
+The radical is therefore a pure even line.  Lemma 2 applied to the perturbed
+form makes the Fourier transform of its generator real-rooted.  If \(q>p\),
+the same argument with \(k=q-1\) leaves a pure odd line.
+
+Finally suppose \(p=q=d\) and (PE2) holds.  Choose \(d-1\) symmetric pairs so
+that their odd restrictions have rank \(d-1\), while their even restrictions,
+together with \(L_0\), have rank \(d\).  This simultaneous choice follows
+from the same analytic-minor argument.  After adding \(P_T\), one even and one
+odd null line remain, and \(L_0\) is nonzero on the even one.  Add the positive
+form \(|L_0|^2\).  It vanishes on every odd function and removes the surviving
+even line.  At a Fourier-lattice node its matrix changes only one diagonal
+entry, so the off-diagonal Loewner hypothesis is still unchanged.  The final
+radical is a one-dimensional pure odd line, and Lemma 2 again gives a
+real-rooted Fourier transform.  This proves all asserted cases. \(\square\)
+
+The exception (PE3) is an actual logical remainder, not a claim that such a
+kernel exists.  Removing it would require either a parity-sensitive positive
+perturbation that stays in the Loewner class or an operator-specific theorem
+excluding a balanced zero-mean even radical.  Ordinary evaluation at zero
+cannot do that because it vanishes on both sectors in (PE3).
+
 ### Proposition 4.1b (the Hausdorff measure of a pure-parity witness)
 
-Assume the pure-parity alternative of Proposition 4.1a. Put
+Assume there is a pure-parity real-rooted null vector at the first crossing,
+as in the pure alternative of Proposition 4.1a or in Proposition 4.1a.1. Put
 \(F=\widehat v_*\), let \(r=\operatorname{ord}_0F\), and normalize
 
 \[
