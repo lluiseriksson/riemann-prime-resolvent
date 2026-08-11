@@ -77,13 +77,13 @@ is now the active numerical-analytic track: Suzuki's localized Weil operator
 reconstruction prove
 
 \[
- A_{0.7}\succeq1.0783783252951832\cdot10^{-15}I>0.
+ A_{0.72}\succeq9.86850102990163\cdot10^{-17}I>0.
 \]
 
 Domain monotonicity then gives the unconditional interval theorem
 
 \[
- \lambda_a>0\qquad(0<a\le0.7).
+ \lambda_a>0\qquad(0<a\le0.72).
 \]
 
 This does not prove RH: Suzuki's criterion requires nonnegativity for every
@@ -92,6 +92,12 @@ full operator, not merely its high-degree complement.  It uses a thirteen-block
 exact source and a two-denominator directional Schur estimate.  The active gate
 is now to replace support-by-support certificates by a uniform threshold
 mechanism whose constants remain controlled as further prime powers enter.
+The complementary
+[first-crossing reduction](first-crossing-real-rooted-witness.md) shows that
+failure of RH would force, at the first zero of the lowest branch, either a
+degenerate kernel or a one-dimensional kernel whose full ground-state Fourier
+transform is real-rooted. A resolvent rank-one argument removes the evenness
+restriction from the finite real-zero theorem.
 
 ## Why this track is different
 
@@ -152,6 +158,7 @@ It does not authorize changing the success condition.
 - [Historical common-denominator non-closure at support 0.72](support-072-no-close.md)
 - [Certified localized positivity through support 0.72](support-072-certificate.md)
 - [Uniform harmonic stratification of the Schur correction](harmonic-schur-stratification.md)
+- [First-crossing real-rooted witness](first-crossing-real-rooted-witness.md)
 - [Two-extension Weyl ratio and shift-circularity gate](two-extension-weyl-route.md)
 - [Cut-adapted exact prime basis](cut-adapted-prime-basis.md)
 - [Support-extension audit](support-extension-audit.md)
