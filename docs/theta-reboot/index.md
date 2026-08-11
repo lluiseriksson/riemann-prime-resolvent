@@ -94,10 +94,13 @@ is now to replace support-by-support certificates by a uniform threshold
 mechanism whose constants remain controlled as further prime powers enter.
 The complementary
 [first-crossing reduction](first-crossing-real-rooted-witness.md) shows that
-failure of RH would force, at the first zero of the lowest branch, either a
-degenerate kernel or a one-dimensional kernel whose full ground-state Fourier
-transform is real-rooted. A resolvent rank-one argument removes the evenness
-restriction from the finite real-zero theorem.
+failure of RH would force, at the first zero of the lowest branch, a nonzero
+null state whose full Fourier transform is real-rooted. A resolvent rank-one
+argument removes every parity and node-symmetry restriction from the finite
+real-zero theorem. Positive Fourier-evaluation perturbations reduce any
+multiple kernel to a simple null direction without leaving the Loewner class,
+so multiplicity is no longer a separate branch. The same calculation yields
+an exact Loewner--Cauchy identity on every shifted Fourier lattice.
 
 ## Why this track is different
 
@@ -159,6 +162,7 @@ It does not authorize changing the success condition.
 - [Certified localized positivity through support 0.72](support-072-certificate.md)
 - [Uniform harmonic stratification of the Schur correction](harmonic-schur-stratification.md)
 - [First-crossing real-rooted witness](first-crossing-real-rooted-witness.md)
+- [Ground-simplicity cone no-go](ground-simplicity-cone-no-go.md)
 - [Two-extension Weyl ratio and shift-circularity gate](two-extension-weyl-route.md)
 - [Cut-adapted exact prime basis](cut-adapted-prime-basis.md)
 - [Support-extension audit](support-extension-audit.md)
