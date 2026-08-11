@@ -304,6 +304,31 @@ independent positive block.  The rank-20 numerical data remain a design
 audit until the trial vectors, actions and residual tail are enclosed with
 Arb.
 
+The rank-20 trial is now a deterministic, portable artifact rather than an
+implicit SVD choice.  The exporter writes parity-pure `float64` vectors (used
+as exact dyadic rationals by Arb), right factors, index maps and metadata.
+The registered factor hashes are
+
+| factor | SHA-256 |
+|---|---|
+| even action vectors | `ac7d5cc191fefb4836f2f7a2e76b351efca9bc6fed5b3a978c3f529a38417ae2` |
+| even right factor | `b3aba60b0a3a70445e936e9743e65f31cc894ef058e5d4ec72a822402ade7607` |
+| odd action vectors | `fcd36d510fdb71187203e2086038b658bc5a0ca0a37e47e982082592e2079eeb` |
+| odd right factor | `ac94e9f3a7104a28ba90d6007f28adb0a6a96c8034afd0a0ab99e66f67768e5a` |
+
+It is regenerated, rather than trusted as an opaque binary, by
+
+```console
+python -m experiments.theta_pencil.support_one_degreewise_schur \
+  --component-cache-dir <parts> --matrix-cache <source-cross.npz> \
+  --residual-schur-rank 20 --export-residual-trial <trial.npz>
+```
+
+The complete NPZ had SHA-256
+`ddeab8ca1557a0c3d7216f92963b83bd46eb17fd1d62089c41b35c516470cdc5`
+in the registered run.  Reproduction should compare the internal factor
+hashes, which are independent of ZIP container metadata.
+
 The failure of the two moments is sharp, not merely a weak estimate.  For
 dimension \(n\), trace \(t>0\), squared Frobenius norm \(f\), and
 \(p=\lceil t^2/f\rceil<n\), put \(q=n-p\),

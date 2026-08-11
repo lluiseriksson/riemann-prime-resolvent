@@ -10,6 +10,7 @@ floating design audit; the denominators themselves are exact Fractions.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import math
 import os
@@ -927,6 +928,109 @@ def _atomic_write_json(path: Path, payload: dict) -> None:
     os.replace(temporary, path)
 
 
+def _array_sha256(array: np.ndarray) -> str:
+    return hashlib.sha256(np.asarray(array, dtype=np.float64).tobytes()).hexdigest()
+
+
+def export_support_one_residual_trial(
+    output: Path,
+    trial_rank: int = 20,
+    source_dimension: int = 58,
+    finite_dimension: int = 256,
+    quadrature_order: int = 1024,
+    maximum_smooth_power: int = 95,
+    matrix_cache: Path | None = None,
+    component_cache_dir: Path | None = None,
+) -> dict:
+    """Freeze dyadic rank-factor trials for later Arb action certificates."""
+
+    source, cross = _load_or_build_blocks(
+        matrix_cache,
+        component_cache_dir,
+        source_dimension,
+        finite_dimension,
+        quadrature_order,
+        maximum_smooth_power,
+    )
+    high = sum(
+        (
+            _load_or_build_high_component(
+                label,
+                component_cache_dir,
+                source_dimension,
+                finite_dimension,
+                quadrature_order,
+                maximum_smooth_power,
+            )
+            for label in (
+                "base",
+                "2",
+                "3",
+                "4",
+                "5",
+                "7",
+                *_smooth_high_component_labels(maximum_smooth_power),
+            )
+        ),
+        np.zeros((finite_dimension - source_dimension,) * 2),
+    )
+    arrays = {}
+    metadata = {
+        "format": 1,
+        "architecture": "support-one-residual-schur-trial",
+        "trial_rank": trial_rank,
+        "source_dimension": source_dimension,
+        "finite_dimension": finite_dimension,
+        "quadrature_order": quadrature_order,
+        "maximum_smooth_power": maximum_smooth_power,
+        "parities": {},
+    }
+    for parity, name in ((0, "even"), (1, "odd")):
+        low_indices = np.arange(parity, source_dimension, 2)
+        high_indices = np.arange(
+            parity, finite_dimension - source_dimension, 2
+        )
+        parity_cross = cross[np.ix_(low_indices, high_indices)]
+        parity_high = high[np.ix_(high_indices, high_indices)]
+        exact_trial = np.linalg.solve(parity_high, parity_cross.T)
+        left, singular_values, right = np.linalg.svd(
+            exact_trial, full_matrices=False
+        )
+        if not 1 <= trial_rank <= len(singular_values):
+            raise ValueError("trial_rank must fit each parity source block")
+        action_vectors = np.zeros((finite_dimension, trial_rank))
+        full_high_indices = source_dimension + high_indices
+        action_vectors[full_high_indices, :] = left[:, :trial_rank]
+        right_factor = singular_values[:trial_rank, None] * right[:trial_rank]
+        arrays[f"{name}_action_vectors"] = action_vectors
+        arrays[f"{name}_right_factor"] = right_factor
+        arrays[f"{name}_low_indices"] = low_indices.astype(np.int64)
+        arrays[f"{name}_high_indices"] = full_high_indices.astype(np.int64)
+        reconstruction = left[:, :trial_rank] @ right_factor
+        metadata["parities"][name] = {
+            "action_vectors_sha256": _array_sha256(action_vectors),
+            "right_factor_sha256": _array_sha256(right_factor),
+            "reconstruction_frobenius_error": float(
+                np.linalg.norm(exact_trial - reconstruction)
+            ),
+            "next_singular_value": (
+                float(singular_values[trial_rank])
+                if trial_rank < len(singular_values)
+                else 0.0
+            ),
+        }
+    output.parent.mkdir(parents=True, exist_ok=True)
+    temporary = output.with_name(output.name + ".tmp")
+    with temporary.open("wb") as stream:
+        np.savez(
+            stream,
+            metadata=np.array(json.dumps(metadata, sort_keys=True)),
+            **arrays,
+        )
+    os.replace(temporary, output)
+    return metadata
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--source-dimension", type=int, default=58)
@@ -961,11 +1065,29 @@ def main() -> None:
     parser.add_argument("--endpoint-jet-band-only", action="store_true")
     parser.add_argument("--finite-schur", action="store_true")
     parser.add_argument("--residual-schur-rank", type=int)
+    parser.add_argument("--export-residual-trial", type=Path)
     parser.add_argument("--tail-first-degree", type=int, default=256)
     parser.add_argument("--tail-last-degree", type=int, default=4096)
     parser.add_argument("--jet-count", type=int, default=1)
     parser.add_argument("--partitions", type=int, default=128)
     args = parser.parse_args()
+    if args.export_residual_trial is not None:
+        if args.residual_schur_rank is None:
+            raise ValueError(
+                "--export-residual-trial requires --residual-schur-rank"
+            )
+        metadata = export_support_one_residual_trial(
+            args.export_residual_trial,
+            trial_rank=args.residual_schur_rank,
+            source_dimension=args.source_dimension,
+            finite_dimension=args.finite_dimension,
+            quadrature_order=args.quadrature_order,
+            maximum_smooth_power=args.maximum_smooth_power,
+            matrix_cache=args.matrix_cache,
+            component_cache_dir=args.component_cache_dir,
+        )
+        print(json.dumps(metadata, indent=2, sort_keys=True), flush=True)
+        return
     if args.build_component_only is not None:
         if args.component_cache_dir is None:
             raise ValueError("--build-component-only requires --component-cache-dir")

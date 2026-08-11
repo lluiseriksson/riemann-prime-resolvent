@@ -352,6 +352,9 @@ of the 198-dimensional high block.  A rank-20 trial inverse per parity
 recovers the 26+3 pattern with residual norms below `1.7e-9`; rank 16 does
 not.  The next production unit is therefore forty parity-pure Arb actions,
 their residual Gram, and the signed degree-above-255 tail.
+Those forty trial vectors and their right factors now have deterministic
+export commands and registered hashes, so the future Arb run tests a fixed
+dyadic object rather than redesigning the SVD after seeing interval output.
 
 ## Why this track is different
 

@@ -1,4 +1,5 @@
 from fractions import Fraction
+import json
 
 import numpy as np
 
@@ -9,6 +10,7 @@ from experiments.theta_pencil.support_one_degreewise_schur import (
     _build_rectangular_support_one_blocks,
     _build_high_component,
     _smooth_high_component_labels,
+    export_support_one_residual_trial,
     run_support_one_absolute_tail_budget,
     run_support_one_endpoint_jet_band_audit,
     run_support_one_finite_schur_audit,
@@ -120,3 +122,24 @@ def test_residual_schur_matrix_is_below_the_exact_complement():
     exact = source - cross @ np.linalg.solve(high, cross.T)
     assert np.linalg.eigvalsh(exact - lower)[0] > -1.0e-14
     assert np.linalg.norm(residual) > 0
+
+
+def test_residual_trial_export_has_parity_pure_hashed_actions(tmp_path):
+    output = tmp_path / "trial.npz"
+    metadata = export_support_one_residual_trial(
+        output,
+        trial_rank=1,
+        source_dimension=4,
+        finite_dimension=12,
+        quadrature_order=64,
+        maximum_smooth_power=5,
+    )
+    with np.load(output, allow_pickle=False) as payload:
+        stored = json.loads(str(payload["metadata"].item()))
+        assert stored == metadata
+        even = payload["even_action_vectors"]
+        odd = payload["odd_action_vectors"]
+        assert np.all(even[1::2] == 0.0)
+        assert np.all(odd[::2] == 0.0)
+        assert payload["even_right_factor"].shape == (1, 2)
+        assert payload["odd_right_factor"].shape == (1, 2)
