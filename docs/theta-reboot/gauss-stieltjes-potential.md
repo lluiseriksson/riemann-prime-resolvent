@@ -444,3 +444,66 @@ the displayed decimal is promoted from a design margin to a deposited
 certificate.  Even at design level, the reduction from tail degree 256 to 99
 is robust and changes the cost of the finite source and endpoint jets by a
 large factor.
+
+## The commensurate dyadic block lowers the tail further to degree 85
+
+The preceding estimate still paid the prime powers 2 and 4 separately.  This
+throws away the exact relation between their displacements,
+
+\[
+ h_4=\log4=2\log2=2h_2.                              \tag{GS21}
+\]
+
+Fiber both translations over residues modulo \(h_2\).  Since
+\(2<3h_2\), every fiber inside \([-1,1]\) has two or three vertices.  On a
+three-vertex fiber the joint prime matrix is
+
+\[
+ \begin{pmatrix}
+ 0&-a&-b\\ -a&0&-a\\ -b&-a&0
+ \end{pmatrix},\qquad
+ a=\frac{\log2}{\sqrt2},\quad b=\frac{\log2}{2}.     \tag{GS22}
+\]
+
+The antisymmetric eigenvalue is \(b\).  On the symmetric subspace the matrix
+is
+
+\[
+ \begin{pmatrix}-b&-\sqrt2a\\-\sqrt2a&0\end{pmatrix},
+\]
+
+so its least eigenvalue is
+
+\[
+ \lambda_-=-\frac{b+\sqrt{b^2+8a^2}}2
+ =-\frac{\log2}{4}(1+\sqrt{17}).                    \tag{GS23}
+\]
+
+The two-vertex fibers have least eigenvalue \(-a\), which is larger than
+\(\lambda_-\).  Thus (GS23) is the exact global joint floor.  Compared with
+the former sum \(-\log2-\log2/2\), it gains
+
+\[
+ \frac{\log2}{4}(5-\sqrt{17})
+ =0.1519542158\ldots.                               \tag{GS24}
+\]
+
+Keeping the allocations (GS15) for 5 and 7, the bounded-part floor improves
+to
+
+\[
+ B_1\succeq-5.0180788996\,I.                        \tag{GS25}
+\]
+
+Now \(H_{84}+B_1<0\), whereas
+
+\[
+ \boxed{Q_{85}L_1Q_{85}\succeq
+ 0.0076588408\,Q_{85}.}                             \tag{GS26}
+\]
+
+This second reduction, from 99 to 85, is not a numerical optimization: it is
+an exact diagonalization of the commensurate residue graph.  The registered
+Arb entry point now combines this exact dyadic block with the source-level
+chain certificates for 3, 5, and 7.  As before, the interval run is required
+before the displayed decimal is called a deposited certificate.

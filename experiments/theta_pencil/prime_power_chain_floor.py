@@ -44,6 +44,19 @@ class SeparablePrimeComplementFloor:
     precision: int
 
 
+@dataclass(frozen=True)
+class JointDyadicComplementFloor:
+    """Support-one floor with the commensurate translations 2 and 4 joined."""
+
+    separable: SeparablePrimeComplementFloor
+    joint_dyadic_lower: float
+    separate_dyadic_lower: float
+    dyadic_gain_lower: float
+    complement_floor: float
+    local_degree: int
+    precision: int
+
+
 def _residue_cuts(arb, displacement):
     """Partition the base residue interval where the chain length is constant."""
 
@@ -207,5 +220,62 @@ def certify_separable_prime_complement_floor(
         complement_floor=_float_lower(complement),
         subdivisions_per_segment=subdivisions_per_segment,
         maximum_smooth_power=maximum_smooth_power,
+        precision=precision,
+    )
+
+
+def certify_support_one_joint_dyadic_complement_floor(
+    allocations: dict[int, float],
+    local_degree: int = 85,
+    maximum_smooth_power: int = 95,
+    subdivisions_per_segment: int = 4096,
+    precision: int = 512,
+) -> JointDyadicComplementFloor:
+    """Certify the support-one floor after joining the 2 and 4 translations.
+
+    The remaining prime powers are certified by the separable chain routine.
+    The dyadic residue fibers have length two or three and exact common floor
+    ``-log(2) * (1 + sqrt(17)) / 4``.
+    """
+
+    if 2 in allocations or 4 in allocations:
+        raise ValueError(
+            "prime powers 2 and 4 are already in the joint dyadic block"
+        )
+    base = certify_separable_prime_complement_floor(
+        half_width=1.0,
+        allocations=allocations,
+        local_degree=local_degree,
+        maximum_smooth_power=maximum_smooth_power,
+        subdivisions_per_segment=subdivisions_per_segment,
+        precision=precision,
+    )
+    try:
+        from flint import arb, ctx
+    except ImportError as error:  # pragma: no cover
+        raise RuntimeError("python-flint is required") from error
+
+    previous_precision = ctx.prec
+    try:
+        ctx.prec = precision
+        log_two = arb(2).log()
+        joint = -log_two * (1 + arb(17).sqrt()) / 4
+        separate = -3 * log_two / 2
+        gain = joint - separate
+        # The base value is already a downward-rounded float.  Re-enter its
+        # decimal exactly before adding the outward-rounded negative floor.
+        complement = arb(str(base.complement_floor)) + joint
+        if not complement.lower() > 0:
+            raise ArithmeticError("the joint dyadic complement floor is not positive")
+    finally:
+        ctx.prec = previous_precision
+
+    return JointDyadicComplementFloor(
+        separable=base,
+        joint_dyadic_lower=_float_lower(joint),
+        separate_dyadic_lower=_float_lower(separate),
+        dyadic_gain_lower=_float_lower(gain),
+        complement_floor=_float_lower(complement),
+        local_degree=local_degree,
         precision=precision,
     )

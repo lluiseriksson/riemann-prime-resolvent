@@ -28,6 +28,8 @@ class AllocatedSupportOneFloor:
     prime_two_floor: float
     prime_three_floor: float
     prime_four_floor: float
+    joint_two_four_floor: float
+    joint_two_four_gain: float
     prime_five_floor: float
     prime_seven_raw_floor: float
     prime_seven_floor: float
@@ -54,6 +56,19 @@ def two_vertex_allocated_floor(prime_power: int, allocation: Fraction) -> float:
     return float(allocation) * minimum_potential - coefficient
 
 
+def joint_dyadic_floor() -> float:
+    """Exact floor for the combined prime-power translations 2 and 4.
+
+    The shifts are ``h = log(2)`` and ``2h``.  Fibering over residues modulo
+    ``h`` gives chains of length two or three.  The length-three matrix has
+    nearest-neighbour weight ``log(2)/sqrt(2)`` and endpoint weight
+    ``log(2)/2``.  Its least eigenvalue is the returned value, which also
+    lies below the length-two eigenvalue.
+    """
+
+    return -math.log(2.0) * (1.0 + math.sqrt(17.0)) / 4.0
+
+
 def registered_support_one_floor(
     smooth_order: int = 95,
 ) -> AllocatedSupportOneFloor:
@@ -65,6 +80,8 @@ def registered_support_one_floor(
     floor_two = -2.0 * coefficient_two * math.cos(math.pi / 4.0)
     floor_three = -math.log(3.0) / math.sqrt(3.0)
     floor_four = -math.log(2.0) / 2.0
+    joint_dyadic = joint_dyadic_floor()
+    dyadic_gain = joint_dyadic - (floor_two + floor_four)
     floor_five = two_vertex_allocated_floor(5, THETA_FIVE)
     raw_seven = two_vertex_allocated_floor(7, THETA_SEVEN)
     floor_seven = min(0.0, raw_seven)
@@ -73,9 +90,8 @@ def registered_support_one_floor(
     bounded = (
         scalar
         - smooth
-        + floor_two
+        + joint_dyadic
         + floor_three
-        + floor_four
         + floor_five
         + floor_seven
     )
@@ -89,6 +105,8 @@ def registered_support_one_floor(
         prime_two_floor=floor_two,
         prime_three_floor=floor_three,
         prime_four_floor=floor_four,
+        joint_two_four_floor=joint_dyadic,
+        joint_two_four_gain=dyadic_gain,
         prime_five_floor=floor_five,
         prime_seven_raw_floor=raw_seven,
         prime_seven_floor=floor_seven,
@@ -103,22 +121,19 @@ def certify_registered_support_one_floor(
     subdivisions_per_segment: int = 4096,
     precision: int = 512,
 ):
-    """Run the source-level Arb chain certificate for the rational split."""
+    """Run the source-level Arb certificate including the joint dyadic floor."""
 
     from experiments.theta_pencil.prime_power_chain_floor import (
-        certify_separable_prime_complement_floor,
+        certify_support_one_joint_dyadic_complement_floor,
     )
 
-    return certify_separable_prime_complement_floor(
-        half_width=1.0,
+    return certify_support_one_joint_dyadic_complement_floor(
         allocations={
-            2: 0.0,
             3: 0.0,
-            4: 0.0,
             5: float(THETA_FIVE),
             7: float(THETA_SEVEN),
         },
-        local_degree=99,
+        local_degree=85,
         maximum_smooth_power=95,
         subdivisions_per_segment=subdivisions_per_segment,
         precision=precision,
