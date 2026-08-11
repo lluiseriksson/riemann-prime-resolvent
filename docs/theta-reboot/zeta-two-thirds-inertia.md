@@ -201,6 +201,42 @@ between prime powers and between endpoint jets, for example as signed
 matrix-valued band Grams; treating the components by separate norms cannot
 reach the certified margins.
 
+There is nevertheless useful structure inside the large endpoint term.  In a
+fixed parity block, retaining $J$ endpoint jets gives the exact
+factorization
+
+\[
+ C_J=E_JP_J,
+ \qquad
+ C_JD_0^{-1}C_J^*=E_J(P_JD_0^{-1}P_J^*)E_J^*,       \tag{ZT7}
+\]
+
+where $E_J$ has exactly $J$ columns and all five prime powers have already
+been summed in $P_J$.  Consequently this Gram has rank at most $J$,
+independently of the number of high degrees or prime powers.  The certified
+26-dimensional raw positive subspace therefore retains at least $26-J$
+positive directions after subtraction of this isolated Gram.  This is an
+exact inertia statement, but it does not order the isolated Gram against the
+full correction, whose cross terms with the regular remainder can have either
+sign.
+
+On the floating band 256--4095, the one-jet Gram has rank one and norms
+`1.2062610369` (even) and `1.2617739163` (odd).  Summing prime Grams separately
+gives `1.2088289425` and `1.2317511138`, so the signed/separate ratios are
+`0.9978757080` and `1.0243740819`: cross-prime interference is not the missing
+cancellation.  The reproducible audit is
+
+```console
+python -m experiments.theta_pencil.support_one_degreewise_schur \
+  --endpoint-jet-band-only --tail-first-degree 256 \
+  --tail-last-degree 4096 --jet-count 1
+```
+
+Thus the next Gram must keep endpoint jets, their regular remainders, the
+boundary potential and the smooth kernel together.  It cannot gain the
+required orders of magnitude merely by summing prime powers before taking a
+norm.
+
 The failure of the two moments is sharp, not merely a weak estimate.  For
 dimension \(n\), trace \(t>0\), squared Frobenius norm \(f\), and
 \(p=\lceil t^2/f\rceil<n\), put \(q=n-p\),

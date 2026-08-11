@@ -18,6 +18,7 @@ from fractions import Fraction
 from pathlib import Path
 
 import numpy as np
+from scipy.special import digamma
 
 from experiments.theta_pencil.legendre_feshbach import (
     build_legendre_weil_components,
@@ -27,6 +28,7 @@ from experiments.theta_pencil.legendre_jump_tail import (
     wang_normalized_tail_bound,
 )
 from experiments.theta_pencil.prime_jet_tail import (
+    prime_jet_cross_matrix_for_prime,
     active_prime_jet_tail_weighted_norm,
     active_prime_remainder_variation_bound,
 )
@@ -37,6 +39,7 @@ from experiments.theta_pencil.smooth_legendre_series import (
     smooth_kernel_series_matrix,
     smooth_kernel_series_remainder_bound,
 )
+from experiments.theta_pencil.semilocal_weil_matrix import EULER_GAMMA
 
 
 @dataclass(frozen=True)
@@ -88,6 +91,30 @@ class FloatingSupportOneAbsoluteTail:
     context: str = (
         "floating absolute-norm tail design audit; a large upper bound is a "
         "failure of this estimate, not a lower bound for the true correction"
+    )
+
+
+@dataclass(frozen=True)
+class FloatingSupportOneEndpointJetBandParity:
+    parity: int
+    block_dimension: int
+    gram_rank: int
+    rank_bound: int
+    signed_gram_norm: float
+    separate_prime_gram_norm: float
+    signed_to_separate_ratio: float
+
+
+@dataclass(frozen=True)
+class FloatingSupportOneEndpointJetBand:
+    first_degree: int
+    last_degree: int
+    jet_count: int
+    even: FloatingSupportOneEndpointJetBandParity
+    odd: FloatingSupportOneEndpointJetBandParity
+    context: str = (
+        "floating finite endpoint-jet band; rank <= jet_count is algebraic, "
+        "but the reported norms and numerical ranks are design diagnostics"
     )
 
 
@@ -313,6 +340,71 @@ def run_support_one_absolute_tail_budget(
     )
 
 
+def run_support_one_endpoint_jet_band_audit(
+    first_degree: int = 256,
+    last_degree: int = 4096,
+    jet_count: int = 1,
+) -> FloatingSupportOneEndpointJetBand:
+    """Keep the signed finite-rank jet Gram over one degree band.
+
+    For each parity the combined-prime cross matrix factors as ``E_J P_J``,
+    where ``E_J`` has one column per endpoint jet.  Hence its weighted Gram
+    has rank at most ``J`` independently of the number of prime powers.
+    """
+
+    if first_degree <= 58 or last_degree <= first_degree:
+        raise ValueError("the degree band must start above 58 and be nonempty")
+    if jet_count < 1:
+        raise ValueError("jet_count must be positive")
+    active_prime_powers = (2, 3, 4, 5, 7)
+    beta = float(support_one_bounded_part_lower())
+    results = []
+    for parity in (0, 1):
+        low_degrees = np.arange(parity, 58, 2)
+        high_degrees = np.arange(
+            first_degree + ((first_degree - parity) % 2), last_degree, 2
+        )
+        denominators = (
+            digamma(high_degrees + 1.0) + EULER_GAMMA + beta
+        )
+        pieces = [
+            prime_jet_cross_matrix_for_prime(
+                1.0,
+                prime_power,
+                low_degrees,
+                high_degrees,
+                jet_count,
+            )
+            for prime_power in active_prime_powers
+        ]
+        combined = sum(pieces, np.zeros_like(pieces[0]))
+        signed_gram = (combined / denominators) @ combined.T
+        separate_gram = sum(
+            ((piece / denominators) @ piece.T for piece in pieces),
+            np.zeros((len(low_degrees), len(low_degrees))),
+        )
+        signed_norm = float(np.linalg.eigvalsh(signed_gram)[-1])
+        separate_norm = float(np.linalg.eigvalsh(separate_gram)[-1])
+        results.append(
+            FloatingSupportOneEndpointJetBandParity(
+                parity=parity,
+                block_dimension=len(low_degrees),
+                gram_rank=int(np.linalg.matrix_rank(signed_gram, tol=1.0e-10)),
+                rank_bound=min(jet_count, len(low_degrees)),
+                signed_gram_norm=signed_norm,
+                separate_prime_gram_norm=separate_norm,
+                signed_to_separate_ratio=signed_norm / separate_norm,
+            )
+        )
+    return FloatingSupportOneEndpointJetBand(
+        first_degree=first_degree,
+        last_degree=last_degree,
+        jet_count=jet_count,
+        even=results[0],
+        odd=results[1],
+    )
+
+
 def _atomic_write_json(path: Path, payload: dict) -> None:
     temporary = path.with_name(path.name + ".tmp")
     temporary.write_text(
@@ -331,16 +423,26 @@ def main() -> None:
     parser.add_argument("--matrix-cache", type=Path)
     parser.add_argument("--output", type=Path)
     parser.add_argument("--absolute-tail-only", action="store_true")
+    parser.add_argument("--endpoint-jet-band-only", action="store_true")
     parser.add_argument("--tail-first-degree", type=int, default=256)
+    parser.add_argument("--tail-last-degree", type=int, default=4096)
     parser.add_argument("--jet-count", type=int, default=1)
     parser.add_argument("--partitions", type=int, default=128)
     args = parser.parse_args()
+    if args.absolute_tail_only and args.endpoint_jet_band_only:
+        raise ValueError("select at most one specialized audit")
     if args.absolute_tail_only:
         result = run_support_one_absolute_tail_budget(
             first_degree=args.tail_first_degree,
             jet_count=args.jet_count,
             partitions=args.partitions,
             maximum_smooth_power=args.maximum_smooth_power,
+        )
+    elif args.endpoint_jet_band_only:
+        result = run_support_one_endpoint_jet_band_audit(
+            first_degree=args.tail_first_degree,
+            last_degree=args.tail_last_degree,
+            jet_count=args.jet_count,
         )
     else:
         result = run_support_one_degreewise_schur_audit(

@@ -5,6 +5,7 @@ from experiments.theta_pencil.rational_joint_five_seven_certificate import (
 )
 from experiments.theta_pencil.support_one_degreewise_schur import (
     run_support_one_absolute_tail_budget,
+    run_support_one_endpoint_jet_band_audit,
     support_one_bounded_part_lower,
     support_one_degreewise_denominator_lowers,
 )
@@ -39,3 +40,17 @@ def test_absolute_tail_budget_keeps_its_scope_and_square_accounting():
         assert parity.total_weighted_norm > 0
         assert parity.correction_norm_upper == parity.total_weighted_norm**2
     assert "failure of this estimate" in result.context
+
+
+def test_endpoint_jet_band_retains_the_algebraic_rank_bound():
+    result = run_support_one_endpoint_jet_band_audit(
+        first_degree=64,
+        last_degree=80,
+        jet_count=2,
+    )
+    for parity in (result.even, result.odd):
+        assert parity.gram_rank <= parity.rank_bound == 2
+        assert parity.signed_gram_norm > 0
+        assert parity.separate_prime_gram_norm > 0
+        assert parity.signed_to_separate_ratio > 0
+    assert "rank <= jet_count is algebraic" in result.context

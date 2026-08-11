@@ -335,6 +335,11 @@ A one-to-six endpoint-jet sweep shows that the separate absolute-norm tail
 bound misses the raw margins by fourteen to sixteen orders of magnitude.
 This closes that implementation, not the true tail: the next certificate
 must retain signed, matrix-valued cancellations across prime cuts and jets.
+The endpoint part itself now has an exact rank-$J$ factorization for $J$
+jets, so it can remove at most $J$ of the 26 certified raw positive
+directions.  A 256--4095 pilot shows essentially no norm cancellation between
+prime powers; the required cancellation must couple jets to the regular,
+potential and smooth remainders in one Gram.
 
 ## Why this track is different
 
