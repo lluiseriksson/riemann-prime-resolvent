@@ -139,7 +139,15 @@ commutator yields a signed prime-correlation inequality with weights
 \(\Lambda(n)(\log n)^2/\sqrt n\), a conditionally negative
 \(|x-y|\) term and an explicit positive gap remainder.  This is a strict
 source-side gate, but no sign theorem for the translated correlations is
-claimed; the non-mean-zero case \(k=0\) remains separate.
+claimed; this first-order formula does not cover the non-mean-zero case
+\(k=0\).  That split is removed by a finite commutator-exit theorem.
+For every nonzero kernel vector there is a least
+\(s\le\dim\ker A_a\) with \(X^sw\notin\ker A_a\), and
+\((-1)^s\operatorname{ad}_X^{2s}(A_a)\) has expectation
+\({2s\choose s}\langle X^sw,A_aX^sw\rangle>0\).  Its explicit source
+formula has prime weights \(\Lambda(n)(\log n)^{2s}/\sqrt n\) and one
+overall alternating sign.  This supplies a strict finite signed gate for
+every kernel dimension, while leaving its arithmetic exclusion open.
 In the pure branch, pairing the real zeros produces a canonical Stieltjes
 transform in the radial variable and an explicit Hausdorff measure with atoms
 \(x/(x+\lambda_j^2)\). These are witness zeros, not xi zeros; identifying the

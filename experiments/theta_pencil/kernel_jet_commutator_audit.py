@@ -7,6 +7,7 @@ algebra audit, not numerical evidence for the Riemann hypothesis.
 from __future__ import annotations
 
 from fractions import Fraction as Q
+from math import comb
 
 Matrix = list[list[Q]]
 Vector = list[Q]
@@ -73,6 +74,30 @@ def projection_formula() -> None:
     assert left >= norm_fourth
 
 
+def higher_commutator_exit() -> None:
+    """Check the unique central term in (PC17) at exit order s=2."""
+
+    z = Q(0)
+    A = [[z, z, z], [z, z, z], [z, z, Q(7)]]
+    X = [[z, Q(1), z], [Q(1), z, Q(1)], [z, Q(1), z]]
+    w = [Q(1), z, z]
+
+    first = mv(X, w)
+    second = mv(X, first)
+    assert mv(A, w) == [z, z, z]
+    assert mv(A, first) == [z, z, z]
+    assert mv(A, second) != [z, z, z]
+
+    nested = A
+    for _ in range(4):
+        nested = madd(mm(X, nested), mm(nested, X), -1)
+    left = sum(x * y for x, y in zip(w, mv(nested, w), strict=True))
+    central = comb(4, 2) * sum(
+        x * y for x, y in zip(second, mv(A, second), strict=True)
+    )
+    assert left == central > 0
+
+
 def translation_formula() -> None:
     z = Q(0)
     nodes = [Q(-2), Q(-1), z, Q(1), Q(2)]
@@ -99,9 +124,32 @@ def translation_formula() -> None:
     ]
     assert double == expected_double
 
+    # The complete even hierarchy has the alternating sign and displacement
+    # power stated in (PC18).
+    for order in range(1, 4):
+        nested = block
+        for _ in range(2 * order):
+            nested = madd(mm(X, nested), mm(nested, X), -1)
+        signed = [
+            [(-1) ** order * entry for entry in row]
+            for row in nested
+        ]
+        expected = [
+            [
+                (-1) ** (order + 1)
+                * weight
+                * shift ** (2 * order)
+                * (plus[i][j] + minus[i][j])
+                for j in range(size)
+            ]
+            for i in range(size)
+        ]
+        assert signed == expected
+
 
 def main() -> None:
     projection_formula()
+    higher_commutator_exit()
     translation_formula()
     print("KERNEL-JET-COMMUTATOR-AUDIT: PASS (exact rational algebra)")
 

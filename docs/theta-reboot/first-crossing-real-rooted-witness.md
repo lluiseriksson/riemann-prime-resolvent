@@ -1062,7 +1062,100 @@ real-rootedness nor the sign-coherent moments (PH11) currently give a
 pointwise sign for the translated autocorrelations.  Its gain is that the
 missing cancellation is now one coercive inequality with a fixed positive
 right side.  The case \(k_0=0\) lacks the mean-zero identity (PC13) and
-remains a separate gate.
+is handled by the higher-order exit rule below.
+
+### Proposition 4.1a.6 (finite commutator exit, including \(k_0=0\))
+
+Let \(0\ne w\in\ker A\).  There is a least integer \(s\ge1\) such that
+
+\[
+ X^jw\in\ker A\quad(0\le j<s),\qquad X^sw\notin\ker A,  \tag{PC15}
+\]
+
+and \(s\le\dim\ker A\).  Define
+
+\[
+ D_s=(-1)^s\operatorname{ad}_X^{,2s}(A),
+ \qquad \operatorname{ad}_X(B)=[X,B].                    \tag{PC16}
+\]
+
+Then
+
+\[
+\boxed{
+ \langle w,D_sw\rangle
+ ={2s\choose s}\langle X^sw,AX^sw\rangle
+ \ge {2s\choose s}\Delta\|QX^sw\|_2^2>0.}              \tag{PC17}
+\]
+
+Moreover the complete source-side expression is
+
+\[
+\boxed{
+\begin{aligned}
+ (D_sf)(x)=(-1)^{s+1}\Bigg\{&\frac12
+   \int_{-a_*}^{a_*}|x-y|^{2s-1}f(y)\,dy\\
+ &+\int_{-a_*}^{a_*}(x-y)^{2s}r''(x-y)f(y)\,dy\\
+ &+\sum_{2\le n\le e^{2a_*}}
+   \frac{\Lambda(n)\ell_n^{2s}}{\sqrt n}
+   (T_{\ell_n}^{+}+T_{\ell_n}^{-})f(x)\Bigg\}.
+\end{aligned}}                                            \tag{PC18}
+\]
+
+Thus every hypothetical first crossing, including the previously separate
+case \(k_0=0\), satisfies for some finite \(s\) the strict signed gate
+
+\[
+\boxed{
+\begin{aligned}
+0<&\;(-1)^{s+1}\Bigg\{
+ \frac12\iint |x-y|^{2s-1}w(x)w(y)\,dx\,dy\\
+&+\iint (x-y)^{2s}r''(x-y)w(x)w(y)\,dx\,dy\\
+&+2\sum_{2\le n\le e^{2a_*}}
+ \frac{\Lambda(n)\ell_n^{2s}}{\sqrt n}
+ \int_{-a_*}^{a_*-\ell_n}w(x+\ell_n)w(x)\,dx\Bigg\}.
+\end{aligned}}                                            \tag{PC19}
+\]
+
+#### Proof
+
+The bounded commutator formula (PC2) makes \(X\) invariant on
+\(\mathfrak D(A)\), so all operator expressions below are defined.
+If \(X^jw\in\ker A\) for every \(j\ge0\), finite dimensionality of the
+kernel would give a nonzero polynomial \(p\) with \(p(X)w=0\).  Hence
+\(p(x)w(x)=0\) almost everywhere.  A nonzero polynomial has only finitely
+many real zeros, whereas a nonzero \(L^2\) function is nonzero on a set of
+positive measure, a contradiction.  The vectors
+\(w,Xw,\ldots,X^{s-1}w\) are linearly independent by the same argument, so
+\(s\le\dim\ker A\).
+
+The iterated commutator expands as
+
+\[
+ \operatorname{ad}_X^{2s}(A)
+ =\sum_{j=0}^{2s}(-1)^j{2s\choose j}X^{2s-j}AX^j.        \tag{PC20}
+\]
+
+Pair this identity with \(w\).  Terms with \(j<s\) vanish because
+\(AX^jw=0\); terms with \(j>s\) vanish after moving \(A\) to the left,
+because \(AX^{2s-j}w=0\).  Only \(j=s\) survives.  Multiplication by
+\((-1)^s\), followed by the gap bound on \(Q L^2\), proves (PC17).
+
+For an integral kernel, each application of \(\operatorname{ad}_X\)
+multiplies the kernel by \(x-y\).  The off-diagonal singular kernel of \(A\)
+is \(-1/(2|x-y|)\), its smooth kernel is \(-r''(x-y)\), and its prime block
+is \(-\Lambda(n)(T_{\ell_n}^++T_{\ell_n}^-)/\sqrt n\).  Since
+\(\operatorname{ad}_X^{2s}(T_\ell^\pm)=\ell^{2s}T_\ell^\pm\), these three
+components give (PC18).  Pairing with the real vector \(w\) and combining
+the two adjoint translations gives (PC19). \(\square\)
+
+For \(s=1\), (PC18) is exactly (PC12); when \(k_0\ge1\), (PC9) forces this
+first exit and (PC11) supplies the stronger normalized lower bound.  For
+\(k_0=0\), Proposition 4.1a.6 removes the logical gap but not the analytic
+one: the exit order is finite rather than uniformly bounded independently of
+the kernel multiplicity, and the sign in (PC19) alternates with \(s\).
+Consequently a closure still has to control the complete signed
+prime--archimedean combination, not its terms separately.
 
 ### Proposition 4.1b (the Hausdorff measure of a pure-parity witness)
 
