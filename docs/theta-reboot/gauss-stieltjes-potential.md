@@ -337,8 +337,33 @@ Thus an interval pass that merely raises the global Legendre cutoff is not
 accepted.  It must retain the endpoint jets explicitly, form their *block*
 residual Gram, and bound only the regular remainder.  The generic finite
 matrix calculation is implemented in `block_temple.py`; the existing Arb
-jet routines supply the ingredients that still have to be lifted from one
-trial vector to a cluster.
+jet routines already supply the coordinate Gram.  What remains is its
+congruence to the trial cluster and the regular non-jet residuals.
+
+No floating orthonormalization is needed in the interval version.  For an
+arbitrary injective trial map \(W\), put
+
+\[
+ G=W^*W,\qquad A=W^*TW,\qquad K=W^*T^2W.
+\]
+
+Projection onto the orthogonal complement of \(\operatorname{ran}W\) gives
+the exact residual Gram
+
+\[
+ W^*T(I-WG^{-1}W^*)TW=K-AG^{-1}A.                  \tag{GS13}
+\]
+
+Therefore (GS12) is equivalently the finite generalized test
+
+\[
+ \boxed{A-\beta^{-1}(K-AG^{-1}A)\succ0.}           \tag{GS14}
+\]
+
+All entries in (GS14) can be enclosed directly for dyadic trial vectors.
+The already implemented combined-prime jet correction is a Gram before any
+triangle inequality, so congruencing it by the same trial matrix retains the
+interference between different prime powers and different endpoint jets.
 
 The next non-circular target is therefore to keep (GS3) as an auxiliary Gram
 block and combine it with the signed prime translations inside the same

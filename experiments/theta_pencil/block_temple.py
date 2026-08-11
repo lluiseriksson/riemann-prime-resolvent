@@ -26,6 +26,17 @@ class BlockTempleAudit:
     complement_floor: float
 
 
+@dataclass(frozen=True)
+class GeneralizedBlockTempleAudit:
+    trial_gram: np.ndarray
+    compression: np.ndarray
+    action_gram: np.ndarray
+    residual_gram: np.ndarray
+    lower_matrix: np.ndarray
+    lower_eigenvalues: np.ndarray
+    complement_floor: float
+
+
 def block_temple_audit(
     operator: np.ndarray,
     trial_isometry: np.ndarray,
@@ -68,5 +79,56 @@ def block_temple_audit(
         lower_matrix=lower,
         lower_eigenvalues=np.linalg.eigvalsh(lower),
         residual_norm=float(np.linalg.norm(residual, 2)),
+        complement_floor=complement_floor,
+    )
+
+
+def generalized_block_temple_audit(
+    trial_gram: np.ndarray,
+    compression: np.ndarray,
+    action_gram: np.ndarray,
+    complement_floor: float,
+    symmetry_tolerance: float = 1.0e-11,
+) -> GeneralizedBlockTempleAudit:
+    """Block Temple matrix in a nonorthonormal trial basis.
+
+    For an injective trial map ``V``, the inputs are
+
+    ``G = V* V``, ``A = V* T V``, and ``K = V* T^2 V``.
+
+    The orthogonal residual Gram is exactly ``K - A G^-1 A``.  Positivity of
+    ``A - residual/beta`` is congruent to the isometric block criterion and
+    can be checked without treating a floating QR factorization as data.
+    """
+
+    gram = np.asarray(trial_gram, dtype=float)
+    source = np.asarray(compression, dtype=float)
+    action = np.asarray(action_gram, dtype=float)
+    if gram.ndim != 2 or gram.shape[0] != gram.shape[1] or gram.shape[0] < 1:
+        raise ValueError("trial Gram must be nonempty and square")
+    if source.shape != gram.shape or action.shape != gram.shape:
+        raise ValueError("all three matrices must have the same shape")
+    if complement_floor <= 0.0:
+        raise ValueError("complement floor must be positive")
+    for matrix in (gram, source, action):
+        if not np.allclose(
+            matrix, matrix.T, atol=symmetry_tolerance, rtol=0.0
+        ):
+            raise ValueError("input matrices must be symmetric")
+    if np.linalg.eigvalsh(gram)[0] <= 0.0:
+        raise ValueError("trial Gram must be positive definite")
+
+    projected_action = source @ np.linalg.solve(gram, source)
+    residual = action - projected_action
+    residual = 0.5 * (residual + residual.T)
+    lower = source - residual / complement_floor
+    lower = 0.5 * (lower + lower.T)
+    return GeneralizedBlockTempleAudit(
+        trial_gram=gram,
+        compression=source,
+        action_gram=action,
+        residual_gram=residual,
+        lower_matrix=lower,
+        lower_eigenvalues=np.linalg.eigvalsh(lower),
         complement_floor=complement_floor,
     )
