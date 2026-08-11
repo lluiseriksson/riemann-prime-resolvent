@@ -39,6 +39,21 @@ LAMBDA_LOWER = Fraction(7071, 10_000)
 LAMBDA_UPPER = Fraction(7072, 10_000)
 SQRT_TWO_UPPER = Fraction(14_143, 10_000)
 CONTOUR_NORM_UPPER = Fraction(6, 5)
+L2_EXTENDED_GAP = 96
+L2_RADIUS_OVERRIDES = {
+    93: Fraction(469, 500),
+    94: Fraction(473, 500),
+    95: Fraction(477, 500),
+    96: Fraction(963, 1000),
+    97: Fraction(971, 1000),
+}
+L2_FACTOR_UPPERS = {
+    93: Fraction(179, 500),
+    94: Fraction(183, 500),
+    95: Fraction(47, 125),
+    96: Fraction(49, 125),
+    97: Fraction(103, 250),
+}
 
 
 def beta_integer(left: int, right: int) -> Fraction:
@@ -241,6 +256,22 @@ def binomial_one_step_ratio(m: int, gap: int) -> Fraction:
     )
 
 
+def direct_contour_upper(m: int, gap: int, radius: Fraction) -> Fraction:
+    """Direct rational circle-maximum bound at a specified radius."""
+
+    norm_square = Fraction(2 * m + 2 * gap + 1, 2 * m + 1)
+    assert norm_square < CONTOUR_NORM_UPPER**2
+    assert LAMBDA_UPPER < radius < 1
+    return (
+        CONTOUR_NORM_UPPER
+        * Fraction(2 * m + 1, gap)
+        * SQRT_TWO_UPPER
+        * radius ** (2 * m + gap + 1)
+        * (1 - LAMBDA_LOWER * radius) ** gap
+        / (radius - LAMBDA_UPPER) ** gap
+    )
+
+
 def contour_two_dilation_upper(m: int, gap: int) -> Fraction:
     """Rational contour bound for abs(Q_(m,m+d)(1/2)).
 
@@ -251,18 +282,39 @@ def contour_two_dilation_upper(m: int, gap: int) -> Fraction:
     """
 
     assert gap >= 2
-    norm_square = Fraction(2 * m + 2 * gap + 1, 2 * m + 1)
-    assert norm_square < CONTOUR_NORM_UPPER**2
     radius = CONTOUR_RADIUS_OVERRIDES.get(gap, CONTOUR_RADIUS)
-    assert LAMBDA_UPPER < radius < 1
+    return direct_contour_upper(m, gap, radius)
+
+
+def l2_concentration_lower(gap: int) -> Fraction:
+    """Rational lower bound for the angular concentration constant c."""
+
+    radius = L2_RADIUS_OVERRIDES[gap]
     return (
-        CONTOUR_NORM_UPPER
-        * Fraction(2 * m + 1, gap)
-        * SQRT_TWO_UPPER
-        * radius ** (2 * m + gap + 1)
-        * (1 - LAMBDA_LOWER * radius) ** gap
-        / (radius - LAMBDA_UPPER) ** gap
+        LAMBDA_LOWER
+        * radius
+        * (1 - radius * radius)
+        / (
+            (1 - LAMBDA_LOWER * radius) ** 2
+            * (radius + LAMBDA_UPPER) ** 2
+        )
     )
+
+
+def l2_factor_upper(gap: int) -> Fraction:
+    """Rational upper bound for (pi/(8*d*c))^(1/4)."""
+
+    factor = L2_FACTOR_UPPERS[gap]
+    # pi < 22/7, so pi/(8*d*c) < 11/(28*d*c).
+    assert factor**4 > Fraction(11, 28 * gap) / l2_concentration_lower(gap)
+    return factor
+
+
+def contour_two_dilation_l2_upper(m: int, gap: int) -> Fraction:
+    """Circle-L2 bound retaining the Gaussian angular concentration."""
+
+    radius = L2_RADIUS_OVERRIDES[gap]
+    return direct_contour_upper(m, gap, radius) * l2_factor_upper(gap)
 
 
 def exact_two_dilation_square(m: int, gap: int) -> Fraction:
@@ -297,6 +349,20 @@ def contour_prime_upper(m: int, gap: int) -> Fraction:
     )
     # Lambda(2)/2 < 1/2 because log(2)<1.
     return contour_two_dilation_upper(m, gap) / 2 + tail
+
+
+def l2_extended_prime_upper(m: int, gap: int) -> Fraction:
+    """Prime bound extended past gap 92 using angular L2 concentration."""
+
+    if gap <= CONTOUR_EXTENDED_GAP:
+        return contour_prime_upper(m, gap)
+    tail = (
+        CONTOUR_NORM_UPPER
+        * comb(2 * m + gap, gap)
+        * pfaff_hypergeometric_ratio(m, gap)
+        * pfaff_mangoldt_tail_upper(m, gap)
+    )
+    return contour_two_dilation_l2_upper(m, gap) / 2 + tail
 
 
 def main() -> None:
@@ -464,6 +530,39 @@ def main() -> None:
         > 2
     )
 
+    # Cauchy--Schwarz on the circle retains the angular width of the peak.
+    # Exact fourth-power comparisons remove both pi and the fourth root.
+    for gap in range(CONTOUR_EXTENDED_GAP + 1, L2_EXTENDED_GAP + 2):
+        assert l2_factor_upper(gap) < 1
+        assert exact_two_dilation_square(TAIL_START, gap) < (
+            contour_two_dilation_l2_upper(TAIL_START, gap) ** 2
+        )
+        assert l2_extended_prime_upper(TAIL_START + 1, gap) < (
+            l2_extended_prime_upper(TAIL_START, gap)
+        )
+
+    l2_totals = list(contour_totals)
+    for gap in range(CONTOUR_EXTENDED_GAP + 1, L2_EXTENDED_GAP + 1):
+        archimedean = (
+            odd_archimedean_crude_upper(TAIL_START, gap)
+            if gap % 2
+            else even_archimedean_crude_upper(TAIL_START, gap)
+        )
+        l2_totals.append(
+            l2_extended_prime_upper(TAIL_START, gap) + archimedean
+        )
+    assert max(l2_totals) < Fraction(9, 5)
+    assert l2_totals.index(max(l2_totals)) + 1 == 92
+    l2_next_archimedean = odd_archimedean_crude_upper(
+        TAIL_START,
+        L2_EXTENDED_GAP + 1,
+    )
+    assert (
+        l2_extended_prime_upper(TAIL_START, L2_EXTENDED_GAP + 1)
+        + l2_next_archimedean
+        > 2
+    )
+
     print(f"exact_moment_identity_checks={identity_checks}")
     print(f"max_prime_bound={float(max(prime_bounds)):.12e}")
     print("odd_archimedean_bound=1/gap")
@@ -476,6 +575,8 @@ def main() -> None:
     print("pfaff_tail_local_diameter=68")
     print(f"contour_total_bound={float(max(contour_totals)):.12e}")
     print("contour_tail_local_diameter=92")
+    print(f"l2_total_bound={float(max(l2_totals)):.12e}")
+    print("l2_tail_local_diameter=96")
 
 
 if __name__ == "__main__":

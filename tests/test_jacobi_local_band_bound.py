@@ -7,6 +7,7 @@ from experiments.theta_pencil.jacobi_local_band_bound import (
     EXTENDED_GAP,
     LAMBDA_LOWER,
     LAMBDA_UPPER,
+    L2_EXTENDED_GAP,
     MAX_GAP,
     PFAFF_EXTENDED_GAP,
     SQRT_TWO_UPPER,
@@ -16,11 +17,14 @@ from experiments.theta_pencil.jacobi_local_band_bound import (
     closed_j_zero_ratio,
     contour_prime_upper,
     contour_two_dilation_upper,
+    contour_two_dilation_l2_upper,
     crude_prime_upper,
     even_archimedean_rational_upper,
     even_archimedean_crude_upper,
     exact_two_dilation_square,
     jacobi_moment,
+    l2_extended_prime_upper,
+    l2_factor_upper,
     odd_upper_polynomial,
     odd_archimedean_crude_upper,
     normalized_jacobi_coefficients,
@@ -159,5 +163,33 @@ def test_contour_width_92_budget_and_uniformity() -> None:
             TAIL_START,
             CONTOUR_EXTENDED_GAP + 1,
         )
+        > 2
+    )
+
+
+def test_l2_width_96_budget_and_uniformity() -> None:
+    totals = []
+    for gap in range(1, L2_EXTENDED_GAP + 1):
+        archimedean = (
+            odd_archimedean_crude_upper(TAIL_START, gap)
+            if gap % 2
+            else even_archimedean_crude_upper(TAIL_START, gap)
+        )
+        totals.append(
+            l2_extended_prime_upper(TAIL_START, gap) + archimedean
+        )
+        if gap > CONTOUR_EXTENDED_GAP:
+            assert l2_factor_upper(gap) < 1
+            assert exact_two_dilation_square(TAIL_START, gap) < (
+                contour_two_dilation_l2_upper(TAIL_START, gap) ** 2
+            )
+            assert l2_extended_prime_upper(TAIL_START + 1, gap) < (
+                l2_extended_prime_upper(TAIL_START, gap)
+            )
+    assert max(totals) < Fraction(9, 5)
+    assert totals.index(max(totals)) + 1 == 92
+    assert (
+        l2_extended_prime_upper(TAIL_START, L2_EXTENDED_GAP + 1)
+        + odd_archimedean_crude_upper(TAIL_START, L2_EXTENDED_GAP + 1)
         > 2
     )

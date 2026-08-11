@@ -2615,10 +2615,100 @@ B[\{i,j,k\}]\succ0
 \quad(232\le i<j<k,\ k-i\le92).}                  \tag{E162}
 \]
 
-At \(d=93\), using the nearby rational radius \(943/1000\), the same contour
-majorant is \(2.3980326048\ldots\), so the proof budget fails there.  Again
-this is a frontier of the selected radii and absolute majorants, not a
-negative matrix witness.
+The circle maximum still discards the angular width of the peak.  That width
+can be retained without stationary-phase asymptotics.  On the circle
+\(z=xe^{i\theta}\), write
+
+\[
+R_x(\theta)=\left|\frac{1-\lambda xe^{i\theta}}
+{xe^{i\theta}-\lambda}\right|,
+\qquad y=1-\cos\theta.
+\]
+
+With
+
+\[
+a=\frac{2\lambda x}{(1-\lambda x)^2},\qquad
+b=\frac{2\lambda x}{(x-\lambda)^2},
+\]
+
+direct division gives
+
+\[
+\frac{R_x(\theta)^2}{R_x(0)^2}
+=\frac{1+ay}{1+by}
+\le1-c_xy\le e^{-c_xy},
+\qquad
+c_x=\frac{\lambda x(1-x^2)}
+{(1-\lambda x)^2(x+\lambda)^2}.                  \tag{E163}
+\]
+
+Indeed \(1-(1+ay)/(1+by)=(b-a)y/(1+by)\), and replacing
+\(1+by\) by \(1+2b\) gives exactly the displayed \(c_x\).  Apply
+Cauchy--Schwarz to the integral in (E158).  Since
+\(1-\cos\theta\ge2\theta^2/\pi^2\) on \([0,\pi]\),
+
+\[
+\begin{aligned}
+\left(\frac1\pi\int_0^\pi
+\left(\frac{R_x(\theta)}{R_x(0)}\right)^{2d}
+d\theta\right)^{1/2}
+&\le
+\left(\frac{\sqrt\pi}{2\sqrt{2dc_x}}\right)^{1/2}\\
+&=\left(\frac{\pi}{8dc_x}\right)^{1/4}.           \tag{E164}
+\end{aligned}
+\]
+
+Thus (E159) gains the multiplicative factor in (E164).  For a certificate
+free of transcendental evaluation, use \(\pi<22/7\), the same rational
+brackets for \(\lambda\), and
+
+\[
+\begin{array}{c|ccccc}
+d&93&94&95&96&97\\ \hline
+x_d&469/500&473/500&477/500&963/1000&971/1000\\
+F_d&179/500&183/500&47/125&49/125&103/250.
+\end{array}
+\]
+
+Exact rational fourth-power comparison proves
+\[
+F_d^4>\frac{11}{28d\,\underline c_{x_d}},
+\]
+where \(\underline c_x\) is obtained from (E163) by putting
+\(\underline\lambda\) in the numerator and in \(1-\lambda x\), and
+\(\overline\lambda\) in \(x+\lambda\).  Hence \(F_d\) is a rigorous upper
+bound for the factor in (E164).  Combining it with the \(p\ge3\) tail from
+(E154) gives, at \(d=93,94,95,96\), respectively,
+
+\[
+0.8974426128\ldots,\quad
+1.1377108675\ldots,\quad
+1.4653088169\ldots,\quad
+1.7380655007\ldots
+\]
+
+as upper bounds for the full off-diagonal entry, including its
+archimedean part.  All are below \(9/5\); the global maximum through this
+range remains the \(d=92\) value in (E161).  Therefore
+
+\[
+\boxed{|B_{m,m+d}|<\frac95
+\qquad(m\ge232,\ 1\le d\le96),}                   \tag{E165}
+\]
+
+and strict diagonal dominance proves
+
+\[
+\boxed{
+B[\{i,j,k\}]\succ0
+\quad(232\le i<j<k,\ k-i\le96).}                  \tag{E166}
+\]
+
+At \(d=97\) the same \(L^2\) majorant is
+\(2.0458728881\ldots\), so it no longer fits the diagonal budget.  This is
+a failure of the one-entry absolute estimate, not a negative matrix
+witness.
 
 At the analytic cutoff \(m=232\), (E130) already covers every gap
 \(d\le29\), rather than only the first two bands.  This does not yet prove
@@ -2664,7 +2754,7 @@ the bandwise archimedean--prime discrepancy (E126)--(E133) are checked
 coefficientwise over rational numbers (with a symbolic \(\log2\) component) by
 `jacobi_dilation_connection.py`.
 The Rodrigues moment inequalities, closed beta sums, uniform archimedean
-bounds, prime remainder, and local triple theorems (E134)--(E162) are
+bounds, prime remainder, and local triple theorems (E134)--(E166) are
 audited by `jacobi_local_band_bound.py`.
 The floating-point checks elsewhere in this audit are not used in place of
 the displayed analytic inequalities. Global claims still require all
