@@ -74,6 +74,24 @@ L1_FACTOR_UPPERS = {
     101: Fraction(2893, 10_000),
     102: Fraction(3047, 10_000),
 }
+SPLIT_EXTENDED_GAP = 106
+SPLIT_NORM_UPPER = Fraction(61, 50)
+SPLIT_RADIUS_OVERRIDES = {
+    102: Fraction(491, 500),
+    103: Fraction(123, 125),
+    104: Fraction(197, 200),
+    105: Fraction(493, 500),
+    106: Fraction(987, 1000),
+    107: Fraction(247, 250),
+}
+SPLIT_MAIN_FACTOR_UPPERS = {
+    102: Fraction(509, 2500),
+    103: Fraction(1069, 5000),
+    104: Fraction(137, 625),
+    105: Fraction(2253, 10_000),
+    106: Fraction(2321, 10_000),
+    107: Fraction(1199, 5000),
+}
 
 
 def beta_integer(left: int, right: int) -> Fraction:
@@ -384,6 +402,66 @@ def contour_two_dilation_l1_upper(m: int, gap: int) -> Fraction:
     return direct_contour_tight_upper(m, gap, radius) * l1_factor_upper(gap)
 
 
+def split_concentration_lower(gap: int) -> Fraction:
+    """Tight concentration lower bound at the split-contour radius."""
+
+    radius = SPLIT_RADIUS_OVERRIDES[gap]
+    return (
+        L1_LAMBDA_LOWER
+        * radius
+        * (1 - radius * radius)
+        / (
+            (1 - L1_LAMBDA_LOWER * radius) ** 2
+            * (radius + L1_LAMBDA_UPPER) ** 2
+        )
+    )
+
+
+def split_main_factor_upper(gap: int) -> Fraction:
+    """Rational upper bound for sqrt(pi/(8*d*c))."""
+
+    factor = SPLIT_MAIN_FACTOR_UPPERS[gap]
+    assert factor**2 > Fraction(11, 28 * gap) / split_concentration_lower(gap)
+    return factor
+
+
+def split_tail_factor_upper(gap: int) -> Fraction:
+    """Rational upper bound for exp(-d*c/2)/2."""
+
+    exponent = Fraction(gap, 2) * split_concentration_lower(gap)
+    exponential_denominator = (
+        1
+        + exponent
+        + exponent**2 / 2
+        + exponent**3 / 6
+        + exponent**4 / 24
+    )
+    return Fraction(1, 2) / exponential_denominator
+
+
+def split_l1_factor_upper(gap: int) -> Fraction:
+    """Main Gaussian arc plus the complementary exponential tail."""
+
+    return split_main_factor_upper(gap) + split_tail_factor_upper(gap)
+
+
+def contour_two_dilation_split_upper(m: int, gap: int) -> Fraction:
+    """Split-arc L1 bound with a sharper quadratic constant near zero."""
+
+    radius = SPLIT_RADIUS_OVERRIDES[gap]
+    norm_square = Fraction(2 * m + 2 * gap + 1, 2 * m + 1)
+    assert norm_square < SPLIT_NORM_UPPER**2
+    direct = (
+        SPLIT_NORM_UPPER
+        * Fraction(2 * m + 1, gap)
+        * L1_SQRT_TWO_UPPER
+        * radius ** (2 * m + gap + 1)
+        * (1 - L1_LAMBDA_LOWER * radius) ** gap
+        / (radius - L1_LAMBDA_UPPER) ** gap
+    )
+    return direct * split_l1_factor_upper(gap)
+
+
 def exact_two_dilation_square(m: int, gap: int) -> Fraction:
     """Exact square of Q_(m,m+d)(1/2), avoiding every square root."""
 
@@ -444,6 +522,20 @@ def l1_extended_prime_upper(m: int, gap: int) -> Fraction:
         * pfaff_mangoldt_tail_upper(m, gap)
     )
     return contour_two_dilation_l1_upper(m, gap) / 2 + tail
+
+
+def split_extended_prime_upper(m: int, gap: int) -> Fraction:
+    """Prime bound extended past gap 101 by splitting the angular arc."""
+
+    if gap <= L1_EXTENDED_GAP:
+        return l1_extended_prime_upper(m, gap)
+    tail = (
+        SPLIT_NORM_UPPER
+        * comb(2 * m + gap, gap)
+        * pfaff_hypergeometric_ratio(m, gap)
+        * pfaff_mangoldt_tail_upper(m, gap)
+    )
+    return contour_two_dilation_split_upper(m, gap) / 2 + tail
 
 
 def main() -> None:
@@ -679,6 +771,39 @@ def main() -> None:
         > Fraction(9, 5)
     )
 
+    # A half-circle split doubles the quadratic constant near zero.  The
+    # complementary arc is bounded by a fourth-order exponential series.
+    for gap in range(L1_EXTENDED_GAP + 1, SPLIT_EXTENDED_GAP + 2):
+        assert split_l1_factor_upper(gap) < 1
+        assert exact_two_dilation_square(TAIL_START, gap) < (
+            contour_two_dilation_split_upper(TAIL_START, gap) ** 2
+        )
+        assert split_extended_prime_upper(TAIL_START + 1, gap) < (
+            split_extended_prime_upper(TAIL_START, gap)
+        )
+
+    split_totals = list(l1_totals)
+    for gap in range(L1_EXTENDED_GAP + 1, SPLIT_EXTENDED_GAP + 1):
+        archimedean = (
+            odd_archimedean_crude_upper(TAIL_START, gap)
+            if gap % 2
+            else even_archimedean_crude_upper(TAIL_START, gap)
+        )
+        split_totals.append(
+            split_extended_prime_upper(TAIL_START, gap) + archimedean
+        )
+    assert max(split_totals) < Fraction(9, 5)
+    assert split_totals.index(max(split_totals)) + 1 == 106
+    split_next_archimedean = odd_archimedean_crude_upper(
+        TAIL_START,
+        SPLIT_EXTENDED_GAP + 1,
+    )
+    assert (
+        split_extended_prime_upper(TAIL_START, SPLIT_EXTENDED_GAP + 1)
+        + split_next_archimedean
+        > Fraction(9, 5)
+    )
+
     print(f"exact_moment_identity_checks={identity_checks}")
     print(f"max_prime_bound={float(max(prime_bounds)):.12e}")
     print("odd_archimedean_bound=1/gap")
@@ -695,6 +820,8 @@ def main() -> None:
     print("l2_tail_local_diameter=96")
     print(f"l1_total_bound={float(max(l1_totals)):.12e}")
     print("l1_tail_local_diameter=101")
+    print(f"split_total_bound={float(max(split_totals)):.12e}")
+    print("split_tail_local_diameter=106")
 
 
 if __name__ == "__main__":

@@ -2779,6 +2779,71 @@ At \(d=102\) the same rational \(L^1\) certificate gives
 \(1.8636453221\ldots>9/5\).  This moves the one-entry frontier to 102;
 it does not exhibit a negative entry or principal minor.
 
+The global quadratic estimate in (E167) is sharp at the wrong endpoint for
+this integral.  Split the arc at \(\pi/2\).  Concavity of sine on
+\([0,\pi/4]\) gives
+\[
+1-\cos\theta=2\sin^2(\theta/2)\ge\frac{4\theta^2}{\pi^2}
+\quad(0\le\theta\le\pi/2),
+\]
+while \(1-\cos\theta\ge1\) on the complementary half.  Therefore
+
+\[
+\frac1\pi\int_0^\pi e^{-dc_x(1-\cos\theta)/2}\,d\theta
+\le
+\frac{\sqrt\pi}{2\sqrt{2dc_x}}+\frac12e^{-dc_x/2}. \tag{E170}
+\]
+
+Both terms admit rational certificates.  For the Gaussian term use
+\(\pi<22/7\).  If \(z=dc_x/2\), then
+
+\[
+\frac12e^{-z}\le
+\frac1{2(1+z+z^2/2+z^3/6+z^4/24)}.
+\]
+
+Using the same tight brackets as in (E167), together with
+
+\[
+\begin{array}{c|rrrrrr}
+d&102&103&104&105&106&107\\ \hline
+x_d&491/500&123/125&197/200&493/500&987/1000&247/250\\
+M_d&509/2500&1069/5000&137/625&2253/10000&2321/10000&1199/5000,
+\end{array}
+\]
+
+the exact checks are \(M_d^2>11/(28d\underline c_{x_d})\); the rational
+Taylor denominator above supplies the tail in (E170).  Adding the
+\(p\ge3\) and archimedean contributions gives, for \(d=102,\ldots,106\),
+
+\[
+1.4109050220\ldots,\quad
+1.5404231153\ldots,\quad
+1.6040954368\ldots,\quad
+1.7230093611\ldots,\quad
+1.7779607166\ldots.
+\]
+
+Hence
+
+\[
+\boxed{|B_{m,m+d}|<\frac95
+\qquad(m\ge232,\ 1\le d\le106),}                  \tag{E171}
+\]
+
+and
+
+\[
+\boxed{
+B[\{i,j,k\}]\succ0
+\quad(232\le i<j<k,\ k-i\le106).}                 \tag{E172}
+\]
+
+At \(d=107\) the same split-arc certificate is
+\(1.8882666915\ldots>9/5\).  The remaining loss is now within the main
+Gaussian arc, so a further subdivision of the exponentially small tail
+cannot by itself cross this frontier.
+
 At the analytic cutoff \(m=232\), (E130) already covers every gap
 \(d\le29\), rather than only the first two bands.  This does not yet prove
 positivity of the corresponding full blocks: the archimedean contribution
@@ -2823,7 +2888,7 @@ the bandwise archimedean--prime discrepancy (E126)--(E133) are checked
 coefficientwise over rational numbers (with a symbolic \(\log2\) component) by
 `jacobi_dilation_connection.py`.
 The Rodrigues moment inequalities, closed beta sums, uniform archimedean
-bounds, prime remainder, and local triple theorems (E134)--(E169) are
+bounds, prime remainder, and local triple theorems (E134)--(E172) are
 audited by `jacobi_local_band_bound.py`.
 The floating-point checks elsewhere in this audit are not used in place of
 the displayed analytic inequalities. Global claims still require all

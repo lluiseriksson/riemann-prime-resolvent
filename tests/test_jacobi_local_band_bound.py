@@ -15,6 +15,7 @@ from experiments.theta_pencil.jacobi_local_band_bound import (
     MAX_GAP,
     PFAFF_EXTENDED_GAP,
     SQRT_TWO_UPPER,
+    SPLIT_EXTENDED_GAP,
     TAIL_START,
     binomial_one_step_ratio,
     closed_j_one,
@@ -23,6 +24,7 @@ from experiments.theta_pencil.jacobi_local_band_bound import (
     contour_two_dilation_upper,
     contour_two_dilation_l2_upper,
     contour_two_dilation_l1_upper,
+    contour_two_dilation_split_upper,
     crude_prime_upper,
     even_archimedean_rational_upper,
     even_archimedean_crude_upper,
@@ -32,6 +34,8 @@ from experiments.theta_pencil.jacobi_local_band_bound import (
     l2_factor_upper,
     l1_extended_prime_upper,
     l1_factor_upper,
+    split_extended_prime_upper,
+    split_l1_factor_upper,
     odd_upper_polynomial,
     odd_archimedean_crude_upper,
     normalized_jacobi_coefficients,
@@ -228,5 +232,33 @@ def test_l1_width_101_budget_and_uniformity() -> None:
     assert (
         l1_extended_prime_upper(TAIL_START, L1_EXTENDED_GAP + 1)
         + even_archimedean_crude_upper(TAIL_START, L1_EXTENDED_GAP + 1)
+        > Fraction(9, 5)
+    )
+
+
+def test_split_width_106_budget_and_uniformity() -> None:
+    totals = []
+    for gap in range(1, SPLIT_EXTENDED_GAP + 1):
+        archimedean = (
+            odd_archimedean_crude_upper(TAIL_START, gap)
+            if gap % 2
+            else even_archimedean_crude_upper(TAIL_START, gap)
+        )
+        totals.append(
+            split_extended_prime_upper(TAIL_START, gap) + archimedean
+        )
+        if gap > L1_EXTENDED_GAP:
+            assert split_l1_factor_upper(gap) < 1
+            assert exact_two_dilation_square(TAIL_START, gap) < (
+                contour_two_dilation_split_upper(TAIL_START, gap) ** 2
+            )
+            assert split_extended_prime_upper(TAIL_START + 1, gap) < (
+                split_extended_prime_upper(TAIL_START, gap)
+            )
+    assert max(totals) < Fraction(9, 5)
+    assert totals.index(max(totals)) + 1 == 106
+    assert (
+        split_extended_prime_upper(TAIL_START, SPLIT_EXTENDED_GAP + 1)
+        + odd_archimedean_crude_upper(TAIL_START, SPLIT_EXTENDED_GAP + 1)
         > Fraction(9, 5)
     )
