@@ -35,6 +35,8 @@ from experiments.theta_pencil.jacobi_local_band_bound import (
     contour_two_dilation_bessel_upper,
     contour_three_dilation_bessel_upper,
     contour_four_dilation_bessel_upper,
+    complementary_contour_tail_upper,
+    complementary_start_for_target,
     crude_prime_upper,
     even_archimedean_rational_upper,
     even_archimedean_crude_upper,
@@ -48,6 +50,9 @@ from experiments.theta_pencil.jacobi_local_band_bound import (
     l1_factor_upper,
     split_extended_prime_upper,
     split_l1_factor_upper,
+    scaled_contour_coefficient_upper,
+    scaled_contour_dilation_upper,
+    scaled_contour_multiplier,
     rational_bessel_factor_upper,
     robust_three_by_three_determinant_lower,
     three_split_prime_upper,
@@ -372,3 +377,34 @@ def test_uniform_integer_tail_after_145_extractions() -> None:
             )
             checks += 1
     assert checks == 16
+
+
+def test_scaled_contour_dilation_bound_in_complementary_region() -> None:
+    checks = 0
+    for m, gaps in ((2, (2, 5, 12)), (5, (8, 20)), (8, (14, 32))):
+        for gap in gaps:
+            multiplier = scaled_contour_multiplier(m, gap)
+            denominator = (
+                multiplier.numerator * multiplier.numerator
+                // (multiplier.denominator * multiplier.denominator)
+                + 2
+            )
+            while denominator <= multiplier * multiplier:
+                denominator += 1
+            bound = scaled_contour_dilation_upper(m, gap, denominator)
+            assert exact_dilation_square(m, gap, denominator) < bound * bound
+            checks += 1
+    assert checks == 7
+
+
+def test_complementary_tail_has_exact_finite_cutoff() -> None:
+    checks = 0
+    for m, gap in ((2, 2), (3, 8), (8, 14), (32, 100), (232, 462)):
+        target = Fraction(1, 2**m)
+        start = complementary_start_for_target(m, gap, target)
+        assert complementary_contour_tail_upper(m, gap, start) < target
+        multiplier = scaled_contour_multiplier(m, gap)
+        assert start - 1 > multiplier * multiplier
+        assert scaled_contour_coefficient_upper(m, gap) > 0
+        checks += 1
+    assert checks == 5

@@ -11,7 +11,7 @@ from __future__ import annotations
 
 from functools import lru_cache
 from fractions import Fraction
-from math import comb, factorial
+from math import comb, factorial, isqrt
 
 try:
     from experiments.theta_pencil.jacobi_dilation_connection import rising
@@ -353,6 +353,123 @@ def uniform_extracted_tail_upper(m: int) -> Fraction:
 
     assert m >= 2
     return 8 * Fraction(144, 145) ** m
+
+
+def scaled_contour_multiplier(m: int, gap: int) -> Fraction:
+    """The entropy-optimal multiplier t=1+d/(2m+1)."""
+
+    assert m >= 1
+    assert gap >= 2
+    return Fraction(2 * m + gap + 1, 2 * m + 1)
+
+
+def scaled_contour_coefficient_upper(m: int, gap: int) -> Fraction:
+    """Rational coefficient in the moving-radius Jacobi bound.
+
+    With ``t=1+d/(2m+1)`` and ``x=t/sqrt(r)``, the general contour
+    representation gives
+
+        abs(Q_(m,m+d)(1/r))
+          < C_(m,d) r^(-m) (1-t/r)^d,
+
+    whenever ``r>t^2``.  A strict rational enclosure of the square-root
+    normalization produces the exact certificate returned here.
+    """
+
+    multiplier = scaled_contour_multiplier(m, gap)
+    norm_square = Fraction(2 * m + 2 * gap + 1, 2 * m + 1)
+    # sqrt(p/q)=sqrt(p*q)/q.  The next integer is a strict rational upper
+    # enclosure, including when p*q happens to be a square.
+    norm_upper = Fraction(
+        isqrt(norm_square.numerator * norm_square.denominator) + 1,
+        norm_square.denominator,
+    )
+    assert norm_upper * norm_upper > norm_square
+    return (
+        norm_upper
+        * Fraction(2 * m + 1, gap)
+        * multiplier ** (2 * m + gap + 1)
+        / (multiplier - 1) ** gap
+    )
+
+
+def scaled_contour_dilation_upper(
+    m: int,
+    gap: int,
+    denominator: int,
+) -> Fraction:
+    """Moving-radius upper bound for one Jacobi dilation.
+
+    This helper is entirely rational even though its underlying contour
+    radius is ``t/sqrt(denominator)``.  The assertion is precisely the
+    requirement that this radius lie between ``1/sqrt(r)`` and one.
+    """
+
+    assert denominator >= 2
+    multiplier = scaled_contour_multiplier(m, gap)
+    assert denominator > multiplier * multiplier
+    return (
+        scaled_contour_coefficient_upper(m, gap)
+        * Fraction(1, denominator**m)
+        * (1 - multiplier / denominator) ** gap
+    )
+
+
+def rational_log_upper(integer: int) -> int:
+    """Elementary integer upper bound for the natural logarithm.
+
+    For ``integer>=2``, ``log(integer)<log_2(integer)<bit_length`` because
+    ``log(2)<1``.  Returning an integer keeps the tail certificate exact.
+    """
+
+    assert integer >= 2
+    return integer.bit_length()
+
+
+def complementary_contour_tail_upper(
+    m: int,
+    gap: int,
+    start: int,
+) -> Fraction:
+    """Prime-dilation tail bound valid for every gap.
+
+    The sum starts at the integer ``start`` and includes composite integers;
+    hence it majorizes the Mangoldt-supported tail.  Set ``base=start-1``.
+    The condition ``base>t^2`` makes the moving contour valid throughout the
+    integration interval, and the integral of ``log(x)x^(-m-1)`` supplies
+    the final two factors.
+    """
+
+    assert m >= 2
+    assert gap >= 2
+    assert start >= 3
+    base = start - 1
+    multiplier = scaled_contour_multiplier(m, gap)
+    assert base > multiplier * multiplier
+    logarithm = rational_log_upper(base)
+    return (
+        scaled_contour_coefficient_upper(m, gap)
+        * Fraction(1, base**m)
+        * (Fraction(logarithm, m) + Fraction(1, m * m))
+    )
+
+
+def complementary_start_for_target(
+    m: int,
+    gap: int,
+    target: Fraction,
+) -> int:
+    """Find an exact finite cutoff whose certified tail is below target."""
+
+    assert m >= 2
+    assert gap >= 2
+    assert target > 0
+    multiplier_square = scaled_contour_multiplier(m, gap) ** 2
+    base = multiplier_square.numerator // multiplier_square.denominator + 1
+    base = max(base, 2)
+    while complementary_contour_tail_upper(m, gap, base + 1) >= target:
+        base *= 2
+    return base + 1
 
 
 def extracted_pfaff_tail_contribution_upper(
@@ -1251,6 +1368,15 @@ def main() -> None:
             )
             uniform_tail_checks += 1
 
+    # A moving contour retains r^(-m) and reduces the infinite dilation tail
+    # to an exact finite cutoff even in the complementary large-gap region.
+    complementary_cutoffs = []
+    for m, gap in ((232, 462), (232, 1000), (232, 10_000)):
+        target = Fraction(1, 2**m)
+        start = complementary_start_for_target(m, gap, target)
+        assert complementary_contour_tail_upper(m, gap, start) < target
+        complementary_cutoffs.append((m, gap, start))
+
     print(f"exact_moment_identity_checks={identity_checks}")
     print(f"max_prime_bound={float(max(prime_bounds)):.12e}")
     print("odd_archimedean_bound=1/gap")
@@ -1285,6 +1411,7 @@ def main() -> None:
     print(f"robust_triple_determinant_lower={float(determinant):.12e}")
     print("robust_tail_local_diameter=122")
     print(f"uniform_extracted_tail_checks={uniform_tail_checks}")
+    print(f"complementary_contour_cutoffs={complementary_cutoffs}")
 
 
 if __name__ == "__main__":

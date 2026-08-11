@@ -3060,12 +3060,112 @@ prime-tail estimate
 \qquad(1\le d<2(m-1)).}                            \tag{E182}
 \]
 
-Thus infinitely many prime powers can be removed from the analytic gate at
-once: inside the wedge, only the 144 explicit dilations \(r=2,\ldots,145\)
-remain, plus an exponentially decaying error.  This is not RH.  A global
-argument must still preserve cancellation among those finite dilations and
-the archimedean term, and must control the complementary region
-\(d\ge2(m-1)\).
+For \(d\ge2\), the apparent loss outside this linear wedge comes from keeping the contour
+radius fixed while the Jacobi parameter changes.  A moving radius restores
+the missing power of the dilation.  Put
+
+\[
+ a=2m+1,
+ \qquad
+ t=1+\frac d a=\frac{2m+d+1}{2m+1}.
+\]
+
+For an integer \(r>t^2\), specialize the general form of (E159) to
+\(\lambda=r^{-1/2}\) and choose \(x=t\lambda\).  This is an admissible
+contour radius.  Moreover
+
+\[
+ \frac{1-\lambda x}{x-\lambda}
+ =\sqrt r\,\frac{1-t/r}{t-1}.
+\]
+
+The powers of \(r\) in (E159) then cancel exactly down to \(r^{-m}\).
+Writing
+\(N_{m,d}=\sqrt{(2m+2d+1)/(2m+1)}=\sqrt{2t-1}\) gives the all-gap
+estimate
+
+\[
+ \boxed{
+ |Q_{m,m+d}(1/r)|
+ \le C_{m,d}\,r^{-m}(1-t/r)^d,
+ \qquad
+ C_{m,d}:=N_{m,d}\frac{t^{\,2m+d+1}}{(t-1)^{d+1}}.}
+                                                               \tag{E183}
+\]
+
+No asymptotic theorem is used here: (E183) is just the exact contour
+representation with an explicit radius.  It applies, in particular, in the
+previously untreated region \(d\ge2(m-1)\).
+
+The square root can be enclosed rationally.  If
+\(N_{m,d}^2=P/Q\) in lowest terms, set
+
+\[
+ \widehat N_{m,d}=\frac{\lfloor\sqrt{PQ}\rfloor+1}{Q},
+ \qquad
+ \widehat C_{m,d}
+ =\widehat N_{m,d}\frac{t^{\,2m+d+1}}{(t-1)^{d+1}}.
+                                                               \tag{E184}
+\]
+
+Then \(\widehat N_{m,d}>N_{m,d}\), using integer arithmetic only.  Let
+\(R\ge3\), \(b=R-1>t^2\), and
+\(L(b)=1+\lfloor\log_2 b\rfloor\).  Since
+\(\Lambda(r)\le\log r\), while \(\log b<L(b)\), and
+\(\log x\,x^{-m-1}\) is decreasing for \(x\ge2\) when \(m\ge2\), the
+integral test yields
+
+\[
+ \boxed{
+ \sum_{r\ge R}\frac{\Lambda(r)}r
+       |Q_{m,m+d}(1/r)|
+ <\widehat C_{m,d}\,b^{-m}
+   \left(\frac{L(b)}m+\frac1{m^2}\right).}         \tag{E185}
+\]
+
+This is a terminating rational certificate for every \((m,d)\), with no
+restriction on the gap.  For any prescribed rational \(\varepsilon>0\),
+doubling \(b\) until the right-hand side of (E185) is below
+\(\varepsilon\) produces a finite cutoff.  At fixed \(m\),
+
+\[
+ C_{m,d}
+ =\sqrt{2t-1}\,t^{2m}
+   \left(\frac{t}{t-1}\right)^{d+1}
+ =O_m\!\left(t^{\,2m+1/2}\right),
+ \qquad
+ \widehat C_{m,d}=O_m\!\left(t^{\,2m+1/2}\right),
+\]
+
+so a cutoff of scale
+
+\[
+ b=O_{m,\varepsilon}\!\left(
+ t^{\,2+1/(2m)}(\log t)^{1/m}\right)              \tag{E186}
+\]
+
+suffices.  Thus the dilation cutoff is essentially quadratic in
+\(1+d/(2m+1)\); for \(m\ge232\), the power is at most
+\(2+1/464\).
+
+The exact implementation, with target \(2^{-m}\), returns the following
+registered (not claimed minimal) cutoffs:
+
+\[
+\begin{array}{c|r|r|r}
+m&d&t&R\\ \hline
+232&462&1.993548\ldots&33\\
+232&1000&3.150537\ldots&161\\
+232&10000&22.505376\ldots&8113.
+\end{array}
+\]
+
+Thus infinitely many prime powers can now be removed from the analytic gate
+at every gap: inside the linear wedge, (E182) leaves the fixed dilations
+\(2\le r\le145\); outside it, (E185) leaves a finite but gap-dependent
+set \(2\le r<R(m,d)\).  This is not RH.  A global argument must still
+preserve the signed cancellation of those finite dilations with the
+archimedean term and prove coercivity uniformly in \((m,d)\).
 
 At the analytic cutoff \(m=232\), (E130) already covers every gap
 \(d\le29\), rather than only the first two bands.  This does not yet prove
