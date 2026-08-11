@@ -116,10 +116,12 @@ analytic gate is a uniform weighted-tail estimate for these necessarily
 ill-conditioned interpolants, not their finite construction. An explicit
 Riemann--von Mangoldt bound combined with complex Kadec sampling goes further:
 that tail estimate is impossible in \(PW_a\) for
-\(a<0.83525\ldots\). Hence the rational-localization mechanism is now closed
-for a hypothetical first crossing in \(0.72<a_*<0.83525\ldots\); no known
-argument places every hypothetical first crossing in that interval, so larger
-support remains open.
+\(a<0.83525\ldots\). Pairing the conjugate spectral samples cancels the
+vertical perturbation to first order and raises the rigorous obstruction to
+\(a<0.9707804201\ldots\). Hence the rational-localization mechanism is now
+closed for a hypothetical first crossing in
+\(0.72<a_*<0.9707804201\ldots\); no known argument places every hypothetical
+first crossing in that interval, so larger support remains open.
 
 ## Why this track is different
 

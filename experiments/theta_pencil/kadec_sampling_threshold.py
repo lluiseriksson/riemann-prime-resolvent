@@ -31,6 +31,24 @@ def main() -> None:
     scaled_kadec_radius = math.sqrt(3.0 * alpha / 8.0)
     critical_type = scaled_kadec_radius / limiting_displacement
 
+    def paired_margin(pw_type: float) -> float:
+        phase = pw_type * limiting_interval / 2.0
+        kadec_defect = 1.0 - math.cos(phase) + math.sin(phase)
+        even_vertical_defect = math.cosh(pw_type / 2.0) - 1.0
+        return (
+            (1.0 - kadec_defect)
+            - (1.0 + kadec_defect) * even_vertical_defect
+        )
+
+    paired_lo = 0.0
+    paired_hi = math.pi / (2.0 * limiting_interval)
+    for _ in range(80):
+        paired_mid = (paired_lo + paired_hi) / 2.0
+        if paired_margin(paired_mid) > 0.0:
+            paired_lo = paired_mid
+        else:
+            paired_hi = paired_mid
+
     # A strict, usable pair on the proved side of the limiting inequalities.
     test_interval = 1.31
     test_type = 0.83
@@ -42,6 +60,7 @@ def main() -> None:
         "limiting_complex_displacement": limiting_displacement,
         "scaled_complex_kadec_radius": scaled_kadec_radius,
         "critical_paley_wiener_type": critical_type,
+        "conjugate_pair_paley_wiener_type": paired_lo,
         "strict_test": {
             "interval_length": test_interval,
             "type": test_type,
@@ -60,6 +79,9 @@ def main() -> None:
     assert result["strict_test"]["zero_count_leading_margin"] > 0.0
     assert result["strict_test"]["kadec_margin"] > 0.0
     assert 0.8352 < critical_type < 0.8353
+    assert 0.9707 < paired_lo < 0.9709
+    assert paired_margin(0.97) > 0.0
+    assert paired_margin(0.98) < 0.0
 
 
 if __name__ == "__main__":

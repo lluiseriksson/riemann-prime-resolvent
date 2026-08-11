@@ -837,6 +837,107 @@ upper bound \(a_*<a_{\mathrm K}\) for a hypothetical first crossing is known.
 It therefore closes a genuine parameter range of the proposed mechanism, not
 the Riemann hypothesis.
 
+### Proposition 4.5 (conjugate-pair improvement)
+
+Let \(L_0=4\pi A_0\), and put
+
+\[
+ q_a=1-\cos(aL_0/2)+\sin(aL_0/2),
+ \qquad
+ \varepsilon_a=\cosh(a/2)-1.                                 \tag{KP1}
+\]
+
+Let \(a_{\mathrm P}=0.9707804201\ldots\) be the first positive solution of
+
+\[
+ (1-q_a)-(1+q_a)\varepsilon_a=0.                              \tag{KP2}
+\]
+
+Then the sampling inequality (KS2), with a possibly different finite defect
+family, and hence the impossibility of (RTL), hold for every
+
+\[
+ \boxed{0<a<a_{\mathrm P}.}                                  \tag{KP3}
+\]
+
+### Proof
+
+Choose \(L>L_0\) sufficiently close to \(L_0\). As in Proposition 4.4,
+select a spectral point
+\(\gamma_n=x_n+iy_n\) above each sufficiently remote lattice site
+\(n\pi/a\), now recording separately that
+
+\[
+ |x_n-n\pi/a|\le L/2,
+ \qquad |y_n|<1/2.                                           \tag{KP4}
+\]
+
+The real Kadec proof gives the synthesis operator
+
+\[
+ T_xc=\sum_n c_ne^{ix_nt}
+\]
+
+the normalized bounds
+
+\[
+ (1-q_{a,L})\|c\|_{\ell^2}\le\|T_xc\|_2
+ \le(1+q_{a,L})\|c\|_{\ell^2},
+ \quad
+ q_{a,L}=1-\cos(aL/2)+\sin(aL/2),                            \tag{KP5}
+\]
+
+provided \(aL/(2\pi)<1/4\). Instead of treating the vertical displacement
+as an arbitrary complex perturbation, pair the two spectral points forced by
+the functional equation:
+
+\[
+ \frac{e^{i(x_n+iy_n)t}+e^{i(x_n-iy_n)t}}2
+ =e^{ix_nt}\cosh(y_nt).                                      \tag{KP6}
+\]
+
+The linear imaginary perturbation has disappeared. Expanding the remaining
+factor and applying the upper bound in (KP5) at each even order gives
+
+\[
+\begin{aligned}
+ \left\|\sum_n c_ne^{ix_nt}(\cosh(y_nt)-1)\right\|_2
+ &\le(1+q_{a,L})
+   \sum_{k\ge1}\frac{(a/2)^{2k}}{(2k)!}\|c\|_{\ell^2}\\
+ &=(1+q_{a,L})(\cosh(a/2)-1)\|c\|_{\ell^2}.                 \tag{KP7}
+\end{aligned}
+\]
+
+Therefore the paired family in (KP6) is a Riesz basis whenever
+
+\[
+ (1-q_{a,L})-(1+q_{a,L})\varepsilon_a>0.                     \tag{KP8}
+\]
+
+For \(L\downarrow L_0\), condition (KP8) is precisely \(a<a_{\mathrm P}\).
+It also implies the real Kadec condition at this first root. The remote paired
+family consequently spans a finite-codimensional subspace. Complete it by
+finitely many spectral derivative kernels exactly as in Proposition 4.4.
+Finally,
+
+\[
+ \left|\frac{G(x_n+iy_n)+G(x_n-iy_n)}2\right|^2
+ \le\frac{|G(x_n+iy_n)|^2+|G(x_n-iy_n)|^2}{2},               \tag{KP9}
+\]
+
+so the resulting lower frame bound is controlled by the same value-sample
+tail appearing in (RTL). Exhaustive Hermite cancellation would again force
+\(\|g_H\|_2\to0\), contradicting \(G_H(\gamma_0)=i\). \(\square\)
+
+The improvement from \(a_{\mathrm K}\) to \(a_{\mathrm P}\) uses the full
+quartet symmetry rather than treating the imaginary displacement as noise.
+It still leaves \(a_*\ge a_{\mathrm P}\) open. Extending the argument by
+packing several value samples into each lattice cell would require uniform
+control of distinct, separated spectral points. Riemann--von Mangoldt counts
+multiplicity, while (RTL) controls values rather than derivative samples;
+known average estimates for high multiplicities do not provide that uniform
+local separation.
+
 ## 4. Exact parity-gap identity
 
 Although multiplicity is no longer a separate logical branch, parity
@@ -916,7 +1017,8 @@ fully explicit route into that gate: prove the uniform tail localization
 (RTL) for the rational division family. The finite interpolation and every
 algebraic cancellation required by that route are already unconditional.
 Proposition 4.3 forces superexponential norm growth for any exhaustive
-cancellation, and Proposition 4.4 rules out (RTL) altogether below
-\(a=0.83525\ldots\). For larger support the moving infinite tail remains
+cancellation. Proposition 4.4 gives the first sampling obstruction and the
+conjugate-pair refinement in Proposition 4.5 rules out (RTL) altogether below
+\(a=0.9707804201\ldots\). For larger support the moving infinite tail remains
 uncontrolled. Neither that surviving case nor an alternative exclusion is
 declared solved here.
