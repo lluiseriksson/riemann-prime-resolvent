@@ -2523,11 +2523,11 @@ longer fits the diagonal budget.  This is again a failure of this absolute
 majorant, not a negative matrix witness.
 
 The cancellation at the central value can in fact be retained by a contour
-estimate.  Specialize the integral representation of
+estimate.  Specialize Lemma 2 (the two-integral representation) of
 [Szehr--Zarouf](https://arxiv.org/abs/1605.02509) to
 \(\lambda=2^{-1/2}\), \(\alpha=0\), \(\beta=1\), \(n=d-1\), and
 \(a=(2m+1)/n\).  Since \(an+\alpha=2m+1\) is an integer, the second
-integral in their representation vanishes.  Taking absolute values on the
+integral, whose coefficient is \(\sin(\pi(an+\alpha))\), vanishes.  Taking absolute values on the
 circle of radius \(x\in(\lambda,1)\) gives
 
 \[
@@ -2935,8 +2935,9 @@ does not yet imply positivity of the infinite Jacobi operator.
 
 The rapid loss in the Pfaff remainder at the next gap is caused almost
 entirely by its first omitted integer, \(r=3\), rather than by the full
-prime tail.  The contour argument is not special to \(r=2\).  Applying the
-same Szehr--Zarouf specialization with \(\lambda=3^{-1/2}\) gives
+prime tail.  The contour argument is not special to \(r=2\): Lemma 2 is
+stated for every \(\lambda\in(0,1)\).  Applying the same specialization
+with \(\lambda=3^{-1/2}\) gives
 
 \[
 |Q_{m,m+d}(1/3)|\le
