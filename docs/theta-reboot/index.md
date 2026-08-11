@@ -148,6 +148,14 @@ For every nonzero kernel vector there is a least
 formula has prime weights \(\Lambda(n)(\log n)^{2s}/\sqrt n\) and one
 overall alternating sign.  This supplies a strict finite signed gate for
 every kernel dimension, while leaving its arithmetic exclusion open.
+The commutator hierarchy also has a global form.  Every null vector obeys
+\(Q_W^a(e^{itx}w)\ge\Delta\|Qe^{itX}w\|^2\) for all real \(t\).  In a
+simple kernel this is
+\(\Delta(\|w\|^2-|\widehat{w^2}(-t)|^2/\|w\|^2)\), strictly positive away
+from zero.  The source side retains every prime correlation with weight
+\(1-\cos(t\log n)\); its second derivative at zero is the former
+double-commutator rule.  This continuum gate uses the null equation and gap,
+but its global prime--cusp exclusion remains open.
 Real-rootedness nevertheless fixes more of this source expression than a
 pointwise argument suggests.  If \(r\) is the zero order and
 \(J_j=\iint(x-y)^{2j}w(x)w(y)\), then \(J_j=0\) below \(r\) and

@@ -1157,6 +1157,171 @@ the kernel multiplicity, and the sign in (PC19) alternates with \(s\).
 Consequently a closure still has to control the complete signed
 prime--archimedean combination, not its terms separately.
 
+### Proposition 4.1a.7 (global modulation--gap gate)
+
+Let \(0\ne w\in\ker A\) be real and let \(\Delta>0\) be the spectral gap of
+\(A\) on \(Q L^2\).  For \(t\in\mathbb R\), define
+
+\[
+ \mathcal E_w(t)=Q_W^{a_*}(e^{it\,\cdot}w).
+\]
+
+Then modulation preserves the form domain and
+
+\[
+ \boxed{
+ \mathcal E_w(t)\ge
+ \Delta\,\|Q(e^{itX}w)\|_2^2\ge0.}                       \tag{MG1}
+\]
+
+Moreover this energy has the exact source-side representation
+
+\[
+\boxed{
+\begin{aligned}
+ \mathcal E_w(t)={}&
+ \frac12\iint
+  \frac{1-\cos(t(x-y))}{|x-y|}w(x)w(y)\,dx\,dy\\
+ &+\iint r''(x-y)\{1-\cos(t(x-y))\}w(x)w(y)\,dx\,dy\\
+ &+2\sum_{2\le n\le e^{2a_*}}
+   \frac{\Lambda(n)}{\sqrt n}
+   \{1-\cos(t\ell_n)\}C_w(\ell_n),
+ \qquad \ell_n=\log n .
+\end{aligned}}                                             \tag{MG2}
+\]
+
+If the first-crossing kernel is one-dimensional, put
+
+\[
+ K_w(t)=\int_{-a_*}^{a_*}e^{itx}w(x)^2\,dx .
+\]
+
+Orthogonal projection onto \(\mathbb Cw\) sharpens (MG1) to
+
+\[
+ \boxed{
+ \mathcal E_w(t)\ge
+ \Delta\left(
+ \|w\|_2^2-\frac{|K_w(t)|^2}{\|w\|_2^2}
+ \right)>0\qquad(t\ne0).}                                \tag{MG3}
+\]
+
+Thus a simple first crossing must satisfy a continuum of strict signed
+prime--archimedean inequalities, not merely the second-order condition
+(PC10).  Indeed,
+
+\[
+ \boxed{\mathcal E_w''(0)=\langle w,Dw\rangle}             \tag{MG4}
+\]
+
+and differentiating (MG2) twice gives exactly (PC12).
+
+#### Proof
+
+For fixed \(t\), multiplication by \(e^{itx}\) preserves the localized form
+domain.  On the Fourier side it translates the transform by \(t\), and the
+logarithmic form weight at \(\xi+t\) is bounded by a fixed multiple of the
+weight at \(\xi\); the remaining smooth and finite-translation pieces are
+bounded.  Since \(A\succeq\Delta Q\) in the quadratic-form sense, applying
+this inequality to \(e^{itX}w\) proves (MG1).
+
+The off-diagonal kernels of \(A\) are
+
+\[
+ -\frac1{2|x-y|},\qquad -r''(x-y),\qquad
+ -\frac{\Lambda(n)}{\sqrt n}(T_{\ell_n}^++T_{\ell_n}^-).
+\]
+
+All multiplication terms are unchanged by modulation.  Subtract
+\(Q_W^{a_*}(w)=0\), pair conjugate phases, and use
+\(\langle w,(T_\ell^++T_\ell^-)w\rangle=2C_w(\ell)\).
+The factors \(1-\cos\) remove the singularity at \(x=y\), and the result is
+(MG2), first on the form core and then by closure.
+
+If \(\ker A=\mathbb Cw\), then
+
+\[
+ P(e^{itX}w)=\frac{K_w(t)}{\|w\|_2^2}w,
+ \qquad
+ \|Q(e^{itX}w)\|_2^2
+ =\|w\|_2^2-\frac{|K_w(t)|^2}{\|w\|_2^2}.
+\]
+
+For \(t\ne0\), equality in
+\(|K_w(t)|\le\int w^2=\|w\|_2^2\) would force \(e^{itx}\) to have constant
+phase on a positive-measure set supporting \(w^2\), which is impossible.
+This proves the strict inequality in (MG3).  Finally two differentiations of
+\(e^{-itX}Ae^{itX}\) at zero give \([X,[A,X]]=D\), proving (MG4). \(\square\)
+
+### Corollary 4.1a.8 (radial resolvent form of the modulation gate)
+
+For every \(s>0\), the same null vector satisfies
+
+\[
+\boxed{
+\begin{aligned}
+ &\frac12\iint
+   \frac{|x-y|}{s^2+(x-y)^2}w(x)w(y)\,dx\,dy\\
+ &\quad+\iint r''(x-y)
+   \frac{(x-y)^2}{s^2+(x-y)^2}w(x)w(y)\,dx\,dy\\
+ &\quad+2\sum_{2\le n\le e^{2a_*}}
+   \frac{\Lambda(n)}{\sqrt n}
+   \frac{\ell_n^2}{s^2+\ell_n^2}C_w(\ell_n)\\
+ &\qquad\ge
+ \Delta s\int_0^\infty e^{-st}\|Q(e^{itX}w)\|_2^2\,dt
+ \ge0 .
+\end{aligned}}                                             \tag{MR1}
+\]
+
+If \(\ker A=\mathbb Cw\), this becomes the strictly positive radial margin
+
+\[
+\boxed{
+\begin{aligned}
+ &\frac12\iint
+   \frac{|x-y|}{s^2+(x-y)^2}w(x)w(y)\,dx\,dy\\
+ &\quad+\iint r''(x-y)
+   \frac{(x-y)^2}{s^2+(x-y)^2}w(x)w(y)\,dx\,dy\\
+ &\quad+2\sum_{2\le n\le e^{2a_*}}
+   \frac{\Lambda(n)}{\sqrt n}
+   \frac{\ell_n^2}{s^2+\ell_n^2}C_w(\ell_n)\\
+ &\qquad\ge
+ \frac{\Delta}{\|w\|_2^2}
+ \iint\frac{(x-y)^2}{s^2+(x-y)^2}
+       w(x)^2w(y)^2\,dx\,dy>0 .
+\end{aligned}}                                             \tag{MR2}
+\]
+
+Indeed,
+
+\[
+ s\int_0^\infty e^{-st}\{1-\cos(tu)\}\,dt
+ =\frac{u^2}{s^2+u^2}.                                    \tag{MR3}
+\]
+
+Multiply (MG1)--(MG2) by \(se^{-st}\), integrate, and use Tonelli on the
+nonnegative gap term and dominated convergence on the finite-support source
+terms.  In the simple case,
+
+\[
+\begin{aligned}
+ s\int_0^\infty e^{-st}|K_w(t)|^2\,dt
+ &=\iint w(x)^2w(y)^2
+   \frac{s^2}{s^2+(x-y)^2}\,dx\,dy,
+\end{aligned}
+\]
+
+which turns (MG3) into (MR2).  The last integral in (MR2) is strict because
+the diagonal has two-dimensional measure zero while \(w^2\) has positive
+mass. \(\square\)
+
+The factors \(u^2/(s^2+u^2)\) are the same radial resolvent atoms that drive
+the Hausdorff formulation, but here they act on physical differences and
+prime lags.  Corollary 4.1a.8 is therefore a genuine bridge between the
+first-crossing gap and the radial programme.  It does not identify the
+witness-zero measure with the xi-zero measure, and no upper estimate
+contradicting (MR2) is currently known.
+
 ### Proposition 4.1b (the Hausdorff measure of a pure-parity witness)
 
 Assume there is a pure-parity real-rooted null vector at the first crossing,
