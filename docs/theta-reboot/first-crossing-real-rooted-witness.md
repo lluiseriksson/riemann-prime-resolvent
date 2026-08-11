@@ -1614,6 +1614,66 @@ boundary can contain non-universal information only through a genuinely
 multidimensional kernel. This is an exact common-factor no-go, not evidence
 that the first-crossing kernel is multiple.
 
+### Corollary 4.9c (the scalar resolvent residue recovers the witness measure)
+
+Continue to assume that \(K_0=\mathbb C v\), let \(F=\widehat v\), and use
+the normalization (PH1),
+
+\[
+ F(z)=d\,z^rE(z),\qquad E(0)=1.
+\]
+
+For \(c>0\), set \(M(c)=\|P_0(e^{c\,\cdot})\|_2^2\). Then the Stieltjes
+transform \(\Phi\) and the full Hausdorff battery in (PH3)--(PH5) are
+recovered from the scalar amplitude by
+
+\[
+ \boxed{
+ \Phi(x)=\frac12\frac{d}{dx}
+ \log\!\left(x^{-r}M(\sqrt x)\right),}                    \tag{HB9a}
+\]
+
+and
+
+\[
+ \boxed{
+ b_n(x)=\frac{x^{n+1}}{2n!}(-1)^n
+ \frac{d^{n+1}}{dx^{n+1}}
+ \log\!\left(x^{-r}M(\sqrt x)\right).}                   \tag{HB9b}
+\]
+
+The amplitude itself is the zero-energy resolvent residue
+
+\[
+ \boxed{
+ M(c)=\lim_{\varepsilon\downarrow0}
+ \varepsilon\,
+ \left\langle(A_a+\varepsilon I)^{-1}e^{c\,\cdot},
+ e^{c\,\cdot}\right\rangle.}                            \tag{HB9c}
+\]
+
+To prove the formulas, normalize neither \(v\) nor \(F\). Orthogonal
+projection onto \(\mathbb Cv\) gives
+
+\[
+ M(c)=\frac{|\langle e^{c\,\cdot},v\rangle|^2}{\|v\|_2^2}
+ =\frac{|F(-ic)|^2}{\|v\|_2^2}
+ =C\,c^{2r}E(ic)^2                                      \tag{HB9d}
+\]
+
+with a constant \(C>0\); evenness makes \(E(-ic)=E(ic)>0\). Taking one
+logarithmic derivative with \(x=c^2\) proves (HB9a), and repeated
+differentiation plus (PH3) proves (HB9b). Finally the spectral theorem gives
+\(\varepsilon(A_a+\varepsilon I)^{-1}\to P_0\) strongly, and pairing this
+limit with \(e^{c\,\cdot}\) proves (HB9c). \(\square\)
+
+Equations (HB9a)--(HB9c) locate exactly the information erased by the
+projective collapse (HB8a)--(HB8b): it survives in the scalar normalization,
+not in the Weyl quotient. They provide an unconditional bridge between the
+localized resolvent and the **witness-zero** Hausdorff measure. They do not
+identify that measure with the xi-resolvent measure; the density obstruction
+(PH8)--(PH9) still forbids such a direct identification.
+
 Proposition 4.9 is stronger than the existence of one real-rooted null
 witness: it places a canonical family of real-rooted pencils, parametrized
 by the deficiency scale \(c>0\), on the

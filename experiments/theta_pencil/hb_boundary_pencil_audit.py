@@ -86,6 +86,34 @@ def simple_kernel_cayley_check() -> None:
             assert odd_m == (-c / z, Fraction(0))
 
 
+def scalar_amplitude_stieltjes_check() -> None:
+    # Build the amplitude polynomial independently, differentiate it, and
+    # compare its logarithmic derivative with the Stieltjes partial fractions.
+    def multiply(left: list[Fraction], right: list[Fraction]) -> list[Fraction]:
+        product = [Fraction(0)] * (len(left) + len(right) - 1)
+        for left_index, left_value in enumerate(left):
+            for right_index, right_value in enumerate(right):
+                product[left_index + right_index] += left_value * right_value
+        return product
+
+    def evaluate(coefficients: list[Fraction], point: Fraction) -> Fraction:
+        value = Fraction(0)
+        for coefficient in reversed(coefficients):
+            value = value * point + coefficient
+        return value
+
+    order_at_zero = 3
+    squared_zeros = [Fraction(4), Fraction(9), Fraction(25), Fraction(121)]
+    amplitude = [Fraction(0)] * order_at_zero + [Fraction(1)]
+    for zero in squared_zeros:
+        amplitude = multiply(amplitude, [zero * zero, 2 * zero, Fraction(1)])
+    derivative = [index * value for index, value in enumerate(amplitude)][1:]
+    for x in [Fraction(1, 3), Fraction(2), Fraction(17, 2)]:
+        phi = sum(Fraction(1, 1) / (x + zero) for zero in squared_zeros)
+        log_derivative_amplitude = evaluate(derivative, x) / evaluate(amplitude, x)
+        assert (log_derivative_amplitude - order_at_zero / x) / 2 == phi
+
+
 def main() -> None:
     for y in [Fraction(1, 7), Fraction(1), Fraction(5, 2), Fraction(13)]:
         for deficiency in [Fraction(1, 5), Fraction(1), Fraction(11, 3)]:
@@ -97,6 +125,7 @@ def main() -> None:
                 parity_factorization(y, deficiency, even, odd)
     projector_limit()
     simple_kernel_cayley_check()
+    scalar_amplitude_stieltjes_check()
     print("HB-PENCIL-AUDIT: PASS (exact rational algebra; spectral sanity check)")
 
 

@@ -852,6 +852,12 @@ Corollary 4.9b shows that a one-dimensional even kernel gives
 the fixed-support boundary quotient cannot transport the witness-zero
 Hausdorff measure in the simple-kernel branch; any non-universal projective
 signal requires a multidimensional kernel.
+The scalar factor is nevertheless recoverable. Corollary 4.9c identifies
+\(\|P_{\ker A_{a_*}}e^{c\,\cdot}\|^2\) with the zero-energy resolvent
+residue and obtains the witness Stieltjes transform by its radial logarithmic
+derivative. Thus the projective and scalar channels are now separated
+exactly: the former is universal for a simple kernel, while the latter carries
+the witness-zero Hausdorff measure.
 
 For the normalized Riemann target, (PI) defines
 

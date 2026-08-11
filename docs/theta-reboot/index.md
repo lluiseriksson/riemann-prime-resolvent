@@ -135,7 +135,12 @@ to exclude it yet. If the first-crossing kernel is one-dimensional, all of
 the real-rooted factor instead cancels from this projective object and the
 boundary Weyl function is the universal \(z/c\) (even) or \(-c/z\) (odd).
 Hence this fixed-support quotient carries new arithmetic information only in
-a genuinely multidimensional kernel.
+a genuinely multidimensional kernel. In the simple branch the discarded
+scalar is not lost: its squared norm is the zero-energy resolvent residue, and
+one radial logarithmic derivative recovers exactly the Stieltjes transform
+and Hausdorff battery of the witness zeros. This separates the projective and
+scalar channels without identifying the witness measure with the incompatible
+xi-zero measure.
 Dividing by finite products of these real zeros gives exact rational
 interpolants that isolate any hypothetical off-line zeta quartet with negative
 spectral sign while Hermite-cancelling an arbitrary finite set of other zeros
