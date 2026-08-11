@@ -1322,6 +1322,56 @@ first-crossing gap and the radial programme.  It does not identify the
 witness-zero measure with the xi-zero measure, and no upper estimate
 contradicting (MR2) is currently known.
 
+### Corollary 4.1a.9 (explicit Hausdorff-moment margin)
+
+Assume in addition that the kernel is simple, that its real generator \(w\)
+is even, and that its zero order is \(r=0\).  Use the canonical orientation
+from (PE6), so
+
+\[
+ m_0=\int w=\|w\|_2^2,
+ \qquad m_2=\int x^2w(x)\,dx>0.
+\]
+
+Then the left side of (MR2) has the fully explicit lower bound
+
+\[
+ \boxed{
+ \text{left side of (MR2)}\ge
+ \frac{3\Delta m_2^2}
+ {a_*^3(s^2+4a_*^2)}>0\qquad(s>0).}                       \tag{MR4}
+\]
+
+Indeed \(w^2\) is even, and hence
+
+\[
+ \iint(x-y)^2w(x)^2w(y)^2\,dx\,dy
+ =2\|w\|_2^2\int x^2w(x)^2\,dx .                         \tag{MR5}
+\]
+
+On the support square, \((x-y)^2\le4a_*^2\), while
+
+\[
+ \int x^2w(x)^2\,dx
+ \ge\frac{\left(\int x^2w(x)\,dx\right)^2}
+          {\int_{-a_*}^{a_*}x^2\,dx}
+ =\frac{3m_2^2}{2a_*^3}.                                  \tag{MR6}
+\]
+
+Using
+
+\[
+ \frac{(x-y)^2}{s^2+(x-y)^2}
+ \ge\frac{(x-y)^2}{s^2+4a_*^2}
+\]
+
+in the right side of (MR2), followed by (MR5)--(MR6), proves (MR4).
+The strict sign \(m_2>0\) is the first nonconstant coefficient sign in the
+real-rooted product (PH11).  Thus (MR4) genuinely combines zero geometry,
+the first-crossing gap and the prime--archimedean radial form.  It is still a
+necessary condition rather than a contradiction; the missing step is an
+upper estimate for the signed left side below this margin.
+
 ### Proposition 4.1b (the Hausdorff measure of a pure-parity witness)
 
 Assume there is a pure-parity real-rooted null vector at the first crossing,
