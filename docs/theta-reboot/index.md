@@ -362,6 +362,11 @@ should not be launched on the frozen cutoff-256 trial: the residual retains
 72--75% of the leading jump, and its available triangular Schur charge is
 about 52 per parity.  The next design unit is therefore an
 endpoint-constrained trial at a larger cutoff, not a blind 200-action run.
+The first repair is now measured: re-slicing at source dimensions 60, 62 and
+64 supplies respectively 27, 28 and 29 finite-Schur positive directions per
+parity, while the isolated leading endpoint jet costs one.  This suggests a
+rank-budget architecture (`58+2J` source degrees for `J` retained jets); the
+missing theorem is a signed, non-derivative bound for the remainder.
 
 ## Why this track is different
 

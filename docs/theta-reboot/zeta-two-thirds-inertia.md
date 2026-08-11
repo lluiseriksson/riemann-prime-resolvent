@@ -372,6 +372,34 @@ python -m experiments.theta_pencil.support_one_residual_endpoint_audit \
   --trial <trial.npz> --first-degree 256 --last-degree 4096
 ```
 
+There is a less destructive alternative to forcing the endpoint value to
+zero.  Re-slicing the same finite 256-section at larger even source cutoffs
+adds one positive direction per parity for every two source degrees.  Charging
+the isolated leading-jet band removes exactly one in the observed grid:
+
+| source cutoff | raw / finite-Schur positive | after isolated jet, even / odd |
+|---:|---:|---:|
+| 58 | 26 / 26 | 25 / 25 |
+| 60 | 27 / 27 | **26 / 26** |
+| 62 | 28 / 28 | 27 / 27 |
+| 64 | 29 / 29 | 28 / 28 |
+
+Thus a source buffer can pay for finitely many signed endpoint jets by rank,
+instead of trying to make their norms tiny.  This is still a floating design
+observation: the displayed charge includes only the leading jet over degrees
+256--4096, and the old absolute remainder estimate gets worse when more jets
+are differentiated.  The surviving analytic obligation is now precise:
+retain `J` jets as a rank-`J` correction using source cutoff `58+2J`, and find
+a non-derivative bound for the remaining signed tail.  Reproduce the table
+with
+
+```console
+python -m experiments.theta_pencil.support_one_source_buffer_audit \
+  --matrix-cache <source-cross.npz> --component-cache-dir <parts> \
+  --source-dimensions 58 60 62 64 --finite-dimension 256 \
+  --first-tail-degree 256 --last-tail-degree 4096
+```
+
 The failure of the two moments is sharp, not merely a weak estimate.  For
 dimension \(n\), trace \(t>0\), squared Frobenius norm \(f\), and
 \(p=\lceil t^2/f\rceil<n\), put \(q=n-p\),
