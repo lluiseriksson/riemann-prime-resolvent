@@ -1396,6 +1396,53 @@ second moment can approach zero in the B-spline family.  An operator-specific
 relation between the cusp form, the prime lags and the first-crossing gap is
 still required.
 
+There is no ambient Fourier-multiplier sign with which to close (PH18).
+Extend \(w\) by zero and define
+
+\[
+ q_a(t)=t^2h(|t|){\bf1}_{[-2a,2a]}(t),
+\]
+
+with the removable value at zero.  Fourier inversion of the autocorrelation
+gives the exact identity
+
+\[
+\boxed{
+ \text{left side of (PH18)}
+ =\frac1{2\pi}\int_{\mathbb R}|H(\xi)|^2M_a(\xi)\,d\xi,} \tag{PH19}
+\]
+
+where
+
+\[
+ M_a(\xi)=\widehat q_a(\xi)
+ +2\sum_{2\le n\le e^{2a}}
+  \frac{\Lambda(n)(\log n)^2}{\sqrt n}
+  \cos(\xi\log n).                                      \tag{PH20}
+\]
+
+For every \(a>\tfrac12\log2\), the continuous real function \(M_a\) takes
+both positive and negative values along sequences tending to infinity.
+Indeed, \(q_a\in L^1(\mathbb R)\), so
+\(\widehat q_a(\xi)\to0\).  The remaining finite trigonometric polynomial
+is nonzero, has no constant term and is positive at \(\xi=0\).  Write it as
+a function on the torus indexed by the finitely many active primes.  The
+numbers \(\log p\) are linearly independent over \(\mathbb Q\), since an
+integer relation would give a relation between distinct prime powers.
+Kronecker density therefore makes the real orbit dense in that torus.  The
+torus polynomial has Haar mean zero; because it is nonzero, it cannot be
+nonnegative everywhere and hence has a negative value.  Recurrence of the
+dense orbit approximates both that value and the positive value at the
+identity at arbitrarily large \(\xi\).  The decaying cusp transform cannot
+change their signs eventually.
+
+Thus a pointwise estimate \(M_a\le0\) or \(M_a\ge0\) is impossible even in
+the first prime window.  This is a no-go for an ambient multiplier proof, not
+for (PH18): the latter pairs \(M_a\) only with the highly constrained density
+\(|H|^2\).  A successful argument must use that spectral density and the
+kernel-projection identities, rather than discard them by taking a supremum
+of \(M_a\).
+
 The sequence in (PH12) is the locally uniform limit of polynomials with only
 negative real zeros and positive coefficients.  This is the
 physical-variable positive structure

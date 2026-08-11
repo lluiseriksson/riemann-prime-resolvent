@@ -165,6 +165,15 @@ must exceed
 primitive-square correction after the singular term is moved.  No generic
 lower moment margin is imported; this is a reduced arithmetic gate, not its
 solution.
+The residual form has an exact Fourier multiplier
+\(\widehat{t^2h(|t|){\bf1}_{|t|\le2a}}+
+2\sum\Lambda(n)(\log n)^2n^{-1/2}\cos(\xi\log n)\).
+It is necessarily sign-indefinite: the compact cusp transform decays, while
+the nonzero finite prime polynomial has zero torus mean and recurrent
+positive and negative values by rational independence of the prime
+logarithms.  Therefore a pointwise multiplier bound cannot close the gate;
+the constrained density \(|H|^2\) and the kernel projection must remain in
+the argument.
 In the pure branch, pairing the real zeros produces a canonical Stieltjes
 transform in the radial variable and an explicit Hausdorff measure with atoms
 \(x/(x+\lambda_j^2)\). These are witness zeros, not xi zeros; identifying the
