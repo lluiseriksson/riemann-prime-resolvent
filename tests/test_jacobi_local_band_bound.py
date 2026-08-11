@@ -4,6 +4,7 @@ from experiments.theta_pencil.jacobi_local_band_bound import (
     BESSEL_EXTENDED_GAP,
     ROBUST_TRIPLE_DIAMETER,
     THREE_SPLIT_EXTENDED_GAP,
+    FOUR_SPLIT_EXTENDED_GAP,
     CONTOUR_EXTENDED_GAP,
     CONTOUR_NORM_UPPER,
     CONTOUR_RADIUS,
@@ -32,6 +33,7 @@ from experiments.theta_pencil.jacobi_local_band_bound import (
     contour_two_dilation_split_upper,
     contour_two_dilation_bessel_upper,
     contour_three_dilation_bessel_upper,
+    contour_four_dilation_bessel_upper,
     crude_prime_upper,
     even_archimedean_rational_upper,
     even_archimedean_crude_upper,
@@ -47,6 +49,7 @@ from experiments.theta_pencil.jacobi_local_band_bound import (
     rational_bessel_factor_upper,
     robust_three_by_three_determinant_lower,
     three_split_prime_upper,
+    four_split_prime_upper,
     odd_upper_polynomial,
     odd_archimedean_crude_upper,
     normalized_jacobi_coefficients,
@@ -317,7 +320,23 @@ def test_three_split_contours_through_113() -> None:
         )
 
 
-def test_robust_triple_width_113() -> None:
+def test_four_split_contours_through_122() -> None:
+    for gap in range(THREE_SPLIT_EXTENDED_GAP + 1, FOUR_SPLIT_EXTENDED_GAP + 1):
+        assert exact_two_dilation_square(TAIL_START, gap) < (
+            contour_two_dilation_bessel_upper(TAIL_START, gap) ** 2
+        )
+        assert exact_dilation_square(TAIL_START, gap, 3) < (
+            contour_three_dilation_bessel_upper(TAIL_START, gap) ** 2
+        )
+        assert exact_dilation_square(TAIL_START, gap, 4) < (
+            contour_four_dilation_bessel_upper(TAIL_START, gap) ** 2
+        )
+        assert four_split_prime_upper(TAIL_START + 1, gap) < (
+            four_split_prime_upper(TAIL_START, gap)
+        )
+
+
+def test_robust_triple_width_122() -> None:
     entry_bounds = {
         gap: tail_entry_abs_upper(TAIL_START, gap)
         for gap in range(1, ROBUST_TRIPLE_DIAMETER + 1)
@@ -335,4 +354,4 @@ def test_robust_triple_width_113() -> None:
     certificate, diameter, left_gap = min(certificates)
     assert diameter == ROBUST_TRIPLE_DIAMETER
     assert left_gap in (1, ROBUST_TRIPLE_DIAMETER - 1)
-    assert certificate > 3
+    assert certificate > Fraction(1, 3)

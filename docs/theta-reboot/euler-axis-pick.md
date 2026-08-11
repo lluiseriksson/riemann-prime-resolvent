@@ -2983,6 +2983,51 @@ tail becomes dominated by its smallest retained prime power, that term can
 be moved to its own contour before bounding the remainder.  It still does
 not supply the global coercivity needed for RH.
 
+The next retained integer is the prime power \(r=4\), with
+\(\Lambda(4)=\log2\).  Here \(\lambda=1/2\) is rational, so the contour
+certificate uses no algebraic brackets; take \(x=13/20\) and the
+normalization bound \(247/200\).  The extracted coefficient obeys
+\(\Lambda(4)/4<1/4\).  For the remaining integers, the Pfaff-weighted
+summand is decreasing on \([4,\infty)\) in the registered range, and
+
+\[
+\begin{aligned}
+\sum_{r\ge5}\log r\,r^{-m-1}(1-1/r)^d
+&\le\int_4^\infty\log x\,x^{-m-1}(1-1/x)^d\,dx\\
+&\le4^{-m}\left(\frac{3}{2m}+\frac1{m^2}\right).
+                                                               \tag{E179}
+\end{aligned}
+\]
+
+For monotonicity, the logarithmic derivative is at most
+\(x^{-1}(1-(m+1)+d/3)<0\), using \(d<2(m-1)\).  The last line of (E179)
+uses \(\log4<3/2\).  Exact contour comparisons for
+\(Q(1/2)^2,Q(1/3)^2,Q(1/4)^2\), followed by the integral tail, give the
+entry bounds
+
+\[
+\begin{array}{c|rrrrrrrrr}
+d&114&115&116&117&118&119&120&121&122\\ \hline
+X_d&1.92318&1.98665&1.98965&2.04886&2.04831&2.10366&
+2.09968&2.15302&2.15488.
+\end{array}
+\]
+
+All displayed decimals round the exact rational upper bounds upward.  The
+determinant enumeration over \(a+b\le122\) remains positive; its minimum is
+\(0.3884147136\ldots\) at \((a,b)=(1,121)\) or its reversal.  Hence
+
+\[
+\boxed{
+B[\{i,j,k\}]\succ0
+\quad(232\le i<j<k,\ k-i\le122).}                 \tag{E180}
+\]
+
+The shrinking determinant margin is a quantitative warning: repeated
+extraction improves the certified bandwidth, but a proof of the infinite
+operator still needs a uniform block mechanism rather than a finite list
+of separated dilations.
+
 At the analytic cutoff \(m=232\), (E130) already covers every gap
 \(d\le29\), rather than only the first two bands.  This does not yet prove
 positivity of the corresponding full blocks: the archimedean contribution
@@ -3027,7 +3072,7 @@ the bandwise archimedean--prime discrepancy (E126)--(E133) are checked
 coefficientwise over rational numbers (with a symbolic \(\log2\) component) by
 `jacobi_dilation_connection.py`.
 The Rodrigues moment inequalities, closed beta sums, uniform archimedean
-bounds, prime remainder, and local triple theorems (E134)--(E178) are
+bounds, prime remainder, and local triple theorems (E134)--(E180) are
 audited by `jacobi_local_band_bound.py`.
 The floating-point checks elsewhere in this audit are not used in place of
 the displayed analytic inequalities. Global claims still require all

@@ -102,6 +102,15 @@ BESSEL_RADIUS_OVERRIDES = {
     111: Fraction(9921, 10_000),
     112: Fraction(397, 400),
     113: Fraction(9929, 10_000),
+    114: Fraction(9933, 10_000),
+    115: Fraction(1987, 2000),
+    116: Fraction(9939, 10_000),
+    117: Fraction(9941, 10_000),
+    118: Fraction(1989, 2000),
+    119: Fraction(9947, 10_000),
+    120: Fraction(9949, 10_000),
+    121: Fraction(9951, 10_000),
+    122: Fraction(9953, 10_000),
 }
 BESSEL_I0_ORDER = 16
 BESSEL_EXP_ORDER = 24
@@ -111,7 +120,10 @@ THREE_LAMBDA_LOWER = Fraction(11_547, 20_000)
 THREE_LAMBDA_UPPER = Fraction(577_351, 1_000_000)
 SQRT_THREE_UPPER = Fraction(1_732_051, 1_000_000)
 THREE_CONTOUR_RADIUS = Fraction(3, 4)
-ROBUST_TRIPLE_DIAMETER = 113
+FOUR_SPLIT_EXTENDED_GAP = 122
+FOUR_SPLIT_NORM_UPPER = Fraction(247, 200)
+FOUR_CONTOUR_RADIUS = Fraction(13, 20)
+ROBUST_TRIPLE_DIAMETER = 122
 
 
 def beta_integer(left: int, right: int) -> Fraction:
@@ -297,6 +309,18 @@ def pfaff_mangoldt_tail_four_upper(m: int, gap: int) -> Fraction:
     remainder = pfaff_mangoldt_tail_upper(m, gap) - at_three
     assert remainder > 0
     return remainder
+
+
+def pfaff_mangoldt_tail_five_upper(m: int, gap: int) -> Fraction:
+    """Integral majorant for the Pfaff-weighted tail over r>=5."""
+
+    assert m >= 2
+    assert 1 <= gap < 2 * (m - 1)
+    # The summand is decreasing from r=4 onward.  Dropping (1-1/r)^d
+    # and integrating log(x) x^(-m-1) from 4 to infinity gives this.
+    return Fraction(1, 4**m) * (
+        Fraction(3, 2 * m) + Fraction(1, m * m)
+    )
 
 
 def pfaff_prime_upper(m: int, gap: int) -> Fraction:
@@ -541,14 +565,25 @@ def rational_bessel_factor_upper(gap: int) -> Fraction:
     return rational_exp_i_zero_upper(a)
 
 
+def tail_norm_upper(gap: int) -> Fraction:
+    """Registered square-root normalization bound for the active gap."""
+
+    return (
+        SPLIT_NORM_UPPER
+        if gap <= THREE_SPLIT_EXTENDED_GAP
+        else FOUR_SPLIT_NORM_UPPER
+    )
+
+
 def contour_two_dilation_bessel_upper(m: int, gap: int) -> Fraction:
     """Contour bound retaining the full angular exponential integral."""
 
     radius = BESSEL_RADIUS_OVERRIDES[gap]
     norm_square = Fraction(2 * m + 2 * gap + 1, 2 * m + 1)
-    assert norm_square < SPLIT_NORM_UPPER**2
+    norm_upper = tail_norm_upper(gap)
+    assert norm_square < norm_upper**2
     direct = (
-        SPLIT_NORM_UPPER
+        norm_upper
         * Fraction(2 * m + 1, gap)
         * L1_SQRT_TWO_UPPER
         * radius ** (2 * m + gap + 1)
@@ -581,9 +616,10 @@ def contour_three_dilation_bessel_upper(m: int, gap: int) -> Fraction:
     assert SQRT_THREE_UPPER**2 > 3
     radius = THREE_CONTOUR_RADIUS
     norm_square = Fraction(2 * m + 2 * gap + 1, 2 * m + 1)
-    assert norm_square < SPLIT_NORM_UPPER**2
+    norm_upper = tail_norm_upper(gap)
+    assert norm_square < norm_upper**2
     direct = (
-        SPLIT_NORM_UPPER
+        norm_upper
         * Fraction(2 * m + 1, gap)
         * SQRT_THREE_UPPER
         * radius ** (2 * m + gap + 1)
@@ -592,6 +628,41 @@ def contour_three_dilation_bessel_upper(m: int, gap: int) -> Fraction:
     )
     angular = rational_exp_i_zero_upper(
         Fraction(gap, 2) * three_concentration_lower()
+    )
+    return direct * angular
+
+
+def four_concentration_lower() -> Fraction:
+    """Exact angular concentration constant for the p=4 contour."""
+
+    radius = FOUR_CONTOUR_RADIUS
+    lam = Fraction(1, 2)
+    return (
+        lam
+        * radius
+        * (1 - radius * radius)
+        / ((1 - lam * radius) ** 2 * (radius + lam) ** 2)
+    )
+
+
+def contour_four_dilation_bessel_upper(m: int, gap: int) -> Fraction:
+    """Rational contour bound for abs(Q_(m,m+d)(1/4))."""
+
+    radius = FOUR_CONTOUR_RADIUS
+    lam = Fraction(1, 2)
+    norm_square = Fraction(2 * m + 2 * gap + 1, 2 * m + 1)
+    norm_upper = tail_norm_upper(gap)
+    assert norm_square < norm_upper**2
+    direct = (
+        norm_upper
+        * Fraction(2 * m + 1, gap)
+        * 2
+        * radius ** (2 * m + gap + 1)
+        * (1 - lam * radius) ** gap
+        / (radius - lam) ** gap
+    )
+    angular = rational_exp_i_zero_upper(
+        Fraction(gap, 2) * four_concentration_lower()
     )
     return direct * angular
 
@@ -717,15 +788,36 @@ def three_split_prime_upper(m: int, gap: int) -> Fraction:
     )
 
 
+def four_split_prime_upper(m: int, gap: int) -> Fraction:
+    """Prime bound extracting r=2,3,4 before the integral tail."""
+
+    if gap <= THREE_SPLIT_EXTENDED_GAP:
+        return three_split_prime_upper(m, gap)
+    tail = (
+        tail_norm_upper(gap)
+        * comb(2 * m + gap, gap)
+        * pfaff_hypergeometric_ratio(m, gap)
+        * pfaff_mangoldt_tail_five_upper(m, gap)
+    )
+    # Lambda(4)/4=log(2)/4 < 1/4.
+    return (
+        contour_two_dilation_bessel_upper(m, gap) / 2
+        + contour_three_dilation_bessel_upper(m, gap) / 2
+        + contour_four_dilation_bessel_upper(m, gap) / 4
+        + tail
+    )
+
+
 @lru_cache(maxsize=None)
 def tail_entry_abs_upper(m: int, gap: int) -> Fraction:
     """Uniform absolute bound for a tail Jacobi entry."""
 
-    prime = (
-        three_split_prime_upper(m, gap)
-        if gap > BESSEL_EXTENDED_GAP + 1
-        else bessel_extended_prime_upper(m, gap)
-    )
+    if gap > THREE_SPLIT_EXTENDED_GAP:
+        prime = four_split_prime_upper(m, gap)
+    elif gap > BESSEL_EXTENDED_GAP + 1:
+        prime = three_split_prime_upper(m, gap)
+    else:
+        prime = bessel_extended_prime_upper(m, gap)
     archimedean = (
         odd_archimedean_crude_upper(m, gap)
         if gap % 2
@@ -1063,6 +1155,22 @@ def main() -> None:
             three_split_prime_upper(TAIL_START, gap)
         )
 
+    # Extracting r=4 leaves a monotone r>=5 tail controlled by one
+    # elementary integral from 4 to infinity.
+    for gap in range(THREE_SPLIT_EXTENDED_GAP + 1, FOUR_SPLIT_EXTENDED_GAP + 1):
+        assert exact_two_dilation_square(TAIL_START, gap) < (
+            contour_two_dilation_bessel_upper(TAIL_START, gap) ** 2
+        )
+        assert exact_dilation_square(TAIL_START, gap, 3) < (
+            contour_three_dilation_bessel_upper(TAIL_START, gap) ** 2
+        )
+        assert exact_dilation_square(TAIL_START, gap, 4) < (
+            contour_four_dilation_bessel_upper(TAIL_START, gap) ** 2
+        )
+        assert four_split_prime_upper(TAIL_START + 1, gap) < (
+            four_split_prime_upper(TAIL_START, gap)
+        )
+
     # Diagonal dominance is only sufficient.  Retaining the exact 3-by-3
     # determinant crosses gap 110 despite its entry bound exceeding 9/5.
     entry_bounds = {
@@ -1110,8 +1218,12 @@ def main() -> None:
         "three_split_gap_113_bound="
         f"{float(tail_entry_abs_upper(TAIL_START, 113)):.12e}"
     )
+    print(
+        "four_split_gap_122_bound="
+        f"{float(tail_entry_abs_upper(TAIL_START, 122)):.12e}"
+    )
     print(f"robust_triple_determinant_lower={float(determinant):.12e}")
-    print("robust_tail_local_diameter=113")
+    print("robust_tail_local_diameter=122")
 
 
 if __name__ == "__main__":
