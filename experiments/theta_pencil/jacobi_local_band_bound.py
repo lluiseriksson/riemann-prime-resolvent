@@ -124,6 +124,7 @@ FOUR_SPLIT_EXTENDED_GAP = 122
 FOUR_SPLIT_NORM_UPPER = Fraction(247, 200)
 FOUR_CONTOUR_RADIUS = Fraction(13, 20)
 ROBUST_TRIPLE_DIAMETER = 122
+UNIFORM_EXTRACTION_START = 146
 
 
 def beta_integer(left: int, right: int) -> Fraction:
@@ -133,6 +134,13 @@ def beta_integer(left: int, right: int) -> Fraction:
         factorial(left - 1) * factorial(right - 1),
         factorial(left + right - 1),
     )
+
+
+def harmonic_number(index: int) -> Fraction:
+    """Exact H_index."""
+
+    assert index >= 0
+    return sum((Fraction(1, k) for k in range(1, index + 1)), Fraction(0))
 
 
 def normalized_jacobi_coefficients(m: int, gap: int) -> list[Fraction]:
@@ -320,6 +328,46 @@ def pfaff_mangoldt_tail_five_upper(m: int, gap: int) -> Fraction:
     # and integrating log(x) x^(-m-1) from 4 to infinity gives this.
     return Fraction(1, 4**m) * (
         Fraction(3, 2 * m) + Fraction(1, m * m)
+    )
+
+
+def pfaff_mangoldt_tail_from_upper(
+    m: int,
+    gap: int,
+    start: int,
+) -> Fraction:
+    """Integral majorant for the Pfaff-weighted integer tail r>=start."""
+
+    assert m >= 2
+    assert 1 <= gap < 2 * (m - 1)
+    assert start >= 5
+    base = start - 1
+    logarithm_upper = harmonic_number(base - 1)
+    return Fraction(1, base**m) * (
+        logarithm_upper / m + Fraction(1, m * m)
+    )
+
+
+def uniform_extracted_tail_upper(m: int) -> Fraction:
+    """Uniform r>=146 prime-tail bound throughout d<=2(m-1)."""
+
+    assert m >= 2
+    return 8 * Fraction(144, 145) ** m
+
+
+def extracted_pfaff_tail_contribution_upper(
+    m: int,
+    gap: int,
+    start: int = UNIFORM_EXTRACTION_START,
+) -> Fraction:
+    """Full normalized Pfaff contribution from integers r>=start."""
+
+    assert 1 <= gap < 2 * (m - 1)
+    return (
+        2
+        * comb(2 * m + gap, gap)
+        * pfaff_hypergeometric_ratio(m, gap)
+        * pfaff_mangoldt_tail_from_upper(m, gap, start)
     )
 
 
@@ -1191,6 +1239,18 @@ def main() -> None:
     assert diameter == ROBUST_TRIPLE_DIAMETER
     assert left_gap in (1, ROBUST_TRIPLE_DIAMETER - 1)
 
+    # After extracting r<146, the whole remaining integer tail is
+    # exponentially small uniformly in the linear wedge d<2(m-1).
+    assert harmonic_number(144) < 6
+    uniform_tail_checks = 0
+    for m in (2, 3, 8, 32, TAIL_START):
+        candidate_gaps = {1, max(1, m - 1), 2 * m - 3}
+        for gap in candidate_gaps:
+            assert extracted_pfaff_tail_contribution_upper(m, gap) < (
+                uniform_extracted_tail_upper(m)
+            )
+            uniform_tail_checks += 1
+
     print(f"exact_moment_identity_checks={identity_checks}")
     print(f"max_prime_bound={float(max(prime_bounds)):.12e}")
     print("odd_archimedean_bound=1/gap")
@@ -1224,6 +1284,7 @@ def main() -> None:
     )
     print(f"robust_triple_determinant_lower={float(determinant):.12e}")
     print("robust_tail_local_diameter=122")
+    print(f"uniform_extracted_tail_checks={uniform_tail_checks}")
 
 
 if __name__ == "__main__":

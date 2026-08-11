@@ -3028,6 +3028,44 @@ extraction improves the certified bandwidth, but a proof of the infinite
 operator still needs a uniform block mechanism rather than a finite list
 of separated dilations.
 
+There is nevertheless a uniform finite-place reduction in a linear wedge.
+Extract all integers \(2\le r\le145\).  For
+\(1\le d<2(m-1)\), the Pfaff-weighted summand is decreasing from 145 onward,
+and the integral test gives
+
+\[
+\sum_{r\ge146}\log r\,r^{-m-1}(1-1/r)^d
+\le145^{-m}\left(\frac{H_{144}}m+\frac1{m^2}\right)
+<4\,145^{-m}.                                      \tag{E181}
+\]
+
+The remaining algebraic factors admit bounds independent of \(d\) in this
+wedge:
+
+\[
+\sqrt{\frac{2m+2d+1}{2m+1}}<2,qquad
+\binom{2m+d}{d}\le16^m,qquad
+\frac{(2m+d+2)_{d-1}}{(2m+2)_{d-1}}<9^m.
+\]
+
+For the last inequality, each of the fewer than \(2m\) factors is below
+three.  Since \(H_{144}<6\), multiplication with (E181) proves the uniform
+prime-tail estimate
+
+\[
+\boxed{
+\operatorname{Tail}_{m,d}(r\ge146)
+<8\left(\frac{144}{145}\right)^m
+\qquad(1\le d<2(m-1)).}                            \tag{E182}
+\]
+
+Thus infinitely many prime powers can be removed from the analytic gate at
+once: inside the wedge, only the 144 explicit dilations \(r=2,\ldots,145\)
+remain, plus an exponentially decaying error.  This is not RH.  A global
+argument must still preserve cancellation among those finite dilations and
+the archimedean term, and must control the complementary region
+\(d\ge2(m-1)\).
+
 At the analytic cutoff \(m=232\), (E130) already covers every gap
 \(d\le29\), rather than only the first two bands.  This does not yet prove
 positivity of the corresponding full blocks: the archimedean contribution
@@ -3072,7 +3110,8 @@ the bandwise archimedean--prime discrepancy (E126)--(E133) are checked
 coefficientwise over rational numbers (with a symbolic \(\log2\) component) by
 `jacobi_dilation_connection.py`.
 The Rodrigues moment inequalities, closed beta sums, uniform archimedean
-bounds, prime remainder, and local triple theorems (E134)--(E180) are
+bounds, prime remainder, local triple theorems, and the uniform extracted
+tail estimate (E134)--(E182) are
 audited by `jacobi_local_band_bound.py`.
 The floating-point checks elsewhere in this audit are not used in place of
 the displayed analytic inequalities. Global claims still require all

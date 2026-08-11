@@ -21,6 +21,7 @@ from experiments.theta_pencil.jacobi_local_band_bound import (
     SQRT_TWO_UPPER,
     SPLIT_EXTENDED_GAP,
     TAIL_DIAGONAL_LOWER,
+    UNIFORM_EXTRACTION_START,
     TAIL_START,
     binomial_one_step_ratio,
     bessel_extended_prime_upper,
@@ -39,6 +40,7 @@ from experiments.theta_pencil.jacobi_local_band_bound import (
     even_archimedean_crude_upper,
     exact_two_dilation_square,
     exact_dilation_square,
+    extracted_pfaff_tail_contribution_upper,
     jacobi_moment,
     l2_extended_prime_upper,
     l2_factor_upper,
@@ -50,6 +52,7 @@ from experiments.theta_pencil.jacobi_local_band_bound import (
     robust_three_by_three_determinant_lower,
     three_split_prime_upper,
     four_split_prime_upper,
+    harmonic_number,
     odd_upper_polynomial,
     odd_archimedean_crude_upper,
     normalized_jacobi_coefficients,
@@ -59,6 +62,7 @@ from experiments.theta_pencil.jacobi_local_band_bound import (
     pfaff_mangoldt_tail_upper,
     pfaff_prime_upper,
     tail_entry_abs_upper,
+    uniform_extracted_tail_upper,
 )
 
 
@@ -355,3 +359,16 @@ def test_robust_triple_width_122() -> None:
     assert diameter == ROBUST_TRIPLE_DIAMETER
     assert left_gap in (1, ROBUST_TRIPLE_DIAMETER - 1)
     assert certificate > Fraction(1, 3)
+
+
+def test_uniform_integer_tail_after_145_extractions() -> None:
+    assert UNIFORM_EXTRACTION_START == 146
+    assert harmonic_number(144) < 6
+    checks = 0
+    for m in (2, 3, 8, 32, TAIL_START, 1000):
+        for gap in {1, max(1, m - 1), 2 * m - 3}:
+            assert extracted_pfaff_tail_contribution_upper(m, gap) < (
+                uniform_extracted_tail_upper(m)
+            )
+            checks += 1
+    assert checks == 16
