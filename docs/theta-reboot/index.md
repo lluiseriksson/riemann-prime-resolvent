@@ -321,6 +321,12 @@ Frobenius norm with 39 positive and 19 negative eigenvalues, proving that no
 two-moment argument can force a fortieth direction.  See
 [the inertia audit](zeta-two-thirds-inertia.md).
 
+An exact Arb reconstruction now certifies 26 positive raw-source directions
+in each parity, leaving a three-dimensional near-null complement per block.
+This is a rigorous statement about the uncorrected source, not the Schur
+complement: the remaining gate is to enclose the cross-tail subtraction on
+the full 26+3 decomposition before transferring inertia.
+
 ## Why this track is different
 
 - The coefficients are explicit theta functions, not guessed zero locations.

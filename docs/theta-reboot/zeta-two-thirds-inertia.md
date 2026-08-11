@@ -104,6 +104,34 @@ positive and three unresolved directions in each parity, with no observed
 negative direction.  These are still floating observations, not enclosures
 of (ZT3).
 
+The corresponding statement about the **raw source** is now rigorous rather
+than floating.  `arb_support_one_source.py` encloses every entry using Arb:
+the five active prime powers \(2,3,4,5,7\) are integrated with ball
+arithmetic, the smooth kernel is summed through power 95, and its analytic
+remainder is charged as an operator-norm loss.  Congruence by point trial
+vectors followed by interval Gershgorin proves a 26-dimensional positive
+subspace in each parity.  At 512-bit source precision and 2048-bit prime
+precision the certified lower spectral bounds are
+
+| parity | certified dimension | lower spectral bound |
+|---|---:|---:|
+| even | 26 of 29 | `4.484080139063457e-12` |
+| odd | 26 of 29 | `4.800583144111085e-10` |
+
+The trial transforms have certified Gram lower bounds
+`0.9999999999999939` and `0.9999999999999948`.  The calculation is
+reproduced by
+
+```console
+python -m experiments.theta_pencil.run_arb_support_one_source
+```
+
+This result proves neither that the three-dimensional complements are
+nonnegative nor that these 52 directions survive the subtraction in (ZT3).
+The infinite Schur correction is positive semidefinite before subtraction and
+can reduce the positive index.  The certificate therefore narrows the raw
+near-null cluster but does not discharge the actual Schur gate.
+
 The failure of the two moments is sharp, not merely a weak estimate.  For
 dimension \(n\), trace \(t>0\), squared Frobenius norm \(f\), and
 \(p=\lceil t^2/f\rceil<n\), put \(q=n-p\),
@@ -143,9 +171,11 @@ Consequently it would be circular to extrapolate `0.6725` to RH.
 The useful target for this repository is narrower and falsifiable:
 
 > Construct an interval enclosure of the actual Schur complement (ZT3),
-> including its certified cross tail, or add a third local invariant that
-> separates its near-null cluster.  Trace and Frobenius data alone are closed
-> by the explicit adversary (ZT4).
+> including its certified cross tail.  Use the 26+26 raw-source trial
+> decomposition to expose the three-dimensional near-null complement in each
+> parity, but control the Schur subtraction on the full trial space before
+> transferring any inertia statement.  Trace and Frobenius data alone are
+> closed by the explicit adversary (ZT4).
 
 This imports a successful linear-algebraic mechanism while preserving the
 existing RH success condition: every support and zero negative directions.
