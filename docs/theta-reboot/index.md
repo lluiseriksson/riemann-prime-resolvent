@@ -122,6 +122,15 @@ The next projected monomial supplies a second, genuinely operator-specific
 constraint: \(-1/z-i\widehat{P_0x^{k+1}}/((k+1)\widehat{P_0x^k})\) is
 Herglotz.  Hence its poles at witness zeros are simple with positive masses,
 forcing the corresponding residue signs and multiplicity cancellations.
+This first Herglotz jet now has an exact source-side realization.  If
+\(R_0\) is the reduced inverse and \(X\) is multiplication by \(x\), then
+\([P_0,X]=P_0[X,A]R_0Q+R_0Q[X,A]P_0\).  The commutator \([X,A]\) is a
+bounded skew operator whose prime component is the oriented translation
+difference weighted by \(\Lambda(n)\log n/\sqrt n\).  The positive residue
+at every simple witness zero is therefore a concrete inequality for this
+prime--archimedean commutator correction.  This locates the missing signed
+estimate without assigning it a nonexistent termwise sign; the reduced
+inverse still carries the full spectral difficulty.
 In the pure branch, pairing the real zeros produces a canonical Stieltjes
 transform in the radial variable and an explicit Hausdorff measure with atoms
 \(x/(x+\lambda_j^2)\). These are witness zeros, not xi zeros; identifying the

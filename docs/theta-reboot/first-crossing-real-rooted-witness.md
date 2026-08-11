@@ -813,6 +813,148 @@ The pole order and residue statements are the standard local consequences of
 the positive-measure representation of a meromorphic Herglotz function.
 \(\square\)
 
+### Proposition 4.1a.4 (prime--theta commutator formula for the first jet)
+
+Keep the notation of Propositions 4.1a.1--4.1a.3, put
+
+\[
+ Xf(x)=xf(x),\qquad P=P_0,\qquad Q=I-P,
+\]
+
+and let \(R_0\) be the reduced inverse of \(A=A_{a_*}\): it is zero on
+\(\ker A\) and equals \((A|_{Q L^2})^{-1}\) on \(Q L^2\).  This is a
+bounded positive operator because \(A\succeq0\), zero is an isolated
+eigenvalue and the spectrum is discrete.  Define
+
+\[
+ C=[X,A]=XA-AX .                                           \tag{PC1}
+\]
+
+Then \(C\) extends to a bounded skew-adjoint operator.  In the decomposition
+(ET1), with \(\ell_n=\log n\), set
+
+\[
+\begin{aligned}
+ (T_{\ell}^{+}f)(x)&={\bf1}_{[-a_*+\ell,a_*]}(x)f(x-\ell),\\
+ (T_{\ell}^{-}f)(x)&={\bf1}_{[-a_* ,a_*-\ell]}(x)f(x+\ell).
+\end{aligned}
+\]
+
+The physical-space formula for the commutator is
+
+\[
+\boxed{
+\begin{aligned}
+ (Cf)(x)={}&-\frac12\int_{-a_*}^{a_*}\!\operatorname{sgn}(x-y)f(y)\,dy\\
+ &-\int_{-a_*}^{a_*}(x-y)r''(x-y)f(y)\,dy\\
+ &-\sum_{2\le n\le e^{2a_*}}
+   \frac{\Lambda(n)\ell_n}{\sqrt n}
+   (T_{\ell_n}^{+}-T_{\ell_n}^{-})f(x).
+\end{aligned}}                                             \tag{PC2}
+\]
+
+Thus the prime term is not positive: it is the explicitly oriented,
+skew-adjoint translation difference, now carrying the extra weight
+\(\log n\).  Equivalently, for \(h_c(x)=e^{cx}\),
+
+\[
+ \boxed{Ch_c=-h_c\,\partial_c\mathcal B_{a_*,c}.}          \tag{PC3}
+\]
+
+The spectral projection has the exact commutator representation
+
+\[
+ \boxed{[P,X]=PCR_0Q+R_0QCP.}                              \tag{PC4}
+\]
+
+Consequently, if \(k=k_0\), \(w=Px^k\), and
+
+\[
+ \zeta=[P,X]x^k
+ =PCR_0Qx^k+R_0QCw,\qquad Z(z)=\widehat\zeta(z),           \tag{PC5}
+\]
+
+then the next kernel jet splits as
+
+\[
+ \boxed{P x^{k+1}=Xw+\zeta,\qquad H_1(z)=-iH'(z)+Z(z).}    \tag{PC6}
+\]
+
+At every nonzero simple zero \(\lambda\) of \(H\), the Herglotz mass in
+(PE10) therefore becomes the explicit commutator constraint
+
+\[
+ \boxed{
+ \mu_\lambda=\frac1{k+1}
+ \left(1+i\frac{Z(\lambda)}{H'(\lambda)}\right)\ge0.}     \tag{PC7}
+\]
+
+In particular \(iZ(\lambda)/H'(\lambda)\) is real and at least \(-1\).
+Equations (PC2), (PC5) and (PC7) are a direct bridge from the positive
+Herglotz residues to the signed prime--archimedean operator, rather than to
+an abstract real-rooted function alone.
+
+#### Proof
+
+Equations (ET7)--(ET9) hold against every vector in the form domain and their
+right-hand side is the \(L^2\) pairing with
+\(h_c\mathcal B_{a_*,c}\).  The only endpoint singularity is logarithmic.
+The representation theorem therefore strengthens the form-domain statement
+in Proposition 4.9d to
+
+\[
+ h_c\in\mathfrak D(A),\qquad Ah_c=h_c\mathcal B_{a_*,c}.   \tag{PC8}
+\]
+
+Both sides are entire in \(c\) in the graph norm: on compact \(c\)-sets the
+logarithmic endpoint term has an \(L^2\) majorant, the prime sum is finite,
+and the smooth integral may be differentiated under the integral sign.
+Hence every polynomial belongs to \(\mathfrak D(A)\).
+
+Polarizing the singular term (ET6) gives the operator
+
+\[
+ \frac12\int_{-a_*}^{a_*}\frac{f(x)-f(y)}{|x-y|}\,dy
+ -\frac12\log(a_*^2-x^2)f(x).
+\]
+
+Commuting it with \(X\) cancels the multiplication term and leaves the first
+line of (PC2).  The scalar term commutes with \(X\).  The smooth convolution
+and the two truncated translations give the second and third lines because
+
+\[
+ [X,T_\ell^+]=\ell T_\ell^+,
+ \qquad [X,T_\ell^-]=-\ell T_\ell^- .
+\]
+
+Every kernel in (PC2) is bounded on the finite interval and
+\((T_\ell^+)^*=T_\ell^-\); hence \(C^*=-C\).  Differentiating (PC8) gives
+
+\[
+ AXh_c=Xh_c\mathcal B_{a_*,c}+h_c\partial_c\mathcal B_{a_*,c},
+\]
+
+which is (PC3) and independently checks every sign in (PC2).
+
+For (PC4), use \(AP=PA=0\), \(AR_0Q=R_0QA=Q\), and take the two off-diagonal
+blocks:
+
+\[
+ PXQ=PCR_0Q,\qquad -QXP=R_0QCP.
+\]
+
+Their sum is \([P,X]\).  Since
+\(Px^{k+1}=PXx^k=XPx^k+[P,X]x^k\), (PC5)--(PC6) follow; the Fourier
+derivative convention is \(H'=i\widehat{Xw}\).  Finally substitute (PC6)
+into (PE10).  This gives (PC7). \(\square\)
+
+The inequality (PC7) is genuinely operator-specific, but it does not yet
+exclude a crossing.  The positive reduced inverse \(R_0\) is composed with
+the skew commutator \(C\), and (PC2) has no termwise sign.  Proving (PC7)
+incompatible with (PC2) for a support-saturating real-rooted null vector is
+the remaining arithmetic step; replacing \(R_0\) by an assumed positive
+prime factorization would merely reintroduce Weil positivity.
+
 ### Proposition 4.1b (the Hausdorff measure of a pure-parity witness)
 
 Assume there is a pure-parity real-rooted null vector at the first crossing,
