@@ -2710,6 +2710,75 @@ At \(d=97\) the same \(L^2\) majorant is
 a failure of the one-entry absolute estimate, not a negative matrix
 witness.
 
+For the scalar coefficient, Cauchy--Schwarz is unnecessary: applying the
+triangle inequality directly to the integral retains the same Gaussian
+profile in \(L^1\).  From (E163),
+
+\[
+\begin{aligned}
+\frac1\pi\int_0^\pi
+\left(\frac{R_x(\theta)}{R_x(0)}\right)^d\,d\theta
+&\le\frac1\pi\int_0^\pi
+e^{-dc_x(1-\cos\theta)/2}\,d\theta\\
+&\le\frac{\sqrt\pi}{2\sqrt{dc_x}}.                \tag{E167}
+\end{aligned}
+\]
+
+This is the missing \(d^{-1/2}\) rather than \(d^{-1/4}\) factor.  Tighten
+the algebraic brackets, still rationally, to
+
+\[
+\frac{70710678}{10^8}<\lambda<\frac{70710679}{10^8},
+\qquad
+\sqrt2<\frac{141421357}{10^8},
+\]
+
+and use
+
+\[
+\begin{array}{c|rrrrrr}
+d&97&98&99&100&101&102\\ \hline
+x_d&481/500&969/1000&487/500&489/500&491/500&9841/10000\\
+F_d&2133/10000&2311/10000&31/125&166/625&2893/10000&3047/10000.
+\end{array}
+\]
+
+The exact inequalities
+\[
+F_d^2>\frac{11}{14d\,\underline c_{x_d}}
+>\frac{\pi}{4d c_{x_d}}
+\]
+certify the factor in (E167), using only \(\pi<22/7\).  After adding the
+\(p\ge3\) and archimedean bounds, the registered totals for \(d=97,\ldots,101\)
+are
+
+\[
+1.1319097820\ldots,\quad
+1.2844546241\ldots,\quad
+1.4832644606\ldots,\quad
+1.6060543736\ldots,\quad
+1.7721660203\ldots.
+\]
+
+Consequently
+
+\[
+\boxed{|B_{m,m+d}|<\frac95
+\qquad(m\ge232,\ 1\le d\le101),}                  \tag{E168}
+\]
+
+and
+
+\[
+\boxed{
+B[\{i,j,k\}]\succ0
+\quad(232\le i<j<k,\ k-i\le101).}                 \tag{E169}
+\]
+
+At \(d=102\) the same rational \(L^1\) certificate gives
+\(1.8636453221\ldots>9/5\).  This moves the one-entry frontier to 102;
+it does not exhibit a negative entry or principal minor.
+
 At the analytic cutoff \(m=232\), (E130) already covers every gap
 \(d\le29\), rather than only the first two bands.  This does not yet prove
 positivity of the corresponding full blocks: the archimedean contribution
@@ -2754,7 +2823,7 @@ the bandwise archimedean--prime discrepancy (E126)--(E133) are checked
 coefficientwise over rational numbers (with a symbolic \(\log2\) component) by
 `jacobi_dilation_connection.py`.
 The Rodrigues moment inequalities, closed beta sums, uniform archimedean
-bounds, prime remainder, and local triple theorems (E134)--(E166) are
+bounds, prime remainder, and local triple theorems (E134)--(E169) are
 audited by `jacobi_local_band_bound.py`.
 The floating-point checks elsewhere in this audit are not used in place of
 the displayed analytic inequalities. Global claims still require all

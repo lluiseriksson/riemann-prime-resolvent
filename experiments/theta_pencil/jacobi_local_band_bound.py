@@ -54,6 +54,26 @@ L2_FACTOR_UPPERS = {
     96: Fraction(49, 125),
     97: Fraction(103, 250),
 }
+L1_EXTENDED_GAP = 101
+L1_LAMBDA_LOWER = Fraction(70_710_678, 100_000_000)
+L1_LAMBDA_UPPER = Fraction(70_710_679, 100_000_000)
+L1_SQRT_TWO_UPPER = Fraction(141_421_357, 100_000_000)
+L1_RADIUS_OVERRIDES = {
+    97: Fraction(481, 500),
+    98: Fraction(969, 1000),
+    99: Fraction(487, 500),
+    100: Fraction(489, 500),
+    101: Fraction(491, 500),
+    102: Fraction(9841, 10_000),
+}
+L1_FACTOR_UPPERS = {
+    97: Fraction(2133, 10_000),
+    98: Fraction(2311, 10_000),
+    99: Fraction(31, 125),
+    100: Fraction(166, 625),
+    101: Fraction(2893, 10_000),
+    102: Fraction(3047, 10_000),
+}
 
 
 def beta_integer(left: int, right: int) -> Fraction:
@@ -317,6 +337,53 @@ def contour_two_dilation_l2_upper(m: int, gap: int) -> Fraction:
     return direct_contour_upper(m, gap, radius) * l2_factor_upper(gap)
 
 
+def direct_contour_tight_upper(m: int, gap: int, radius: Fraction) -> Fraction:
+    """Direct contour bound using the tighter L1 algebraic brackets."""
+
+    norm_square = Fraction(2 * m + 2 * gap + 1, 2 * m + 1)
+    assert norm_square < CONTOUR_NORM_UPPER**2
+    assert L1_LAMBDA_UPPER < radius < 1
+    return (
+        CONTOUR_NORM_UPPER
+        * Fraction(2 * m + 1, gap)
+        * L1_SQRT_TWO_UPPER
+        * radius ** (2 * m + gap + 1)
+        * (1 - L1_LAMBDA_LOWER * radius) ** gap
+        / (radius - L1_LAMBDA_UPPER) ** gap
+    )
+
+
+def l1_concentration_lower(gap: int) -> Fraction:
+    """Tight rational lower bound for the angular concentration c."""
+
+    radius = L1_RADIUS_OVERRIDES[gap]
+    return (
+        L1_LAMBDA_LOWER
+        * radius
+        * (1 - radius * radius)
+        / (
+            (1 - L1_LAMBDA_LOWER * radius) ** 2
+            * (radius + L1_LAMBDA_UPPER) ** 2
+        )
+    )
+
+
+def l1_factor_upper(gap: int) -> Fraction:
+    """Rational upper bound for sqrt(pi/(4*d*c))."""
+
+    factor = L1_FACTOR_UPPERS[gap]
+    # pi < 22/7, so pi/(4*d*c) < 11/(14*d*c).
+    assert factor**2 > Fraction(11, 14 * gap) / l1_concentration_lower(gap)
+    return factor
+
+
+def contour_two_dilation_l1_upper(m: int, gap: int) -> Fraction:
+    """Circle-L1 bound retaining the full Gaussian peak width."""
+
+    radius = L1_RADIUS_OVERRIDES[gap]
+    return direct_contour_tight_upper(m, gap, radius) * l1_factor_upper(gap)
+
+
 def exact_two_dilation_square(m: int, gap: int) -> Fraction:
     """Exact square of Q_(m,m+d)(1/2), avoiding every square root."""
 
@@ -363,6 +430,20 @@ def l2_extended_prime_upper(m: int, gap: int) -> Fraction:
         * pfaff_mangoldt_tail_upper(m, gap)
     )
     return contour_two_dilation_l2_upper(m, gap) / 2 + tail
+
+
+def l1_extended_prime_upper(m: int, gap: int) -> Fraction:
+    """Prime bound extended past gap 96 using angular L1 concentration."""
+
+    if gap <= L2_EXTENDED_GAP:
+        return l2_extended_prime_upper(m, gap)
+    tail = (
+        CONTOUR_NORM_UPPER
+        * comb(2 * m + gap, gap)
+        * pfaff_hypergeometric_ratio(m, gap)
+        * pfaff_mangoldt_tail_upper(m, gap)
+    )
+    return contour_two_dilation_l1_upper(m, gap) / 2 + tail
 
 
 def main() -> None:
@@ -563,6 +644,41 @@ def main() -> None:
         > 2
     )
 
+    # Direct L1 integration improves d^(-1/4) to d^(-1/2).  The tighter
+    # algebraic brackets are independently certified by squaring.
+    assert L1_LAMBDA_LOWER**2 < Fraction(1, 2) < L1_LAMBDA_UPPER**2
+    assert L1_SQRT_TWO_UPPER**2 > 2
+    for gap in range(L2_EXTENDED_GAP + 1, L1_EXTENDED_GAP + 2):
+        assert l1_factor_upper(gap) < 1
+        assert exact_two_dilation_square(TAIL_START, gap) < (
+            contour_two_dilation_l1_upper(TAIL_START, gap) ** 2
+        )
+        assert l1_extended_prime_upper(TAIL_START + 1, gap) < (
+            l1_extended_prime_upper(TAIL_START, gap)
+        )
+
+    l1_totals = list(l2_totals)
+    for gap in range(L2_EXTENDED_GAP + 1, L1_EXTENDED_GAP + 1):
+        archimedean = (
+            odd_archimedean_crude_upper(TAIL_START, gap)
+            if gap % 2
+            else even_archimedean_crude_upper(TAIL_START, gap)
+        )
+        l1_totals.append(
+            l1_extended_prime_upper(TAIL_START, gap) + archimedean
+        )
+    assert max(l1_totals) < Fraction(9, 5)
+    assert l1_totals.index(max(l1_totals)) + 1 == 101
+    l1_next_archimedean = even_archimedean_crude_upper(
+        TAIL_START,
+        L1_EXTENDED_GAP + 1,
+    )
+    assert (
+        l1_extended_prime_upper(TAIL_START, L1_EXTENDED_GAP + 1)
+        + l1_next_archimedean
+        > Fraction(9, 5)
+    )
+
     print(f"exact_moment_identity_checks={identity_checks}")
     print(f"max_prime_bound={float(max(prime_bounds)):.12e}")
     print("odd_archimedean_bound=1/gap")
@@ -577,6 +693,8 @@ def main() -> None:
     print("contour_tail_local_diameter=92")
     print(f"l2_total_bound={float(max(l2_totals)):.12e}")
     print("l2_tail_local_diameter=96")
+    print(f"l1_total_bound={float(max(l1_totals)):.12e}")
+    print("l1_tail_local_diameter=101")
 
 
 if __name__ == "__main__":

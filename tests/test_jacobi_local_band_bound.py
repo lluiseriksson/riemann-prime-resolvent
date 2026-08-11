@@ -8,6 +8,10 @@ from experiments.theta_pencil.jacobi_local_band_bound import (
     LAMBDA_LOWER,
     LAMBDA_UPPER,
     L2_EXTENDED_GAP,
+    L1_EXTENDED_GAP,
+    L1_LAMBDA_LOWER,
+    L1_LAMBDA_UPPER,
+    L1_SQRT_TWO_UPPER,
     MAX_GAP,
     PFAFF_EXTENDED_GAP,
     SQRT_TWO_UPPER,
@@ -18,6 +22,7 @@ from experiments.theta_pencil.jacobi_local_band_bound import (
     contour_prime_upper,
     contour_two_dilation_upper,
     contour_two_dilation_l2_upper,
+    contour_two_dilation_l1_upper,
     crude_prime_upper,
     even_archimedean_rational_upper,
     even_archimedean_crude_upper,
@@ -25,6 +30,8 @@ from experiments.theta_pencil.jacobi_local_band_bound import (
     jacobi_moment,
     l2_extended_prime_upper,
     l2_factor_upper,
+    l1_extended_prime_upper,
+    l1_factor_upper,
     odd_upper_polynomial,
     odd_archimedean_crude_upper,
     normalized_jacobi_coefficients,
@@ -192,4 +199,34 @@ def test_l2_width_96_budget_and_uniformity() -> None:
         l2_extended_prime_upper(TAIL_START, L2_EXTENDED_GAP + 1)
         + odd_archimedean_crude_upper(TAIL_START, L2_EXTENDED_GAP + 1)
         > 2
+    )
+
+
+def test_l1_width_101_budget_and_uniformity() -> None:
+    assert L1_LAMBDA_LOWER**2 < Fraction(1, 2) < L1_LAMBDA_UPPER**2
+    assert L1_SQRT_TWO_UPPER**2 > 2
+    totals = []
+    for gap in range(1, L1_EXTENDED_GAP + 1):
+        archimedean = (
+            odd_archimedean_crude_upper(TAIL_START, gap)
+            if gap % 2
+            else even_archimedean_crude_upper(TAIL_START, gap)
+        )
+        totals.append(
+            l1_extended_prime_upper(TAIL_START, gap) + archimedean
+        )
+        if gap > L2_EXTENDED_GAP:
+            assert l1_factor_upper(gap) < 1
+            assert exact_two_dilation_square(TAIL_START, gap) < (
+                contour_two_dilation_l1_upper(TAIL_START, gap) ** 2
+            )
+            assert l1_extended_prime_upper(TAIL_START + 1, gap) < (
+                l1_extended_prime_upper(TAIL_START, gap)
+            )
+    assert max(totals) < Fraction(9, 5)
+    assert totals.index(max(totals)) + 1 == 101
+    assert (
+        l1_extended_prime_upper(TAIL_START, L1_EXTENDED_GAP + 1)
+        + even_archimedean_crude_upper(TAIL_START, L1_EXTENDED_GAP + 1)
+        > Fraction(9, 5)
     )
