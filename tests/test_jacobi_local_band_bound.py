@@ -2,6 +2,7 @@ from fractions import Fraction
 
 from experiments.theta_pencil.jacobi_local_band_bound import (
     BESSEL_EXTENDED_GAP,
+    ROBUST_TRIPLE_DIAMETER,
     CONTOUR_EXTENDED_GAP,
     CONTOUR_NORM_UPPER,
     CONTOUR_RADIUS,
@@ -17,6 +18,7 @@ from experiments.theta_pencil.jacobi_local_band_bound import (
     PFAFF_EXTENDED_GAP,
     SQRT_TWO_UPPER,
     SPLIT_EXTENDED_GAP,
+    TAIL_DIAGONAL_LOWER,
     TAIL_START,
     binomial_one_step_ratio,
     bessel_extended_prime_upper,
@@ -40,6 +42,7 @@ from experiments.theta_pencil.jacobi_local_band_bound import (
     split_extended_prime_upper,
     split_l1_factor_upper,
     rational_bessel_factor_upper,
+    robust_three_by_three_determinant_lower,
     odd_upper_polynomial,
     odd_archimedean_crude_upper,
     normalized_jacobi_coefficients,
@@ -48,6 +51,7 @@ from experiments.theta_pencil.jacobi_local_band_bound import (
     pfaff_mangoldt_moment_upper,
     pfaff_mangoldt_tail_upper,
     pfaff_prime_upper,
+    tail_entry_abs_upper,
 )
 
 
@@ -294,3 +298,24 @@ def test_bessel_width_109_budget_and_uniformity() -> None:
         + even_archimedean_crude_upper(TAIL_START, BESSEL_EXTENDED_GAP + 1)
         > Fraction(9, 5)
     )
+
+
+def test_robust_triple_width_110() -> None:
+    entry_bounds = {
+        gap: tail_entry_abs_upper(TAIL_START, gap)
+        for gap in range(1, ROBUST_TRIPLE_DIAMETER + 1)
+    }
+    assert max(entry_bounds.values()) < TAIL_DIAGONAL_LOWER
+    certificates = []
+    for diameter in range(2, ROBUST_TRIPLE_DIAMETER + 1):
+        for left_gap in range(1, diameter):
+            certificate = robust_three_by_three_determinant_lower(
+                left_gap,
+                diameter - left_gap,
+            )
+            assert certificate > 0
+            certificates.append((certificate, diameter, left_gap))
+    certificate, diameter, left_gap = min(certificates)
+    assert diameter == ROBUST_TRIPLE_DIAMETER
+    assert left_gap in (1, ROBUST_TRIPLE_DIAMETER - 1)
+    assert certificate > 11

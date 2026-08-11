@@ -9,6 +9,7 @@ its exact cutoff constants without zero data or floating-point quadrature.
 
 from __future__ import annotations
 
+from functools import lru_cache
 from fractions import Fraction
 from math import comb, factorial
 
@@ -101,6 +102,8 @@ BESSEL_RADIUS_OVERRIDES = {
 }
 BESSEL_I0_ORDER = 16
 BESSEL_EXP_ORDER = 24
+TAIL_DIAGONAL_LOWER = Fraction(181_089, 50_000)
+ROBUST_TRIPLE_DIAMETER = 110
 
 
 def beta_integer(left: int, right: int) -> Fraction:
@@ -619,6 +622,36 @@ def bessel_extended_prime_upper(m: int, gap: int) -> Fraction:
     return contour_two_dilation_bessel_upper(m, gap) / 2 + tail
 
 
+@lru_cache(maxsize=None)
+def tail_entry_abs_upper(m: int, gap: int) -> Fraction:
+    """Uniform absolute bound for a tail Jacobi entry."""
+
+    prime = bessel_extended_prime_upper(m, gap)
+    archimedean = (
+        odd_archimedean_crude_upper(m, gap)
+        if gap % 2
+        else even_archimedean_crude_upper(m, gap)
+    )
+    return prime + archimedean
+
+
+def robust_three_by_three_determinant_lower(
+    left_gap: int,
+    right_gap: int,
+) -> Fraction:
+    """Sign-independent determinant lower bound at the tail cutoff."""
+
+    left = tail_entry_abs_upper(TAIL_START, left_gap)
+    outside = tail_entry_abs_upper(TAIL_START, left_gap + right_gap)
+    right = tail_entry_abs_upper(TAIL_START, right_gap)
+    diagonal = TAIL_DIAGONAL_LOWER
+    return (
+        diagonal**3
+        - diagonal * (left**2 + outside**2 + right**2)
+        - 2 * left * outside * right
+    )
+
+
 def main() -> None:
     identity_checks = 0
     for m in range(4, 20):
@@ -918,6 +951,26 @@ def main() -> None:
         > Fraction(9, 5)
     )
 
+    # Diagonal dominance is only sufficient.  Retaining the exact 3-by-3
+    # determinant crosses gap 110 despite its entry bound exceeding 9/5.
+    entry_bounds = {
+        gap: tail_entry_abs_upper(TAIL_START, gap)
+        for gap in range(1, ROBUST_TRIPLE_DIAMETER + 1)
+    }
+    assert max(entry_bounds.values()) < TAIL_DIAGONAL_LOWER
+    robust_determinants = []
+    for diameter in range(2, ROBUST_TRIPLE_DIAMETER + 1):
+        for left_gap in range(1, diameter):
+            determinant = robust_three_by_three_determinant_lower(
+                left_gap,
+                diameter - left_gap,
+            )
+            assert determinant > 0
+            robust_determinants.append((determinant, diameter, left_gap))
+    determinant, diameter, left_gap = min(robust_determinants)
+    assert diameter == ROBUST_TRIPLE_DIAMETER
+    assert left_gap in (1, ROBUST_TRIPLE_DIAMETER - 1)
+
     print(f"exact_moment_identity_checks={identity_checks}")
     print(f"max_prime_bound={float(max(prime_bounds)):.12e}")
     print("odd_archimedean_bound=1/gap")
@@ -941,6 +994,8 @@ def main() -> None:
         f"{float(bessel_extended_prime_upper(TAIL_START, 109) + odd_archimedean_crude_upper(TAIL_START, 109)):.12e}"
     )
     print("bessel_tail_local_diameter=109")
+    print(f"robust_triple_determinant_lower={float(determinant):.12e}")
+    print("robust_tail_local_diameter=110")
 
 
 if __name__ == "__main__":

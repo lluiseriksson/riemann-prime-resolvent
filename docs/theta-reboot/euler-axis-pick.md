@@ -2898,6 +2898,41 @@ At \(d=110\) the same rational Bessel-series certificate is
 \(1.9251590813\ldots>9/5\).  This is a frontier of this entrywise
 diagonal-dominance estimate, not evidence of a negative entry or minor.
 
+Indeed, using the determinant rather than a row-sum threshold crosses this
+frontier.  Set
+
+\[
+D=\frac{181089}{50000}=3.62178,
+\]
+
+which is the diagonal lower bound from (E102), and let \(X_r\) denote the
+rational absolute-entry bound at gap \(r\).  For a triple with consecutive
+gaps \(a,b\), replace its three diagonal entries by \(D\), obtaining a
+matrix \(C\).  The original compression is \(C\) plus a positive diagonal
+matrix.  Irrespective of the signs of the three off-diagonal entries,
+
+\[
+\det C\ge
+D^3-D\bigl(X_a^2+X_b^2+X_{a+b}^2\bigr)
+-2X_aX_bX_{a+b}.
+\]
+
+The exact rational enumeration over \(a,b\ge1\), \(a+b\le110\), also checks
+\(X_r<D\).  The smallest determinant certificate occurs at
+\((a,b)=(1,109)\) or \((109,1)\) and is
+\(11.9345327633\ldots>0\).  Sylvester's criterion for \(C\), followed by
+monotonicity under addition of a positive diagonal matrix, proves
+
+\[
+\boxed{
+B[\{i,j,k\}]\succ0
+\quad(232\le i<j<k,\ k-i\le110).}                 \tag{E176}
+\]
+
+Thus the local theorem is no longer limited by the artificial \(9/5\)
+entry threshold.  It remains a theorem about three-point compressions and
+does not yet imply positivity of the infinite Jacobi operator.
+
 At the analytic cutoff \(m=232\), (E130) already covers every gap
 \(d\le29\), rather than only the first two bands.  This does not yet prove
 positivity of the corresponding full blocks: the archimedean contribution
@@ -2942,7 +2977,7 @@ the bandwise archimedean--prime discrepancy (E126)--(E133) are checked
 coefficientwise over rational numbers (with a symbolic \(\log2\) component) by
 `jacobi_dilation_connection.py`.
 The Rodrigues moment inequalities, closed beta sums, uniform archimedean
-bounds, prime remainder, and local triple theorems (E134)--(E175) are
+bounds, prime remainder, and local triple theorems (E134)--(E176) are
 audited by `jacobi_local_band_bound.py`.
 The floating-point checks elsewhere in this audit are not used in place of
 the displayed analytic inequalities. Global claims still require all
