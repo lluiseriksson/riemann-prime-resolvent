@@ -2488,27 +2488,27 @@ rational evaluation at (m=232) gives
 \[
  |B^{\rm prime}_{m,m+d}|<
  \begin{cases}
- 1/3,&d\text{ odd},\
+ 1/3,&d\text{ odd},\\
  8/5,&d\text{ even},
  \end{cases}
  \qquad 1\le d\le68,                              \tag{E155}
 \]
 
 with the parity maxima
-(0.3153321955186\ldots) at (d=67) and
-(1.5634365835641\ldots) at (d=68).  The archimedean estimates in
+\(0.3153321955186\ldots\) at \(d=67\) and
+\(1.5634365835641\ldots\) at \(d=68\).  The archimedean estimates in
 (E146)--(E147) remain valid over this enlarged range, so
 
 \[
  |B_{m,m+d}|<
  \begin{cases}
- 83/60,&d\text{ odd},\
+ 83/60,&d\text{ odd},\\
  33/20,&d\text{ even}.
  \end{cases}                                      \tag{E156}
 \]
 
 Thus every off-diagonal row sum in a three-point compression is less than
-(33/10=3.3<3.62178).  Strict diagonal dominance proves the larger local
+\(33/10=3.3<3.62178\).  Strict diagonal dominance proves the larger local
 theorem
 
 \[
@@ -2518,11 +2518,102 @@ theorem
 \]
 
 This argument is unconditional and uses neither RH nor verified zero data.
-At gap 69 the same Pfaff--Chu majorant is (7.6759\ldots>7), so it no
+At gap 69 the same Pfaff--Chu majorant is \(7.6759\ldots>7\), so it no
 longer fits the diagonal budget.  This is again a failure of this absolute
-majorant, not a negative matrix witness.  The next target is a sharper
-central-value estimate for (H_{m,d}(1/2)), where the alternating
-hypergeometric polynomial has much more cancellation than (E152) retains.
+majorant, not a negative matrix witness.
+
+The cancellation at the central value can in fact be retained by a contour
+estimate.  Specialize the integral representation of
+[Szehr--Zarouf](https://arxiv.org/abs/1605.02509) to
+\(\lambda=2^{-1/2}\), \(\alpha=0\), \(\beta=1\), \(n=d-1\), and
+\(a=(2m+1)/n\).  Since \(an+\alpha=2m+1\) is an integer, the second
+integral in their representation vanishes.  Taking absolute values on the
+circle of radius \(x\in(\lambda,1)\) gives
+
+\[
+\begin{aligned}
+&\left|\lambda^{2m+1}(1-\lambda^2)
+P_{d-1}^{(2m+1,1)}(0)\right|\\
+&\quad\le
+\frac{x(1+\lambda x)^2}{(1-\lambda x)(x-\lambda)}
+\cdot\left[
+x^{2m+d}\left(\frac{1-\lambda x}{x-\lambda}\right)^{d-1}
+\right].                                                        \tag{E158}
+\end{aligned}
+\]
+
+Here the two displayed factors on the right are multiplied; the brackets
+only make that product unambiguous.  Combining (E158) with (E127),
+\(P_{d-1}^{(2m+1,1)}(1)=\binom{2m+d}{d-1}\), and
+\(\binom{2m+d}{d}/\binom{2m+d}{d-1}=(2m+1)/d\), yields
+
+\[
+\boxed{
+|Q_{m,m+d}(1/2)|\le
+\sqrt{\frac{2m+2d+1}{2m+1}}\frac{2m+1}{d}\sqrt2\,
+\frac{x^{2m+d+1}(1+\lambda x)^2(1-\lambda x)^{d-2}}
+{(x-\lambda)^d}.}                                  \tag{E159}
+\]
+
+For a rational certificate choose \(x=89/100\) and use
+
+\[
+\frac{7071}{10000}<\lambda<\frac{7072}{10000},
+\qquad
+\sqrt2<\frac{14143}{10000},
+\qquad
+\sqrt{\frac{2m+2d+1}{2m+1}}<\frac65
+\]
+
+for \(m\ge232\), \(2\le d\le85\).  Replacing each occurrence in (E159)
+in the direction that enlarges the right-hand side gives the rational bound
+
+\[
+\begin{aligned}
+U_{m,d}:={}&\frac65\frac{2m+1}{d}\frac{14143}{10000}
+x^{2m+d+1}(1+\overline\lambda x)^2\\
+&\times
+\frac{(1-\underline\lambda x)^{d-2}}
+{(x-\overline\lambda)^d},
+\quad
+\underline\lambda=\frac{7071}{10000},\quad
+\overline\lambda=\frac{7072}{10000}.              \tag{E160}
+\end{aligned}
+\]
+
+Thus the \(p=2\) contribution is less than \(U_{m,d}/2\).  For \(p\ge3\)
+use (E152)--(E154) with the first, \(r=2\), summand removed.  The resulting
+bound decreases with \(m\): explicitly
+
+\[
+\frac{U_{m+1,d}}{U_{m,d}}
+=x^2\frac{2m+3}{2m+1}<1,
+\]
+
+while the remaining Mangoldt majorant loses at least a factor \(3\), the
+binomial factor gains less than \(3/2\), and the Chu factor decreases.
+The archimedean bounds in (E146) decrease as well.  Exact rational
+evaluation at \(m=232\) therefore proves
+
+\[
+\boxed{|B_{m,m+d}|<\frac{17}{10}
+\qquad(m\ge232,\ 1\le d\le85).}                   \tag{E161}
+\]
+
+The exact maximum of the registered rational majorants is
+\(1.6883099470354\ldots\), at \(d=85\).  Hence every off-diagonal row sum
+in a three-point compression is less than \(17/5=3.4<3.62178\), and
+
+\[
+\boxed{
+B[\{i,j,k\}]\succ0
+\quad(232\le i<j<k,\ k-i\le85).}                  \tag{E162}
+\]
+
+At \(d=86\) this same fixed-contour majorant is
+\(2.9411632344\ldots\), so the proof budget fails there.  Again this is a
+frontier of the selected radius and absolute majorants, not a negative
+matrix witness.
 
 At the analytic cutoff \(m=232\), (E130) already covers every gap
 \(d\le29\), rather than only the first two bands.  This does not yet prove
@@ -2568,7 +2659,7 @@ the bandwise archimedean--prime discrepancy (E126)--(E133) are checked
 coefficientwise over rational numbers (with a symbolic \(\log2\) component) by
 `jacobi_dilation_connection.py`.
 The Rodrigues moment inequalities, closed beta sums, uniform archimedean
-bounds, prime remainder, and local triple theorems (E134)--(E150) are
+bounds, prime remainder, and local triple theorems (E134)--(E162) are
 audited by `jacobi_local_band_bound.py`.
 The floating-point checks elsewhere in this audit are not used in place of
 the displayed analytic inequalities. Global claims still require all

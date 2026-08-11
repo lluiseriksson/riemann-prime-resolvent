@@ -1,16 +1,25 @@
 from fractions import Fraction
 
 from experiments.theta_pencil.jacobi_local_band_bound import (
+    CONTOUR_EXTENDED_GAP,
+    CONTOUR_NORM_UPPER,
+    CONTOUR_RADIUS,
     EXTENDED_GAP,
+    LAMBDA_LOWER,
+    LAMBDA_UPPER,
     MAX_GAP,
     PFAFF_EXTENDED_GAP,
+    SQRT_TWO_UPPER,
     TAIL_START,
     binomial_one_step_ratio,
     closed_j_one,
     closed_j_zero_ratio,
+    contour_prime_upper,
+    contour_two_dilation_upper,
     crude_prime_upper,
     even_archimedean_rational_upper,
     even_archimedean_crude_upper,
+    exact_two_dilation_square,
     jacobi_moment,
     odd_upper_polynomial,
     odd_archimedean_crude_upper,
@@ -18,6 +27,7 @@ from experiments.theta_pencil.jacobi_local_band_bound import (
     pfaff_hypergeometric_ratio,
     pfaff_hypergeometric_upper,
     pfaff_mangoldt_moment_upper,
+    pfaff_mangoldt_tail_upper,
     pfaff_prime_upper,
 )
 
@@ -107,3 +117,47 @@ def test_pfaff_width_68_budget_and_uniformity() -> None:
     assert max(odd_bounds) < Fraction(1, 3)
     assert max(even_bounds) < Fraction(8, 5)
     assert pfaff_prime_upper(TAIL_START, PFAFF_EXTENDED_GAP + 1) > 7
+
+
+def test_contour_width_85_budget_and_uniformity() -> None:
+    assert LAMBDA_LOWER**2 < Fraction(1, 2) < LAMBDA_UPPER**2
+    assert SQRT_TWO_UPPER**2 > 2
+    assert LAMBDA_UPPER < CONTOUR_RADIUS < 1
+    for m, gap in (
+        (TAIL_START, 2),
+        (TAIL_START, 8),
+        (TAIL_START, 68),
+        (TAIL_START, 85),
+    ):
+        assert exact_two_dilation_square(m, gap) < (
+            contour_two_dilation_upper(m, gap) ** 2
+        )
+    totals = []
+    for gap in range(1, CONTOUR_EXTENDED_GAP + 1):
+        norm_square = Fraction(
+            2 * TAIL_START + 2 * gap + 1,
+            2 * TAIL_START + 1,
+        )
+        assert norm_square < CONTOUR_NORM_UPPER**2
+        assert 3 * pfaff_mangoldt_tail_upper(TAIL_START + 1, gap) < (
+            pfaff_mangoldt_tail_upper(TAIL_START, gap)
+        )
+        assert contour_prime_upper(TAIL_START + 1, gap) < (
+            contour_prime_upper(TAIL_START, gap)
+        )
+        archimedean = (
+            odd_archimedean_crude_upper(TAIL_START, gap)
+            if gap % 2
+            else even_archimedean_crude_upper(TAIL_START, gap)
+        )
+        totals.append(contour_prime_upper(TAIL_START, gap) + archimedean)
+    assert max(totals) < Fraction(17, 10)
+    assert totals.index(max(totals)) + 1 == 85
+    assert (
+        contour_prime_upper(TAIL_START, CONTOUR_EXTENDED_GAP + 1)
+        + even_archimedean_crude_upper(
+            TAIL_START,
+            CONTOUR_EXTENDED_GAP + 1,
+        )
+        > 2
+    )

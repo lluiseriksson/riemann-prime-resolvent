@@ -23,6 +23,12 @@ MAX_GAP = 29
 EXTENDED_GAP = 45
 PFAFF_EXTENDED_GAP = 68
 PFAFF_NORM_UPPER = Fraction(8, 7)
+CONTOUR_EXTENDED_GAP = 85
+CONTOUR_RADIUS = Fraction(89, 100)
+LAMBDA_LOWER = Fraction(7071, 10_000)
+LAMBDA_UPPER = Fraction(7072, 10_000)
+SQRT_TWO_UPPER = Fraction(14_143, 10_000)
+CONTOUR_NORM_UPPER = Fraction(6, 5)
 
 
 def beta_integer(left: int, right: int) -> Fraction:
@@ -174,6 +180,14 @@ def pfaff_mangoldt_moment_upper(m: int, gap: int) -> Fraction:
     assert m >= 2
     assert 1 <= gap < 2 * (m - 1)
     at_two = Fraction(1, 2 ** (m + 1 + gap))
+    return at_two + pfaff_mangoldt_tail_upper(m, gap)
+
+
+def pfaff_mangoldt_tail_upper(m: int, gap: int) -> Fraction:
+    """The same rational Mangoldt bound with the r=2 term removed."""
+
+    assert m >= 2
+    assert 1 <= gap < 2 * (m - 1)
     at_three = Fraction(3, 2) * Fraction(
         2**gap,
         3 ** (m + 1 + gap),
@@ -187,12 +201,7 @@ def pfaff_mangoldt_moment_upper(m: int, gap: int) -> Fraction:
         * Fraction(2**gap, 3 ** (m - 1 + gap))
         / logarithmic_slope
     )
-    return (
-        at_two
-        + at_three
-        + integral_zero_quarter
-        + integral_quarter_third
-    )
+    return at_three + integral_zero_quarter + integral_quarter_third
 
 
 def pfaff_prime_upper(m: int, gap: int) -> Fraction:
@@ -220,6 +229,64 @@ def binomial_one_step_ratio(m: int, gap: int) -> Fraction:
         (2 * m + gap + 2) * (2 * m + gap + 1),
         (2 * m + 2) * (2 * m + 1),
     )
+
+
+def contour_two_dilation_upper(m: int, gap: int) -> Fraction:
+    """Rational contour bound for abs(Q_(m,m+d)(1/2)).
+
+    This is the Szehr--Zarouf integral estimate at lambda=1/sqrt(2),
+    alpha=0, beta=1 and the fixed contour radius x=89/100.  Rational
+    brackets for lambda and sqrt(2) make the returned certificate exact.
+    """
+
+    assert gap >= 2
+    norm_square = Fraction(2 * m + 2 * gap + 1, 2 * m + 1)
+    assert norm_square < CONTOUR_NORM_UPPER**2
+    radius = CONTOUR_RADIUS
+    assert LAMBDA_UPPER < radius < 1
+    return (
+        CONTOUR_NORM_UPPER
+        * Fraction(2 * m + 1, gap)
+        * SQRT_TWO_UPPER
+        * radius ** (2 * m + gap + 1)
+        * (1 + LAMBDA_UPPER * radius) ** 2
+        * (1 - LAMBDA_LOWER * radius) ** (gap - 2)
+        / (radius - LAMBDA_UPPER) ** gap
+    )
+
+
+def exact_two_dilation_square(m: int, gap: int) -> Fraction:
+    """Exact square of Q_(m,m+d)(1/2), avoiding every square root."""
+
+    value = sum(
+        (
+            coefficient * Fraction(1, 2) ** power
+            for power, coefficient in enumerate(
+                normalized_jacobi_coefficients(m, gap)
+            )
+        ),
+        Fraction(0),
+    )
+    norm_square = (
+        comb(2 * m + gap, gap) ** 2
+        * Fraction(2 * m + 2 * gap + 1, 2 * m + 1)
+    )
+    return norm_square * Fraction(1, 2 ** (2 * m + 2)) * value * value
+
+
+def contour_prime_upper(m: int, gap: int) -> Fraction:
+    """Prime-band bound using the contour estimate for p=2."""
+
+    if gap == 1:
+        return pfaff_prime_upper(m, gap)
+    tail = (
+        CONTOUR_NORM_UPPER
+        * comb(2 * m + gap, gap)
+        * pfaff_hypergeometric_ratio(m, gap)
+        * pfaff_mangoldt_tail_upper(m, gap)
+    )
+    # Lambda(2)/2 < 1/2 because log(2)<1.
+    return contour_two_dilation_upper(m, gap) / 2 + tail
 
 
 def main() -> None:
@@ -337,6 +404,56 @@ def main() -> None:
     # next gap.  This registers a method frontier, not a matrix obstruction.
     assert pfaff_prime_upper(TAIL_START, PFAFF_EXTENDED_GAP + 1) > 7
 
+    # The central p=2 term admits a much sharper contour estimate.  First
+    # audit all rational enclosures used to remove sqrt(2).
+    assert LAMBDA_LOWER**2 < Fraction(1, 2) < LAMBDA_UPPER**2
+    assert SQRT_TWO_UPPER**2 > 2
+    assert LAMBDA_UPPER < CONTOUR_RADIUS < 1
+    for m, gap in (
+        (TAIL_START, 2),
+        (TAIL_START, 7),
+        (TAIL_START, 68),
+        (TAIL_START, 85),
+    ):
+        assert exact_two_dilation_square(m, gap) < (
+            contour_two_dilation_upper(m, gap) ** 2
+        )
+
+    contour_totals = []
+    for gap in range(1, CONTOUR_EXTENDED_GAP + 1):
+        norm_square = Fraction(
+            2 * TAIL_START + 2 * gap + 1,
+            2 * TAIL_START + 1,
+        )
+        assert norm_square < CONTOUR_NORM_UPPER**2
+        assert binomial_one_step_ratio(TAIL_START, gap) < Fraction(3, 2)
+        assert 3 * pfaff_mangoldt_tail_upper(TAIL_START + 1, gap) < (
+            pfaff_mangoldt_tail_upper(TAIL_START, gap)
+        )
+        assert contour_prime_upper(TAIL_START + 1, gap) < (
+            contour_prime_upper(TAIL_START, gap)
+        )
+        archimedean = (
+            odd_archimedean_crude_upper(TAIL_START, gap)
+            if gap % 2
+            else even_archimedean_crude_upper(TAIL_START, gap)
+        )
+        contour_totals.append(
+            contour_prime_upper(TAIL_START, gap) + archimedean
+        )
+    assert max(contour_totals) < Fraction(17, 10)
+    assert contour_totals.index(max(contour_totals)) + 1 == 85
+
+    next_archimedean = even_archimedean_crude_upper(
+        TAIL_START,
+        CONTOUR_EXTENDED_GAP + 1,
+    )
+    assert (
+        contour_prime_upper(TAIL_START, CONTOUR_EXTENDED_GAP + 1)
+        + next_archimedean
+        > 2
+    )
+
     print(f"exact_moment_identity_checks={identity_checks}")
     print(f"max_prime_bound={float(max(prime_bounds)):.12e}")
     print("odd_archimedean_bound=1/gap")
@@ -347,6 +464,8 @@ def main() -> None:
     print(f"pfaff_odd_prime_bound={float(max(odd_pfaff_bounds)):.12e}")
     print(f"pfaff_even_prime_bound={float(max(even_pfaff_bounds)):.12e}")
     print("pfaff_tail_local_diameter=68")
+    print(f"contour_total_bound={float(max(contour_totals)):.12e}")
+    print("contour_tail_local_diameter=85")
 
 
 if __name__ == "__main__":
