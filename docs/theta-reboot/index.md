@@ -148,6 +148,16 @@ For every nonzero kernel vector there is a least
 formula has prime weights \(\Lambda(n)(\log n)^{2s}/\sqrt n\) and one
 overall alternating sign.  This supplies a strict finite signed gate for
 every kernel dimension, while leaving its arithmetic exclusion open.
+Real-rootedness nevertheless fixes more of this source expression than a
+pointwise argument suggests.  If \(r\) is the zero order and
+\(J_j=\iint(x-y)^{2j}w(x)w(y)\), then \(J_j=0\) below \(r\) and
+\((-1)^rJ_j>0\) thereafter, with an exact convolution formula in the
+elementary symmetric sums of the inverse witness zeros.  Consequently the
+entire \(-2\cosh((x-y)/2)\) component of the smooth kernel has fixed sign in
+every commutator order.  The cusp remainder \(h(|x-y|)\), odd absolute
+powers and the translated prime correlations are not controlled by this
+even-moment law; those are now the residual cancellation rather than the
+whole archimedean block.
 In the pure branch, pairing the real zeros produces a canonical Stieltjes
 transform in the radial variable and an explicit Hausdorff measure with atoms
 \(x/(x+\lambda_j^2)\). These are witness zeros, not xi zeros; identifying the

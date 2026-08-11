@@ -38,6 +38,36 @@ def main() -> None:
             )
             assert correlation == expected_correlation
 
+        if order <= 12:
+            # Physical even-difference moments for the centered unit-knot
+            # spline derivative.  They vanish below the Fourier zero order
+            # r=order-1 and then all have sign (-1)^r, as in (PH13).
+            zero_order = order - 1
+            maximum_difference_order = zero_order + 3
+            left_endpoint = -Fraction(order, 2)
+            moments = []
+            for power in range(2 * maximum_difference_order + 1):
+                moment = Fraction(0)
+                for interval, value in enumerate(values):
+                    left = left_endpoint + interval
+                    right = left + 1
+                    moment += Fraction(value) * (
+                        right ** (power + 1) - left ** (power + 1)
+                    ) / (power + 1)
+                moments.append(moment)
+            for difference_order in range(maximum_difference_order + 1):
+                difference_moment = sum(
+                    (-1) ** index
+                    * comb(2 * difference_order, index)
+                    * moments[2 * difference_order - index]
+                    * moments[index]
+                    for index in range(2 * difference_order + 1)
+                )
+                if difference_order < zero_order:
+                    assert difference_moment == 0
+                else:
+                    assert (-1) ** zero_order * difference_moment > 0
+
         # If h=2a/m, the nonzero Fourier-zero spacing is pi*m/a and every
         # such zero has multiplicity m.  Multiplicity divided by the spacing
         # therefore equals a/pi, independently of m; counting both signs

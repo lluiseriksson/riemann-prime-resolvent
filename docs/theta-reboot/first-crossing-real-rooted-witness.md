@@ -1273,12 +1273,62 @@ because \(\sum_j\lambda_j^{-2}<\infty\).
 Thus the factorially normalized nonzero moments have generating function
 
 \[
- \sum_{q\ge0}\frac{m_{r+2q}}{\kappa(r+2q)!},t^q
- =\prod_{j\ge1}(1+t/\lambda_j^2),                          \tag{PH12}
+ \sum_{q\ge0}\frac{m_{r+2q}}{\kappa(r+2q)!}\,t^q
+ =\prod_{j\ge1}(1+t/\lambda_j^2).                         \tag{PH12}
 \]
 
-the locally uniform limit of polynomials with only negative real zeros and
-positive coefficients.  This is the physical-variable positive structure
+There is a companion sign law directly adapted to the commutator hierarchy.
+For \(j\ge0\), set
+
+\[
+ J_j=\iint_{[-a_*,a_*]^2}(x-y)^{2j}v_*(x)v_*(y)\,dx\,dy.
+\]
+
+Then
+
+\[
+\boxed{
+ J_j=0\quad(j<r),\qquad
+ \frac{J_{r+q}}{(2r+2q)!}
+ =(-1)^r\kappa^2\sum_{u=0}^{q}e_u e_{q-u}
+ \quad(q\ge0),}                                         \tag{PH13}
+\]
+
+where \(e_u=e_u(\lambda_1^{-2},\lambda_2^{-2},\ldots)\).  In particular
+
+\[
+ \boxed{(-1)^rJ_j>0\qquad(j\ge r).}                     \tag{PH14}
+\]
+
+Indeed,
+
+\[
+ \sum_{j\ge0}\frac{J_j}{(2j)!}c^{2j}
+ =G(c)G(-c)
+ =(-1)^r\kappa^2c^{2r}
+  \left\{\prod_{j\ge1}(1+c^2/\lambda_j^2)\right\}^{\!2},
+\]
+
+and coefficient comparison proves (PH13).  Every even derivative of the
+last expression on the positive real axis has the same global sign.  Hence,
+for every \(s\ge0\),
+
+\[
+\boxed{
+ (-1)^r\iint (x-y)^{2s}\cosh((x-y)/2)
+ v_*(x)v_*(y)\,dx\,dy>0.}                               \tag{PH15}
+\]
+
+Thus the \(-2\cosh((x-y)/2)\) component of \(r''\) in (PC18) has a fully
+determined sign: inside \(D_s\) its sign is \((-1)^{s+r}\).  The remaining
+archimedean difficulty is the cusp remainder
+\(h(|x-y|)=e^{|x-y|/2}/(2\sinh|x-y|)-1/(2|x-y|)\), together with the odd
+absolute-power kernel and the prime correlations.  Real-rootedness controls
+the whole even polynomial sector, but not those three residual terms.
+
+The sequence in (PH12) is the locally uniform limit of polynomials with only
+negative real zeros and positive coefficients.  This is the
+physical-variable positive structure
 actually supplied by real-rootedness.  Proposition 4.9e below shows why it is
 not a pointwise sign theorem: (PH11) can coexist with arbitrarily many sign
 changes of \(v_*\).
