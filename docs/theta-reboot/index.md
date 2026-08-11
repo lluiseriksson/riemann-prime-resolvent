@@ -104,6 +104,10 @@ an exact Loewner--Cauchy identity on every shifted Fourier lattice. Minimality
 of the first crossing forces the witness to saturate the whole interval;
 Cartwright theory then upgrades real-rootedness to the exact density law
 \(N(R)=2a_*R/\pi+o(R)\) and a constant-phase conjugate-reflection symmetry.
+Splitting that symmetry into real and imaginary parts gives an exact
+dichotomy: either the witness has pure parity, or the even and odd ground
+levels collide at zero at the first crossing; a mixed witness is not a third
+branch.
 Dividing by finite products of these real zeros gives exact rational
 interpolants that isolate any hypothetical off-line zeta quartet with negative
 spectral sign while Hermite-cancelling an arbitrary finite set of other zeros

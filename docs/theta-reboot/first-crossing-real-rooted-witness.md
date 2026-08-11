@@ -549,6 +549,47 @@ does not make the zero set a uniqueness set for the same Paley--Wiener space;
 \(F\) itself is the counterexample. Thus (ZD) sharpens the exterior synthesis
 problem but does not solve it by a density count alone.
 
+### Proposition 4.1a (pure parity or a genuine parity collision)
+
+The witness in Proposition 4.1 may be written
+
+\[
+ v_*=e_*+i o_*,                                           \tag{PD1}
+\]
+
+where \(e_*\) is real and even, \(o_*\) is real and odd, and
+
+\[
+ e_*,o_*\in\ker A_{a_*}.                                  \tag{PD2}
+\]
+
+Consequently exactly one of the following alternatives holds:
+
+1. one component in (PD1) vanishes, so the real-rooted witness has pure
+   parity and its Fourier transform is respectively even or odd;
+2. both components are nonzero, and the lowest even and odd spectral levels
+   collide at zero at the same first-crossing support.
+
+### Proof
+
+After the constant phase in Proposition 4.1, equation (PT2) says
+\(v_*(-x)=\overline{v_*(x)}\). Taking real and imaginary parts gives a real
+even function \(e_*\) and a real odd function \(o_*\), proving (PD1). The
+localized Weil operator commutes with conjugation and with reflection. Hence
+it annihilates the real and imaginary parts of \(v_*\) and their parity
+projections. Since \(A_{a_*}v_*=0\), this proves (PD2). If both components
+are nonzero, zero belongs to both parity restrictions. Because
+\(A_{a_*}\succeq0\), it is their lowest spectral value. If one component
+vanishes, the Fourier transform of the surviving real-even function is even
+and real on the real axis, while the transform of \(i\) times a real-odd
+function is odd and real there. Its real-rootedness is the one already proved
+for \(v_*\). \(\square\)
+
+Thus a mixed real-rooted witness is not a third symmetry class: it is an exact
+certificate of a parity collision. Excluding such a collision would reduce
+the first-crossing gate to the pure even/odd real-rooted branches, but no such
+exclusion is asserted here.
+
 ### Proposition 4.2 (finite rational localization of an off-line quartet)
 
 Let \(F\) be the constant-phase real entire transform supplied by Proposition
@@ -1179,7 +1220,9 @@ The first-crossing route now has one explicit gate:
 \]
 
 No simplicity assumption remains in (GATE). The exact identity (HG) remains
-an entry point for understanding parity collisions. The separate
+an entry point for understanding parity collisions. Proposition 4.1a shows
+that this is precisely the only mixed-parity branch; otherwise the witness is
+pure even or pure odd. The separate
 [cone no-go](ground-simplicity-cone-no-go.md) proves that ordinary
 Beurling--Deny/Perron--Frobenius theory cannot supply simplicity once
 \(a>1/2\): the off-diagonal form has a positive open band near separation
