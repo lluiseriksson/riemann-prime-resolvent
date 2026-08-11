@@ -2418,11 +2418,111 @@ therefore less than \(13/5=2.6<3.62178\).  Hence the stronger local theorem is
  \quad(232\le i<j<k,\ k-i\le45).}                  \tag{E150}
 \]
 
-At gap 46 the same deliberately elementary prime majorant jumps above 2.95,
-so it no longer fits the diagonal budget.  This is a failure of the
-majorant, not a negative matrix witness.  The next analytic target is either
-a sharper prime-dilation estimate beyond the endpoint maximum or a block
-cancellation that crosses this width-45 frontier.
+The gap-46 failure of the endpoint maximum can be removed without using a
+zero or a sign assumption.  Put (q=d-1) and (c=2m+2).  Pfaff's terminating
+transformation gives the exact identity
+
+\[
+ H_{m,d}(u)=(1-u)^{d-1}
+ {}_2F_1\left(1-d,-d;c;-\frac{u}{1-u}\right).      \tag{E151}
+\]
+
+For (u=1/p), (p\ge2), the absolute value of the last polynomial is at
+most the sum of the absolute values of its coefficients.  Since
+(1/(p-1)\le1), Chu--Vandermonde then gives
+
+\[
+ \boxed{
+ |H_{m,d}(1/p)|\le
+ \left(1-\frac1p\right)^{d-1}
+ \frac{(2m+d+2)_{d-1}}{(2m+2)_{d-1}}.}            \tag{E152}
+\]
+
+Unlike the endpoint bound used in (E143), (E152) retains the exponential
+factor ((1-1/p)^{d-1}).  Consequently, if
+
+\[
+ S_{m,d}:=\sum_{r\ge2}\log r\,r^{-m-1}(1-1/r)^d,
+ \qquad
+ C_{m,d}:=\frac{(2m+d+2)_{d-1}}{(2m+2)_{d-1}},
+\]
+
+then
+
+\[
+ |B^{\rm prime}_{m,m+d}|\le G_{m,d}C_{m,d}S_{m,d}. \tag{E153}
+\]
+
+This infinite sum has a completely rational majorant.  Its summand is
+decreasing for (r\ge3) when (d<2m).  Keep (r=2,3), bound the remainder
+by its integral from (3) to infinity, substitute (u=1/r), and split the
+integral at (u=1/4).  On ([1/4,1/3]), the logarithmic derivative of
+(u^{m-1}(1-u)^d) is at least
+(lambda=3(m-1)-3d/2).  Using
+(log2<1) and (log3,log4<3/2) yields
+
+\[
+\begin{aligned}
+ S_{m,d}<&\;2^{-m-d-1}
+ +\frac32\frac{2^d}{3^{m+d+1}}
+ +4^{-m}\left(\frac3{2m}+\frac1{m^2}\right)\\
+ &+\frac32\frac{2^d}{3^{m+d-1}
+       \left(3(m-1)-3d/2\right)}.                 \tag{E154}
+\end{aligned}
+\]
+
+Every constant in (E154) is rational.  In the range (m\ge232),
+(d\le68),
+
+\[
+ \sqrt{\frac{2m+2d+1}{2m+1}}<\frac87,
+ \qquad
+ \frac{\binom{2m+d+2}{d}}{\binom{2m+d}{d}}<\frac32.
+\]
+
+The Chu factor (C_{m,d}) decreases with (m), while every summand on the
+right of (E154) loses at least a factor (2) when (m) is increased by
+one.  Hence the resulting prime majorant decreases with (m).  Exact
+rational evaluation at (m=232) gives
+
+\[
+ |B^{\rm prime}_{m,m+d}|<
+ \begin{cases}
+ 1/3,&d\text{ odd},\
+ 8/5,&d\text{ even},
+ \end{cases}
+ \qquad 1\le d\le68,                              \tag{E155}
+\]
+
+with the parity maxima
+(0.3153321955186\ldots) at (d=67) and
+(1.5634365835641\ldots) at (d=68).  The archimedean estimates in
+(E146)--(E147) remain valid over this enlarged range, so
+
+\[
+ |B_{m,m+d}|<
+ \begin{cases}
+ 83/60,&d\text{ odd},\
+ 33/20,&d\text{ even}.
+ \end{cases}                                      \tag{E156}
+\]
+
+Thus every off-diagonal row sum in a three-point compression is less than
+(33/10=3.3<3.62178).  Strict diagonal dominance proves the larger local
+theorem
+
+\[
+ \boxed{
+ B[\{i,j,k\}]\succ0
+ \quad(232\le i<j<k,\ k-i\le68).}                 \tag{E157}
+\]
+
+This argument is unconditional and uses neither RH nor verified zero data.
+At gap 69 the same Pfaff--Chu majorant is (7.6759\ldots>7), so it no
+longer fits the diagonal budget.  This is again a failure of this absolute
+majorant, not a negative matrix witness.  The next target is a sharper
+central-value estimate for (H_{m,d}(1/2)), where the alternating
+hypergeometric polynomial has much more cancellation than (E152) retains.
 
 At the analytic cutoff \(m=232\), (E130) already covers every gap
 \(d\le29\), rather than only the first two bands.  This does not yet prove

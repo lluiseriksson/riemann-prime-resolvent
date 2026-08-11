@@ -1,9 +1,10 @@
-"""Exact audit for the width-29 Jacobi tail bound.
+"""Exact audit for the local Jacobi tail bounds.
 
 This module checks the terminating beta-sum identities and the rational
-inequalities used to control every band with m >= 232 and 1 <= n-m <= 29.
-The infinite-in-m part is analytic; the finite checks below audit its exact
-cutoff constants without using zero data or floating-point quadrature.
+inequalities used to control the tail bands.  It also implements the Pfaff
+majorant which extends the three-point positivity theorem from width 45 to
+width 68.  The infinite-in-m part is analytic; the finite checks below audit
+its exact cutoff constants without zero data or floating-point quadrature.
 """
 
 from __future__ import annotations
@@ -20,6 +21,8 @@ except ModuleNotFoundError:  # Direct ``python path/to/script.py`` execution.
 TAIL_START = 232
 MAX_GAP = 29
 EXTENDED_GAP = 45
+PFAFF_EXTENDED_GAP = 68
+PFAFF_NORM_UPPER = Fraction(8, 7)
 
 
 def beta_integer(left: int, right: int) -> Fraction:
@@ -131,6 +134,94 @@ def crude_prime_upper(m: int, gap: int) -> Fraction:
     )
 
 
+def pfaff_hypergeometric_ratio(m: int, gap: int) -> Fraction:
+    """Chu--Vandermonde factor in the Pfaff bound for H_(m,d)."""
+
+    assert gap >= 1
+    base = 2 * m + 2
+    return Fraction(
+        rising(base + gap, gap - 1),
+        rising(base, gap - 1),
+    )
+
+
+def pfaff_hypergeometric_upper(
+    m: int,
+    gap: int,
+    denominator: int,
+) -> Fraction:
+    """Upper bound for abs(H_(m,d)(1/denominator)) from Pfaff."""
+
+    assert denominator >= 2
+    return (
+        Fraction(denominator - 1, denominator) ** (gap - 1)
+        * pfaff_hypergeometric_ratio(m, gap)
+    )
+
+
+def pfaff_mangoldt_moment_upper(m: int, gap: int) -> Fraction:
+    """Rational upper bound for the Pfaff-weighted Mangoldt moment.
+
+    This bounds
+
+        sum_(r>=2) log(r) r^(-m-1) (1-1/r)^gap.
+
+    The r=2,3 terms are kept separately.  The decreasing remainder is
+    bounded by its integral from 3 to infinity, split after u=1/x at 1/4.
+    We use log(2)<1 and log(3),log(4)<3/2.
+    """
+
+    assert m >= 2
+    assert 1 <= gap < 2 * (m - 1)
+    at_two = Fraction(1, 2 ** (m + 1 + gap))
+    at_three = Fraction(3, 2) * Fraction(
+        2**gap,
+        3 ** (m + 1 + gap),
+    )
+    integral_zero_quarter = Fraction(1, 4**m) * (
+        Fraction(3, 2 * m) + Fraction(1, m * m)
+    )
+    logarithmic_slope = Fraction(3 * (m - 1), 1) - Fraction(3 * gap, 2)
+    integral_quarter_third = (
+        Fraction(3, 2)
+        * Fraction(2**gap, 3 ** (m - 1 + gap))
+        / logarithmic_slope
+    )
+    return (
+        at_two
+        + at_three
+        + integral_zero_quarter
+        + integral_quarter_third
+    )
+
+
+def pfaff_prime_upper(m: int, gap: int) -> Fraction:
+    """Prime-band bound retaining the Pfaff exponential factor.
+
+    The normalization factor is at most 8/7 in the registered range.  The
+    assertion records that requirement explicitly, so this helper cannot be
+    silently used outside its proved normalization window.
+    """
+
+    norm_square = Fraction(2 * m + 2 * gap + 1, 2 * m + 1)
+    assert norm_square < PFAFF_NORM_UPPER**2
+    return (
+        PFAFF_NORM_UPPER
+        * comb(2 * m + gap, gap)
+        * pfaff_hypergeometric_ratio(m, gap)
+        * pfaff_mangoldt_moment_upper(m, gap)
+    )
+
+
+def binomial_one_step_ratio(m: int, gap: int) -> Fraction:
+    """C(2(m+1)+d,d) / C(2m+d,d)."""
+
+    return Fraction(
+        (2 * m + gap + 2) * (2 * m + gap + 1),
+        (2 * m + 2) * (2 * m + 1),
+    )
+
+
 def main() -> None:
     identity_checks = 0
     for m in range(4, 20):
@@ -184,6 +275,68 @@ def main() -> None:
             crude_prime_upper(TAIL_START, gap)
         )
 
+    # Pfaff retains (1-1/r)^d and crosses the old gap-46 frontier.  Check
+    # the hypergeometric inequality itself on small exact instances.
+    for m in (4, 9, 17):
+        for gap in range(1, 11):
+            coefficients = normalized_jacobi_coefficients(m, gap)
+            for denominator in (2, 3, 5):
+                value = sum(
+                    (
+                        coefficient * Fraction(1, denominator) ** power
+                        for power, coefficient in enumerate(coefficients)
+                    ),
+                    Fraction(0),
+                )
+                assert abs(value) <= pfaff_hypergeometric_upper(
+                    m,
+                    gap,
+                    denominator,
+                )
+
+    # All normalization and growth constants are uniform for m>=232 and
+    # d<=68.  The binomial ratio decreases with m, the Pfaff ratio decreases
+    # with m, and every summand in the moment bound loses at least a factor
+    # two per unit increase of m.  The exact cutoff checks below record the
+    # rational constants used by that analytic monotonicity argument.
+    for gap in range(1, PFAFF_EXTENDED_GAP + 1):
+        norm_square = Fraction(
+            2 * TAIL_START + 2 * gap + 1,
+            2 * TAIL_START + 1,
+        )
+        assert norm_square < PFAFF_NORM_UPPER**2
+        assert binomial_one_step_ratio(TAIL_START, gap) < Fraction(3, 2)
+        assert pfaff_hypergeometric_ratio(TAIL_START + 1, gap) <= (
+            pfaff_hypergeometric_ratio(TAIL_START, gap)
+        )
+        assert 2 * pfaff_mangoldt_moment_upper(TAIL_START + 1, gap) < (
+            pfaff_mangoldt_moment_upper(TAIL_START, gap)
+        )
+        assert pfaff_prime_upper(TAIL_START + 1, gap) < (
+            pfaff_prime_upper(TAIL_START, gap)
+        )
+
+    odd_pfaff_bounds = [
+        pfaff_prime_upper(TAIL_START, gap)
+        for gap in range(1, PFAFF_EXTENDED_GAP + 1, 2)
+    ]
+    even_pfaff_bounds = [
+        pfaff_prime_upper(TAIL_START, gap)
+        for gap in range(2, PFAFF_EXTENDED_GAP + 1, 2)
+    ]
+    assert max(odd_pfaff_bounds) < Fraction(1, 3)
+    assert max(even_pfaff_bounds) < Fraction(8, 5)
+    assert 2 * odd_pfaff_bounds.index(max(odd_pfaff_bounds)) + 1 == 67
+    assert 2 * (even_pfaff_bounds.index(max(even_pfaff_bounds)) + 1) == 68
+    for gap in range(1, PFAFF_EXTENDED_GAP + 1, 2):
+        assert odd_archimedean_crude_upper(TAIL_START, gap) < Fraction(21, 20)
+    for gap in range(2, PFAFF_EXTENDED_GAP + 1, 2):
+        assert even_archimedean_crude_upper(TAIL_START, gap) < Fraction(1, 20)
+
+    # The same Pfaff--Chu majorant no longer fits the diagonal budget at the
+    # next gap.  This registers a method frontier, not a matrix obstruction.
+    assert pfaff_prime_upper(TAIL_START, PFAFF_EXTENDED_GAP + 1) > 7
+
     print(f"exact_moment_identity_checks={identity_checks}")
     print(f"max_prime_bound={float(max(prime_bounds)):.12e}")
     print("odd_archimedean_bound=1/gap")
@@ -191,6 +344,9 @@ def main() -> None:
     print("tail_local_diameter=29")
     print(f"extended_prime_bound={float(max(extended_prime_bounds)):.12e}")
     print("extended_tail_local_diameter=45")
+    print(f"pfaff_odd_prime_bound={float(max(odd_pfaff_bounds)):.12e}")
+    print(f"pfaff_even_prime_bound={float(max(even_pfaff_bounds)):.12e}")
+    print("pfaff_tail_local_diameter=68")
 
 
 if __name__ == "__main__":
