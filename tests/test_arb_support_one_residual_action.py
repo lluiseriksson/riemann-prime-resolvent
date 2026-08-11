@@ -8,6 +8,9 @@ from experiments.theta_pencil.arb_prime_translation import ArbPrimeAction
 from experiments.theta_pencil.run_arb_support_one_residual_action import (
     run_arb_support_one_residual_action,
 )
+from experiments.theta_pencil.support_one_residual_endpoint_audit import (
+    run_support_one_residual_endpoint_audit,
+)
 
 
 def _digest(array):
@@ -45,8 +48,12 @@ def _write_trial(path):
         metadata=np.array(json.dumps(metadata, sort_keys=True)),
         even_action_vectors=even,
         even_right_factor=even_right,
+        even_low_indices=np.array((0, 2), dtype=np.int64),
+        even_high_indices=np.array((4, 6, 8, 10), dtype=np.int64),
         odd_action_vectors=odd,
         odd_right_factor=odd_right,
+        odd_low_indices=np.array((1, 3), dtype=np.int64),
+        odd_high_indices=np.array((5, 7, 9, 11), dtype=np.int64),
     )
 
 
@@ -86,3 +93,15 @@ def test_residual_action_rejects_tampered_trial_hash(tmp_path):
         run_arb_support_one_residual_action(
             trial, tmp_path / "action.npz", "even", 0, 2, 16, 512
         )
+
+
+def test_residual_endpoint_audit_detects_a_surviving_jump(tmp_path):
+    trial = tmp_path / "trial.npz"
+    _write_trial(trial)
+    result = run_support_one_residual_endpoint_audit(
+        trial, first_degree=256, last_degree=320
+    )
+    assert result.even.residual_endpoint_norm > 0.0
+    assert result.odd.residual_endpoint_norm > 0.0
+    assert result.even.triangular_correction_upper > 0.0
+    assert result.odd.signed_leading_jet_band_norm > 0.0

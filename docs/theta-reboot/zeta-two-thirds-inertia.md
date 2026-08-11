@@ -345,6 +345,33 @@ two parities, twenty columns and the five active prime powers
 `2, 3, 4, 5, 7`; it has not yet been run.  In particular, the existence of
 this runner is reproducibility infrastructure, not an interval certificate.
 
+### Endpoint preflight for the frozen trial
+
+The expensive grid now has a mandatory floating preflight.  For the frozen
+rank-20 trial, the endpoint value of `e_low - Y` has norm
+`21.4362130848` in the even block and `21.1600463454` in the odd block.
+These are respectively `74.56%` and `72.34%` of the uncorrected endpoint
+norms: the finite SVD has not cancelled the leading jump.
+
+Using the registered Bernstein jump bound from degree 256 gives leading-jet
+weighted-norm upper bounds `7.31035` and `7.21617`, hence Schur-correction
+uppers `53.4412` and `52.0731`.  Keeping the five prime powers signed over
+the diagnostic band 256--4096 still gives leading-jet Gram norms `0.670648`
+and `0.660381`.  The latter values are diagnostics, not lower bounds for the
+complete residual, because higher jets can cancel on a finite band.
+
+This closes only the **absolute-tail proof design** for the frozen cutoff-256
+trial; it says neither that the exact residual has those norms nor that the
+operator is nonpositive.  The next trial must build the endpoint condition
+into the solve (or move the cutoff far enough that enforcing it is cheap)
+before the 200 Arb prime-power actions are worth running.  Reproduce the gate
+with
+
+```console
+python -m experiments.theta_pencil.support_one_residual_endpoint_audit \
+  --trial <trial.npz> --first-degree 256 --last-degree 4096
+```
+
 The failure of the two moments is sharp, not merely a weak estimate.  For
 dimension \(n\), trace \(t>0\), squared Frobenius norm \(f\), and
 \(p=\lceil t^2/f\rceil<n\), put \(q=n-p\),

@@ -357,7 +357,11 @@ export commands and registered hashes, so the future Arb run tests a fixed
 dyadic object rather than redesigning the SVD after seeing interval output.
 The corresponding action runner checkpoints one `(parity, column, prime
 power)` tuple atomically and rejects any mismatch in trial or output hashes.
-No production action is claimed yet.
+No production action is claimed yet.  A new endpoint preflight shows why it
+should not be launched on the frozen cutoff-256 trial: the residual retains
+72--75% of the leading jump, and its available triangular Schur charge is
+about 52 per parity.  The next design unit is therefore an
+endpoint-constrained trial at a larger cutoff, not a blind 200-action run.
 
 ## Why this track is different
 
