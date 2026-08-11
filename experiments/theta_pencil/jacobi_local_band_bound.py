@@ -19,6 +19,7 @@ except ModuleNotFoundError:  # Direct ``python path/to/script.py`` execution.
 
 TAIL_START = 232
 MAX_GAP = 29
+EXTENDED_GAP = 45
 
 
 def beta_integer(left: int, right: int) -> Fraction:
@@ -95,6 +96,30 @@ def even_archimedean_rational_upper(m: int, gap: int) -> Fraction:
     return Fraction(15 * (2 * m + gap + 1), 8 * m * (m + 1))
 
 
+def odd_archimedean_crude_upper(m: int, gap: int) -> Fraction:
+    """Monotone-in-m absolute upper bound for an odd archimedean band."""
+
+    assert gap % 2 == 1
+    half = (gap + 1) // 2
+    correction = half * (half - 1)
+    norm_upper = Fraction(2, m) + Fraction(gap + 1, m * m)
+    bracket_upper = (
+        Fraction(m, 2 * gap)
+        + Fraction(half, 2 * gap)
+        + Fraction(correction, 2 * gap * m)
+        + Fraction(13, 4)
+    )
+    return norm_upper * bracket_upper
+
+
+def even_archimedean_crude_upper(m: int, gap: int) -> Fraction:
+    """Monotone-in-m absolute upper bound for an even archimedean band."""
+
+    assert gap % 2 == 0
+    norm_upper = Fraction(2, m) + Fraction(gap + 1, m * m)
+    return Fraction(15, 8) * norm_upper
+
+
 def crude_prime_upper(m: int, gap: int) -> Fraction:
     """Elementary prime-band bound using e<3 and Lambda(r)<=log(r)."""
 
@@ -143,11 +168,29 @@ def main() -> None:
         following = crude_prime_upper(TAIL_START + 1, gap)
         assert following < current
 
+    for gap in range(1, EXTENDED_GAP + 1, 2):
+        assert odd_archimedean_crude_upper(TAIL_START, gap) < Fraction(21, 20)
+    for gap in range(2, EXTENDED_GAP + 1, 2):
+        assert even_archimedean_crude_upper(TAIL_START, gap) < Fraction(1, 20)
+
+    extended_prime_bounds = [
+        crude_prime_upper(TAIL_START, gap)
+        for gap in range(1, EXTENDED_GAP + 1)
+    ]
+    assert max(extended_prime_bounds) < Fraction(1, 4)
+    assert extended_prime_bounds.index(max(extended_prime_bounds)) + 1 == EXTENDED_GAP
+    for gap in range(1, EXTENDED_GAP + 1):
+        assert crude_prime_upper(TAIL_START + 1, gap) < (
+            crude_prime_upper(TAIL_START, gap)
+        )
+
     print(f"exact_moment_identity_checks={identity_checks}")
     print(f"max_prime_bound={float(max(prime_bounds)):.12e}")
     print("odd_archimedean_bound=1/gap")
     print("even_archimedean_bound=1/50")
     print("tail_local_diameter=29")
+    print(f"extended_prime_bound={float(max(extended_prime_bounds)):.12e}")
+    print("extended_tail_local_diameter=45")
 
 
 if __name__ == "__main__":

@@ -2350,8 +2350,79 @@ dominant: each off-diagonal row sum is less than
 \]
 
 This strictly extends (E116) from consecutive triples to every triple in a
-width-29 tail window.  The first unresolved tail triple must now have diameter
-at least 30.
+width-29 tail window, with parity-sensitive bounds.  A coarser estimate below
+enlarges that window further.
+
+The sign window is not needed for a coarser absolute estimate, so the local
+diameter can be enlarged once more.  Equations (E136) and (E140) give for
+every \(d\ge1\)
+
+\[
+ |B^{\rm arch}_{m,m+d}|<
+ \begin{cases}
+ \displaystyle A_{m,d}\left(\frac{R_{m,d}}2+\frac{13}{4}\right),
+     &d\ \text{odd},\\[2mm]
+ \displaystyle\frac{15}{8}A_{m,d},&d\ \text{even}.
+ \end{cases}                                       \tag{E146}
+\]
+
+For \(m\ge232\), use
+
+\[
+ A_{m,d}\le\frac2m+\frac{d+1}{m^2},
+\]
+
+and, for odd \(d\) with \(r=(d+1)/2\),
+
+\[
+ \frac{R_{m,d}}2+\frac{13}{4}
+ \le\frac{m}{2d}+\frac{r}{2d}
+ +\frac{r(r-1)}{2dm}+\frac{13}{4}.
+\]
+
+Every term after multiplication is a nonnegative power of \(1/m\), so the
+resulting bound decreases with \(m\).  The exact rational values at \(m=232\)
+therefore prove
+
+\[
+ |B^{\rm arch}_{m,m+d}|<
+ \begin{cases}
+ 21/20,&d\ \text{odd},\\
+ 1/20,&d\ \text{even},
+ \end{cases}
+ \qquad 1\le d\le45.                              \tag{E147}
+\]
+
+The elementary prime majorant from (E143) is also decreasing in \(m\).  Over
+the enlarged finite set of gaps its exact maximum is now
+
+\[
+ 2\left(\frac{3(2\cdot232+45)}{45}\right)^{45}2^{-232}
+ =0.2189094698801\ldots<\frac14.                    \tag{E148}
+\]
+
+No assertion about the sign of the prime polynomial is used here.  Combining
+(E147)--(E148) gives the uniform absolute band estimate
+
+\[
+ \boxed{|B_{m,m+d}|<\frac{13}{10}
+ \qquad(m\ge232,\ 1\le d\le45).}                   \tag{E149}
+\]
+
+The largest absolute off-diagonal row sum in a three-point compression is
+therefore less than \(13/5=2.6<3.62178\).  Hence the stronger local theorem is
+
+\[
+ \boxed{
+ B[\{i,j,k\}]\succ0
+ \quad(232\le i<j<k,\ k-i\le45).}                  \tag{E150}
+\]
+
+At gap 46 the same deliberately elementary prime majorant jumps above 2.95,
+so it no longer fits the diagonal budget.  This is a failure of the
+majorant, not a negative matrix witness.  The next analytic target is either
+a sharper prime-dilation estimate beyond the endpoint maximum or a block
+cancellation that crosses this width-45 frontier.
 
 At the analytic cutoff \(m=232\), (E130) already covers every gap
 \(d\le29\), rather than only the first two bands.  This does not yet prove
@@ -2397,7 +2468,7 @@ the bandwise archimedean--prime discrepancy (E126)--(E133) are checked
 coefficientwise over rational numbers (with a symbolic \(\log2\) component) by
 `jacobi_dilation_connection.py`.
 The Rodrigues moment inequalities, closed beta sums, uniform archimedean
-bounds, prime remainder, and width-29 triple theorem (E134)--(E145) are
+bounds, prime remainder, and local triple theorems (E134)--(E150) are
 audited by `jacobi_local_band_bound.py`.
 The floating-point checks elsewhere in this audit are not used in place of
 the displayed analytic inequalities. Global claims still require all

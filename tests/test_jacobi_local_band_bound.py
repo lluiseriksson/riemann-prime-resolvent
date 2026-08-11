@@ -1,14 +1,17 @@
 from fractions import Fraction
 
 from experiments.theta_pencil.jacobi_local_band_bound import (
+    EXTENDED_GAP,
     MAX_GAP,
     TAIL_START,
     closed_j_one,
     closed_j_zero_ratio,
     crude_prime_upper,
     even_archimedean_rational_upper,
+    even_archimedean_crude_upper,
     jacobi_moment,
     odd_upper_polynomial,
+    odd_archimedean_crude_upper,
 )
 
 
@@ -35,3 +38,15 @@ def test_prime_remainder_is_below_registered_budget() -> None:
         for gap in range(1, MAX_GAP + 1)
     ]
     assert max(bounds) < Fraction(1, 10**20)
+
+
+def test_extended_width_45_budget() -> None:
+    for gap in range(1, EXTENDED_GAP + 1, 2):
+        assert odd_archimedean_crude_upper(TAIL_START, gap) < Fraction(21, 20)
+    for gap in range(2, EXTENDED_GAP + 1, 2):
+        assert even_archimedean_crude_upper(TAIL_START, gap) < Fraction(1, 20)
+    prime_bounds = [
+        crude_prime_upper(TAIL_START, gap)
+        for gap in range(1, EXTENDED_GAP + 1)
+    ]
+    assert max(prime_bounds) < Fraction(1, 4)
