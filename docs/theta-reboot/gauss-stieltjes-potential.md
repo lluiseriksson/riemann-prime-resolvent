@@ -237,6 +237,39 @@ double-precision audit below makes \(m=12\) the first candidate requiring an
 interval source-and-tail calculation.  Failure for one \(m\) would not close
 the hierarchy because (GS7) raises the operator monotonically.
 
+There is also a completeness statement at each *fixed* support.  Write
+
+\[
+ L_{a,m}=A_2+R_m+B_a,\qquad L_a=A_2+V+B_a,            \tag{GS8}
+\]
+
+where \(B_a\) is the bounded scalar, smooth, and finite prime-translation
+part.  Equations (GS2) and (GS7) show that the closed forms of \(L_{a,m}\)
+increase to the form of \(L_a\).  The diagonal operator
+\(A_2e_n=H_ne_n\), together with the standard bounded-perturbation estimate,
+gives compact resolvent.  Monotone convergence of closed forms and the
+min--max principle therefore imply
+
+\[
+ \boxed{\lambda_k(L_{a,m})\nearrow\lambda_k(L_a)
+ \quad(m\to\infty)\qquad(k\ge1).}                   \tag{GS9}
+\]
+
+Consequently
+
+\[
+ \boxed{L_a\succ0\quad\Longleftrightarrow\quad
+ \text{there exists }m\text{ with }L_{a,m}\succ0.}  \tag{GS10}
+\]
+
+The reverse implication is the pointwise order; the forward implication
+uses \(\lambda_1(L_a)>0\) in (GS9).  Thus the nested resolvents form a
+complete terminating certificate hierarchy whenever the fixed-support
+operator has a positive gap.  They do not settle a merely semidefinite
+zero-ground case, and they do not make the choice of \(m\) uniform as
+\(a\to\infty\).  Those two qualifications are precisely why (GS10) is not
+RH.
+
 ## The single-floor Schur shortcut fails
 
 The multiplication compression was implemented in two independent ways:
@@ -268,7 +301,7 @@ global Legendre modes, charging only the explicitly computed columns
 16--127 at \(\beta^{-1}\) produces smallest Schur eigenvalues approximately
 
 \[
- -11.78\quad\text{(even)},\qquad -15.15\quad\text{(odd)}. \tag{GS8}
+ -11.78\quad\text{(even)},\qquad -15.15\quad\text{(odd)}. \tag{GS11}
 \]
 
 These are diagnostics, not interval claims, but their scale identifies the
@@ -276,6 +309,36 @@ correct architecture: the high-complement theorem is useful only after an
 explicit multiband elimination.  Replacing the exact potential globally by
 a strict lower polynomial, or charging every high mode at one denominator,
 cannot be the final step.
+
+The low spectrum at support one is a cluster rather than a single ground
+state.  The appropriate a posteriori test is therefore the following block
+Temple lemma.  Let \(V:\mathbb C^k\to\mathcal H\) be an isometry,
+\(P=VV^*\), and \(Q=I-P\).  Put
+
+\[
+ A=V^*TV,\qquad R=QTV.
+\]
+
+If \(QTQ\succeq\beta Q\) with \(\beta>0\), completing the square gives
+
+\[
+ \boxed{A-\beta^{-1}R^*R\succ0\quad\Longrightarrow\quad T\succ0.} \tag{GS12}
+\]
+
+This treats all small eigenvalues simultaneously and reduces to the usual
+one-vector Temple estimate when \(k=1\).  A first diagnostic using the four
+lowest vectors of the degree-64 section inside degree 128 gives residual
+norms \(1.36\cdot10^{-6}\) (even) and \(1.18\cdot10^{-5}\) (odd).  These are
+too large for the observed next-cluster floors.  Extending to degree 256
+reduces them only to \(4.12\cdot10^{-7}\) and \(4.61\cdot10^{-6}\).
+
+The slow decay is the known endpoint-jump tail of the prime translations.
+Thus an interval pass that merely raises the global Legendre cutoff is not
+accepted.  It must retain the endpoint jets explicitly, form their *block*
+residual Gram, and bound only the regular remainder.  The generic finite
+matrix calculation is implemented in `block_temple.py`; the existing Arb
+jet routines supply the ingredients that still have to be lifted from one
+trial vector to a cluster.
 
 The next non-circular target is therefore to keep (GS3) as an auxiliary Gram
 block and combine it with the signed prime translations inside the same

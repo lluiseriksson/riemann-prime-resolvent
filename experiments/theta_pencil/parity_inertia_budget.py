@@ -67,6 +67,8 @@ def run_parity_inertia_audit(
     jet_end: int = 1_000_000,
     partitions: int = 128,
     active_primes: tuple[int, ...] = (2,),
+    perturbation_loss: float | None = None,
+    maximum_smooth_power: int = 23,
 ) -> ParityInertiaAudit:
     if parity not in (0, 1):
         raise ValueError("parity must be zero or one")
@@ -77,7 +79,9 @@ def run_parity_inertia_audit(
         -math.log(half_width) - math.log(2.0 * math.pi) - EULER_GAMMA
     )
     loss = (
-        abs(scalar_coefficient)
+        float(perturbation_loss)
+        if perturbation_loss is not None
+        else abs(scalar_coefficient)
         + 2.0
         * math.fsum(
             von_mangoldt(prime) / math.sqrt(prime)
@@ -93,7 +97,7 @@ def run_parity_inertia_audit(
             "active_primes must equal the prime powers in the support window"
         )
     smooth_series = smooth_kernel_series_matrix(
-        half_width, smooth_dimension, maximum_power=23
+        half_width, smooth_dimension, maximum_power=maximum_smooth_power
     )
     low_matrix = (
         low_components.dominant
@@ -179,9 +183,9 @@ def run_parity_inertia_audit(
             - spectral_floor
         )
     )
-    if low_dimension + 24 < smooth_dimension:
+    if low_dimension + maximum_smooth_power + 1 < smooth_dimension:
         smooth = smooth_kernel_series_remainder_bound(
-            half_width, 23
+            half_width, maximum_smooth_power
         ) / smooth_denominator
     else:
         smooth_r4_bound = 1.0 if half_width <= 0.4 else 1.1
