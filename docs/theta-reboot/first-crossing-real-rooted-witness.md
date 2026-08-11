@@ -1443,6 +1443,125 @@ for (PH18): the latter pairs \(M_a\) only with the highly constrained density
 kernel-projection identities, rather than discard them by taking a supremum
 of \(M_a\).
 
+### Proposition 4.1d (real-rooted densities still do not sign the residual form)
+
+The preceding warning persists after imposing support saturation, evenness,
+zero order \(r=0\), and real-rootedness of the Fourier transform.  For every
+\(a>\tfrac12\log2\), there are two sequences of real even functions
+\(w_j^\pm\in L^2[-a,a]\), each with essential support \([-a,a]\), such that
+their Fourier transforms are nonzero at the origin and have only real zeros,
+while
+
+\[
+ \mathcal R_a(w_j^+)>0,
+ \qquad
+ \mathcal R_a(w_j^-)<0.                                  \tag{RN1}
+\]
+
+Here \(\mathcal R_a\) is exactly the left side of (PH18).  Thus no theorem
+depending only on these generic Paley--Wiener and zero-geometric properties
+can supply the missing sign.  This does not contradict (PH18), because the
+functions below are not asserted to lie in \(\ker A_a\).
+
+To prove the claim, put
+
+\[
+ w_T(x)=\cos(Tx){\bf1}_{[-a,a]}(x),
+ \qquad T>0,
+ \qquad T\tan(aT)>0.                                     \tag{RN2}
+\]
+
+Away from the endpoints of these open phase intervals,
+\(\sin(aT)\cos(aT)\ne0\), and direct integration gives
+
+\[
+ \begin{aligned}
+ H_T(z)
+ &=\int_{-a}^a w_T(x)e^{izx}\,dx\\
+ &=\frac{2\{z\sin(az)\cos(aT)-T\cos(az)\sin(aT)\}}
+         {z^2-T^2}\\
+ &=2\cos(aT)\,
+   \frac{z\sin(az)-\beta\cos(az)}{z^2-T^2},
+ \qquad \beta=T\tan(aT)>0.                              \tag{RN3}
+ \end{aligned}
+\]
+
+The numerator in the last line is the characteristic determinant of
+\(-d^2/dx^2\) on \([0,a]\) with
+
+\[
+ y'(0)=0,
+ \qquad y'(a)+\beta y(a)=0.                              \tag{RN4}
+\]
+
+Its quadratic form is
+\(\int_0^a|y'|^2+\beta|y(a)|^2\), hence the operator is self-adjoint and
+nonnegative.  Every zero of the determinant is therefore a real spectral
+parameter.  The simple zeros \(z=\pm T\) are removed by the denominator in
+(RN3), so every remaining zero of \(H_T\) is real.  Also
+\(H_T(0)=2\sin(aT)/T\ne0\), proving \(r=0\).
+
+For \(0\le\ell\le2a\), the autocorrelation is elementary:
+
+\[
+ C_T(\ell)
+ =\frac{2a-\ell}{2}\cos(T\ell)
+  +\frac{\sin(2aT-T\ell)}{2T}.                            \tag{RN5}
+\]
+
+Since \(q_a\in L^1[-2a,2a]\), the Riemann--Lebesgue lemma and (RN5) imply,
+along all real \(T\to\infty\),
+
+\[
+ \mathcal R_a(w_T)=P_a(T)+o(1),                           \tag{RN6}
+\]
+
+where the endpoint term vanishes when equality occurs and
+
+\[
+ P_a(T)=
+ \sum_{2\le n<e^{2a}}
+ \frac{\Lambda(n)(\log n)^2}{\sqrt n}
+ (2a-\log n)\cos(T\log n).                               \tag{RN7}
+\]
+
+This is a nonzero cosine polynomial: the coefficient at \(n=2\) is strictly
+positive.  It remains to check that restricting \(T\) by (RN2) does not hide
+one of its signs.  Let \(p_1,\ldots,p_d\) be the active primes and let \(K\)
+be the closure in a torus of
+
+\[
+ T\longmapsto
+ T(a,\log p_1,\ldots,\log p_d)\pmod{2\pi}.
+\]
+
+On \(K\), write \(S(\theta)={\bf1}_{\{\sin(2\theta_0)>0\}}\) and regard
+\(P_a\) as the corresponding finite character sum.  Every character coming
+from \(n\ge2\) is nontrivial on \(K\), so its Haar integral, and hence the
+Haar integral of \(P_a\), is zero.  Inversion on \(K\) preserves Haar measure,
+fixes \(P_a\), and satisfies
+\(S(-\theta)=1-S(\theta)\) off a null boundary.  Consequently
+
+\[
+ \int_K S P_a\,d\theta
+ =\int_K(1-S)P_a\,d\theta
+ =-\int_K S P_a\,d\theta=0.                              \tag{RN8}
+\]
+
+The restriction \(SP_a\) is not almost everywhere zero.  Indeed, the
+one-parameter orbit contains open intervals with \(S=1\), and an exponential
+polynomial that vanished on one such interval would vanish identically,
+whereas \(P_a(0)>0\).  Equation (RN8) therefore forces both a positive and a
+negative open subset of the allowed phase region.  Recurrence of the dense
+one-parameter orbit visits both subsets for arbitrarily large \(T\).  Choosing
+the visits away from the phase boundary and using (RN6) proves (RN1).
+
+Proposition 4.1d is stronger than the pointwise multiplier no-go: the
+multiplier remains indefinite even after it is paired with an explicit
+real-rooted Paley--Wiener density.  What survives is precisely the
+operator-specific relation \(A_aw=0\), including its first-crossing gap and
+projection identities.
+
 The sequence in (PH12) is the locally uniform limit of polynomials with only
 negative real zeros and positive coefficients.  This is the
 physical-variable positive structure

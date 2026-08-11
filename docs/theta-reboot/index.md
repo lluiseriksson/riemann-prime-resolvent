@@ -174,6 +174,17 @@ positive and negative values by rational independence of the prime
 logarithms.  Therefore a pointwise multiplier bound cannot close the gate;
 the constrained density \(|H|^2\) and the kernel projection must remain in
 the argument.
+Even generic real-rootedness of that density is insufficient.  The explicit
+family \(w_T=\cos(Tx){\bf1}_{[-a,a]}\), restricted by
+\(T\tan(aT)>0\), has a Fourier transform whose zeros are real because its
+numerator is a nonnegative Robin Sturm--Liouville determinant.  Its residual
+cusp--prime form is asymptotic to a nonzero prime cosine polynomial.  Haar
+inversion on the joint support--prime phase torus proves that this polynomial
+takes both signs on the allowed Robin phases, recurrently at arbitrarily
+large \(T\).  Hence support saturation, even parity, zero order zero and a
+real-rooted Fourier transform still do not sign the residual form.  The
+first-crossing equation \(A_aw=0\), rather than zero geometry alone, is now a
+provably indispensable input.
 In the pure branch, pairing the real zeros produces a canonical Stieltjes
 transform in the radial variable and an explicit Hausdorff measure with atoms
 \(x/(x+\lambda_j^2)\). These are witness zeros, not xi zeros; identifying the
