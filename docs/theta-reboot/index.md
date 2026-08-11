@@ -100,7 +100,10 @@ argument removes every parity and node-symmetry restriction from the finite
 real-zero theorem. Positive Fourier-evaluation perturbations reduce any
 multiple kernel to a simple null direction without leaving the Loewner class,
 so multiplicity is no longer a separate branch. The same calculation yields
-an exact Loewner--Cauchy identity on every shifted Fourier lattice.
+an exact Loewner--Cauchy identity on every shifted Fourier lattice. Minimality
+of the first crossing forces the witness to saturate the whole interval;
+Cartwright theory then upgrades real-rootedness to the exact density law
+\(N(R)=2a_*R/\pi+o(R)\) and a constant-phase conjugate-reflection symmetry.
 
 ## Why this track is different
 

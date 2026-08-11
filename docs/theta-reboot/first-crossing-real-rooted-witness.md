@@ -488,6 +488,67 @@ simplicity of the original Weil ground state. A proof must now exclude the
 single witness in Theorem 4 from the explicit prime--archimedean structure of
 \(Q_W^a\).
 
+### Proposition 4.1 (support saturation and Cartwright rigidity)
+
+The witness in Theorem 4 may be chosen so that, after multiplication by a
+constant phase, its Fourier transform is real on the real axis. Moreover its
+essential support has convex hull exactly \([-a_*,a_*]\), and, if
+\(N_{v_*}(R)\) counts the zeros of \(\widehat v_*\) in \(|z|\le R\), with
+multiplicity, then
+
+\[
+ \boxed{N_{v_*}(R)=\frac{2a_*}{\pi}R+o(R).}                  \tag{ZD}
+\]
+
+In particular the remaining witness is not merely real-rooted: its real zeros
+have the maximal Cartwright density allowed by its exact support length.
+
+### Proof
+
+First note that the Weil form is invariant under translation. Indeed,
+simultaneously translating a function and its reflected conjugate leaves
+\(v*\widetilde v\), and therefore \(W(v*\widetilde v)\), unchanged. Suppose
+that the convex hull of the essential support of \(v_*\) had length \(2b<2a_*\).
+After a translation, \(v_*\) would belong to the localized form domain on
+\((-b',b')\) for some \(b<b'<a_*\), with the same zero quadratic value.
+But the definition of the first crossing gives \(\lambda_{b'}>0\), a
+contradiction. Hence the convex hull is exactly \([-a_*,a_*]\).
+
+Put \(F=\widehat v_*\) and \(F^\#(z)=\overline{F(\bar z)}\). Both are
+Cartwright entire functions of order at most one. Since every zero of \(F\)
+is real, \(F\) and \(F^\#\) have the same zero divisor. The Cartwright
+product theorem for a Paley--Wiener function with smallest inverse-transform
+support interval (equivalently, Theorem 5 of Al-Hammali--Faridani) therefore
+gives
+
+\[
+ F^\#(z)=e^{i(cz+d)}F(z),\qquad c,d\in\mathbb R.             \tag{PT1}
+\]
+
+Multiplication by \(e^{icz}\) translates the inverse Fourier support by
+\(c\). The support indicator of each side of (PT1) is the same reflected
+interval \([-a_*,a_*]\), so \(c=0\). Replacing \(F\) by
+\(e^{id/2}F\) then gives \(F^\#=F\). Equivalently, after that constant phase,
+
+\[
+ v_*(-x)=\overline{v_*(x)}                                  \tag{PT2}
+\]
+
+almost everywhere.
+
+Finally, the Paley--Wiener indicator diagram of \(F\) has vertical width
+equal to the length of the convex hull of the essential support, namely
+\(2a_*\). The Cartwright zero-density theorem gives total zero density equal
+to that width divided by \(\pi\). All zeros are real, so no angular sector is
+lost, and (ZD) follows. \(\square\)
+
+Two cautions are essential. First, (PT2) is a conjugate-reflection symmetry,
+not an assertion that the witness is even: its real and imaginary parts may
+occupy the even and odd null sectors simultaneously. Second, critical density
+does not make the zero set a uniqueness set for the same Paley--Wiener space;
+\(F\) itself is the counterexample. Thus (ZD) sharpens the exterior synthesis
+problem but does not solve it by a density count alone.
+
 ## 4. Exact parity-gap identity
 
 Although multiplicity is no longer a separate logical branch, parity
