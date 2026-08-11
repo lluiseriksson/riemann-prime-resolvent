@@ -329,6 +329,22 @@ The complete NPZ had SHA-256
 in the registered run.  Reproduction should compare the internal factor
 hashes, which are independent of ZIP container metadata.
 
+Each prime-power action is now an independent resumable unit.  For example,
+
+```console
+python -m experiments.theta_pencil.run_arb_support_one_residual_action \
+  --trial <trial.npz> --output <even-00-p2.npz> \
+  --parity even --column 0 --prime 2 \
+  --maximum-degree <cutoff> --precision <bits>
+```
+
+The runner verifies both factor hashes before calling Arb and hashes the
+resulting midpoint and radius arrays.  Existing outputs are reused only when
+all request metadata and result hashes match.  The production grid contains
+two parities, twenty columns and the five active prime powers
+`2, 3, 4, 5, 7`; it has not yet been run.  In particular, the existence of
+this runner is reproducibility infrastructure, not an interval certificate.
+
 The failure of the two moments is sharp, not merely a weak estimate.  For
 dimension \(n\), trace \(t>0\), squared Frobenius norm \(f\), and
 \(p=\lceil t^2/f\rceil<n\), put \(q=n-p\),

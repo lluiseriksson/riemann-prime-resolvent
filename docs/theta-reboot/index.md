@@ -355,6 +355,9 @@ their residual Gram, and the signed degree-above-255 tail.
 Those forty trial vectors and their right factors now have deterministic
 export commands and registered hashes, so the future Arb run tests a fixed
 dyadic object rather than redesigning the SVD after seeing interval output.
+The corresponding action runner checkpoints one `(parity, column, prime
+power)` tuple atomically and rejects any mismatch in trial or output hashes.
+No production action is claimed yet.
 
 ## Why this track is different
 
