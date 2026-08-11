@@ -1580,6 +1580,40 @@ using \(\sinh(cx)\) and the sine transform. Thus the two exceptional zero
 sets are discrete. Formula (HB7a) is (CI3) applied to \((p_c,q_c)\).
 \(\square\)
 
+### Corollary 4.9b (common-factor collapse for a simple kernel)
+
+If \(K_0\) is one-dimensional, its generator has pure parity. In the even
+case the boundary Herglotz function (BG2) is
+
+\[
+ \boxed{m_{0,c}(z)=z/c,}                                  \tag{HB8a}
+\]
+
+whereas in the odd case it is
+
+\[
+ \boxed{m_{0,c}(z)=-c/z.}                                 \tag{HB8b}
+\]
+
+Indeed, write \(K_0=\mathbb C v\). Reflection invariance and
+one-dimensionality allow \(v\) to be chosen real and either even or odd.
+For every \(c>0\), \(u_c\) is a nonzero scalar multiple of \(v\), so
+\(U_c(-z)=\sigma U_c(z)\), with \(\sigma=1\) in the even case and
+\(\sigma=-1\) in the odd case. Hence (BG1) reduces to
+
+\[
+ \Theta_c(z)=\sigma\frac{z-ic}{z+ic}.
+\]
+
+Substitution in \(m_{0,c}=i(1+\Theta_c)/(1-\Theta_c)\) gives
+(HB8a)--(HB8b). \(\square\)
+
+Thus every zero of the real-rooted kernel generator cancels from the
+projective quotient when the nullspace is simple. The fixed-support Weyl
+boundary can contain non-universal information only through a genuinely
+multidimensional kernel. This is an exact common-factor no-go, not evidence
+that the first-crossing kernel is multiple.
+
 Proposition 4.9 is stronger than the existence of one real-rooted null
 witness: it places a canonical family of real-rooted pencils, parametrized
 by the deficiency scale \(c>0\), on the

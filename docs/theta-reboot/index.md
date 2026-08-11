@@ -131,7 +131,11 @@ constraint.  For all deficiency scales outside a discrete exceptional set,
 the projected pair
 \((P_{\rm e}\cosh(cx),P_{\rm o}\sinh(cx))\) is nonzero in both sectors and
 satisfies the two constraints simultaneously; neither condition is asserted
-to exclude it yet.
+to exclude it yet. If the first-crossing kernel is one-dimensional, all of
+the real-rooted factor instead cancels from this projective object and the
+boundary Weyl function is the universal \(z/c\) (even) or \(-c/z\) (odd).
+Hence this fixed-support quotient carries new arithmetic information only in
+a genuinely multidimensional kernel.
 Dividing by finite products of these real zeros gives exact rational
 interpolants that isolate any hypothetical off-line zeta quartet with negative
 spectral sign while Hermite-cancelling an arbitrary finite set of other zeros

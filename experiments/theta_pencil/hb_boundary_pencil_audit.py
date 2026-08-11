@@ -11,6 +11,31 @@ from __future__ import annotations
 
 from fractions import Fraction
 
+Gaussian = tuple[Fraction, Fraction]
+
+
+def gadd(left: Gaussian, right: Gaussian) -> Gaussian:
+    return left[0] + right[0], left[1] + right[1]
+
+
+def gsub(left: Gaussian, right: Gaussian) -> Gaussian:
+    return left[0] - right[0], left[1] - right[1]
+
+
+def gmul(left: Gaussian, right: Gaussian) -> Gaussian:
+    return (
+        left[0] * right[0] - left[1] * right[1],
+        left[0] * right[1] + left[1] * right[0],
+    )
+
+
+def gdiv(left: Gaussian, right: Gaussian) -> Gaussian:
+    denominator = right[0] ** 2 + right[1] ** 2
+    return (
+        (left[0] * right[0] + left[1] * right[1]) / denominator,
+        (left[1] * right[0] - left[0] * right[1]) / denominator,
+    )
+
 
 def parity_factorization(
     y: Fraction, deficiency: Fraction, even: Fraction, odd: Fraction
@@ -40,6 +65,27 @@ def projector_limit() -> None:
     assert errors[2] < errors[1] < errors[0]
 
 
+def simple_kernel_cayley_check() -> None:
+    one: Gaussian = Fraction(1), Fraction(0)
+    imaginary_unit: Gaussian = Fraction(0), Fraction(1)
+    for z in [Fraction(-7, 3), Fraction(2, 5), Fraction(11, 2)]:
+        for c in [Fraction(1, 7), Fraction(3, 2), Fraction(9)]:
+            z_gaussian: Gaussian = z, Fraction(0)
+            ic: Gaussian = Fraction(0), c
+            base_theta = gdiv(gsub(z_gaussian, ic), gadd(z_gaussian, ic))
+            even_m = gmul(
+                imaginary_unit,
+                gdiv(gadd(one, base_theta), gsub(one, base_theta)),
+            )
+            odd_theta = -base_theta[0], -base_theta[1]
+            odd_m = gmul(
+                imaginary_unit,
+                gdiv(gadd(one, odd_theta), gsub(one, odd_theta)),
+            )
+            assert even_m == (z / c, Fraction(0))
+            assert odd_m == (-c / z, Fraction(0))
+
+
 def main() -> None:
     for y in [Fraction(1, 7), Fraction(1), Fraction(5, 2), Fraction(13)]:
         for deficiency in [Fraction(1, 5), Fraction(1), Fraction(11, 3)]:
@@ -50,6 +96,7 @@ def main() -> None:
             ]:
                 parity_factorization(y, deficiency, even, odd)
     projector_limit()
+    simple_kernel_cayley_check()
     print("HB-PENCIL-AUDIT: PASS (exact rational algebra; spectral sanity check)")
 
 

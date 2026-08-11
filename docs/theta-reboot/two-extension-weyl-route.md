@@ -845,6 +845,13 @@ object does survive when the positive shift reaches a degenerate localized
 operator. It does **not** close the global boundary-continuation theorem.
 No relation between \(m_{0,c}\) at the unknown finite \(a_*\) and the Riemann
 target \(F_\Xi\) has been proved, and asserting one would reinsert RH.
+There is also an exact degeneracy in the most favorable-looking simple case:
+Corollary 4.9b shows that a one-dimensional even kernel gives
+\(m_{0,c}(z)=z/c\), while a one-dimensional odd kernel gives
+\(m_{0,c}(z)=-c/z\). The common real-rooted factor cancels completely. Thus
+the fixed-support boundary quotient cannot transport the witness-zero
+Hausdorff measure in the simple-kernel branch; any non-universal projective
+signal requires a multidimensional kernel.
 
 For the normalized Riemann target, (PI) defines
 
