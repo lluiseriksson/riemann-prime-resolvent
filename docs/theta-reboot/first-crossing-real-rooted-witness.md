@@ -1322,6 +1322,72 @@ For the prime part of the Weil distribution this Hankel form is
  f(y)\overline{f(\log n-y)}\,dy .                              \tag{HP}
 \]
 
+### Proposition 4.8 (collision saturation and the cross-channel identity)
+
+Assume the collision alternative of Proposition 4.1a, and let \(e,o\) be the
+nonzero real half-interval representatives of the even and odd null states.
+Denote by the same letters \(S_a(\cdot,\cdot)\) and
+\(H_a(\cdot,\cdot)\) the polarized forms in (PG). Then
+
+\[
+ \boxed{
+ S_ae=-H_ae,\qquad S_ao=H_ao,\qquad
+ S_a(e,o)=H_a(e,o)=0.}                                    \tag{CI1}
+\]
+
+In particular,
+
+\[
+ H_a(e,e)=-S_a(e,e),\qquad H_a(o,o)=S_a(o,o).              \tag{CI2}
+\]
+
+If \(H_a=H_{a,A}+H_{a,P}\) separates the archimedean and prime-power
+Hankel forms, the cross equality in (CI1) is exactly
+
+\[
+ \boxed{
+ H_{a,A}(e,o)=
+ \sum_{2\le n\le e^{2a}}\frac{\Lambda(n)}{\sqrt n}
+ \int_{I_n}e(y)o(\log n-y)\,dy,}                           \tag{CI3}
+\]
+
+where
+
+\[
+ I_n=[\max(0,\log n-a),\,\min(a,\log n)].
+\]
+
+### Proof
+
+At the first crossing, (PG) identifies the even and odd restrictions of the
+positive operator \(A_{a_*}\) with \(S_a+H_a\) and \(S_a-H_a\), respectively.
+Their null-state equations give the first two identities in (CI1). Pairing
+the first with \(o\), pairing the second with \(e\), and using self-adjointness
+gives
+
+\[
+ S_a(e,o)+H_a(e,o)=0,qquad S_a(e,o)-H_a(e,o)=0,
+\]
+
+which proves the cross identities. Pairing the two null-state equations with
+their own vectors gives (CI2). Finally, polarizing (HP) for the real vectors
+\(e,o\) gives
+
+\[
+ H_{a,P}(e,o)=-\sum_{2\le n\le e^{2a}}
+ \frac{\Lambda(n)}{\sqrt n}\int_{I_n}e(y)o(\log n-y)\,dy.
+\]
+
+Substitution in \(H_{a,A}(e,o)+H_{a,P}(e,o)=0\) proves (CI3). \(\square\)
+
+Because \(S_a+H_a\succeq0\) and \(S_a-H_a\succeq0\), one has
+\(-S_a\preceq H_a\preceq S_a\). Thus (CI2) says that a collision saturates
+**both** endpoints of this order interval. On any subspace where \(S_a\) is
+strictly positive, the normalized Hankel contraction
+\(S_a^{-1/2}H_aS_a^{-1/2}\) must therefore have both \(-1\) and \(+1\) as
+eigenvalues. Equation (CI3) is the corresponding signed prime--archimedean
+balance. No estimate excluding that simultaneous saturation is proved here.
+
 Formula (HP) preserves the signed prime contribution instead of taking
 absolute values. It also explains why a termwise parity proof is unavailable:
 reflection \(f(y)\mapsto f(\log n-y)\) has both \(+1\) and \(-1\)
