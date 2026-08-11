@@ -551,7 +551,7 @@ The two-path family has its observed minimum at \(x=-h_5/2\), equal to
 judge
 
 \[
- \boxed{V+T_5+T_7\succeq-0.267\,I.}               \tag{GS31}
+ \boxed{V+T_5+T_7\succeq-0.263\,I.}               \tag{GS31}
 \]
 
 The judge has now closed without interval-library dependencies.  Use the
@@ -564,17 +564,17 @@ positive rational expansions
  V(z)=\frac12\sum_{k\ge1}\frac{z^{2k}}k.           \tag{GS31a}
 \]
 
-For each logarithm, 96 terms and the geometric tail give rational lower and
-upper bounds.  Divide the two parameter intervals into 64 cells, use 80
+For each logarithm, 112 terms and the geometric tail give rational lower and
+upper bounds.  Divide the two parameter intervals into 1024 cells, use 160
 positive terms of the second series for every diagonal lower bound, and
 round the edge weights upward using integer lower bounds for
-\(\sqrt5,\sqrt7\).  After adding \(267/1000\) to the diagonal, the exact
+\(\sqrt5,\sqrt7\).  After adding \(263/1000\) to the diagonal, the exact
 rational leading-minor lower bounds are
 
 \[
 \begin{array}{c|rrrr}
-\text{four-path}&0.4991416659&0.2564815762&0.3377131466&0.0015294320\\
-\text{two-path}&0.5571495667&0.0957605698&&
+\text{four-path}&0.4951416659&0.2500079408&0.3373985496&0.0004807754\\
+\text{two-path}&0.5531495668&0.0968185115&&
 \end{array}                                        \tag{GS31b}
 \]
 
@@ -602,14 +602,14 @@ as are `isqrt` enclosures of \(\sqrt3\) and \(\sqrt{17}\).  Combining these
 with (GS23), the prime-3 edge, and (GS31) yields
 
 \[
- B_1\succeq-4.6456539428\,I,
+ B_1\succeq-4.6416539428\,I,
  \qquad
  \boxed{Q_{58}L_1Q_{58}\succeq
- 0.0006006509\,Q_{58}.}                            \tag{GS32}
+ 0.0046006509\,Q_{58}.}                            \tag{GS32}
 \]
 
 The same exact calculation gives the degree-57 margin
-\(-0.0166407283\ldots<0\), so degree 58 is the first cut closed by this
+\(-0.0126407283\ldots<0\), so degree 58 is the first cut closed by this
 certificate.  Equation (GS32) is unconditional, uses no zeta-zero data, and
 turns support-one positivity into a finite 58-mode source obligation.  It is
 not RH: it closes only the infinite complement at one fixed support; the

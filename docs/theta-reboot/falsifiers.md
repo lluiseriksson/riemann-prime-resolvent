@@ -99,3 +99,12 @@ is the already-known archimedean case and does not count.
 The passage from \(S\) to \(S\cup\{p\}\) must expose the new operator and its
 norm. A statement that assumes positivity for the enlarged set is rejected as
 a wrapper around Weil's criterion.
+
+### W-F4 - inertia is not positivity
+
+A trace/Frobenius or rank--trace certificate is accepted as a full finite
+positivity proof only if rigorous enclosures force every dimension of the
+actual Schur complement to be positive.  A positive proportion of directions,
+an inertia count for the raw source block, or a bandwidth-one density theorem
+does not discharge a missing negative-index direction.  At support one the
+current two-moment diagnostic forces only 39 of 58 source directions.

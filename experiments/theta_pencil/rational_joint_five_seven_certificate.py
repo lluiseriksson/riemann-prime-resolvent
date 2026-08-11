@@ -1,4 +1,4 @@
-"""Dependency-free rational certificate for ``V + T_5 + T_7 >= -267/1000``.
+"""Dependency-free rational certificate for ``V + T_5 + T_7 >= -263/1000``.
 
 All transcendental inputs are replaced by one-sided rational series bounds.
 The final positive-definiteness checks use exact ``Fraction`` arithmetic.
@@ -12,7 +12,7 @@ from fractions import Fraction
 from math import comb, factorial, isqrt
 
 
-TARGET = Fraction(267, 1000)
+TARGET = Fraction(263, 1000)
 
 
 @dataclass(frozen=True)
@@ -243,9 +243,9 @@ def _update_minima(
 
 def certify_rational_joint_five_seven_floor(
     scale_digits: int = 50,
-    cells: int = 64,
-    logarithm_terms: int = 96,
-    potential_terms: int = 80,
+    cells: int = 1024,
+    logarithm_terms: int = 112,
+    potential_terms: int = 160,
 ) -> RationalJointFiveSevenCertificate:
     """Return an exact rational proof of the registered joint floor."""
 

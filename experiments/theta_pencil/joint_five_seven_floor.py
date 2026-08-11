@@ -23,7 +23,7 @@ from experiments.theta_pencil.support_05_comparison import _smooth_lower_loss
 
 
 EULER_GAMMA = 0.577215664901532860606512090082402431
-REGISTERED_JOINT_FLOOR_TARGET = -0.267
+REGISTERED_JOINT_FLOOR_TARGET = -0.263
 
 
 @dataclass(frozen=True)

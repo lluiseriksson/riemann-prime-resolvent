@@ -28,4 +28,4 @@ def test_two_path_is_not_the_observed_minimum():
 def test_registered_joint_target_moves_tail_to_58():
     degree, margin = registered_joint_floor_target_margin()
     assert degree == 58
-    assert 0.0006 < margin < 0.0007
+    assert 0.0046 < margin < 0.0047

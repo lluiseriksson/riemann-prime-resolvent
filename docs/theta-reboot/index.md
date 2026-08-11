@@ -309,6 +309,15 @@ hypothetical first crossing in
 \(0.72<a_*<1.8868645429\ldots\); no known argument places every hypothetical
 first crossing in that interval, so larger support remains open.
 
+The 2026 two-thirds theorem has now been imported at its exact scope.  Its
+rank--trace--inertia mechanism applied to the raw support-one 58-mode source
+forces 19 even and 20 odd positive directions, exactly 39 of 58.  This
+numerically reproduces the global two-thirds regime but does not enclose the
+true finite Schur complement or certify its remaining 19 directions.  The
+new gate is therefore a rigorous trace/Frobenius enclosure of that Schur
+complement; the moment route counts as closure only if it forces every parity
+dimension.  See [the inertia audit](zeta-two-thirds-inertia.md).
+
 ## Why this track is different
 
 - The coefficients are explicit theta functions, not guessed zero locations.
@@ -343,6 +352,7 @@ It does not authorize changing the success condition.
 ## Navigation
 
 - [Primary-literature matrix](literature-matrix.md)
+- [Two-thirds theorem: finite Weil inertia and its exact scope](zeta-two-thirds-inertia.md)
 - [Theta-pencil derivation and local no-go](theta-pencil.md)
 - [Scaling Hamiltonian source extraction](source-extraction-scaling-hamiltonian.md)
 - [One-prime moment model](one-prime-moments.md)
