@@ -1326,6 +1326,76 @@ archimedean difficulty is the cusp remainder
 absolute-power kernel and the prime correlations.  Real-rootedness controls
 the whole even polynomial sector, but not those three residual terms.
 
+For the most common boundary branch this gives a sharper scalar gate.  Assume
+the purified minimal jet has \(r=k_0=0\) and its commutator exit is \(s=1\);
+in particular this holds whenever the first-crossing kernel is simple.  Put
+
+\[
+ C_w(\ell)=\int_{-a_*}^{a_*-\ell}w(x+\ell)w(x)\,dx,
+ \qquad m_j=\int_{-a_*}^{a_*}x^jw(x)\,dx.
+\]
+
+Since \(m_0=\kappa=\|w\|_2^2\), (PC12), (PC17) and (PH15) give
+
+\[
+\boxed{
+\begin{aligned}
+ &\frac12\iint |x-y|w(x)w(y)\,dx\,dy
+ +\iint (x-y)^2h(|x-y|)w(x)w(y)\,dx\,dy\\
+ &\quad+2\sum_{2\le n\le e^{2a_*}}
+  \frac{\Lambda(n)\ell_n^2}{\sqrt n}C_w(\ell_n)\\
+ &>2\left.\frac{d^2}{dc^2}\{G(c)G(-c)\}\right|_{c=1/2}
+ \ge4m_0m_2>0.
+\end{aligned}}                                            \tag{PH16}
+\]
+
+Indeed, the left side minus the first quantity on the right is exactly
+\(\langle w,D_1w\rangle>0\).  Also
+
+\[
+ G(c)G(-c)=\kappa^2\{1+2e_1c^2+O(c^4)\},
+ \qquad m_2=2\kappa e_1,
+\]
+
+and every omitted coefficient is nonnegative, proving the second inequality
+in (PH16).  Thus the simple \(r=0\) branch cannot hide behind a zero margin:
+the cusp, singular and prime correlations must jointly exceed the explicit
+positive moment \(4m_0m_2\).  No upper bound contradicting (PH16) is proved
+here; Corollary 4.9f shows why generic real-rootedness cannot supply one.
+
+The singular term in (PH16) can also be removed exactly.  With
+\(F_w(t)=\int_{-a_*}^{t}w(x)\,dx\), evenness gives
+\(F_w(-t)=m_0-F_w(t)\), and two integrations by parts yield
+
+\[
+ \frac12\iint|x-y|w(x)w(y)\,dx\,dy
+ =\frac{a_*m_0^2}{2}
+  -\frac14\int_{-a_*}^{a_*}(2F_w(t)-m_0)^2\,dt.          \tag{PH17}
+\]
+
+Consequently (PH16) is equivalent to the cusp--prime inequality
+
+\[
+\boxed{
+\begin{aligned}
+ &\iint (x-y)^2h(|x-y|)w(x)w(y)\,dx\,dy
+ +2\sum_{2\le n\le e^{2a_*}}
+  \frac{\Lambda(n)\ell_n^2}{\sqrt n}C_w(\ell_n)\\
+ &>2\left.\frac{d^2}{dc^2}\{G(c)G(-c)\}\right|_{c=1/2}
+  -\frac{a_*m_0^2}{2}
+  +\frac14\int_{-a_*}^{a_*}(2F_w(t)-m_0)^2\,dt\\
+ &\ge4m_0m_2-\frac{a_*m_0^2}{2}
+  +\frac14\int_{-a_*}^{a_*}(2F_w(t)-m_0)^2\,dt.
+\end{aligned}}                                            \tag{PH18}
+\]
+
+This leaves exactly the cusp remainder and the finite signed prime
+correlations in the simple \(r=0\) branch.  The displayed lower envelope is
+not uniformly positive on the generic real-rooted class: the normalized
+second moment can approach zero in the B-spline family.  An operator-specific
+relation between the cusp form, the prime lags and the first-crossing gap is
+still required.
+
 The sequence in (PH12) is the locally uniform limit of polynomials with only
 negative real zeros and positive coefficients.  This is the
 physical-variable positive structure

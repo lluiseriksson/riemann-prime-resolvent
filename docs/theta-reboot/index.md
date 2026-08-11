@@ -158,6 +158,13 @@ every commutator order.  The cusp remainder \(h(|x-y|)\), odd absolute
 powers and the translated prime correlations are not controlled by this
 even-moment law; those are now the residual cancellation rather than the
 whole archimedean block.
+In the simple \(r=0\) branch the singular \(|x-y|\) form is then eliminated
+by an exact primitive-square identity.  The surviving cusp-plus-prime form
+must exceed
+\(2(G(c)G(-c))''|_{c=1/2}\ge4m_0m_2\), with an additional explicit
+primitive-square correction after the singular term is moved.  No generic
+lower moment margin is imported; this is a reduced arithmetic gate, not its
+solution.
 In the pure branch, pairing the real zeros produces a canonical Stieltjes
 transform in the radial variable and an explicit Hausdorff measure with atoms
 \(x/(x+\lambda_j^2)\). These are witness zeros, not xi zeros; identifying the

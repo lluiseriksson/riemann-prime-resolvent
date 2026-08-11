@@ -38,6 +38,32 @@ def main() -> None:
             )
             assert correlation == expected_correlation
 
+        # Exact audit of the |x-y| integration-by-parts identity (PH17) on
+        # the unit-knot piecewise-constant model.
+        mass = sum(Fraction(value) for value in values)
+        absolute_form = Fraction(0)
+        for left_index, left_value in enumerate(values):
+            for right_index, right_value in enumerate(values):
+                interval_kernel = (
+                    Fraction(1, 3)
+                    if left_index == right_index
+                    else Fraction(abs(left_index - right_index))
+                )
+                absolute_form += left_value * right_value * interval_kernel
+        cumulative = Fraction(0)
+        centered_primitive_norm = Fraction(0)
+        for value in values:
+            constant = 2 * cumulative - mass
+            slope = 2 * Fraction(value)
+            centered_primitive_norm += (
+                constant**2 + constant * slope + slope**2 / 3
+            )
+            cumulative += value
+        half_width = Fraction(order, 2)
+        assert absolute_form / 2 == (
+            half_width * mass**2 / 2 - centered_primitive_norm / 4
+        )
+
         if order <= 12:
             # Physical even-difference moments for the centered unit-knot
             # spline derivative.  They vanish below the Fourier zero order
