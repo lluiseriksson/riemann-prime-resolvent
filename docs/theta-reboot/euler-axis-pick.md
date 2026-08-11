@@ -2933,6 +2933,56 @@ Thus the local theorem is no longer limited by the artificial \(9/5\)
 entry threshold.  It remains a theorem about three-point compressions and
 does not yet imply positivity of the infinite Jacobi operator.
 
+The rapid loss in the Pfaff remainder at the next gap is caused almost
+entirely by its first omitted integer, \(r=3\), rather than by the full
+prime tail.  The contour argument is not special to \(r=2\).  Applying the
+same Szehr--Zarouf specialization with \(\lambda=3^{-1/2}\) gives
+
+\[
+|Q_{m,m+d}(1/3)|\le
+\sqrt{\frac{2m+2d+1}{2m+1}}\frac{2m+1}{d}\sqrt3\,
+x^{2m+d+1}
+\left(\frac{1-3^{-1/2}x}{x-3^{-1/2}}\right)^d
+e^{-a_3}I_0(a_3),                                  \tag{E177}
+\]
+
+where \(a_3=dc_{3,x}/2\) and \(c_{3,x}\) is (E163) with
+\(\lambda=3^{-1/2}\).  This is certified rationally with
+
+\[
+\frac{11547}{20000}<3^{-1/2}<\frac{577351}{10^6},
+\qquad \sqrt3<\frac{1732051}{10^6},
+\qquad x=\frac34,
+\]
+
+and the same finite-series enclosure from (E173).  The exact polynomial
+value of \(Q(1/3)^2\) is checked independently.  Since
+\(\log3/3<1/2\), the extracted \(r=3\) contribution is bounded by one half
+of (E177); the Pfaff integral is then applied only to \(r\ge4\).
+
+At \(d=111,112,113\), the resulting full entry bounds are
+
+\[
+1.8288571413\ldots,\qquad
+1.8997569911\ldots,\qquad
+2.2546519661\ldots.
+\]
+
+Re-running the sign-independent determinant certificate for every
+\(a,b\ge1\), \(a+b\le113\), leaves a minimum
+\(3.2507866669\ldots>0\), again at an endpoint split.  Therefore
+
+\[
+\boxed{
+B[\{i,j,k\}]\succ0
+\quad(232\le i<j<k,\ k-i\le113).}                 \tag{E178}
+\]
+
+This extraction exposes a repeatable analytic mechanism: when the Pfaff
+tail becomes dominated by its smallest retained prime power, that term can
+be moved to its own contour before bounding the remainder.  It still does
+not supply the global coercivity needed for RH.
+
 At the analytic cutoff \(m=232\), (E130) already covers every gap
 \(d\le29\), rather than only the first two bands.  This does not yet prove
 positivity of the corresponding full blocks: the archimedean contribution
@@ -2977,7 +3027,7 @@ the bandwise archimedean--prime discrepancy (E126)--(E133) are checked
 coefficientwise over rational numbers (with a symbolic \(\log2\) component) by
 `jacobi_dilation_connection.py`.
 The Rodrigues moment inequalities, closed beta sums, uniform archimedean
-bounds, prime remainder, and local triple theorems (E134)--(E176) are
+bounds, prime remainder, and local triple theorems (E134)--(E178) are
 audited by `jacobi_local_band_bound.py`.
 The floating-point checks elsewhere in this audit are not used in place of
 the displayed analytic inequalities. Global claims still require all
