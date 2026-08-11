@@ -1,6 +1,7 @@
 from fractions import Fraction
 
 import numpy as np
+import pytest
 
 from experiments.theta_pencil.rank_trace_inertia import (
     audit_floating_symmetric_matrix,
@@ -9,6 +10,7 @@ from experiments.theta_pencil.rank_trace_inertia import (
     rank_trace_lower_bound,
     support_one_finite_schur_audit,
     support_one_source_audit,
+    two_level_moment_extremizer,
 )
 
 
@@ -46,6 +48,15 @@ def test_direct_sum_recomputes_the_joint_moment_bound():
     assert combined.frobenius_squared == 15.0
     assert combined.moment_forced_positive_count == 2
     assert combined.observed_positive_count == 3
+
+
+def test_two_level_extremizer_matches_both_moments_and_has_negative_level():
+    result = two_level_moment_extremizer(3, 4.0, 14.0)
+    assert result.positive_count == 2
+    assert result.negative_count == 1
+    assert result.negative_eigenvalue < 0.0
+    assert result.reconstructed_trace == pytest.approx(4.0)
+    assert result.reconstructed_frobenius_squared == pytest.approx(14.0)
 
 
 def test_support_one_source_audit_keeps_both_parities():

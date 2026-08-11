@@ -316,7 +316,10 @@ numerically reproduces the global two-thirds regime but does not enclose the
 true finite Schur complement or certify its remaining 19 directions.  The
 new gate is therefore a rigorous trace/Frobenius enclosure of that Schur
 complement; the moment route counts as closure only if it forces every parity
-dimension.  See [the inertia audit](zeta-two-thirds-inertia.md).
+dimension.  An explicit two-level spectrum matches the measured trace and
+Frobenius norm with 39 positive and 19 negative eigenvalues, proving that no
+two-moment argument can force a fortieth direction.  See
+[the inertia audit](zeta-two-thirds-inertia.md).
 
 ## Why this track is different
 

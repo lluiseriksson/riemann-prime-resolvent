@@ -104,6 +104,24 @@ positive and three unresolved directions in each parity, with no observed
 negative direction.  These are still floating observations, not enclosures
 of (ZT3).
 
+The failure of the two moments is sharp, not merely a weak estimate.  For
+dimension \(n\), trace \(t>0\), squared Frobenius norm \(f\), and
+\(p=\lceil t^2/f\rceil<n\), put \(q=n-p\),
+
+\[
+ m=\frac tn,\qquad V=f-\frac{t^2}{n},\qquad
+ a=m+\sqrt{\frac{qV}{pn}},\qquad
+ c=m-\sqrt{\frac{pV}{qn}}.                         \tag{ZT4}
+\]
+
+The spectrum with \(p\) copies of \(a\) and \(q\) copies of \(c\) has
+exactly trace \(t\) and squared Frobenius norm \(f\).  Moreover \(c<0\) iff
+\(pf>t^2\).  For the raw 58-mode moments, (ZT4) gives 39 eigenvalues
+`2.9672691489` and 19 eigenvalues `-0.04929079085`, reproducing both moments.
+Thus those two scalar observables are literally compatible with negative
+index 19.  No argument using only them can certify a fortieth positive
+direction, regardless of numerical precision.
+
 Retaining modes 58 through 255 and taking their finite Schur complement does
 not improve the moment count.  At the same Gauss order its tail Ritz value is
 `1.4948996912`, while the even, odd and combined moment ratios are
@@ -124,11 +142,10 @@ Consequently it would be circular to extrapolate `0.6725` to RH.
 
 The useful target for this repository is narrower and falsifiable:
 
-> Construct rigorous trace and Frobenius enclosures for the actual Schur
-> complement (ZT3), including its certified cross tail.  Accept the moment
-> route only if it forces the full parity dimensions.  Otherwise retain the
-> rank--trace result as an inertia diagnostic and seek a third, local invariant
-> that detects one residual hyperbolic plane.
+> Construct an interval enclosure of the actual Schur complement (ZT3),
+> including its certified cross tail, or add a third local invariant that
+> separates its near-null cluster.  Trace and Frobenius data alone are closed
+> by the explicit adversary (ZT4).
 
 This imports a successful linear-algebraic mechanism while preserving the
 existing RH success condition: every support and zero negative directions.

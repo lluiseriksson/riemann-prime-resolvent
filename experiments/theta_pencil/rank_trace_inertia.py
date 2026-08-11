@@ -63,6 +63,20 @@ class FloatingSchurInertiaAudit:
     )
 
 
+@dataclass(frozen=True)
+class TwoLevelMomentExtremizer:
+    dimension: int
+    positive_count: int
+    negative_count: int
+    positive_eigenvalue: float
+    negative_eigenvalue: float
+    reconstructed_trace: float
+    reconstructed_frobenius_squared: float
+    context: str = (
+        "synthetic spectrum matching only the first two trace moments"
+    )
+
+
 def rank_trace_lower_bound(
     trace_positive_part: Rational,
     trace_indefinite_part: Rational,
@@ -200,6 +214,62 @@ def combine_block_audits(
     )
 
 
+def two_level_moment_extremizer(
+    dimension: int,
+    trace: float,
+    frobenius_squared: float,
+    positive_count: int | None = None,
+) -> TwoLevelMomentExtremizer:
+    """Construct the sharp two-level adversary for a moment certificate.
+
+    For ``p`` positive and ``q = dimension - p`` negative eigenvalues, the
+    two levels are chosen to match the supplied trace and squared Frobenius
+    norm exactly in real arithmetic.  With ``p = ceil(trace^2 / frob2)`` and
+    a nonintegral ratio, this realizes equality in the integer content of the
+    positive-inertia moment bound.
+    """
+
+    if dimension < 2:
+        raise ValueError("dimension must be at least two")
+    if trace <= 0.0 or frobenius_squared <= 0.0:
+        raise ValueError("the two moments must be positive")
+    minimum_frobenius = trace * trace / dimension
+    if frobenius_squared < minimum_frobenius:
+        raise ValueError("the moments violate Cauchy--Schwarz")
+    ratio = trace * trace / frobenius_squared
+    count = (
+        math.ceil(math.nextafter(ratio, -math.inf))
+        if positive_count is None
+        else positive_count
+    )
+    if not 0 < count < dimension:
+        raise ValueError("the positive count must lie strictly inside the dimension")
+    negative_count = dimension - count
+    mean = trace / dimension
+    variance_sum = max(0.0, frobenius_squared - trace * trace / dimension)
+    positive_value = mean + math.sqrt(
+        negative_count * variance_sum / (count * dimension)
+    )
+    negative_value = mean - math.sqrt(
+        count * variance_sum / (negative_count * dimension)
+    )
+    reconstructed_trace = (
+        count * positive_value + negative_count * negative_value
+    )
+    reconstructed_frobenius = (
+        count * positive_value**2 + negative_count * negative_value**2
+    )
+    return TwoLevelMomentExtremizer(
+        dimension=dimension,
+        positive_count=count,
+        negative_count=negative_count,
+        positive_eigenvalue=positive_value,
+        negative_eigenvalue=negative_value,
+        reconstructed_trace=reconstructed_trace,
+        reconstructed_frobenius_squared=reconstructed_frobenius,
+    )
+
+
 def support_one_source_audit(
     dimension: int = 58,
     quadrature_order: int = 128,
@@ -322,6 +392,14 @@ def main() -> None:
     print("even", even)
     print("odd", odd)
     print("combined", combine_block_audits(even, odd))
+    print(
+        "two_level_adversary",
+        two_level_moment_extremizer(
+            combine_block_audits(even, odd).dimension,
+            combine_block_audits(even, odd).trace,
+            combine_block_audits(even, odd).frobenius_squared,
+        ),
+    )
     print(
         "finite_schur",
         support_one_finite_schur_audit(
