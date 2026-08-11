@@ -103,6 +103,33 @@ def radial_gap_margin(s: float) -> float:
     return GAP * total / norm_squared
 
 
+def multiplier_energy(values: tuple[complex, ...]) -> float:
+    vector = tuple(values[index] * WITNESS[index] for index in range(3))
+    return float(inner(vector, apply(OPERATOR, vector)).real)
+
+
+def ground_transform_source(values: tuple[complex, ...]) -> float:
+    total = 0.0
+    for i in range(3):
+        for j in range(3):
+            total -= (
+                OPERATOR[i][j]
+                * WITNESS[i]
+                * WITNESS[j]
+                * abs(values[i] - values[j]) ** 2
+                / 2
+            )
+    return total
+
+
+def multiplier_gap_margin(values: tuple[complex, ...]) -> float:
+    norm_squared = inner(WITNESS, WITNESS).real
+    vector = tuple(values[index] * WITNESS[index] for index in range(3))
+    overlap = inner(WITNESS, vector)
+    variance_norm = inner(vector, vector).real - abs(overlap) ** 2 / norm_squared
+    return float(GAP * variance_norm)
+
+
 def audit() -> None:
     assert apply(OPERATOR, WITNESS) == (0.0, 0.0, 0.0)
     for t in (0.1, 0.7, 1.9, 4.2):
@@ -120,6 +147,16 @@ def audit() -> None:
     for s in (0.2, 1.0, 3.0, 10.0):
         assert abs(radial_source(s) - radial_gap_margin(s)) < 1e-12
         assert radial_source(s) > 0
+    for values in (
+        (1 + 0.2j, -0.3 + 0.7j, 2 - 0.4j),
+        (-1.0, 0.0, 1.0),
+        (2.0, 2.0, 2.0),
+    ):
+        direct = multiplier_energy(values)
+        source = ground_transform_source(values)
+        lower = multiplier_gap_margin(values)
+        assert abs(direct - source) < 1e-12
+        assert abs(direct - lower) < 1e-12
     print("GLOBAL-MODULATION-GAP-AUDIT: PASS")
 
 

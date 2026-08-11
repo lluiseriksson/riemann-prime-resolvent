@@ -1372,6 +1372,80 @@ the first-crossing gap and the prime--archimedean radial form.  It is still a
 necessary condition rather than a contradiction; the missing step is an
 upper estimate for the signed left side below this margin.
 
+### Proposition 4.1a.10 (full ground-state transform gate)
+
+Let \(0\ne w\in\ker A\) be real.  For every bounded Lipschitz function
+\(f:[-a_*,a_*]\to\mathbb C\), multiplication by \(f\) preserves the form
+domain and
+
+\[
+\boxed{
+\begin{aligned}
+ Q_W^{a_*}(fw)={}&
+ \frac14\iint\frac{|f(x)-f(y)|^2}{|x-y|}w(x)w(y)\,dx\,dy\\
+ &+\frac12\iint r''(x-y)|f(x)-f(y)|^2w(x)w(y)\,dx\,dy\\
+ &+\sum_{2\le n\le e^{2a_*}}\frac{\Lambda(n)}{\sqrt n}
+   \int_{-a_*}^{a_* -\ell_n}w(x+\ell_n)w(x)
+   |f(x+\ell_n)-f(x)|^2\,dx\\
+ &\ge\Delta\|Q(fw)\|_2^2\ge0 .
+\end{aligned}}                                             \tag{GT1}
+\]
+
+If \(\ker A=\mathbb Cw\), put
+\(d\mu_w(x)=w(x)^2dx/\|w\|_2^2\).  Then (GT1) becomes the signed nonlocal
+Poincare inequality
+
+\[
+ \boxed{
+ Q_W^{a_*}(fw)\ge
+ \Delta\|w\|_2^2
+ \left\{\int|f|^2\,d\mu_w-left|\int f\,d\mu_w\right|^2\right\}.} \tag{GT2}
+\]
+
+The right side is strict precisely when \(f\) is not constant
+\(\mu_w\)-almost everywhere.
+
+#### Proof
+
+The logarithmic Fourier weight is stable under multiplication by a Lipschitz
+function on a compact interval; equivalently, approximate \(f\) uniformly
+together with its Lipschitz seminorm by smooth multipliers and use the
+singular difference form.  Thus \(fw\) lies in the form domain.  Since
+\(Aw=0\),
+
+\[
+ Q_W^{a_*}(fw)-\langle Aw,|f|^2w\rangle=Q_W^{a_*}(fw).
+\]
+
+For a real symmetric off-diagonal kernel \(A(x,y)\), symmetrization of the
+left side gives the ground-state identity
+
+\[
+ -\frac12\iint A(x,y)w(x)w(y)|f(x)-f(y)|^2\,dx\,dy.       \tag{GT3}
+\]
+
+Insert the three off-diagonal pieces
+\(-1/(2|x-y|)\), \(-r''(x-y)\), and
+\(-\Lambda(n)(T_{\ell_n}^++T_{\ell_n}^-)/\sqrt n\).
+Combining the adjoint translations gives the three lines of (GT1).
+The spectral inequality \(A\succeq\Delta Q\) supplies its last line.
+
+For a simple kernel,
+
+\[
+ P(fw)=\frac{\int f(x)w(x)^2\,dx}{\|w\|_2^2}w,
+\]
+
+so the squared \(Q\)-norm is exactly the variance in (GT2).  This proves the
+claim. \(\square\)
+
+Taking \(f(x)=e^{itx}\) in (GT1) recovers (MG1)--(MG3); averaging those
+choices with \(se^{-st}dt\) recovers (MR1)--(MR2).  The full multiplier gate
+is strictly stronger: it permits cut-adapted or prime-lag-adapted functions
+\(f\) without discarding the signed source correlations.  No choice of \(f\)
+that contradicts (GT2) for the real-rooted first-crossing witness is proved
+here.
+
 ### Proposition 4.1b (the Hausdorff measure of a pure-parity witness)
 
 Assume there is a pure-parity real-rooted null vector at the first crossing,

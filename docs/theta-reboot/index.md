@@ -160,6 +160,14 @@ In the simple even \(r=0\) branch this yields the explicit margin
 \(3\Delta m_2^2/[a^3(s^2+4a^2)]\).  Since \(m_2>0\) is forced by the
 real-rooted product, the bound simultaneously uses zero geometry, the gap
 and the signed radial source form.  No matching upper bound is yet proved.
+More generally, the null equation gives a full ground-state transform for
+every bounded Lipschitz multiplier \(f\).  Its source is the singular, smooth
+and prime-translation kernel weighted by \(|f(x)-f(y)|^2w(x)w(y)\), and in a
+simple kernel it dominates
+\(\Delta\|w\|^2\operatorname{Var}_{w^2/\|w\|^2}(f)\).  Modulations and the
+radial gate are special cases.  This retains the signed conductances while
+allowing cut- or prime-adapted tests; a contradictory multiplier is not yet
+known.
 Real-rootedness nevertheless fixes more of this source expression than a
 pointwise argument suggests.  If \(r\) is the zero order and
 \(J_j=\iint(x-y)^{2j}w(x)w(y)\), then \(J_j=0\) below \(r\) and
