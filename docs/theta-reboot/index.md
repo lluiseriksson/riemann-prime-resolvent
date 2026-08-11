@@ -114,6 +114,10 @@ deficiency scale \(c\) converges, after division by \(c^k\) and the parity
 phase choice, to \(z\widehat{P_0x^k}(z)\).  Hurwitz therefore produces a
 pure-parity real-rooted null vector for every kernel dimension and every
 collision multiplicity.  No simplicity or nonzero-mean hypothesis remains.
+The same minimal jet fixes the product normalization:
+\(\int x^kP_0x^k=\|P_0x^k\|_2^2\), all lower moments vanish, and the scalar
+zero-energy residue starts exactly at order \(2k\).  Thus the zero order and
+the first positive PH moment are operator data rather than free parameters.
 In the pure branch, pairing the real zeros produces a canonical Stieltjes
 transform in the radial variable and an explicit Hausdorff measure with atoms
 \(x/(x+\lambda_j^2)\). These are witness zeros, not xi zeros; identifying the

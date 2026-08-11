@@ -702,6 +702,48 @@ multiplicities occurs in this argument.  The decisive input is the whole
 real-rooted boundary pencil as its deficiency point approaches the origin,
 not a sectorwise compression of the Loewner matrix.
 
+### Corollary 4.1a.2 (the zero order is locked to the kernel jet)
+
+For the purified vector in Proposition 4.1a.1, put
+
+\[
+ m_j=\int_{-a_*}^{a_*}x^j w_*(x)\,dx.
+\]
+
+Then
+
+\[
+ \boxed{m_j=0\quad(0\le j<k_0),\qquad
+        m_{k_0}=\|w_*\|_2^2>0.}                           \tag{PE6}
+\]
+
+In particular \(\operatorname{ord}_0\widehat w_*=k_0\), and the constant in
+the physical-moment product (PH10)--(PH12) is no longer free:
+
+\[
+ \boxed{
+  \frac{m_{k_0+2q}}{(k_0+2q)!}
+  =\frac{\|w_*\|_2^2}{k_0!}
+    e_q(\lambda_1^{-2},\lambda_2^{-2},\ldots)>0.}         \tag{PE7}
+\]
+
+The full-kernel scalar residue has the matching leading jet
+
+\[
+ \boxed{
+ M(c):=\|P_0e^{c\,\cdot}\|_2^2
+ =\frac{\|w_*\|_2^2}{(k_0!)^2}c^{2k_0}
+  +O(c^{2k_0+2}).}                                       \tag{PE8}
+\]
+
+Indeed, for \(j<k_0\), self-adjointness of \(P_0\) gives
+\(m_j=\langle P_0x^{k_0},x^j\rangle
+=\langle x^{k_0},P_0x^j\rangle=0\), while the same calculation at
+\(j=k_0\) gives \(m_{k_0}=\|P_0x^{k_0}\|_2^2\).  This proves (PE6), fixes the
+leading coefficient in the canonical product and yields (PE7).  Expanding
+\(P_0e^{cx}\) proves (PE8); the would-be term of order \(2k_0+1\) vanishes
+because \(P_0x^{k_0}\) and \(P_0x^{k_0+1}\) have opposite parity.
+
 ### Proposition 4.1b (the Hausdorff measure of a pure-parity witness)
 
 Assume there is a pure-parity real-rooted null vector at the first crossing,

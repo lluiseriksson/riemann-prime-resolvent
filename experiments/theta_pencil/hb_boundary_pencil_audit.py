@@ -148,6 +148,41 @@ def small_deficiency_pure_parity_limit() -> None:
                 assert leading == 2 * z * h_value
 
 
+def kernel_jet_normalization() -> None:
+    # A parity-preserving projector whose first nonzero polynomial jet is k=1.
+    # The first moment is the squared norm of that projected jet, and the
+    # scalar-residue norm has no odd power immediately after c^(2k).
+    monomial_zero = [Fraction(1), Fraction(0), Fraction(0)]
+    monomial_one = [Fraction(0), Fraction(3), Fraction(0)]
+    monomial_two = [Fraction(0), Fraction(0), Fraction(5)]
+    monomial_three = [Fraction(0), Fraction(7), Fraction(0)]
+
+    def project(vector: list[Fraction]) -> list[Fraction]:
+        return [Fraction(0), vector[1], Fraction(0)]
+
+    def inner(left: list[Fraction], right: list[Fraction]) -> Fraction:
+        return sum(x * y for x, y in zip(left, right, strict=True))
+
+    assert project(monomial_zero) == [0, 0, 0]
+    jet = project(monomial_one)
+    assert inner(jet, monomial_zero) == 0
+    assert inner(jet, monomial_one) == inner(jet, jet) == 9
+    assert inner(jet, project(monomial_two)) == 0
+
+    # P exp(cx) through degree three.
+    # Its only surviving coordinates are 3c + 7c^3/6, so the norm square
+    # starts with 9c^2 and has no c^3 term.
+    leading_residue = inner(jet, jet)
+    cubic_residue = 2 * inner(jet, project(monomial_two)) / 2
+    quartic_residue = (
+        inner(project(monomial_two), project(monomial_two)) / 4
+        + 2 * inner(jet, project(monomial_three)) / 6
+    )
+    assert leading_residue == 9
+    assert cubic_residue == 0
+    assert quartic_residue == 7
+
+
 def main() -> None:
     for y in [Fraction(1, 7), Fraction(1), Fraction(5, 2), Fraction(13)]:
         for deficiency in [Fraction(1, 5), Fraction(1), Fraction(11, 3)]:
@@ -162,6 +197,7 @@ def main() -> None:
     scalar_amplitude_stieltjes_check()
     parity_sector_squared_node_no_go()
     small_deficiency_pure_parity_limit()
+    kernel_jet_normalization()
     print("HB-PENCIL-AUDIT: PASS (exact rational algebra; spectral sanity check)")
 
 
