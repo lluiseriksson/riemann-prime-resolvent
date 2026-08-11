@@ -91,23 +91,28 @@ At dimension 58 and Gauss order 1024 the point-matrix audit gives
 
 | block | dimension | \((\operatorname{tr}G)^2/\lVert G\rVert_F^2\) | forced positive directions |
 |---|---:|---:|---:|
-| even | 29 | `18.9385240493` | 19 |
-| odd | 29 | `19.4277199110` | 20 |
-| direct sum | 58 | `38.3661592384` | **39** |
+| even | 29 | `18.9385242113` | 19 |
+| odd | 29 | `19.4277200629` | 20 |
+| direct sum | 58 | `38.3661595521` | **39** |
 
 Thus the imported two-moment mechanism forces exactly \(39/58=0.672413\ldots\)
 of this finite source discretization, numerically mirroring the global
-two-thirds constant.  It leaves 19 directions uncertified.  Small negative
-point eigenvalues shrink by approximately a factor four when the quadrature
-order doubles from 256 to 512 to 1024, so they are recorded as quadrature
-sensitivity, not as negative spectrum.  Neither observation encloses (ZT3).
+two-thirds constant.  It leaves 19 directions uncertified.  The raw source
+uses the smooth Legendre series through power 95, whose analytic remainder is
+`4.9808002138e-17`.  At tolerance `1e-12` the point matrix observes 26
+positive and three unresolved directions in each parity, with no observed
+negative direction.  These are still floating observations, not enclosures
+of (ZT3).
 
 Retaining modes 58 through 255 and taking their finite Schur complement does
 not improve the moment count.  At the same Gauss order its tail Ritz value is
 `1.4948996912`, while the even, odd and combined moment ratios are
 `18.7729830828`, `19.2532106344` and `38.0260158439`: again exactly 19, 20
 and 39 forced directions.  This is closer to (ZT3) than the raw block, but it
-still omits every cross column beyond mode 255 and is not an enclosure.
+still omits every cross column beyond mode 255 and uses a quadrature smooth
+block.  Its tiny negative eigenvalues decay by approximately a factor four
+when the quadrature order doubles, so they are treated as quadrature
+sensitivity; this finite Schur matrix is not an enclosure.
 
 ## Structural barrier and next gate
 

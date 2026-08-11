@@ -11,7 +11,7 @@ from __future__ import annotations
 
 import argparse
 import math
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from fractions import Fraction
 from typing import TypeAlias
 
@@ -201,7 +201,9 @@ def combine_block_audits(
 
 
 def support_one_source_audit(
-    dimension: int = 58, quadrature_order: int = 1024
+    dimension: int = 58,
+    quadrature_order: int = 128,
+    maximum_smooth_power: int = 95,
 ) -> tuple[FloatingInertiaAudit, FloatingInertiaAudit]:
     """Audit the raw even/odd support-one source blocks.
 
@@ -212,6 +214,10 @@ def support_one_source_audit(
     from experiments.theta_pencil.legendre_feshbach import (
         build_legendre_weil_components,
     )
+    from experiments.theta_pencil.smooth_legendre_series import (
+        smooth_kernel_series_matrix,
+        smooth_kernel_series_remainder_bound,
+    )
 
     components = build_legendre_weil_components(
         1.0, dimension, quadrature_order
@@ -221,11 +227,37 @@ def support_one_source_audit(
         raise ArithmeticError(
             f"unexpected support-one prime powers: {components.active_prime_powers}"
         )
+    matrix = (
+        components.dominant
+        + components.scalar
+        + components.prime
+        + smooth_kernel_series_matrix(
+            1.0, dimension, maximum_smooth_power
+        )
+    )
+    matrix = 0.5 * (matrix + matrix.T)
+    smooth_remainder = smooth_kernel_series_remainder_bound(
+        1.0, maximum_smooth_power
+    )
+    context = (
+        "floating source diagnostic with smooth-series remainder "
+        f"{smooth_remainder:.17g}; not an interval certificate"
+    )
     even = np.arange(0, dimension, 2)
     odd = np.arange(1, dimension, 2)
     return (
-        audit_floating_symmetric_matrix(components.total[np.ix_(even, even)]),
-        audit_floating_symmetric_matrix(components.total[np.ix_(odd, odd)]),
+        replace(
+            audit_floating_symmetric_matrix(
+                matrix[np.ix_(even, even)], zero_tolerance=1.0e-12
+            ),
+            context=context,
+        ),
+        replace(
+            audit_floating_symmetric_matrix(
+                matrix[np.ix_(odd, odd)], zero_tolerance=1.0e-12
+            ),
+            context=context,
+        ),
     )
 
 
@@ -282,9 +314,10 @@ def main() -> None:
     parser.add_argument("--dimension", type=int, default=58)
     parser.add_argument("--quadrature", type=int, default=1024)
     parser.add_argument("--finite-dimension", type=int, default=256)
+    parser.add_argument("--smooth-power", type=int, default=95)
     arguments = parser.parse_args()
     even, odd = support_one_source_audit(
-        arguments.dimension, arguments.quadrature
+        arguments.dimension, arguments.quadrature, arguments.smooth_power
     )
     print("even", even)
     print("odd", odd)
