@@ -549,6 +549,94 @@ does not make the zero set a uniqueness set for the same Paley--Wiener space;
 \(F\) itself is the counterexample. Thus (ZD) sharpens the exterior synthesis
 problem but does not solve it by a density count alone.
 
+### Proposition 4.2 (finite rational localization of an off-line quartet)
+
+Let \(F\) be the constant-phase real entire transform supplied by Proposition
+4.1 and let \(\Lambda\subset\mathbb R\) be its zero multiset. Let
+\(\Gamma\) be the zero multiset in Suzuki's spectral coordinate, so that
+
+\[
+ Q_W(g,h)=\sum_{\gamma\in\Gamma}m_\gamma
+ \widehat g(\gamma)\overline{\widehat h(\bar\gamma)}.          \tag{EF}
+\]
+
+Fix a non-real orbit
+\(\mathcal O=\{\gamma_0,\bar\gamma_0,-\gamma_0,-\bar\gamma_0\}\)
+and a finite conjugation-invariant set
+\(Z\subset\Gamma\setminus\mathcal O\). For every integer \(d\ge1\) there is
+a finite set \(S\subset\Lambda\) of distinct zeros and a real polynomial
+\(P\), with
+
+\[
+ G(z)=F(z)\frac{P(z)}{Q_S(z)},\qquad
+ Q_S(z)=\prod_{\lambda\in S}(z-\lambda),                     \tag{RL1}
+\]
+
+such that
+
+\[
+ G(\gamma_0)=G(-\bar\gamma_0)=i,qquad
+ G(\bar\gamma_0)=G(-\gamma_0)=-i,qquad
+ G|_Z=0,                                                      \tag{RL2}
+\]
+
+and \(P/Q_S=O(|z|^{-d})\) at infinity. All apparent poles in (RL1)
+are removable, \(G\) belongs to the same Paley--Wiener space as \(F\), and,
+for \(d\) sufficiently large, the series (EF) for \(Q_W(G)\) is absolutely
+convergent.
+
+### Proof
+
+All zeros of \(F\) are real, so \(F\) is nonzero at every member of
+\(\mathcal O\). Points \(\gamma\in Z\) at which \(F(\gamma)=0\) are already
+cancelled, so put \(Z'=\{\gamma\in Z:F(\gamma)\ne0\}\). Choose as many
+distinct members of \(\Lambda\) as needed and form \(Q_S\). On the finite
+conjugation-invariant set \(\mathcal O\cup Z'\), prescribe
+
+\[
+ P(\gamma)=c_\gamma\frac{Q_S(\gamma)}{F(\gamma)},             \tag{RL3}
+\]
+
+where \(c_\gamma\) is the value in (RL2) on \(\mathcal O\) and zero on
+\(Z'\). The data in (RL3) are invariant under conjugation, hence ordinary
+Lagrange interpolation gives a polynomial \(P\) with real coefficients and
+degree smaller than the number \(M=|\mathcal O\cup Z'|\) of interpolation
+conditions. Taking \(|S|\ge M+d\) gives the stated decay.
+
+Every factor in \(Q_S\) divides \(F\), so (RL1) is entire. Division by a
+finite polynomial and multiplication by \(P\) do not enlarge the
+Paley--Wiener indicator; the extra decay makes the real-axis \(L^2\) and
+logarithmic form-domain conditions immediate. Finally, the standard unit-strip
+zero count \(O(\log(2+|T|))\) for \(\xi\), together with the local
+Paley--Wiener evaluation bound in the fixed strip
+\(|\operatorname{Im}z|\le1/2\), makes (EF) absolutely convergent once \(d\)
+is chosen large enough. \(\square\)
+
+The four prescribed terms in (EF) contribute
+
+\[
+ -\sum_{\gamma\in\mathcal O}m_\gamma<0.                     \tag{NEG}
+\]
+
+Thus finite interpolation is not the obstruction. An unconditional closure
+would follow from the following precise tail statement: the sets \(Z\) can be
+exhausted while choosing the interpolants above so that
+
+\[
+ \sum_{\gamma\in\Gamma\setminus(\mathcal O\cup Z)}
+ m_\gamma |G(\gamma)|^2=o(1).                               \tag{RTL}
+\]
+
+Indeed (NEG), (RTL), and the absolute convergence would eventually give
+\(Q_W(G)<0\), contradicting \(Q_W^{a_*}\succeq0\). This would exclude every
+non-real \(\gamma_0\) and prove RH. Statement (RTL) is **not** proved here.
+It is a weighted rational-localization problem at critical Paley--Wiener
+density. Pointwise interpolation on each finite set, even with arbitrarily
+large algebraic decay, does not control the growth of its interpolation
+constants, so a diagonal "cancel more zeros" argument is invalid without a
+uniform estimate. This is the exact remaining synthesis cost exposed by the
+real-rooted witness.
+
 ## 4. Exact parity-gap identity
 
 Although multiplicity is no longer a separate logical branch, parity
@@ -623,4 +711,9 @@ an entry point for understanding parity collisions. The separate
 Beurling--Deny/Perron--Frobenius theory cannot supply simplicity once
 \(a>1/2\): the off-diagonal form has a positive open band near separation
 one. The remaining gate must use the explicit prime--archimedean formula;
-real-rootedness alone is not a contradiction. It is not declared solved here.
+real-rootedness alone is not a contradiction. Proposition 4.2 gives one
+fully explicit route into that gate: prove the uniform tail localization
+(RTL) for the rational division family. The finite interpolation and every
+algebraic cancellation required by that route are already unconditional; only
+the norm control of the moving infinite tail remains. Neither (RTL) nor an
+alternative exclusion is declared solved here.

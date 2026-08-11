@@ -104,6 +104,11 @@ an exact Loewner--Cauchy identity on every shifted Fourier lattice. Minimality
 of the first crossing forces the witness to saturate the whole interval;
 Cartwright theory then upgrades real-rootedness to the exact density law
 \(N(R)=2a_*R/\pi+o(R)\) and a constant-phase conjugate-reflection symmetry.
+Dividing by finite products of these real zeros gives exact rational
+interpolants that isolate any hypothetical off-line zeta quartet with negative
+spectral sign while cancelling an arbitrary finite set of other zeros. The
+remaining analytic gate is a uniform weighted-tail estimate for those
+interpolants, not their finite construction.
 
 ## Why this track is different
 
