@@ -48,6 +48,30 @@ def projection_formula() -> None:
     correction = mv(projector_commutator, polynomial)
     assert next_jet == [x + y for x, y in zip(mv(X, w), correction, strict=True)]
 
+    # Take p in the complementary space and w=P X p.  This is the finite
+    # model of p=x^(k-1), w=P x^k.  It checks (PC9)--(PC11), including every
+    # factor two in the double commutator.
+    previous = [z, z, Q(1)]
+    w = mv(P, mv(X, previous))
+    c_w = mv(commutator, w)
+    reduced_previous = mv(reduced, previous)
+    assert sum(x * y for x, y in zip(reduced_previous, c_w, strict=True)) == -sum(
+        x * x for x in w
+    )
+    a_x = mm(A, X)
+    ax_minus_xa = madd(a_x, mm(X, A), -1)
+    double = madd(mm(X, ax_minus_xa), mm(ax_minus_xa, X), -1)
+    energy = sum(x * y for x, y in zip(w, mv(double, w), strict=True))
+    reduced_energy = 2 * sum(
+        x * y for x, y in zip(c_w, mv(reduced, c_w), strict=True)
+    )
+    assert energy == reduced_energy > 0
+    left = energy * sum(
+        x * y for x, y in zip(previous, reduced_previous, strict=True)
+    )
+    norm_fourth = 2 * sum(x * x for x in w) ** 2
+    assert left >= norm_fourth
+
 
 def translation_formula() -> None:
     z = Q(0)
@@ -64,6 +88,16 @@ def translation_formula() -> None:
     direct = madd(mm(X, block), mm(block, X), -1)
     expected = [[-weight * shift * (plus[i][j] - minus[i][j]) for j in range(size)] for i in range(size)]
     assert direct == expected
+
+    # A second commutator turns the oriented difference into the symmetric
+    # translation sum with the positive squared displacement in (PC12).
+    ax_minus_xa = madd(mm(block, X), mm(X, block), -1)
+    double = madd(mm(X, ax_minus_xa), mm(ax_minus_xa, X), -1)
+    expected_double = [
+        [weight * shift**2 * (plus[i][j] + minus[i][j]) for j in range(size)]
+        for i in range(size)
+    ]
+    assert double == expected_double
 
 
 def main() -> None:

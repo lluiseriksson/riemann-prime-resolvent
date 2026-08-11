@@ -131,6 +131,15 @@ at every simple witness zero is therefore a concrete inequality for this
 prime--archimedean commutator correction.  This locates the missing signed
 estimate without assigning it a nonexistent termwise sign; the reduced
 inverse still carries the full spectral difficulty.
+For every minimal jet of order \(k\ge1\), a double-commutator sum rule makes
+this bridge coercive: its expectation is
+\(2\langle Xw,A_aXw\rangle>0\), while the minimality identity fixes
+\(\langle R_0x^{k-1},[X,A_a]w\rangle=-\|w\|^2\).  Expanding the double
+commutator yields a signed prime-correlation inequality with weights
+\(\Lambda(n)(\log n)^2/\sqrt n\), a conditionally negative
+\(|x-y|\) term and an explicit positive gap remainder.  This is a strict
+source-side gate, but no sign theorem for the translated correlations is
+claimed; the non-mean-zero case \(k=0\) remains separate.
 In the pure branch, pairing the real zeros produces a canonical Stieltjes
 transform in the radial variable and an explicit Hausdorff measure with atoms
 \(x/(x+\lambda_j^2)\). These are witness zeros, not xi zeros; identifying the

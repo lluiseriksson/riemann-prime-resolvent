@@ -955,6 +955,115 @@ incompatible with (PC2) for a support-saturating real-rooted null vector is
 the remaining arithmetic step; replacing \(R_0\) by an assumed positive
 prime factorization would merely reintroduce Weil positivity.
 
+### Proposition 4.1a.5 (energy-weighted prime--theta sum rule)
+
+In the setting of Proposition 4.1a.4, assume \(k=k_0\ge1\), put
+\(p=x^{k-1}\), and denote by \(\Delta>0\) the spectral gap of \(A\) on
+\(Q L^2\).  Then the minimal kernel jet obeys
+
+\[
+ \boxed{\langle R_0p,Cw\rangle=-\|w\|_2^2.}              \tag{PC9}
+\]
+
+Let \(D=[X,[A,X]]\).  The energy-weighted sum rule and uncertainty bound are
+
+\[
+\boxed{
+ \langle w,Dw\rangle
+ =2\langle Cw,R_0Cw\rangle
+ =2\langle Xw,AXw\rangle>0,}                             \tag{PC10}
+\]
+
+\[
+\boxed{
+ \langle w,Dw\rangle\,\langle p,R_0p\rangle
+ \ge2\|w\|_2^4,\qquad
+ \langle w,Dw\rangle
+ \ge\frac{2\Delta\|w\|_2^4}{\|x^{k-1}\|_2^2}.}        \tag{PC11}
+\]
+
+The self-adjoint double commutator has the source-side formula
+
+\[
+\boxed{
+\begin{aligned}
+ (Df)(x)={}&\frac12\int_{-a_*}^{a_*}|x-y|f(y)\,dy\\
+ &+\int_{-a_*}^{a_*}(x-y)^2r''(x-y)f(y)\,dy\\
+ &+\sum_{2\le n\le e^{2a_*}}
+   \frac{\Lambda(n)\ell_n^2}{\sqrt n}
+   (T_{\ell_n}^{+}+T_{\ell_n}^{-})f(x).
+\end{aligned}}                                            \tag{PC12}
+\]
+
+Since \(k\ge1\), (PE6) gives \(\int w=0\).  Put
+\(F_w(t)=\int_{-a_*}^{t}w(x)\,dx\).  Then
+
+\[
+ \frac12\iint|x-y|w(x)w(y)\,dx\,dy
+ =-\int_{-a_*}^{a_*}F_w(t)^2\,dt.                         \tag{PC13}
+\]
+
+Consequently every such hypothetical crossing satisfies the explicit signed
+correlation gate
+
+\[
+\boxed{
+\begin{aligned}
+ &\iint (x-y)^2r''(x-y)w(x)w(y)\,dx\,dy\\
+ &\quad+2\sum_{2\le n\le e^{2a_*}}
+  \frac{\Lambda(n)\ell_n^2}{\sqrt n}
+  \int_{-a_*}^{a_*-\ell_n}w(x+\ell_n)w(x)\,dx\\
+ &\ge \int_{-a_*}^{a_*}F_w(t)^2\,dt
+  +\frac{2\Delta\|w\|_2^4}{\|x^{k-1}\|_2^2}.
+\end{aligned}}                                            \tag{PC14}
+\]
+
+#### Proof
+
+Minimality of \(k\) gives \(Pp=0\), so \(AR_0p=p\).  Since \(Aw=0\) and
+\(C=XA-AX\),
+
+\[
+ \langle R_0p,Cw\rangle
+ =-\langle AR_0p,Xw\rangle
+ =-\langle Xp,w\rangle
+ =-\langle x^k,Px^k\rangle=-\|w\|_2^2,
+\]
+
+which proves (PC9).  Also \(Cw=-AXw\) and
+\(R_0Cw=-QXw\).  Expanding the double commutator between two kernel vectors
+gives (PC10); it cannot vanish because otherwise (PC9) would vanish.
+Cauchy--Schwarz in the positive \(R_0\)-metric gives
+
+\[
+ \|w\|_2^4\le
+ \langle p,R_0p\rangle\langle Cw,R_0Cw\rangle.
+\]
+
+Together with \(0\le R_0\le\Delta^{-1}Q\), this proves (PC11).
+
+Commuting each line of (PC2) once more with \(X\), with the sign convention
+above, gives (PC12).  In particular,
+
+\[
+ [X,[-\alpha(T_\ell^++T_\ell^-),X]]
+ =\alpha\ell^2(T_\ell^++T_\ell^-).
+\]
+
+Twice integrating the \(|x-y|\) kernel by parts proves (PC13); its boundary
+terms vanish because \(\int w=0\).  Finally
+\(\langle w,(T_\ell^++T_\ell^-)w\rangle
+=2\int_{-a_*}^{a_*-\ell}w(x+\ell)w(x)\,dx\).
+Substitution in (PC11) proves (PC14). \(\square\)
+
+Formula (PC14) is a strict necessary condition for every hypothetical
+first-crossing witness with \(k_0\ge1\).  It is not a proof of RH: neither
+real-rootedness nor the sign-coherent moments (PH11) currently give a
+pointwise sign for the translated autocorrelations.  Its gain is that the
+missing cancellation is now one coercive inequality with a fixed positive
+right side.  The case \(k_0=0\) lacks the mean-zero identity (PC13) and
+remains a separate gate.
+
 ### Proposition 4.1b (the Hausdorff measure of a pure-parity witness)
 
 Assume there is a pure-parity real-rooted null vector at the first crossing,
@@ -2255,7 +2364,9 @@ precisely, for every \(a>0\) and every integer \(N\ge1\), there is a real
 2. after multiplication by a constant phase, \(\widehat v_N\) is real entire
    and all its zeros are real;
 3. \(N_{v_N}(R)=2aR/\pi+O(1)\), with multiplicity;
-4. \(v_N\) has exactly \(N\) changes of sign on \((-a,a)\).
+4. \(v_N\) has exactly \(N\) changes of sign on \((-a,a)\);
+5. at its aligned translation lags, the autocorrelation has alternating
+   sign.
 
 #### Proof
 
@@ -2296,6 +2407,25 @@ origin has multiplicity \(m-1\), and every other zero is a real point
 \(2\pi k/h=\pi mk/a\), with multiplicity \(m\).  Their spacing divided by
 multiplicity is \(\pi/a\), so counting both half-lines gives
 \(N_{v_N}(R)=2aR/\pi+O(1)\).
+
+The same interval values give, for \(0\le q\le m-1\),
+
+\[
+\begin{aligned}
+ \int_{-a}^{a-qh}v_N(x+qh)v_N(x)\,dx
+ &=h(-1)^q\sum_{j=0}^{m-1-q}
+   {m-1\choose j+q}{m-1\choose j}\\
+ &=\boxed{h(-1)^q{2m-2\choose m-1-q}}.                  \tag{BV3a}
+\end{aligned}
+\]
+
+The last equality is Vandermonde's identity.  Thus the correlation is
+strictly negative at \(h\), strictly positive at \(2h\) when \(m\ge3\),
+and alternates thereafter.  Given any prescribed displacement \(\ell>0\),
+choosing \(h=\ell\) makes the correlation at \(\ell\) negative; choosing
+\(h=\ell/2\) makes it positive.  Hence even at an exact prime displacement
+\(\ell=\log n\), real-rootedness and maximal density alone determine no
+sign for the correlation occurring in (PC14).
 
 Finally \(|\widehat v_N(\xi)|=O(|\xi|^{-1})\).  Thus its logarithmic Fourier
 energy is finite.  Equivalently, smoothing each of the finitely many jumps in

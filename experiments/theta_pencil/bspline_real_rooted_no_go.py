@@ -26,6 +26,18 @@ def main() -> None:
         assert values == expected
         assert all(left * right < 0 for left, right in zip(values, values[1:]))
 
+        # Exact aligned autocorrelations.  Vandermonde gives their magnitude,
+        # while the alternating interval values force sign (-1)^shift.
+        for shift in range(order):
+            correlation = sum(
+                values[index + shift] * values[index]
+                for index in range(order - shift)
+            )
+            expected_correlation = (-1) ** shift * comb(
+                2 * order - 2, order - 1 - shift
+            )
+            assert correlation == expected_correlation
+
         # If h=2a/m, the nonzero Fourier-zero spacing is pi*m/a and every
         # such zero has multiplicity m.  Multiplicity divided by the spacing
         # therefore equals a/pi, independently of m; counting both signs
