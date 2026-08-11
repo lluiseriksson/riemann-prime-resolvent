@@ -112,7 +112,11 @@ In the pure branch, pairing the real zeros produces a canonical Stieltjes
 transform in the radial variable and an explicit Hausdorff measure with atoms
 \(x/(x+\lambda_j^2)\). These are witness zeros, not xi zeros; identifying the
 two measures is now a sharply stated prime--theta obligation rather than an
-implicit analogy.
+implicit analogy.  The same product also forces every physical moment in the
+allowed parity, after factorial normalization and one global sign choice, to
+be a positive elementary symmetric sum of the inverse squared witness zeros.
+This coefficient sequence is a locally uniform negative-real-zero product;
+it is the precise positive cone available for an arithmetic attack.
 In the collision branch, the even and odd half-interval operators saturate
 the two opposite endpoints of the same normalized Hankel contraction. Their
 cross pairing vanishes and yields an exact signed identity between the

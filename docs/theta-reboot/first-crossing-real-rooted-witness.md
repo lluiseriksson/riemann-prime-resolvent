@@ -675,6 +675,46 @@ count gives
 
 which is (PH7). \(\square\)
 
+### Corollary 4.1c (sign-coherent physical moments)
+
+In the pure-parity branch, choose the real generator and its global sign so
+that
+
+\[
+ G(c):=\int_{-a_*}^{a_*}v_*(x)e^{cx}\,dx
+ =\kappa c^r\prod_{j\ge1}\left(1+\frac{c^2}{\lambda_j^2}\right),
+ \qquad \kappa>0.                                          \tag{PH10}
+\]
+
+If \(m_k=\int x^kv_*(x)\,dx\), then
+
+\[
+ \boxed{
+  m_k=0\ (k\not\equiv r\!\!\pmod2),\qquad
+  \frac{m_{r+2q}}{(r+2q)!}
+  =\kappa\,e_q(\lambda_1^{-2},\lambda_2^{-2},\ldots)>0
+  \quad(q\ge0),}                                         \tag{PH11}
+\]
+
+where \(e_q\) is the \(q\)-th elementary symmetric sum.  Indeed, (PH10) is
+(PH2) evaluated at \(z=-ic\), with its constant phase absorbed into the
+choice of the real generator, and comparison with
+\(G(c)=\sum m_kc^k/k!\) gives (PH11).  The infinite elementary sums converge
+because \(\sum_j\lambda_j^{-2}<\infty\).
+
+Thus the factorially normalized nonzero moments have generating function
+
+\[
+ \sum_{q\ge0}\frac{m_{r+2q}}{\kappa(r+2q)!},t^q
+ =\prod_{j\ge1}(1+t/\lambda_j^2),                          \tag{PH12}
+\]
+
+the locally uniform limit of polynomials with only negative real zeros and
+positive coefficients.  This is the physical-variable positive structure
+actually supplied by real-rootedness.  Proposition 4.9e below shows why it is
+not a pointwise sign theorem: (PH11) can coexist with arbitrarily many sign
+changes of \(v_*\).
+
 The atoms in (PH6) are the real zeros of the **first-crossing witness**, not
 the spectral points of the Riemann xi function. Hausdorff determinacy makes
 this distinction rigid: identifying \(\mu_x\) with the Riemann resolvent
