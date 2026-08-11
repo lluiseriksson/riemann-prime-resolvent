@@ -168,6 +168,12 @@ simple kernel it dominates
 radial gate are special cases.  This retains the signed conductances while
 allowing cut- or prime-adapted tests; a contradictory multiplier is not yet
 known.
+Exact prime-lag annihilation is now sharply calibrated.  A continuous
+multiplier invariant under the active \(\log2\) and \(\log3\) translations is
+constant once \(2a\ge\log6\); an analytic one is already constant whenever
+\(2a>\log3\).  Nonconstant smooth annihilators do exist in the narrow window
+\(\log3<2a<\log(9/2)\), where they kill exactly the \(2,3,4\) translations,
+but they leave an unsigned archimedean inequality rather than a contradiction.
 Real-rootedness nevertheless fixes more of this source expression than a
 pointwise argument suggests.  If \(r\) is the zero order and
 \(J_j=\iint(x-y)^{2j}w(x)w(y)\), then \(J_j=0\) below \(r\) and
