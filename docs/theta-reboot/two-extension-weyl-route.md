@@ -778,6 +778,74 @@ finite-section boundary transfer that changes \(S_a/C_a\). The functions
 \`fourier_parity_ratio_from_canonical_weyl\` verify (PF)--(PI) independently
 against the original two-channel formula.
 
+### Fixed-support first-crossing boundary limit
+
+There is now an exact boundary value of the projective construction at a
+hypothetical first crossing, distinct from the conjectural limit
+\(a\to\infty\). Use the notation of Proposition 4.9 in
+[`first-crossing-real-rooted-witness.md`](first-crossing-real-rooted-witness.md).
+For every \(c>0\), put
+
+\[
+ \Theta_c(z)=\frac{E_c^\#(z)}{E_c(z)}
+ =\frac{(z-ic)U_c(z)}{(z+ic)U_c(-z)}.                    \tag{BG1}
+\]
+
+The strict Hermite--Biehler inequality (HB2) says exactly that \(\Theta_c\)
+is analytic and Schur on \(\mathbb C_+\):
+
+\[
+ |\Theta_c(z)|<1\qquad(\operatorname{Im}z>0).
+\]
+
+Consequently the Cayley transform
+
+\[
+ \boxed{
+ m_{0,c}(z)=i\frac{1+\Theta_c(z)}{1-\Theta_c(z)}}          \tag{BG2}
+\]
+
+is a meromorphic Herglotz function, canonically normalized by
+\(m_{0,c}(ic)=i\). Its poles are real and are drawn from the real-rooted
+self-adjoint-extension pencil (HB3). No limiting assertion or RH is used in
+(BG1)--(BG2): they are the strong-resolvent boundary
+\(\varepsilon(A_{a_*}+\varepsilon I)^{-1}\to P_{\ker A_{a_*}}\) of
+Suzuki's positive-shift construction at fixed support.
+
+If
+
+\[
+ U_c(z)=\mathcal C_c(z)+\mathcal S_c(z),
+ \quad \mathcal C_c(-z)=\mathcal C_c(z),
+ \quad \mathcal S_c(-z)=-\mathcal S_c(z),
+ \quad r_{0,c}=\mathcal S_c/\mathcal C_c,
+\]
+
+then direct cancellation gives the projective formula
+
+\[
+ \boxed{
+ m_{0,c}(z)=i\frac{z-ic\,r_{0,c}(z)}{ic-zr_{0,c}(z)}.}    \tag{BG3}
+\]
+
+On the imaginary axis, with \(C_{c,y},S_{c,y}\) from (HB5), this becomes
+
+\[
+ \Theta_c(iy)=
+ \frac{(y-c)(C_{c,y}-S_{c,y})}
+ {(y+c)(C_{c,y}+S_{c,y})}\in(-1,1),                      \tag{BG4}
+\]
+
+and \(\operatorname{Im}m_{0,c}(iy)>0\) is precisely (HB4)--(HB6). Thus
+the signed prime identity (HB7a) and the Herglotz sign now constrain the
+same generic even--odd collision pair.
+
+This closes one conceptual gap in the Weyl route: a canonical projective
+object does survive when the positive shift reaches a degenerate localized
+operator. It does **not** close the global boundary-continuation theorem.
+No relation between \(m_{0,c}\) at the unknown finite \(a_*\) and the Riemann
+target \(F_\Xi\) has been proved, and asserting one would reinsert RH.
+
 For the normalized Riemann target, (PI) defines
 
 \[

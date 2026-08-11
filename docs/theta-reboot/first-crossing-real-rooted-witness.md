@@ -1398,6 +1398,197 @@ collision. Such an exclusion would explain the multiplicity geometry, but
 Lemma 2.1 shows that it is no longer required for the logical reduction to a
 real-rooted null witness.
 
+The classical matching-pair theorems for Toeplitz--Hankel or
+Wiener--Hopf--Hankel operators do not supply the missing exclusion. They
+assume bounded Hardy/Wiener--Hopf symbols \(a,b\) satisfying a multiplicative
+identity such as \(a(t)a(-t)=b(t)b(-t)\). Here \(S_a\) and \(H_a\) are the
+two finite-interval quadrants of one distributional Weil kernel; its prime
+part contains point masses at every \(\log n\), and no such bounded matching
+pair or factorization identity has been established. Importing those kernel
+formulas would therefore change the operator rather than analyze (CI1).
+
+### Proposition 4.9 (the boundary Hermite--Biehler pencil)
+
+Let \(a=a_*\) be the first crossing in Theorem 4, put
+\(K_0=\ker A_a\), and let \(P_0\) be the orthogonal projection onto
+\(K_0\). For every \(c>0\), define
+
+\[
+ u_c=P_0(e^{cx}),\qquad U_c(z)=\int_{-a}^a u_c(x)e^{izx}\,dx,
+ \qquad E_c(z)=(z+ic)U_c(-z).                             \tag{HB1}
+\]
+
+Then \(u_c\ne0\), and \(E_c\) satisfies the strict Hermite--Biehler
+inequality
+
+\[
+ \boxed{|E_c(z)|>|E_c^\#(z)|\qquad(\operatorname{Im}z>0),}
+ \qquad E_c^\#(z)=\overline{E_c(\bar z)}=(z-ic)U_c(z).  \tag{HB2}
+\]
+
+More precisely, for every \(\theta\in\mathbb R\), the nonzero entire
+function
+
+\[
+ W_{0,c,\theta}(z)=E_c^\#(z)+e^{i\theta}E_c(z)           \tag{HB3}
+\]
+
+has only real zeros. On the positive imaginary axis this gives the explicit
+strict projection inequality
+
+\[
+ \boxed{
+ (y+c)|U_c(-iy)|>|y-c|\,|U_c(iy)|\qquad(y>0).}           \tag{HB4}
+\]
+
+To display its parity content, write
+
+\[
+ p_c=P_{0,\mathrm e}(\cosh(cx)),\qquad
+ q_c=P_{0,\mathrm o}(\sinh(cx)),
+\]
+
+where \(P_{0,\mathrm e}\) and \(P_{0,\mathrm o}\) are the even and odd
+parts of \(P_0\), and put
+
+\[
+ C_{c,y}=\langle p_c,\cosh(yx)\rangle,
+ \qquad S_{c,y}=\langle q_c,\sinh(yx)\rangle .            \tag{HB5}
+\]
+
+Both quantities are real, \(U_c(-iy)=C_{c,y}+S_{c,y}\), and
+\(U_c(iy)=C_{c,y}-S_{c,y}\). Consequently (HB4) is equivalently
+
+\[
+ \boxed{
+ (yC_{c,y}+cS_{c,y})(cC_{c,y}+yS_{c,y})>0
+ \qquad(c,y>0).}                                          \tag{HB6}
+\]
+
+#### Proof
+
+For \(\varepsilon>0\), set \(T_\varepsilon=A_a+\varepsilon I\). This is
+Suzuki's positive shifted operator with \(\lambda=-\varepsilon<\lambda_a=0\).
+The proof of Suzuki's Lemma 6.2 applies at any pair of deficiency points
+\(\pm ic\). The corresponding vectors are
+
+\[
+ v_{+,\varepsilon,c}=T_\varepsilon^{-1}e^{cx},
+ \qquad v_{-,\varepsilon,c}=T_\varepsilon^{-1}e^{-cx},
+\]
+
+and satisfy
+\(\mathscr D_a^*v_{+,\varepsilon,c}=icv_{+,\varepsilon,c}\) and
+\(\mathscr D_a^*v_{-,\varepsilon,c}=-icv_{-,\varepsilon,c}\).
+Von Neumann's extension theorem can be formulated using any conjugate pair
+of nonreal deficiency points. Repeating the boundary-form calculation in
+the proof of Suzuki's Theorem 1.5, with \(i\) replaced by \(ic\), shows that
+every function
+
+\[
+ W_{\varepsilon,c,\theta}(z)=
+ (z-ic)\widehat v_{+,\varepsilon,c}(z)
+ +e^{i\theta}(z+ic)\widehat v_{-,\varepsilon,c}(z)       \tag{HB7}
+\]
+
+has only real zeros. The spectral theorem gives
+
+\[
+ \varepsilon(A_a+\varepsilon I)^{-1}\longrightarrow P_0
+ \quad\hbox{strongly in }L^2(-a,a).                       \tag{HB8}
+\]
+
+The operator \(A_a\) is real and commutes with reflection, so \(u_c\) is real
+and
+
+\[
+ P_0(e^{-cx})=u_c(-x).
+\]
+
+On a fixed finite interval, \(L^2\) convergence implies locally uniform
+convergence of Fourier transforms, by
+
+\[
+ |\widehat f(z)|\le \sqrt{2a}\,e^{a|\operatorname{Im}z|}\|f\|_2.
+\]
+
+Multiplying (HB7) by \(\varepsilon\) and using (HB8) therefore gives,
+locally uniformly on \(\mathbb C\),
+
+\[
+ \varepsilon W_{\varepsilon,c,\theta}(z)
+ \longrightarrow (z-ic)U_c(z)+e^{i\theta}(z+ic)U_c(-z)
+ =W_{0,c,\theta}(z).                                      \tag{HB9}
+\]
+
+It remains to rule out a zero limit. The real-rooted witness \(v_*\in K_0\)
+from Theorem 4 satisfies \(\widehat v_*(-ic)\ne0\) for every \(c>0\),
+because all its zeros are real. Hence \(P_0e^{cx}=u_c\ne0\). Moreover
+
+\[
+ U_c(-ic)=\langle P_0e^{cx},e^{cx}\rangle
+ =\|u_c\|_2^2>0.                                         \tag{HB10}
+\]
+
+At \(z=ic\), the first summand in (HB9) vanishes and the second equals
+\(2ic e^{i\theta}\|u_c\|_2^2\). Thus no \(W_{0,c,\theta}\) is identically
+zero. Hurwitz's theorem applied off the real axis now proves (HB3).
+
+Put \(A_c=E_c^\#=(z-ic)U_c(z)\). If
+\(|E_c(z)|=|A_c(z)|\) at a point in the upper
+half-plane, a phase \(e^{i\theta}\) could be chosen so that
+\(A_c(z)+e^{i\theta}E_c(z)=0\), contradicting (HB3). The two moduli therefore
+never agree there. At \(z=ic\), (HB10) gives
+\(|E_c(ic)|=2c\|u_c\|_2^2>|E_c^\#(ic)|=0\); connectedness of the upper half-plane
+proves (HB2). Substitution \(z=iy\) proves (HB4).
+
+Finally reflection invariance gives
+\(u_c=p_c+q_c\), with the two parity components displayed in (HB5). Expanding the
+squares in (HB4) gives the exact factorization
+
+\[
+ (y+c)^2(C_{c,y}+S_{c,y})^2-(y-c)^2(C_{c,y}-S_{c,y})^2
+ =4(yC_{c,y}+cS_{c,y})(cC_{c,y}+yS_{c,y}),
+\]
+
+which proves (HB6). \(\square\)
+
+### Corollary 4.9a (a generic collision pair obeys both constraints)
+
+Assume that both parity sectors of \(K_0\) are nonzero. Then there is an open
+dense subset \(\mathcal C\subset(0,\infty)\), whose complement is discrete,
+such that \(p_c\ne0\) and \(q_c\ne0\) for every \(c\in\mathcal C\). For each
+such \(c\), the pair \((p_c,q_c)\) is an actual even--odd null pair and hence
+satisfies both (HB6) and the signed arithmetic identity
+
+\[
+ \boxed{
+ H_{a,A}(p_c,q_c)=
+ \sum_{2\le n\le e^{2a}}\frac{\Lambda(n)}{\sqrt n}
+ \int_{I_n}p_c(t)q_c(\log n-t)\,dt .}                    \tag{HB7a}
+\]
+
+Indeed, \(c\mapsto p_c\) and \(c\mapsto q_c\) are analytic maps from
+\(\mathbb C\) to the finite-dimensional spaces \(K_{0,\mathrm e}\) and
+\(K_{0,\mathrm o}\). If, for example, \(p_c\) vanished on a set with an
+accumulation point, it would vanish identically. Every
+\(f\in K_{0,\mathrm e}\) would then satisfy
+\(\langle f,\cosh(cx)\rangle=0\) for all \(c\). Analytic continuation to
+\(c=it\) would make the cosine transform of \(f\) vanish identically, hence
+\(f=0\), contrary to \(K_{0,\mathrm e}\ne0\). The odd sector is identical,
+using \(\sinh(cx)\) and the sine transform. Thus the two exceptional zero
+sets are discrete. Formula (HB7a) is (CI3) applied to \((p_c,q_c)\).
+\(\square\)
+
+Proposition 4.9 is stronger than the existence of one real-rooted null
+witness: it places a canonical family of real-rooted pencils, parametrized
+by the deficiency scale \(c>0\), on the
+entire first-crossing kernel. It does not by itself exclude a parity
+collision. Such a collision must now satisfy both the signed arithmetic
+identity (CI3) and the strict projective inequalities (HB4)--(HB6). This is
+the exact point at which the localized Weil route meets the boundary/Weyl
+route, without taking the conjectural limit \(a\to\infty\).
+
 ## 5. Updated proof obligation
 
 The first-crossing route now has one explicit gate:

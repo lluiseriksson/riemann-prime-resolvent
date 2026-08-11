@@ -117,6 +117,21 @@ In the collision branch, the even and odd half-interval operators saturate
 the two opposite endpoints of the same normalized Hankel contraction. Their
 cross pairing vanishes and yields an exact signed identity between the
 archimedean Hankel block and the prime reflections at every \(\log n\).
+Approaching the degenerate operator through Suzuki's positive shifts
+\(A_{a_*}+\varepsilon I\) now gives a second, independent constraint.  The
+rescaled self-adjoint-extension characteristic functions converge, at every
+pair of deficiency points \(\pm ic\), to a nonzero real-rooted pencil
+\(E_c^\#+e^{i\theta}E_c\), where
+\(E_c(z)=(z+ic)\widehat{P_{\ker A_{a_*}}e^{cx}}(-z)\) is strictly
+Hermite--Biehler.  On the imaginary axis this is the two-parameter strict
+projection inequality
+\((y+c)|U_c(-iy)|>|y-c||U_c(iy)|\).  Thus a parity collision must satisfy both
+the signed prime--archimedean identity and a canonical projective/de Branges
+constraint.  For all deficiency scales outside a discrete exceptional set,
+the projected pair
+\((P_{\rm e}\cosh(cx),P_{\rm o}\sinh(cx))\) is nonzero in both sectors and
+satisfies the two constraints simultaneously; neither condition is asserted
+to exclude it yet.
 Dividing by finite products of these real zeros gives exact rational
 interpolants that isolate any hypothetical off-line zeta quartet with negative
 spectral sign while Hermite-cancelling an arbitrary finite set of other zeros
