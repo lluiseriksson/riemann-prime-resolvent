@@ -1937,6 +1937,34 @@ strips of width \(\varepsilon\) gives the same
 \(O(\varepsilon\log(1/\varepsilon))\) form-norm estimate used above for
 truncated exponentials.  Therefore \(v_N\in\mathfrak D(Q_W^a)\). \(\square\)
 
+The zero order \(r=m-1\) in this first construction is not responsible for
+the oscillation.  Fix \(N\ge1\), take instead \(m=2N+1\), and, for
+\(\delta>0\), put
+
+\[
+ w_{N,\delta}=(1+\delta^2\partial_x^2)^N B_m,
+ \qquad
+ \widehat w_{N,\delta}(z)
+ =(1-\delta^2z^2)^N
+ \left(\frac{2\sin(hz/2)}{z}\right)^m.                    \tag{BV4}
+\]
+
+This transform again has only real zeros, but now it is even and nonzero at
+the origin, so \(r=0\).  On each of the \(m\) knot intervals,
+
+\[
+ \delta^{-2N}w_{N,\delta}
+ =B_m^{(2N)}+O(\delta^{-2})
+ =(-1)^j{2N\choose j}+O(\delta^{-2}),                     \tag{BV5}
+\]
+
+uniformly away from the finitely many irrelevant knot values.  For all
+sufficiently large \(\delta\), the signs therefore alternate on all
+\(2N+1\) intervals.  Moreover (BV4) still decays as \(1/|z|\), so the same
+form-domain argument applies.  Hence arbitrarily many sign changes occur
+even with the zero order fixed at \(r=0\), where every moment in (PH11) is
+strictly positive after one global sign choice.
+
 This is a direct no-go for a tempting continuation of (ET4).  Even inside the
 localized form domain, real-rootedness, exact support saturation, constant
 phase, pure parity and maximal Cartwright density coexist with arbitrarily

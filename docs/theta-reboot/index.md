@@ -153,7 +153,9 @@ equivalent to the original weak kernel equation, so it preserves all
 arithmetic information but is not itself a new positivity input.  A compact
 B-spline construction supplies the complementary no-go: form-domain vectors
 can have real-rooted transforms, saturated support, maximal Cartwright zero
-density and arbitrarily many physical-space sign changes simultaneously.
+density and arbitrarily many physical-space sign changes simultaneously,
+even while the zero order is fixed at \(r=0\) and all allowed moments are
+strictly positive.
 Thus zero geometry alone cannot give the sign needed in the exponential
 identity; the remaining argument must use its explicit prime--archimedean
 weight.  Normalized even B-splines further show that the first positive
