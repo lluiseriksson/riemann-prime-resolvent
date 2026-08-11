@@ -135,6 +135,19 @@ def parity_sector_squared_node_no_go() -> None:
     assert rational_value == 0
 
 
+def small_deficiency_pure_parity_limit() -> None:
+    # If H(-z)=s H(z) and the boundary phase is exp(i theta)=s, the
+    # coefficient of c^k in W is exactly 2 z H.  Terms carrying the explicit
+    # deficiency factor ic start one order later.  This is the algebra in
+    # (PE5); Hurwitz supplies the analytic real-zero conclusion.
+    for parity in (Fraction(-1), Fraction(1)):
+        for z in (Fraction(-7, 3), Fraction(2, 5), Fraction(11, 2)):
+            for h_value in (Fraction(-5, 4), Fraction(3, 7)):
+                reflected_h = parity * h_value
+                leading = z * h_value + parity * z * reflected_h
+                assert leading == 2 * z * h_value
+
+
 def main() -> None:
     for y in [Fraction(1, 7), Fraction(1), Fraction(5, 2), Fraction(13)]:
         for deficiency in [Fraction(1, 5), Fraction(1), Fraction(11, 3)]:
@@ -148,6 +161,7 @@ def main() -> None:
     simple_kernel_cayley_check()
     scalar_amplitude_stieltjes_check()
     parity_sector_squared_node_no_go()
+    small_deficiency_pure_parity_limit()
     print("HB-PENCIL-AUDIT: PASS (exact rational algebra; spectral sanity check)")
 
 

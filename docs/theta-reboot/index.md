@@ -107,14 +107,13 @@ Cartwright theory then upgrades real-rootedness to the exact density law
 Splitting that symmetry into real and imaginary parts gives an exact
 dichotomy: either the witness has pure parity, or the even and odd ground
 levels collide at zero at the first crossing; a mixed witness is not a third
-branch.  A reflection-symmetric version of the positive-evaluation reduction
-now purifies almost every collision as well.  If the even and odd null
-multiplicities differ, a generic finite collection of symmetric Fourier
-evaluations leaves a one-dimensional radical in the larger parity sector.
-If the multiplicities agree, evaluation at zero completes the purification
-whenever some even null state has nonzero mean.  Thus the only collision not
-reduced to a pure real-rooted null state has equal parity multiplicities and
-every even null state has zero mean.
+branch.  The boundary Hermite--Biehler pencil then removes the collision from
+the proof gate altogether.  If \(P_0\) projects onto the full first-crossing
+kernel and \(k\) is minimal with \(P_0x^k\ne0\), the real-rooted pencil at
+deficiency scale \(c\) converges, after division by \(c^k\) and the parity
+phase choice, to \(z\widehat{P_0x^k}(z)\).  Hurwitz therefore produces a
+pure-parity real-rooted null vector for every kernel dimension and every
+collision multiplicity.  No simplicity or nonzero-mean hypothesis remains.
 In the pure branch, pairing the real zeros produces a canonical Stieltjes
 transform in the radial variable and an explicit Hausdorff measure with atoms
 \(x/(x+\lambda_j^2)\). These are witness zeros, not xi zeros; identifying the

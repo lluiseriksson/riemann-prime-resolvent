@@ -629,109 +629,78 @@ function is odd and real there. Its real-rootedness is the one already proved
 for \(v_*\). \(\square\)
 
 Thus a mixed real-rooted witness is not a third symmetry class: it is an exact
-certificate of a parity collision. Excluding such a collision would reduce
-the first-crossing gate to the pure even/odd real-rooted branches, but no such
-exclusion is asserted here.
+certificate of a parity collision.  The next proposition shows that the
+collision need not be excluded: the full boundary pencil extracts a different
+null vector of pure parity from every nonzero first-crossing kernel.
 
-### Proposition 4.1a.1 (symmetric-evaluation purification of most collisions)
+### Proposition 4.1a.1 (pure-parity purification of every crossing kernel)
 
-Let
-
-\[
- K_+=\ker A_{a_*}\cap L^2_{\rm even}(-a_*,a_*),\qquad
- K_-=\ker A_{a_*}\cap L^2_{\rm odd}(-a_*,a_*),
- \qquad p=\dim K_+,\qquad q=\dim K_- .                   \tag{PE1}
-\]
-
-Assume that both parity sectors are nonzero.  If \(p\ne q\), then the
-first-crossing kernel contains a nonzero **pure-parity** vector whose Fourier
-transform has only real zeros.  The same conclusion holds when \(p=q\) and
-
-\[
- f\longmapsto \widehat f(0)=\int_{-a_*}^{a_*}f(x)\,dx
- \quad\hbox{is not identically zero on }K_+.              \tag{PE2}
-\]
-
-Consequently the Hausdorff measure and the sign-coherent moments in
-Proposition 4.1b and Corollary 4.1c apply not only to an a priori pure
-crossing, but also to every collision except the sharply delimited case
-
-\[
- \boxed{p=q\quad\hbox{and}\quad \widehat f(0)=0
-        \text{ for every }f\in K_+.}                       \tag{PE3}
-\]
-
-Every purified vector still saturates \([-a_*,a_*]\): the translation and
-smaller-support contradiction in Proposition 4.1 applies verbatim to every
-nonzero member of \(\ker A_{a_*}\), not only to the initially selected witness.
+At the first crossing, independently of the dimension of \(\ker A_{a_*}\)
+and of whether the even and odd ground levels collide, there is a nonzero
+**pure-parity** vector \(w_*\in\ker A_{a_*}\) whose Fourier transform has only
+real zeros.  Hence the counterexample witness in Theorem 4 may always be
+chosen pure even or pure odd; a parity collision remains possible as a
+spectral event, but it is no longer a separate branch of the proof gate.
 
 #### Proof
 
-For real \(t\), write \(L_t(f)=\widehat f(t)\).  On a finite interval the
-functional \(L_t\) is bounded on \(L^2\).  For \(t\) away from the Fourier
-lattice, the calculation in Lemma 2.1 shows that the positive rank-one form
-\(|L_t|^2\) has a Cauchy--Loewner matrix.  Hence so does the
-reflection-invariant positive form
+This uses the boundary pencil proved independently in Proposition 4.9 below.
+Put \(K_0=\ker A_{a_*}\) and let \(P_0\) be its orthogonal projection.  Since
+\(K_0\ne\{0\}\) and polynomials are dense in \(L^2(-a_*,a_*)\), the integer
 
 \[
- P_T(f)=\sum_{t\in T}\bigl(|L_t(f)|^2+|L_{-t}(f)|^2\bigr), \tag{PE4}
+ k_0=\min\{k\ge0:P_0(x^k)\ne0\}                           \tag{PE1}
 \]
 
-where \(T\) is any finite set avoiding that lattice.  Adding \(P_T\) to
-\(Q_W^{a_*}\) preserves closedness, the trigonometric form core, discreteness
-and the matrix hypothesis of Lemma 2.
-
-For this matrix statement, translate \([-a_*,a_*]\) unitarily to
-\([0,2a_*]\), exactly as in Lemma 2.1.  Translation multiplies each \(L_t\)
-by one scalar phase and therefore leaves \(|L_t|^2\) unchanged, while its
-Fourier coefficients become a constant multiple of \((n-s)^{-1}\).  Thus no
-alternating endpoint phase is being hidden in the Loewner assertion.
-
-The restrictions \(L_t|_{K_+}\), as \(t\) ranges over the real line, span
-\(K_+^*\); otherwise a nonzero even null vector would have an entire Fourier
-transform vanishing on the real axis.  The analogous assertion holds on
-\(K_-\).  Moreover, if \(f=e+o\) with \(e\in K_+\) and \(o\in K_-\), then
+exists.  Indeed, if every projection vanished, every vector in \(K_0\) would
+be orthogonal to every polynomial.  Set
 
 \[
- L_t(f)=L_{-t}(f)=0
- \quad\Longleftrightarrow\quad
- L_t(e)=0\ \hbox{ and }\ L_t(o)=0.                         \tag{PE5}
+ w_*=P_0(x^{k_0}),\qquad H(z)=\widehat w_*(z),qquad
+ s=(-1)^{k_0}.                                             \tag{PE2}
 \]
 
-It follows that generic tuples of \(k\) nonzero real points give evaluation
-rank \(\min(k,p)\) on \(K_+\) and \(\min(k,q)\) on \(K_-\), simultaneously.
-Indeed the relevant minors are nonzero real-analytic functions of the tuple;
-the intersection of their open dense nonvanishing sets is nonempty and can
-be chosen off the Fourier lattice.
-
-If \(p>q\), take \(k=p-1\).  Equations (PE4)--(PE5) give
+Reflection and conjugation commute with \(P_0\), so \(w_*\) is real,
+\(w_*(-x)=s w_*(x)\), and \(H(-z)=sH(z)\).  For \(c>0\), Proposition 4.9 uses
 
 \[
- \operatorname{rad}(Q_W^{a_*}+P_T)
- =K_+\cap\ker P_T,\qquad
- \dim\operatorname{rad}(Q_W^{a_*}+P_T)=1.                 \tag{PE6}
+ u_c=P_0(e^{cx}),\qquad U_c=\widehat u_c,
 \]
 
-The radical is therefore a pure even line.  Lemma 2 applied to the perturbed
-form makes the Fourier transform of its generator real-rooted.  If \(q>p\),
-the same argument with \(k=q-1\) leaves a pure odd line.
+and proves that, for every phase, the nonzero entire function
 
-Finally suppose \(p=q=d\) and (PE2) holds.  Choose \(d-1\) symmetric pairs so
-that their odd restrictions have rank \(d-1\), while their even restrictions,
-together with \(L_0\), have rank \(d\).  This simultaneous choice follows
-from the same analytic-minor argument.  After adding \(P_T\), one even and one
-odd null line remain, and \(L_0\) is nonzero on the even one.  Add the positive
-form \(|L_0|^2\).  It vanishes on every odd function and removes the surviving
-even line.  At a Fourier-lattice node its matrix changes only one diagonal
-entry, so the off-diagonal Loewner hypothesis is still unchanged.  The final
-radical is a one-dimensional pure odd line, and Lemma 2 again gives a
-real-rooted Fourier transform.  This proves all asserted cases. \(\square\)
+\[
+ W_{0,c,\theta}(z)=(z-ic)U_c(z)
+             +e^{i\theta}(z+ic)U_c(-z)                    \tag{PE3}
+\]
 
-The exception (PE3) is an actual logical remainder, not a claim that such a
-kernel exists.  Removing it would require either a parity-sensitive positive
-perturbation that stays in the Loewner class or an operator-specific theorem
-excluding a balanced zero-mean even radical.  Ordinary evaluation at zero
-cannot do that because it vanishes on both sectors in (PE3).
+has only real zeros.  Minimality in (PE1) gives, in \(L^2\) and therefore
+locally uniformly after Fourier transformation,
+
+\[
+ U_c(z)=\frac{c^{k_0}}{k_0!}H(z)+O(c^{k_0+1}).             \tag{PE4}
+\]
+
+Choose \(e^{i\theta}=s\).  Substitution of (PE2)--(PE4) into (PE3) yields
+
+\[
+ \boxed{
+  \frac{k_0!}{2c^{k_0}}W_{0,c,\theta}(z)
+  \longrightarrow zH(z)}                                 \tag{PE5}
+\]
+
+locally uniformly on \(\mathbb C\) as \(c\downarrow0\).  The limit is not
+identically zero.  Hurwitz's theorem now rules out every nonreal zero of
+\(zH(z)\), because all approximants in (PE5) are real-rooted.  Thus \(H\) is
+real-rooted and \(w_*\) has pure parity.  Finally, the translation and
+smaller-support contradiction in Proposition 4.1 applies to every nonzero
+member of \(K_0\), so this purified vector also saturates
+\([-a_*,a_*]\). \(\square\)
+
+No simplicity, nonzero-mean condition or comparison of the two parity
+multiplicities occurs in this argument.  The decisive input is the whole
+real-rooted boundary pencil as its deficiency point approaches the origin,
+not a sectorwise compression of the Loewner matrix.
 
 ### Proposition 4.1b (the Hausdorff measure of a pure-parity witness)
 
