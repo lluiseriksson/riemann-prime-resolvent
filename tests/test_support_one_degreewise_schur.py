@@ -1,13 +1,23 @@
 from fractions import Fraction
 
+import numpy as np
+
 from experiments.theta_pencil.rational_joint_five_seven_certificate import (
     certify_rational_support_one_tail,
 )
 from experiments.theta_pencil.support_one_degreewise_schur import (
+    _build_rectangular_support_one_blocks,
+    _build_high_component,
+    _smooth_high_component_labels,
     run_support_one_absolute_tail_budget,
     run_support_one_endpoint_jet_band_audit,
+    run_support_one_finite_schur_audit,
     support_one_bounded_part_lower,
     support_one_degreewise_denominator_lowers,
+)
+from experiments.theta_pencil.legendre_feshbach import build_legendre_weil_components
+from experiments.theta_pencil.smooth_legendre_series import (
+    smooth_kernel_series_matrix,
 )
 
 
@@ -54,3 +64,44 @@ def test_endpoint_jet_band_retains_the_algebraic_rank_bound():
         assert parity.separate_prime_gram_norm > 0
         assert parity.signed_to_separate_ratio > 0
     assert "rank <= jet_count is algebraic" in result.context
+
+
+def test_rectangular_builder_matches_the_full_point_components():
+    source, cross = _build_rectangular_support_one_blocks(4, 12, 64, 5)
+    components = build_legendre_weil_components(1.0, 12, 64)
+    target = (
+        components.dominant
+        + components.scalar
+        + components.prime
+        + smooth_kernel_series_matrix(1.0, 12, 5)
+    )
+    assert abs(source - target[:4, :4]).max() < 1.0e-12
+    assert abs(cross - target[:4, 4:]).max() < 1.0e-12
+    high = sum(
+        (
+            _build_high_component(label, 4, 12, 64, 5)
+            for label in (
+                "base",
+                "2",
+                "3",
+                "4",
+                "5",
+                "7",
+                *_smooth_high_component_labels(5),
+            )
+        ),
+        np.zeros((8, 8)),
+    )
+    assert abs(high - target[4:, 4:]).max() < 1.0e-12
+
+
+def test_small_full_high_block_schur_pipeline_keeps_scope_explicit():
+    result = run_support_one_finite_schur_audit(
+        source_dimension=4,
+        finite_dimension=12,
+        quadrature_order=64,
+        maximum_smooth_power=5,
+    )
+    assert result.tail_least_eigenvalue > 0
+    assert result.even.dimension == result.odd.dimension == 2
+    assert "infinite cross tail" in result.context

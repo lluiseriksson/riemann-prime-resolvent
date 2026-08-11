@@ -340,6 +340,13 @@ jets, so it can remove at most $J$ of the 26 certified raw positive
 directions.  A 256--4095 pilot shows essentially no norm cancellation between
 prime powers; the required cancellation must couple jets to the regular,
 potential and smooth remainders in one Gram.
+The complete 58+198 finite Schur comparison now makes the structural loss
+visible: exact degreewise denominators create six negative directions per
+parity, whereas retaining the full high--high block restores the numerical
+26+3 pattern with no resolved negative direction and tail floor
+`1.4948997122`.  The active gate is consequently an interval enclosure of
+that full block plus the signed cross tail above degree 255; diagonal
+majorants are closed for this support-one architecture.
 
 ## Why this track is different
 

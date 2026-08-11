@@ -18,11 +18,13 @@ from fractions import Fraction
 from pathlib import Path
 
 import numpy as np
+from numpy.polynomial.legendre import leggauss
 from scipy.special import digamma
 
 from experiments.theta_pencil.legendre_feshbach import (
-    build_legendre_weil_components,
+    normalized_legendre_values,
 )
+from experiments.theta_pencil.legendre_log_matrix import dominant_operator_matrix
 from experiments.theta_pencil.legendre_jump_tail import (
     potential_operator_tail_bound,
     wang_normalized_tail_bound,
@@ -36,10 +38,13 @@ from experiments.theta_pencil.rational_joint_five_seven_certificate import (
     certify_rational_support_one_tail,
 )
 from experiments.theta_pencil.smooth_legendre_series import (
+    absolute_power_matrix,
     smooth_kernel_series_matrix,
     smooth_kernel_series_remainder_bound,
+    smooth_remainder_series_coefficients,
 )
 from experiments.theta_pencil.semilocal_weil_matrix import EULER_GAMMA
+from experiments.theta_pencil.screw_weil_operator import von_mangoldt
 
 
 @dataclass(frozen=True)
@@ -66,6 +71,21 @@ class FloatingSupportOneDegreewiseSchur:
     context: str = (
         "floating finite degreewise-majorant audit; the infinite cross tail "
         "and interval entry enclosures are omitted"
+    )
+
+
+@dataclass(frozen=True)
+class FloatingSupportOneFiniteSchur:
+    source_dimension: int
+    finite_dimension: int
+    quadrature_order: int
+    maximum_smooth_power: int
+    tail_least_eigenvalue: float
+    even: FloatingDegreewiseSchurParity
+    odd: FloatingDegreewiseSchurParity
+    context: str = (
+        "floating finite Schur audit with the full high-high block; the "
+        "infinite cross tail, smooth remainder and interval enclosures are omitted"
     )
 
 
@@ -156,26 +176,288 @@ def support_one_degreewise_denominator_lowers(
     return tuple(denominators)
 
 
-def _atomic_save_matrix(path: Path, metadata: dict, matrix: np.ndarray) -> None:
+def _atomic_save_blocks(
+    path: Path, metadata: dict, source: np.ndarray, cross: np.ndarray
+) -> None:
     temporary = path.with_name(path.name + ".tmp")
     with temporary.open("wb") as stream:
         np.savez(
             stream,
             metadata=np.array(json.dumps(metadata, sort_keys=True)),
-            matrix=np.asarray(matrix, dtype=np.float64),
+            source=np.asarray(source, dtype=np.float64),
+            cross=np.asarray(cross, dtype=np.float64),
         )
     os.replace(temporary, path)
 
 
-def _load_or_build_matrix(
-    cache: Path | None,
+def _atomic_save_high(path: Path, metadata: dict, high: np.ndarray) -> None:
+    temporary = path.with_name(path.name + ".tmp")
+    with temporary.open("wb") as stream:
+        np.savez(
+            stream,
+            metadata=np.array(json.dumps(metadata, sort_keys=True)),
+            high=np.asarray(high, dtype=np.float64),
+        )
+    os.replace(temporary, path)
+
+
+def _build_rectangular_support_one_blocks(
+    source_dimension: int,
+    finite_dimension: int,
+    quadrature_order: int,
+    maximum_smooth_power: int,
+    component_cache_dir: Path | None = None,
+) -> tuple[np.ndarray, np.ndarray]:
+    """Build only the source and cross blocks needed by the Schur majorant."""
+
+    if not 0 < source_dimension < finite_dimension:
+        raise ValueError("require 0 < source_dimension < finite_dimension")
+    if quadrature_order < finite_dimension:
+        raise ValueError("quadrature_order must be at least finite_dimension")
+    source, cross = _load_or_build_rectangular_component(
+        "base",
+        component_cache_dir,
+        source_dimension,
+        finite_dimension,
+        quadrature_order,
+        maximum_smooth_power,
+    )
+    for prime_power in (2, 3, 4, 5, 7):
+        prime_source, prime_cross = _load_or_build_rectangular_component(
+            str(prime_power),
+            component_cache_dir,
+            source_dimension,
+            finite_dimension,
+            quadrature_order,
+            maximum_smooth_power,
+        )
+        source += prime_source
+        cross += prime_cross
+    return 0.5 * (source + source.T), cross
+
+
+def _build_rectangular_component(
+    label: str,
+    source_dimension: int,
+    finite_dimension: int,
+    quadrature_order: int,
+    maximum_smooth_power: int,
+) -> tuple[np.ndarray, np.ndarray]:
+    if label == "base":
+        dominant = dominant_operator_matrix(finite_dimension)
+        # A |x-y|^p kernel changes Legendre degree by at most p+1.  Hence the
+        # truncated smooth series has no cross entry beyond
+        # source_dimension + maximum_smooth_power.  Building only that exact
+        # band avoids an unused finite_dimension-square calculation.
+        smooth_dimension = min(
+            finite_dimension, source_dimension + maximum_smooth_power + 1
+        )
+        smooth = smooth_kernel_series_matrix(
+            1.0, smooth_dimension, maximum_smooth_power
+        )
+        scalar = -math.log(2.0 * math.pi) - EULER_GAMMA
+        source = dominant[:source_dimension, :source_dimension].copy()
+        source += smooth[:source_dimension, :source_dimension]
+        source += scalar * np.eye(source_dimension)
+        cross = dominant[:source_dimension, source_dimension:].copy()
+        smooth_cross_end = smooth_dimension - source_dimension
+        cross[:, :smooth_cross_end] += smooth[
+            :source_dimension, source_dimension:smooth_dimension
+        ]
+        return 0.5 * (source + source.T), cross
+
+    prime_power = int(label)
+    if prime_power not in (2, 3, 4, 5, 7):
+        raise ValueError("the support-one component must be base, 2, 3, 4, 5 or 7")
+    mangoldt = von_mangoldt(prime_power)
+    shift = math.log(prime_power)
+    if mangoldt == 0.0 or not 0.0 < shift < 2.0:
+        raise ArithmeticError("the requested prime-power component is inactive")
+    nodes, weights = leggauss(quadrature_order)
+    right = 1.0 - shift
+    x = (right + 1.0) * nodes / 2.0 + (right - 1.0) / 2.0
+    scaled_weights = weights * (right + 1.0) / 2.0
+    at_x = normalized_legendre_values(x, finite_dimension)
+    at_shift = normalized_legendre_values(x + shift, finite_dimension)
+    coefficient = -mangoldt / math.sqrt(prime_power)
+    low_x = at_x[:source_dimension]
+    low_shift = at_shift[:source_dimension]
+    source = coefficient * (
+        (low_shift * scaled_weights) @ low_x.T
+        + (low_x * scaled_weights) @ low_shift.T
+    )
+    high_x = at_x[source_dimension:]
+    high_shift = at_shift[source_dimension:]
+    cross = coefficient * (
+        (low_shift * scaled_weights) @ high_x.T
+        + (low_x * scaled_weights) @ high_shift.T
+    )
+    return 0.5 * (source + source.T), cross
+
+
+def _load_or_build_rectangular_component(
+    label: str,
+    cache_dir: Path | None,
+    source_dimension: int,
+    finite_dimension: int,
+    quadrature_order: int,
+    maximum_smooth_power: int,
+) -> tuple[np.ndarray, np.ndarray]:
+    metadata = {
+        "format": 1,
+        "architecture": "support-one-degreewise-rectangular-component",
+        "component": label,
+        "source_dimension": source_dimension,
+        "finite_dimension": finite_dimension,
+        "quadrature_order": quadrature_order,
+        "maximum_smooth_power": maximum_smooth_power,
+    }
+    path = None if cache_dir is None else cache_dir / f"component-{label}.npz"
+    if path is not None and path.exists():
+        with np.load(path, allow_pickle=False) as payload:
+            observed = json.loads(str(payload["metadata"].item()))
+            if observed != metadata:
+                raise ValueError(f"the cached {label} component metadata do not match")
+            source = np.array(payload["source"], dtype=float)
+            cross = np.array(payload["cross"], dtype=float)
+        if source.shape != (source_dimension, source_dimension):
+            raise ValueError(f"the cached {label} source has the wrong shape")
+        if cross.shape != (source_dimension, finite_dimension - source_dimension):
+            raise ValueError(f"the cached {label} cross has the wrong shape")
+        return source, cross
+
+    source, cross = _build_rectangular_component(
+        label,
+        source_dimension,
+        finite_dimension,
+        quadrature_order,
+        maximum_smooth_power,
+    )
+    if path is not None:
+        cache_dir.mkdir(parents=True, exist_ok=True)
+        _atomic_save_blocks(path, metadata, source, cross)
+    return source, cross
+
+
+def _build_high_component(
+    label: str,
+    source_dimension: int,
+    finite_dimension: int,
+    quadrature_order: int,
+    maximum_smooth_power: int,
+) -> np.ndarray:
+    high_dimension = finite_dimension - source_dimension
+    if label == "base":
+        dominant = dominant_operator_matrix(finite_dimension)
+        high = dominant[source_dimension:, source_dimension:].copy()
+        high += (-math.log(2.0 * math.pi) - EULER_GAMMA) * np.eye(
+            high_dimension
+        )
+        return 0.5 * (high + high.T)
+
+    if label.startswith("smooth-"):
+        bounds = label.removeprefix("smooth-").split("-")
+        if len(bounds) != 2:
+            raise ValueError("invalid smooth high-component label")
+        first_power, last_power = (int(value) for value in bounds)
+        if not 0 <= first_power <= last_power:
+            raise ValueError("invalid smooth power range")
+        coefficients = smooth_remainder_series_coefficients(
+            maximum_smooth_power
+        )
+        high = np.zeros((high_dimension, high_dimension))
+        for power in range(first_power, min(last_power, maximum_smooth_power) + 1):
+            matrix = absolute_power_matrix(power, finite_dimension)
+            high += -float(coefficients[power]) * matrix[
+                source_dimension:, source_dimension:
+            ]
+        return 0.5 * (high + high.T)
+
+    prime_power = int(label)
+    if prime_power not in (2, 3, 4, 5, 7):
+        raise ValueError("the support-one component must be base, 2, 3, 4, 5 or 7")
+    mangoldt = von_mangoldt(prime_power)
+    shift = math.log(prime_power)
+    nodes, weights = leggauss(quadrature_order)
+    right = 1.0 - shift
+    x = (right + 1.0) * nodes / 2.0 + (right - 1.0) / 2.0
+    scaled_weights = weights * (right + 1.0) / 2.0
+    high_x = normalized_legendre_values(x, finite_dimension)[source_dimension:]
+    high_shift = normalized_legendre_values(
+        x + shift, finite_dimension
+    )[source_dimension:]
+    coefficient = -mangoldt / math.sqrt(prime_power)
+    high = coefficient * (
+        (high_shift * scaled_weights) @ high_x.T
+        + (high_x * scaled_weights) @ high_shift.T
+    )
+    return 0.5 * (high + high.T)
+
+
+def _smooth_high_component_labels(
+    maximum_smooth_power: int, chunk_size: int = 16
+) -> tuple[str, ...]:
+    if maximum_smooth_power < 0 or chunk_size < 1:
+        raise ValueError("invalid smooth high-component partition")
+    return tuple(
+        f"smooth-{start}-{min(start + chunk_size - 1, maximum_smooth_power)}"
+        for start in range(0, maximum_smooth_power + 1, chunk_size)
+    )
+
+
+def _load_or_build_high_component(
+    label: str,
+    cache_dir: Path | None,
+    source_dimension: int,
     finite_dimension: int,
     quadrature_order: int,
     maximum_smooth_power: int,
 ) -> np.ndarray:
     metadata = {
         "format": 1,
-        "architecture": "support-one-degreewise-schur",
+        "architecture": "support-one-finite-schur-high-component",
+        "component": label,
+        "source_dimension": source_dimension,
+        "finite_dimension": finite_dimension,
+        "quadrature_order": quadrature_order,
+        "maximum_smooth_power": maximum_smooth_power,
+    }
+    path = None if cache_dir is None else cache_dir / f"high-component-{label}.npz"
+    if path is not None and path.exists():
+        with np.load(path, allow_pickle=False) as payload:
+            observed = json.loads(str(payload["metadata"].item()))
+            if observed != metadata:
+                raise ValueError(f"the cached high {label} metadata do not match")
+            high = np.array(payload["high"], dtype=float)
+        expected = finite_dimension - source_dimension
+        if high.shape != (expected, expected):
+            raise ValueError(f"the cached high {label} block has the wrong shape")
+        return high
+    high = _build_high_component(
+        label,
+        source_dimension,
+        finite_dimension,
+        quadrature_order,
+        maximum_smooth_power,
+    )
+    if path is not None:
+        cache_dir.mkdir(parents=True, exist_ok=True)
+        _atomic_save_high(path, metadata, high)
+    return high
+
+
+def _load_or_build_blocks(
+    cache: Path | None,
+    component_cache_dir: Path | None,
+    source_dimension: int,
+    finite_dimension: int,
+    quadrature_order: int,
+    maximum_smooth_power: int,
+) -> tuple[np.ndarray, np.ndarray]:
+    metadata = {
+        "format": 2,
+        "architecture": "support-one-degreewise-schur-rectangular",
+        "source_dimension": source_dimension,
         "finite_dimension": finite_dimension,
         "quadrature_order": quadrature_order,
         "maximum_smooth_power": maximum_smooth_power,
@@ -185,32 +467,25 @@ def _load_or_build_matrix(
             observed = json.loads(str(payload["metadata"].item()))
             if observed != metadata:
                 raise ValueError("the degreewise Schur cache metadata do not match")
-            matrix = np.array(payload["matrix"], dtype=float)
-        if matrix.shape != (finite_dimension, finite_dimension):
-            raise ValueError("the cached matrix has the wrong shape")
-        return matrix
+            source = np.array(payload["source"], dtype=float)
+            cross = np.array(payload["cross"], dtype=float)
+        if source.shape != (source_dimension, source_dimension):
+            raise ValueError("the cached source block has the wrong shape")
+        if cross.shape != (source_dimension, finite_dimension - source_dimension):
+            raise ValueError("the cached cross block has the wrong shape")
+        return source, cross
 
-    components = build_legendre_weil_components(
-        1.0, finite_dimension, quadrature_order
+    source, cross = _build_rectangular_support_one_blocks(
+        source_dimension,
+        finite_dimension,
+        quadrature_order,
+        maximum_smooth_power,
+        component_cache_dir,
     )
-    expected = (2, 3, 4, 5, 7)
-    if components.active_prime_powers != expected:
-        raise ArithmeticError(
-            f"unexpected support-one prime powers: {components.active_prime_powers}"
-        )
-    matrix = (
-        components.dominant
-        + components.scalar
-        + components.prime
-        + smooth_kernel_series_matrix(
-            1.0, finite_dimension, maximum_smooth_power
-        )
-    )
-    matrix = 0.5 * (matrix + matrix.T)
     if cache is not None:
         cache.parent.mkdir(parents=True, exist_ok=True)
-        _atomic_save_matrix(cache, metadata, matrix)
-    return matrix
+        _atomic_save_blocks(cache, metadata, source, cross)
+    return source, cross
 
 
 def run_support_one_degreewise_schur_audit(
@@ -220,13 +495,16 @@ def run_support_one_degreewise_schur_audit(
     maximum_smooth_power: int = 95,
     zero_tolerance: float = 1.0e-12,
     matrix_cache: Path | None = None,
+    component_cache_dir: Path | None = None,
 ) -> FloatingSupportOneDegreewiseSchur:
     """Apply the exact degreewise denominators to a floating finite source."""
 
     if zero_tolerance < 0:
         raise ValueError("zero_tolerance must be nonnegative")
-    matrix = _load_or_build_matrix(
+    source, cross = _load_or_build_blocks(
         matrix_cache,
+        component_cache_dir,
+        source_dimension,
         finite_dimension,
         quadrature_order,
         maximum_smooth_power,
@@ -235,10 +513,7 @@ def run_support_one_degreewise_schur_audit(
         finite_dimension, source_dimension
     )
     denominators = np.array([float(value) for value in denominators_exact])
-    cross = matrix[:source_dimension, source_dimension:]
-    schur = matrix[:source_dimension, :source_dimension] - (
-        cross / denominators
-    ) @ cross.T
+    schur = source - (cross / denominators) @ cross.T
     schur = 0.5 * (schur + schur.T)
 
     results = []
@@ -268,6 +543,79 @@ def run_support_one_degreewise_schur_audit(
             smooth_kernel_series_remainder_bound(1.0, maximum_smooth_power),
             math.inf,
         ),
+        even=results[0],
+        odd=results[1],
+    )
+
+
+def run_support_one_finite_schur_audit(
+    source_dimension: int = 58,
+    finite_dimension: int = 256,
+    quadrature_order: int = 1024,
+    maximum_smooth_power: int = 95,
+    zero_tolerance: float = 1.0e-12,
+    matrix_cache: Path | None = None,
+    component_cache_dir: Path | None = None,
+) -> FloatingSupportOneFiniteSchur:
+    """Keep the full finite high block instead of its diagonal minorant."""
+
+    source, cross = _load_or_build_blocks(
+        matrix_cache,
+        component_cache_dir,
+        source_dimension,
+        finite_dimension,
+        quadrature_order,
+        maximum_smooth_power,
+    )
+    high = sum(
+        (
+            _load_or_build_high_component(
+                label,
+                component_cache_dir,
+                source_dimension,
+                finite_dimension,
+                quadrature_order,
+                maximum_smooth_power,
+            )
+            for label in (
+                "base",
+                "2",
+                "3",
+                "4",
+                "5",
+                "7",
+                *_smooth_high_component_labels(maximum_smooth_power),
+            )
+        ),
+        np.zeros((finite_dimension - source_dimension,) * 2),
+    )
+    tail_least = float(np.linalg.eigvalsh(high)[0])
+    if tail_least <= 0:
+        raise ArithmeticError("the finite high block is not positive definite")
+    schur = source - np.linalg.solve(high, cross.T).T @ cross.T
+    schur = 0.5 * (schur + schur.T)
+    results = []
+    for parity in (0, 1):
+        indices = np.arange(parity, source_dimension, 2)
+        eigenvalues = np.linalg.eigvalsh(schur[np.ix_(indices, indices)])
+        results.append(
+            FloatingDegreewiseSchurParity(
+                parity=parity,
+                dimension=len(indices),
+                negative_count=int(np.count_nonzero(eigenvalues < -zero_tolerance)),
+                positive_count=int(np.count_nonzero(eigenvalues > zero_tolerance)),
+                unresolved_count=int(
+                    np.count_nonzero(np.abs(eigenvalues) <= zero_tolerance)
+                ),
+                least_eigenvalues=tuple(float(value) for value in eigenvalues[:5]),
+            )
+        )
+    return FloatingSupportOneFiniteSchur(
+        source_dimension=source_dimension,
+        finite_dimension=finite_dimension,
+        quadrature_order=quadrature_order,
+        maximum_smooth_power=maximum_smooth_power,
+        tail_least_eigenvalue=tail_least,
         even=results[0],
         odd=results[1],
     )
@@ -421,15 +769,91 @@ def main() -> None:
     parser.add_argument("--maximum-smooth-power", type=int, default=95)
     parser.add_argument("--zero-tolerance", type=float, default=1.0e-12)
     parser.add_argument("--matrix-cache", type=Path)
+    parser.add_argument("--component-cache-dir", type=Path)
+    parser.add_argument(
+        "--build-component-only", choices=("base", "2", "3", "4", "5", "7")
+    )
+    parser.add_argument(
+        "--build-high-component-only",
+        choices=(
+            "base",
+            "2",
+            "3",
+            "4",
+            "5",
+            "7",
+            "smooth-0-15",
+            "smooth-16-31",
+            "smooth-32-47",
+            "smooth-48-63",
+            "smooth-64-79",
+            "smooth-80-95",
+        ),
+    )
     parser.add_argument("--output", type=Path)
     parser.add_argument("--absolute-tail-only", action="store_true")
     parser.add_argument("--endpoint-jet-band-only", action="store_true")
+    parser.add_argument("--finite-schur", action="store_true")
     parser.add_argument("--tail-first-degree", type=int, default=256)
     parser.add_argument("--tail-last-degree", type=int, default=4096)
     parser.add_argument("--jet-count", type=int, default=1)
     parser.add_argument("--partitions", type=int, default=128)
     args = parser.parse_args()
-    if args.absolute_tail_only and args.endpoint_jet_band_only:
+    if args.build_component_only is not None:
+        if args.component_cache_dir is None:
+            raise ValueError("--build-component-only requires --component-cache-dir")
+        source, cross = _load_or_build_rectangular_component(
+            args.build_component_only,
+            args.component_cache_dir,
+            args.source_dimension,
+            args.finite_dimension,
+            args.quadrature_order,
+            args.maximum_smooth_power,
+        )
+        print(
+            json.dumps(
+                {
+                    "component": args.build_component_only,
+                    "source_shape": source.shape,
+                    "cross_shape": cross.shape,
+                    "source_frobenius": float(np.linalg.norm(source)),
+                    "cross_frobenius": float(np.linalg.norm(cross)),
+                },
+                indent=2,
+                sort_keys=True,
+            ),
+            flush=True,
+        )
+        return
+    if args.build_high_component_only is not None:
+        if args.component_cache_dir is None:
+            raise ValueError(
+                "--build-high-component-only requires --component-cache-dir"
+            )
+        high = _load_or_build_high_component(
+            args.build_high_component_only,
+            args.component_cache_dir,
+            args.source_dimension,
+            args.finite_dimension,
+            args.quadrature_order,
+            args.maximum_smooth_power,
+        )
+        print(
+            json.dumps(
+                {
+                    "component": args.build_high_component_only,
+                    "high_shape": high.shape,
+                    "high_frobenius": float(np.linalg.norm(high)),
+                },
+                indent=2,
+                sort_keys=True,
+            ),
+            flush=True,
+        )
+        return
+    if sum(
+        (args.absolute_tail_only, args.endpoint_jet_band_only, args.finite_schur)
+    ) > 1:
         raise ValueError("select at most one specialized audit")
     if args.absolute_tail_only:
         result = run_support_one_absolute_tail_budget(
@@ -444,6 +868,16 @@ def main() -> None:
             last_degree=args.tail_last_degree,
             jet_count=args.jet_count,
         )
+    elif args.finite_schur:
+        result = run_support_one_finite_schur_audit(
+            source_dimension=args.source_dimension,
+            finite_dimension=args.finite_dimension,
+            quadrature_order=args.quadrature_order,
+            maximum_smooth_power=args.maximum_smooth_power,
+            zero_tolerance=args.zero_tolerance,
+            matrix_cache=args.matrix_cache,
+            component_cache_dir=args.component_cache_dir,
+        )
     else:
         result = run_support_one_degreewise_schur_audit(
             source_dimension=args.source_dimension,
@@ -452,6 +886,7 @@ def main() -> None:
             maximum_smooth_power=args.maximum_smooth_power,
             zero_tolerance=args.zero_tolerance,
             matrix_cache=args.matrix_cache,
+            component_cache_dir=args.component_cache_dir,
         )
     payload = asdict(result)
     if args.output is not None:

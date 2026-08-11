@@ -237,6 +237,43 @@ boundary potential and the smooth kernel together.  It cannot gain the
 required orders of magnitude merely by summing prime powers before taking a
 norm.
 
+## Degreewise majorant versus the true finite high block
+
+The 58--255 production falsifier has now been completed without lowering its
+registered parameters.  A rectangular constructor computes only the
+58-by-58 source and 58-by-198 cross blocks; the high--high block is assembled
+from twelve atomic caches (dominant/scalar, five prime powers and six smooth
+power ranges).  Gauss order 1024 integrates the prime polynomial products
+exactly in exact arithmetic: their maximum degree is 510, below the
+Gauss--Legendre exactness limit 2047.  The reconstructed source differs from
+the independent Arb midpoint by at most `7.7715611724e-14`.
+
+Using the exact rational degreewise denominators in (ZT5) gives
+
+| parity | negative | positive | unresolved | first eigenvalue |
+|---|---:|---:|---:|---:|
+| even | 6 | 20 | 3 | `-183.1498063273` |
+| odd | 6 | 20 | 3 | `-45.5326999806` |
+
+This is a robust falsification of the diagonal-majorant *design*, not of the
+operator: replacing the full high block by its diagonal lower minorant loses
+the correlations that its inverse needs.
+
+Keeping the complete 198-dimensional high block reverses the verdict.  Its
+least eigenvalue is `1.4948997122004581`, and the finite Schur complement has
+
+| parity | negative | positive | unresolved | first resolved positive |
+|---|---:|---:|---:|---:|
+| even | 0 | 26 | 3 | `1.3553476401530287e-12` |
+| odd | 0 | 26 | 3 | `2.3248384822321485e-10` |
+
+The three smallest values per parity remain at floating roundoff scale, so
+this is not an interval positivity certificate.  It does identify the right
+finite object: an Arb enclosure of the full 58+198 block (or an equivalent
+block-LDL factorization), followed by a signed enclosure of the cross columns
+above degree 255.  Further scalar or degreewise denominators are now rejected
+by the production falsifier.
+
 The failure of the two moments is sharp, not merely a weak estimate.  For
 dimension \(n\), trace \(t>0\), squared Frobenius norm \(f\), and
 \(p=\lceil t^2/f\rceil<n\), put \(q=n-p\),
