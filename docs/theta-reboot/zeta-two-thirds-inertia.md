@@ -274,6 +274,36 @@ block-LDL factorization), followed by a signed enclosure of the cross columns
 above degree 255.  Further scalar or degreewise denominators are now rejected
 by the production falsifier.
 
+The full Arb proof need not invert a 198-dimensional interval matrix.  Let
+$Y$ be any trial map from the 58-dimensional source into the high block and
+put $R=C^*-DY$.  Completing the square a second time gives the exact residual
+inequality
+
+\[
+ A-CD^{-1}C^*\succeq
+ A-CY-Y^*C^*+Y^*DY-\delta^{-1}R^*R,               \tag{ZT8}
+\]
+
+whenever $D\succeq\delta I$.  Here $\delta$ is the already certified
+rational margin `0.004600650916100899`.  Unlike direct interval inversion,
+(ZT8) only needs certified actions of $D$ on the columns of $Y$.
+
+Taking $Y$ from a truncated SVD of the floating solve $D^{-1}C^*$ sizes
+that obligation sharply.  Rank 16 still leaves one negative direction per
+parity (`-5.57e-12` even and `-2.23e-10` odd).  Rank 20 gives
+
+| parity | residual norm | next omitted singular value | positive/unresolved |
+|---|---:|---:|---:|
+| even | `1.2925208593e-9` | `3.3445210862e-10` | 26 / 3 |
+| odd | `1.6431117749e-9` | `4.4736077984e-10` | 26 / 3 |
+
+Thus the production interval task is reduced from certifying an arbitrary
+198-by-198 inverse to forty parity-pure high-vector actions plus finite Gram
+arithmetic.  The inequality and its Loewner direction are unit-tested on an
+independent positive block.  The rank-20 numerical data remain a design
+audit until the trial vectors, actions and residual tail are enclosed with
+Arb.
+
 The failure of the two moments is sharp, not merely a weak estimate.  For
 dimension \(n\), trace \(t>0\), squared Frobenius norm \(f\), and
 \(p=\lceil t^2/f\rceil<n\), put \(q=n-p\),

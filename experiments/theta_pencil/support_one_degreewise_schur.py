@@ -90,6 +90,32 @@ class FloatingSupportOneFiniteSchur:
 
 
 @dataclass(frozen=True)
+class FloatingSupportOneResidualSchurParity:
+    parity: int
+    trial_rank: int
+    residual_norm: float
+    next_solution_singular_value: float
+    negative_count: int
+    positive_count: int
+    unresolved_count: int
+    least_eigenvalues: tuple[float, ...]
+
+
+@dataclass(frozen=True)
+class FloatingSupportOneResidualSchur:
+    source_dimension: int
+    finite_dimension: int
+    trial_rank: int
+    complement_floor: float
+    even: FloatingSupportOneResidualSchurParity
+    odd: FloatingSupportOneResidualSchurParity
+    context: str = (
+        "floating trial-inverse design audit; the residual Schur inequality "
+        "is exact, but all reported matrix data still require Arb enclosures"
+    )
+
+
+@dataclass(frozen=True)
 class FloatingSupportOneAbsoluteTailParity:
     parity: int
     endpoint_jet_weighted_norm: float
@@ -621,6 +647,146 @@ def run_support_one_finite_schur_audit(
     )
 
 
+def schur_residual_lower_matrix(
+    source: np.ndarray,
+    cross: np.ndarray,
+    high: np.ndarray,
+    trial_inverse_cross: np.ndarray,
+    complement_floor: float,
+) -> tuple[np.ndarray, np.ndarray]:
+    """Return the residual lower Schur matrix and residual map.
+
+    If ``high >= complement_floor * I`` and ``R = cross.T - high @ Y``, then
+
+    ``source - cross @ high^-1 @ cross.T`` is bounded below by
+    ``source - cross@Y - Y.T@cross.T + Y.T@high@Y - R.T@R/floor``.
+    """
+
+    source = np.asarray(source, dtype=float)
+    cross = np.asarray(cross, dtype=float)
+    high = np.asarray(high, dtype=float)
+    trial = np.asarray(trial_inverse_cross, dtype=float)
+    if complement_floor <= 0:
+        raise ValueError("complement_floor must be positive")
+    if source.ndim != 2 or source.shape[0] != source.shape[1]:
+        raise ValueError("source must be square")
+    if high.ndim != 2 or high.shape[0] != high.shape[1]:
+        raise ValueError("high must be square")
+    if cross.shape != (source.shape[0], high.shape[0]):
+        raise ValueError("cross has the wrong shape")
+    if trial.shape != (high.shape[0], source.shape[0]):
+        raise ValueError("trial inverse cross has the wrong shape")
+    residual = cross.T - high @ trial
+    lower = (
+        source
+        - cross @ trial
+        - trial.T @ cross.T
+        + trial.T @ high @ trial
+        - residual.T @ residual / complement_floor
+    )
+    return 0.5 * (lower + lower.T), residual
+
+
+def run_support_one_residual_schur_audit(
+    trial_rank: int = 20,
+    source_dimension: int = 58,
+    finite_dimension: int = 256,
+    quadrature_order: int = 1024,
+    maximum_smooth_power: int = 95,
+    zero_tolerance: float = 1.0e-12,
+    matrix_cache: Path | None = None,
+    component_cache_dir: Path | None = None,
+) -> FloatingSupportOneResidualSchur:
+    """Size a low-rank trial inverse for a future Arb residual proof."""
+
+    source, cross = _load_or_build_blocks(
+        matrix_cache,
+        component_cache_dir,
+        source_dimension,
+        finite_dimension,
+        quadrature_order,
+        maximum_smooth_power,
+    )
+    high = sum(
+        (
+            _load_or_build_high_component(
+                label,
+                component_cache_dir,
+                source_dimension,
+                finite_dimension,
+                quadrature_order,
+                maximum_smooth_power,
+            )
+            for label in (
+                "base",
+                "2",
+                "3",
+                "4",
+                "5",
+                "7",
+                *_smooth_high_component_labels(maximum_smooth_power),
+            )
+        ),
+        np.zeros((finite_dimension - source_dimension,) * 2),
+    )
+    complement_floor = float(
+        certify_rational_support_one_tail().complement_margin
+    )
+    results = []
+    for parity in (0, 1):
+        low_indices = np.arange(parity, source_dimension, 2)
+        high_indices = np.arange(
+            parity, finite_dimension - source_dimension, 2
+        )
+        parity_source = source[np.ix_(low_indices, low_indices)]
+        parity_cross = cross[np.ix_(low_indices, high_indices)]
+        parity_high = high[np.ix_(high_indices, high_indices)]
+        exact_trial = np.linalg.solve(parity_high, parity_cross.T)
+        left, singular_values, right = np.linalg.svd(
+            exact_trial, full_matrices=False
+        )
+        if not 1 <= trial_rank <= len(singular_values):
+            raise ValueError("trial_rank must fit each parity source block")
+        trial = (
+            left[:, :trial_rank] * singular_values[:trial_rank]
+        ) @ right[:trial_rank]
+        lower, residual = schur_residual_lower_matrix(
+            parity_source,
+            parity_cross,
+            parity_high,
+            trial,
+            complement_floor,
+        )
+        eigenvalues = np.linalg.eigvalsh(lower)
+        next_singular = (
+            float(singular_values[trial_rank])
+            if trial_rank < len(singular_values)
+            else 0.0
+        )
+        results.append(
+            FloatingSupportOneResidualSchurParity(
+                parity=parity,
+                trial_rank=trial_rank,
+                residual_norm=float(np.linalg.svd(residual, compute_uv=False)[0]),
+                next_solution_singular_value=next_singular,
+                negative_count=int(np.count_nonzero(eigenvalues < -zero_tolerance)),
+                positive_count=int(np.count_nonzero(eigenvalues > zero_tolerance)),
+                unresolved_count=int(
+                    np.count_nonzero(np.abs(eigenvalues) <= zero_tolerance)
+                ),
+                least_eigenvalues=tuple(float(value) for value in eigenvalues[:5]),
+            )
+        )
+    return FloatingSupportOneResidualSchur(
+        source_dimension=source_dimension,
+        finite_dimension=finite_dimension,
+        trial_rank=trial_rank,
+        complement_floor=complement_floor,
+        even=results[0],
+        odd=results[1],
+    )
+
+
 def run_support_one_absolute_tail_budget(
     first_degree: int = 256,
     jet_count: int = 1,
@@ -794,6 +960,7 @@ def main() -> None:
     parser.add_argument("--absolute-tail-only", action="store_true")
     parser.add_argument("--endpoint-jet-band-only", action="store_true")
     parser.add_argument("--finite-schur", action="store_true")
+    parser.add_argument("--residual-schur-rank", type=int)
     parser.add_argument("--tail-first-degree", type=int, default=256)
     parser.add_argument("--tail-last-degree", type=int, default=4096)
     parser.add_argument("--jet-count", type=int, default=1)
@@ -852,7 +1019,12 @@ def main() -> None:
         )
         return
     if sum(
-        (args.absolute_tail_only, args.endpoint_jet_band_only, args.finite_schur)
+        (
+            args.absolute_tail_only,
+            args.endpoint_jet_band_only,
+            args.finite_schur,
+            args.residual_schur_rank is not None,
+        )
     ) > 1:
         raise ValueError("select at most one specialized audit")
     if args.absolute_tail_only:
@@ -870,6 +1042,17 @@ def main() -> None:
         )
     elif args.finite_schur:
         result = run_support_one_finite_schur_audit(
+            source_dimension=args.source_dimension,
+            finite_dimension=args.finite_dimension,
+            quadrature_order=args.quadrature_order,
+            maximum_smooth_power=args.maximum_smooth_power,
+            zero_tolerance=args.zero_tolerance,
+            matrix_cache=args.matrix_cache,
+            component_cache_dir=args.component_cache_dir,
+        )
+    elif args.residual_schur_rank is not None:
+        result = run_support_one_residual_schur_audit(
+            trial_rank=args.residual_schur_rank,
             source_dimension=args.source_dimension,
             finite_dimension=args.finite_dimension,
             quadrature_order=args.quadrature_order,

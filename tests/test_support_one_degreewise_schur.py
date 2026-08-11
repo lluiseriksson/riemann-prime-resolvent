@@ -12,6 +12,7 @@ from experiments.theta_pencil.support_one_degreewise_schur import (
     run_support_one_absolute_tail_budget,
     run_support_one_endpoint_jet_band_audit,
     run_support_one_finite_schur_audit,
+    schur_residual_lower_matrix,
     support_one_bounded_part_lower,
     support_one_degreewise_denominator_lowers,
 )
@@ -105,3 +106,17 @@ def test_small_full_high_block_schur_pipeline_keeps_scope_explicit():
     assert result.tail_least_eigenvalue > 0
     assert result.even.dimension == result.odd.dimension == 2
     assert "infinite cross tail" in result.context
+
+
+def test_residual_schur_matrix_is_below_the_exact_complement():
+    source = np.array([[3.0, 0.2], [0.2, 2.0]])
+    cross = np.array([[0.4, -0.1], [0.3, 0.2]])
+    high = np.array([[2.0, 0.1], [0.1, 1.5]])
+    trial = np.array([[0.1, 0.05], [-0.02, 0.08]])
+    floor = float(np.linalg.eigvalsh(high)[0])
+    lower, residual = schur_residual_lower_matrix(
+        source, cross, high, trial, floor
+    )
+    exact = source - cross @ np.linalg.solve(high, cross.T)
+    assert np.linalg.eigvalsh(exact - lower)[0] > -1.0e-14
+    assert np.linalg.norm(residual) > 0

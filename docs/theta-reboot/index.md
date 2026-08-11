@@ -347,6 +347,11 @@ parity, whereas retaining the full high--high block restores the numerical
 `1.4948997122`.  The active gate is consequently an interval enclosure of
 that full block plus the signed cross tail above degree 255; diagonal
 majorants are closed for this support-one architecture.
+An exact residual-Schur identity now removes the need for interval inversion
+of the 198-dimensional high block.  A rank-20 trial inverse per parity
+recovers the 26+3 pattern with residual norms below `1.7e-9`; rank 16 does
+not.  The next production unit is therefore forty parity-pure Arb actions,
+their residual Gram, and the signed degree-above-255 tail.
 
 ## Why this track is different
 
