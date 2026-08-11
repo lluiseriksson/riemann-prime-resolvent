@@ -22,6 +22,14 @@ import numpy as np
 from experiments.theta_pencil.legendre_feshbach import (
     build_legendre_weil_components,
 )
+from experiments.theta_pencil.legendre_jump_tail import (
+    potential_operator_tail_bound,
+    wang_normalized_tail_bound,
+)
+from experiments.theta_pencil.prime_jet_tail import (
+    active_prime_jet_tail_weighted_norm,
+    active_prime_remainder_variation_bound,
+)
 from experiments.theta_pencil.rational_joint_five_seven_certificate import (
     certify_rational_support_one_tail,
 )
@@ -55,6 +63,31 @@ class FloatingSupportOneDegreewiseSchur:
     context: str = (
         "floating finite degreewise-majorant audit; the infinite cross tail "
         "and interval entry enclosures are omitted"
+    )
+
+
+@dataclass(frozen=True)
+class FloatingSupportOneAbsoluteTailParity:
+    parity: int
+    endpoint_jet_weighted_norm: float
+    prime_remainder_weighted_norm: float
+    potential_weighted_norm: float
+    smooth_weighted_norm: float
+    total_weighted_norm: float
+    correction_norm_upper: float
+
+
+@dataclass(frozen=True)
+class FloatingSupportOneAbsoluteTail:
+    first_degree: int
+    jet_count: int
+    partitions: int
+    denominator_floor: float
+    even: FloatingSupportOneAbsoluteTailParity
+    odd: FloatingSupportOneAbsoluteTailParity
+    context: str = (
+        "floating absolute-norm tail design audit; a large upper bound is a "
+        "failure of this estimate, not a lower bound for the true correction"
     )
 
 
@@ -213,6 +246,73 @@ def run_support_one_degreewise_schur_audit(
     )
 
 
+def run_support_one_absolute_tail_budget(
+    first_degree: int = 256,
+    jet_count: int = 1,
+    partitions: int = 128,
+    maximum_smooth_power: int = 95,
+) -> FloatingSupportOneAbsoluteTail:
+    """Audit a triangle-inequality bound for the cross tail above a cutoff."""
+
+    if first_degree <= 58:
+        raise ValueError("first_degree must exceed the 58-mode source")
+    if jet_count < 1:
+        raise ValueError("jet_count must be positive")
+    if partitions < 1:
+        raise ValueError("partitions must be positive")
+    active_prime_powers = (2, 3, 4, 5, 7)
+    denominator = float(
+        support_one_degreewise_denominator_lowers(first_degree + 1)[-1]
+    )
+    results = []
+    for parity in (0, 1):
+        low_degrees = np.arange(parity, 58, 2)
+        endpoint = active_prime_jet_tail_weighted_norm(
+            1.0,
+            active_prime_powers,
+            low_degrees,
+            first_degree,
+            jet_count,
+            denominator,
+        )
+        variation = active_prime_remainder_variation_bound(
+            1.0,
+            active_prime_powers,
+            low_degrees,
+            jet_count,
+            partitions,
+        )
+        prime_remainder = wang_normalized_tail_bound(
+            variation, first_degree, jet_count
+        ) / math.sqrt(denominator)
+        potential = potential_operator_tail_bound(
+            low_degrees, first_degree, 3
+        ) / math.sqrt(denominator)
+        smooth = smooth_kernel_series_remainder_bound(
+            1.0, maximum_smooth_power
+        ) / math.sqrt(denominator)
+        total = endpoint + prime_remainder + potential + smooth
+        results.append(
+            FloatingSupportOneAbsoluteTailParity(
+                parity=parity,
+                endpoint_jet_weighted_norm=endpoint,
+                prime_remainder_weighted_norm=prime_remainder,
+                potential_weighted_norm=potential,
+                smooth_weighted_norm=smooth,
+                total_weighted_norm=total,
+                correction_norm_upper=total * total,
+            )
+        )
+    return FloatingSupportOneAbsoluteTail(
+        first_degree=first_degree,
+        jet_count=jet_count,
+        partitions=partitions,
+        denominator_floor=denominator,
+        even=results[0],
+        odd=results[1],
+    )
+
+
 def _atomic_write_json(path: Path, payload: dict) -> None:
     temporary = path.with_name(path.name + ".tmp")
     temporary.write_text(
@@ -230,15 +330,27 @@ def main() -> None:
     parser.add_argument("--zero-tolerance", type=float, default=1.0e-12)
     parser.add_argument("--matrix-cache", type=Path)
     parser.add_argument("--output", type=Path)
+    parser.add_argument("--absolute-tail-only", action="store_true")
+    parser.add_argument("--tail-first-degree", type=int, default=256)
+    parser.add_argument("--jet-count", type=int, default=1)
+    parser.add_argument("--partitions", type=int, default=128)
     args = parser.parse_args()
-    result = run_support_one_degreewise_schur_audit(
-        source_dimension=args.source_dimension,
-        finite_dimension=args.finite_dimension,
-        quadrature_order=args.quadrature_order,
-        maximum_smooth_power=args.maximum_smooth_power,
-        zero_tolerance=args.zero_tolerance,
-        matrix_cache=args.matrix_cache,
-    )
+    if args.absolute_tail_only:
+        result = run_support_one_absolute_tail_budget(
+            first_degree=args.tail_first_degree,
+            jet_count=args.jet_count,
+            partitions=args.partitions,
+            maximum_smooth_power=args.maximum_smooth_power,
+        )
+    else:
+        result = run_support_one_degreewise_schur_audit(
+            source_dimension=args.source_dimension,
+            finite_dimension=args.finite_dimension,
+            quadrature_order=args.quadrature_order,
+            maximum_smooth_power=args.maximum_smooth_power,
+            zero_tolerance=args.zero_tolerance,
+            matrix_cache=args.matrix_cache,
+        )
     payload = asdict(result)
     if args.output is not None:
         args.output.parent.mkdir(parents=True, exist_ok=True)

@@ -174,6 +174,33 @@ so that the first remote run yields a reproducible falsifier rather than a trans
 screen value.  Even a positive finite result would still require an interval
 enclosure of the entries and the infinite sum in (ZT6).
 
+The first analytic treatment of that infinite sum is decisively too coarse.
+Splitting each prime translation into endpoint jets plus a Wang remainder,
+then applying the triangle inequality to the five prime powers, the boundary
+potential and the smooth remainder gives, from degree 256 onward,
+
+| parity | weighted cross norm upper | correction norm upper |
+|---|---:|---:|
+| even | `212.6978526831` | `45240.3765360` |
+| odd | `225.4706199305` | `50837.0004519` |
+
+These are the best values in the registered sweep over one through six
+endpoint jets; more jets amplify the high derivatives of the 58-dimensional
+source.  They are fourteen to sixteen orders of magnitude larger than the raw
+positive-subspace margins.  The figures are reproduced locally in seconds by
+
+```console
+python -m experiments.theta_pencil.support_one_degreewise_schur \
+  --absolute-tail-only --tail-first-degree 256 --jet-count 1 --partitions 128
+```
+
+A large **upper** bound is not a lower bound on the true correction and hence
+is not an impossibility theorem.  It does falsify this particular
+triangle-inequality closure.  Any viable tail proof must retain cancellations
+between prime powers and between endpoint jets, for example as signed
+matrix-valued band Grams; treating the components by separate norms cannot
+reach the certified margins.
+
 The failure of the two moments is sharp, not merely a weak estimate.  For
 dimension \(n\), trace \(t>0\), squared Frobenius norm \(f\), and
 \(p=\lceil t^2/f\rceil<n\), put \(q=n-p\),

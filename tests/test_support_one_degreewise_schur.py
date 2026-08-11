@@ -4,6 +4,7 @@ from experiments.theta_pencil.rational_joint_five_seven_certificate import (
     certify_rational_support_one_tail,
 )
 from experiments.theta_pencil.support_one_degreewise_schur import (
+    run_support_one_absolute_tail_budget,
     support_one_bounded_part_lower,
     support_one_degreewise_denominator_lowers,
 )
@@ -24,3 +25,17 @@ def test_bounded_part_recovers_preceding_margin():
     beta = support_one_bounded_part_lower()
     harmonic_57 = certificate.harmonic_floor - Fraction(1, 58)
     assert harmonic_57 + beta == certificate.preceding_margin
+
+
+def test_absolute_tail_budget_keeps_its_scope_and_square_accounting():
+    result = run_support_one_absolute_tail_budget(
+        first_degree=64,
+        jet_count=1,
+        partitions=4,
+        maximum_smooth_power=5,
+    )
+    assert result.denominator_floor > 0
+    for parity in (result.even, result.odd):
+        assert parity.total_weighted_norm > 0
+        assert parity.correction_norm_upper == parity.total_weighted_norm**2
+    assert "failure of this estimate" in result.context

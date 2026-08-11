@@ -331,6 +331,10 @@ the exact degreewise minorant $D\succeq\operatorname{diag}(H_n+\beta)$.
 This gives a cached multiband falsifier with exact denominators; its
 256-mode matrix run is assigned to the remote compute plane, while the
 infinite cross-tail enclosure remains the proof obligation.
+A one-to-six endpoint-jet sweep shows that the separate absolute-norm tail
+bound misses the raw margins by fourteen to sixteen orders of magnitude.
+This closes that implementation, not the true tail: the next certificate
+must retain signed, matrix-valued cancellations across prime cuts and jets.
 
 ## Why this track is different
 
