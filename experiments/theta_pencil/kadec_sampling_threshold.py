@@ -1,8 +1,8 @@
 """Audit the constants in the low-type Kadec sampling obstruction.
 
 This is a constant-only check.  It performs no zero search and no spectral
-computation.  The mathematical inputs are the explicit coefficient 0.1038 in
-the Hasanalizade--Shen--Wong zero-counting bound and the complex Kadec constant
+computation.  The mathematical inputs are the explicit coefficient 0.10076 in
+the Bellotti--Wong zero-counting bound and the complex Kadec constant
 from Avantaggiati--Loreti--Vellucci.
 """
 
@@ -12,7 +12,7 @@ import json
 import math
 
 
-ZERO_COUNT_LOG_COEFFICIENT = 0.1038
+ZERO_COUNT_LOG_COEFFICIENT = 0.10076
 
 
 def oseen_parameter() -> float:
@@ -50,8 +50,8 @@ def main() -> None:
             paired_hi = paired_mid
 
     # A strict, usable pair on the proved side of the limiting inequalities.
-    test_interval = 1.31
-    test_type = 0.83
+    test_interval = 1.27
+    test_type = 0.84
     test_displacement = math.hypot(test_interval / 2.0, 0.5)
 
     result = {
@@ -78,10 +78,10 @@ def main() -> None:
     assert abs(math.exp(alpha) - 2.0 * alpha - 1.0) < 1e-14
     assert result["strict_test"]["zero_count_leading_margin"] > 0.0
     assert result["strict_test"]["kadec_margin"] > 0.0
-    assert 0.8352 < critical_type < 0.8353
-    assert 0.9707 < paired_lo < 0.9709
-    assert paired_margin(0.97) > 0.0
-    assert paired_margin(0.98) < 0.0
+    assert 0.8508 < critical_type < 0.8510
+    assert 0.9908 < paired_lo < 0.9910
+    assert paired_margin(0.99) > 0.0
+    assert paired_margin(1.00) < 0.0
 
 
 if __name__ == "__main__":

@@ -726,14 +726,14 @@ diagonal limit.
 
 ### Proposition 4.4 (low-type sampling obstruction to RTL)
 
-Let \(A_0=0.1038\), and let \(\alpha_{mathrm O}\) be the positive root of
+Let \(A_0=0.10076\), and let \(\alpha_{\mathrm O}\) be the positive root of
 \(e^x=2x+1\). Define
 
 \[
- a_{mathrm K}:=
+ a_{\mathrm K}:=
  \frac{\sqrt{3\alpha_{\mathrm O}/8}}
  {\sqrt{(2\pi A_0)^2+1/4}}
- =0.83525\ldots .                                             \tag{KS1}
+ =0.8508610646\ldots .                                        \tag{KS1}
 \]
 
 For every \(0<a<a_{\mathrm K}\), there are a constant \(C_a>0\) and a
@@ -754,16 +754,16 @@ Hermite cancellations, and (RTL) exists in \(PW_a\) when
 Proposition 4.2 cannot close RH if its hypothetical first crossing lies in
 
 \[
- 0.72<a_*<0.83525\ldots .                                     \tag{KS3}
+ 0.72<a_*<0.8508610646\ldots .                                \tag{KS3}
 \]
 
 ### Proof
 
-The explicit zero-counting estimate of Hasanalizade--Shen--Wong is
+The explicit zero-counting estimate of Bellotti--Wong is
 
 \[
  \left|N(T)-\frac{T}{2\pi}\log\frac{T}{2\pi e}\right|
- \le A_0\log T+0.2573\log\log T+9.3675.                       \tag{KS4}
+ \le A_0\log T+0.24460\log\log T+8.08292.                    \tag{KS4}
 \]
 
 Hence, for every fixed \(L>4\pi A_0\), every interval of length \(L\) at
@@ -829,7 +829,7 @@ would force \(\|g_H\|_2\to0\). Paley--Wiener evaluation at the fixed point
 \(G_H(\gamma_0)=i\). \(\square\)
 
 The two numerical constants used here come from
-[the explicit Riemann--von Mangoldt bound](https://arxiv.org/abs/2107.06506)
+[the explicit Riemann--von Mangoldt bound](https://arxiv.org/abs/2412.15470)
 and
 [the complex Kadec theorem](https://arxiv.org/abs/1603.08762).
 Proposition 4.4 does not exclude (RTL) when \(a\ge a_{\mathrm K}\), and no
@@ -847,7 +847,7 @@ Let \(L_0=4\pi A_0\), and put
  \varepsilon_a=\cosh(a/2)-1.                                 \tag{KP1}
 \]
 
-Let \(a_{\mathrm P}=0.9707804201\ldots\) be the first positive solution of
+Let \(a_{\mathrm P}=0.9908731338\ldots\) be the first positive solution of
 
 \[
  (1-q_a)-(1+q_a)\varepsilon_a=0.                              \tag{KP2}
@@ -1019,6 +1019,6 @@ algebraic cancellation required by that route are already unconditional.
 Proposition 4.3 forces superexponential norm growth for any exhaustive
 cancellation. Proposition 4.4 gives the first sampling obstruction and the
 conjugate-pair refinement in Proposition 4.5 rules out (RTL) altogether below
-\(a=0.9707804201\ldots\). For larger support the moving infinite tail remains
+\(a=0.9908731338\ldots\). For larger support the moving infinite tail remains
 uncontrolled. Neither that surviving case nor an alternative exclusion is
 declared solved here.
