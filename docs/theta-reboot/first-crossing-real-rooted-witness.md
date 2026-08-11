@@ -1838,6 +1838,73 @@ that no scalar residue can simultaneously have an entire square root whose
 Fourier transform is real-rooted and satisfy the explicit arithmetic weight
 (ET3).  No sign or coercive estimate accomplishing that is proved here.
 
+### Proposition 4.9e (real-rootedness has no finite variation budget)
+
+The real-rooted, full-support and maximal-density properties of the witness
+do not by themselves bound its oscillation in the physical variable.  More
+precisely, for every \(a>0\) and every integer \(N\ge1\), there is a real
+\(v_N\in\mathfrak D(Q_W^a)\) such that
+
+1. the convex hull of its essential support is \([-a,a]\);
+2. after multiplication by a constant phase, \(\widehat v_N\) is real entire
+   and all its zeros are real;
+3. \(N_{v_N}(R)=2aR/\pi+O(1)\), with multiplicity;
+4. \(v_N\) has exactly \(N\) changes of sign on \((-a,a)\).
+
+#### Proof
+
+Put \(m=N+1\), \(h=2a/m\), and let
+
+\[
+ \chi_h={\bf1}_{[-h/2,h/2]},\qquad B_m=\chi_h^{*m},
+ \qquad v_N=B_m^{(m-1)}.                                  \tag{BV1}
+\]
+
+The centered cardinal \(B\)-spline \(B_m\) is a compactly supported
+piecewise polynomial of degree \(m-1\), is \(C^{m-2}\), and has support
+\([-a,a]\).  Hence \(v_N\) is an ordinary piecewise-constant \(L^2\)
+function.  On the knot interval
+
+\[
+ I_j=(-a+jh,-a+(j+1)h),\qquad 0\le j\le m-1,
+\]
+
+the truncated-power formula gives
+
+\[
+ v_N|_{I_j}=\sum_{k=0}^{j}(-1)^k{m\choose k}
+ =(-1)^j{m-1\choose j}.                                  \tag{BV2}
+\]
+
+These values are nonzero and alternate, proving both full support and exactly
+\(m-1=N\) sign changes.  Moreover
+
+\[
+ \widehat v_N(z)=(-iz)^{m-1}
+ \left(\frac{2\sin(hz/2)}{z}\right)^m
+ =(-i)^{m-1}2^m\frac{\sin^m(hz/2)}{z}.                   \tag{BV3}
+\]
+
+After removal of the constant phase, (BV3) is real entire.  Its zero at the
+origin has multiplicity \(m-1\), and every other zero is a real point
+\(2\pi k/h=\pi mk/a\), with multiplicity \(m\).  Their spacing divided by
+multiplicity is \(\pi/a\), so counting both half-lines gives
+\(N_{v_N}(R)=2aR/\pi+O(1)\).
+
+Finally \(|\widehat v_N(\xi)|=O(|\xi|^{-1})\).  Thus its logarithmic Fourier
+energy is finite.  Equivalently, smoothing each of the finitely many jumps in
+strips of width \(\varepsilon\) gives the same
+\(O(\varepsilon\log(1/\varepsilon))\) form-norm estimate used above for
+truncated exponentials.  Therefore \(v_N\in\mathfrak D(Q_W^a)\). \(\square\)
+
+This is a direct no-go for a tempting continuation of (ET4).  Even inside the
+localized form domain, real-rootedness, exact support saturation, constant
+phase, pure parity and maximal Cartwright density coexist with arbitrarily
+many sign changes.  Consequently no generic variation-diminishing or
+Pólya-frequency argument can assign a usable sign to the integral in (ET4).
+Such a contradiction must use the specific arithmetic weight
+\(\mathcal B_{a,c}\), not merely the zero geometry of \(F\).
+
 Proposition 4.9 is stronger than the existence of one real-rooted null
 witness: it places a canonical family of real-rooted pencils, parametrized
 by the deficiency scale \(c>0\), on the

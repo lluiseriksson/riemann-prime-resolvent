@@ -146,7 +146,13 @@ sign.  Testing the null equation against every truncated exponential gives an
 ordinary Laplace identity with an explicit `Ein` weight, a finite sum over
 \(\log n\le2a\), and the smooth archimedean kernel.  The identity is proved
 equivalent to the original weak kernel equation, so it preserves all
-arithmetic information but is not itself a new positivity input.
+arithmetic information but is not itself a new positivity input.  A compact
+B-spline construction supplies the complementary no-go: form-domain vectors
+can have real-rooted transforms, saturated support, maximal Cartwright zero
+density and arbitrarily many physical-space sign changes simultaneously.
+Thus zero geometry alone cannot give the sign needed in the exponential
+identity; the remaining argument must use its explicit prime--archimedean
+weight.
 Dividing by finite products of these real zeros gives exact rational
 interpolants that isolate any hypothetical off-line zeta quartet with negative
 spectral sign while Hermite-cancelling an arbitrary finite set of other zeros
