@@ -140,7 +140,13 @@ scalar is not lost: its squared norm is the zero-energy resolvent residue, and
 one radial logarithmic derivative recovers exactly the Stieltjes transform
 and Hausdorff battery of the witness zeros. This separates the projective and
 scalar channels without identifying the witness measure with the incompatible
-xi-zero measure.
+xi-zero measure.  The scalar channel is in fact projectively complete for a
+simple kernel: its entire square root recovers the full null vector up to
+sign.  Testing the null equation against every truncated exponential gives an
+ordinary Laplace identity with an explicit `Ein` weight, a finite sum over
+\(\log n\le2a\), and the smooth archimedean kernel.  The identity is proved
+equivalent to the original weak kernel equation, so it preserves all
+arithmetic information but is not itself a new positivity input.
 Dividing by finite products of these real zeros gives exact rational
 interpolants that isolate any hypothetical off-line zeta quartet with negative
 spectral sign while Hermite-cancelling an arbitrary finite set of other zeros

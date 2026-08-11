@@ -1674,6 +1674,170 @@ localized resolvent and the **witness-zero** Hausdorff measure. They do not
 identify that measure with the xi-resolvent measure; the density obstruction
 (PH8)--(PH9) still forbids such a direct identification.
 
+### Proposition 4.9d (exponential null tomography)
+
+The scalar channel also retains the part of the null equation that is hidden
+by the projective quotient.  Write Suzuki's local decomposition on
+\((-a,a)\) as
+
+\[
+ g(t)=\frac12|t|\log|t|+A|t|
+ +\sum_{n\le e^{|t|}}\frac{\Lambda(n)}{\sqrt n}(|t|-\log n)+r(t),
+ \qquad
+ A=\frac12\bigl(\log(2\pi)+\gamma-1\bigr),                 \tag{ET1}
+\]
+
+where \(r\) is even and \(C^2\).  Let
+
+\[
+ \operatorname{Ein}(z)=\int_0^z\frac{1-e^{-t}}{t}\,dt
+ =\sum_{k\ge1}\frac{(-1)^{k+1}z^k}{k\,k!}.                \tag{ET2}
+\]
+
+For real \(c\) and \(-a<x<a\), define the ordinary locally integrable
+weight
+
+\[
+\begin{aligned}
+ \mathcal B_{a,c}(x)={}&\frac12\{\operatorname{Ein}(c(a+x))
+       +\operatorname{Ein}(-c(a-x))-\log(a^2-x^2)\}-(2A+1)\\
+ &-\int_{-a-x}^{a-x}r''(t)e^{ct}\,dt\\
+ &-\sum_{2\le n\le e^{2a}}\frac{\Lambda(n)}{\sqrt n}
+   \left\{e^{-c\ell_n}{\bf1}_{[-a+\ell_n,a]}(x)
+          +e^{c\ell_n}{\bf1}_{[-a,a-\ell_n]}(x)\right\},
+ \qquad \ell_n=\log n .                                  \tag{ET3}
+\end{aligned}
+\]
+
+If \(v\in\mathfrak D(A_a)\) is real and \(A_av=0\), then for every real
+\(c\)
+
+\[
+ \boxed{\int_{-a}^{a}v(x)e^{cx}\mathcal B_{a,c}(x)\,dx=0.} \tag{ET4}
+\]
+
+Conversely, if a real \(v\in\mathfrak D(Q_W^a)\) satisfies (ET4) for every
+real \(c\), then \(v\in\mathfrak D(A_a)\) and \(A_av=0\).  Thus (ET4) is
+an exact scalar tomography of the weak null equation, not an additional
+positivity assumption.
+
+#### Proof
+
+First, the truncated exponential \(h_z(x)=e^{zx}{\bf1}_{[-a,a]}(x)\) belongs
+to the closed form domain for every \(z\in\mathbb C\).  Its Fourier
+coefficients in Suzuki's form core \(e_n(x)=e^{i\pi nx/a}\) are
+
+\[
+ \alpha_n(z)=\frac{(-1)^n\sinh(az)}
+ {a\,(z-i\pi n/a)},                                      \tag{ET5}
+\]
+
+with the removable values understood.  To justify form-domain membership
+without assuming a discrete Fourier-norm equivalence, apply the boundary
+cutoff used in Suzuki's proof that the trigonometric span is a form core.
+If \(\eta_\varepsilon=1\) away from boundary strips of width
+\(\varepsilon\), the error
+\(w_{\varepsilon,z}=h_z(1-\eta_\varepsilon)\) obeys, uniformly for \(z\) in
+each compact set,
+
+\[
+ \|w_{\varepsilon,z}\|_2^2=O(\varepsilon),\qquad
+ |\widehat w_{\varepsilon,z}(\xi)|
+ \le O(\varepsilon),\qquad
+ |\widehat w_{\varepsilon,z}(\xi)|\le\frac{O(1)}{1+|\xi|}.
+\]
+
+Splitting the logarithmic Fourier norm at
+\(|\xi|=\varepsilon^{-1}\) gives
+\[
+ \|w_{\varepsilon,z}\|_{Q_W^a}^2
+ =O(\varepsilon\log(1/\varepsilon)),
+\]
+exactly as in that source proof.
+The same estimates hold after every \(z\)-derivative, since those only insert
+a bounded power of \(x\).  Thus \(h_z\in\mathfrak D(Q_W^a)\) and
+\(z\mapsto h_z\) is entire in the form norm.  Formula (ET5) is an independent
+coefficient check of the same \(1/|n|\) boundary decay.
+
+Polarize Suzuki's formula (2.5).  Its singular part is
+
+\[
+ \mathcal L_a(v,h_c)=\frac14\iint
+ \frac{(v(x)-v(y))(e^{cx}-e^{cy})}{|x-y|}\,dx\,dy
+ -\frac12\int v(x)e^{cx}\log(a^2-x^2)\,dx .                \tag{ET6}
+\]
+
+Symmetry in \(x,y\), followed by the substitutions \(t=x-y\) on the two
+halves of the inner integral, gives
+
+\[
+ \mathcal L_a(v,h_c)=\frac12\int_{-a}^a v(x)e^{cx}
+ \{\operatorname{Ein}(c(a+x))+\operatorname{Ein}(-c(a-x))
+   -\log(a^2-x^2)\}\,dx .                                 \tag{ET7}
+\]
+
+The calculation is first made on the smooth core and then passed to the form
+limit.  This last integral is an ordinary \(L^2\) pairing: its only endpoint
+singularity is logarithmic, while the `Ein` terms are continuous.
+
+For a prime-power displacement \(\ell\), the two polarized translations are
+
+\[
+\begin{aligned}
+ &\int_{-a}^{a-\ell}v(x+\ell)e^{cx}\,dx
+ +\int_{-a+\ell}^{a}v(x-\ell)e^{cx}\,dx\\
+ &\quad=e^{-c\ell}\int_{-a+\ell}^{a}v(y)e^{cy}\,dy
+       +e^{c\ell}\int_{-a}^{a-\ell}v(y)e^{cy}\,dy.        \tag{ET8}
+\end{aligned}
+\]
+
+Finally, changing variables \(t=x-y\) in the smooth term gives
+
+\[
+ \iint r''(x-y)v(y)e^{cx}\,dx\,dy
+ =\int_{-a}^a v(y)e^{cy}
+   \left(\int_{-a-y}^{a-y}r''(t)e^{ct}\,dt\right)dy.       \tag{ET9}
+\]
+
+Since \(v\in\ker A_a\), the representation theorem for closed forms gives
+\(Q_W^a(v,h_c)=\langle A_av,h_c\rangle=0\).  Equations
+(ET7)--(ET9) are exactly (ET4).
+
+For the converse, \(z\mapsto Q_W^a(h_z,v)\) is entire.  Its restriction to
+the real axis vanishes by (ET4) and the reality of the form, so it vanishes
+identically.  In particular it vanishes at \(z=i\pi n/a\) for every integer
+\(n\).  Those exponentials span a form core.  Therefore
+\(Q_W^a(w,v)=0\) on the full form domain.  The zero functional is
+\(L^2\)-continuous, and the representation theorem now gives
+\(v\in\mathfrak D(A_a)\) and \(A_av=0\). \(\square\)
+
+There is a further exact consequence in the simple-kernel branch.  Normalize
+the real generator by \(\|v\|_2=1\) and put
+
+\[
+ G(c)=\langle v,e^{c\,\cdot}\rangle=F(-ic).
+\]
+
+Then
+
+\[
+ \boxed{M(c)=G(c)^2\qquad(c\in\mathbb R).}                 \tag{ET10}
+\]
+
+Exact knowledge of \(M\) on any open real interval determines the entire
+function \(G^2\).  Its entire square root is unique up to one global sign,
+and then \(F(z)=G(iz)\); Fourier inversion recovers the projective vector
+\(v\).  Hence the scalar residue is **projectively complete** when the kernel
+is simple.  Formula (HB9a) extracts its witness-zero Hausdorff measure, while
+(ET4) retains the explicit prime--archimedean null equation.
+
+This closes an information-loss question but not RH.  The converse above
+also calibrates the limitation sharply: imposing all of (ET4) merely
+reimposes \(A_av=0\).  To rule out the first crossing one must still prove
+that no scalar residue can simultaneously have an entire square root whose
+Fourier transform is real-rooted and satisfy the explicit arithmetic weight
+(ET3).  No sign or coercive estimate accomplishing that is proved here.
+
 Proposition 4.9 is stronger than the existence of one real-rooted null
 witness: it places a canonical family of real-rooted pencils, parametrized
 by the deficiency scale \(c>0\), on the
