@@ -21,7 +21,7 @@
       "status": "open-research",
       "area": "analytic-number-theory",
       "depends_on": [],
-      "summary": "Replace the current closed-form majorant interface by an unconditional theorem bounding the omitted prime/von Mangoldt contribution for an integer cutoff.",
+      "summary": "Integer-tail summability and bound are verified in Lean for N>=3, delta>0, sigma>=1+delta, with numerical regressions. The scaled continuous formula requires N=lam^2. Issue retained for integration review; no spectral error identification is claimed.",
       "acceptance_criteria": [
         "State the exact sum, normalization, integer cutoff and complete parameter range.",
         "Derive an explicit bound compatible with primeTailMajorant and resolventPrimeTailMajorant.",

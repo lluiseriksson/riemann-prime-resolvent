@@ -71,3 +71,4 @@ jobs:
           -r subprojects/riemann-one-point-resolvent/requirements-docs.txt
       - run: python -m pip check
       - run: ./scripts/verify_static.sh
+      - run: make audit
