@@ -4,17 +4,18 @@
 
 ## Goal
 
-Replace the current closed-form majorant interface with an unconditional
-integer-cutoff theorem for the omitted prime/von Mangoldt contribution.
+Implemented by `primeTail_summable_and_le` in `PrimeTail.lean`, with the
+integer cutoff and scaled equality guard documented in the arithmetic page.
+The issue remains open for integration review; RF-3/RF-4 are not discharged.
 
 ## Acceptance criteria
 
-- [ ] Exact sum, normalization, integer cutoff and parameter range are stated.
-- [ ] The bound is compatible with `primeTailMajorant` and
+- [x] Exact sum, normalization, integer cutoff and parameter range are stated.
+- [x] The bound is compatible with `primeTailMajorant` and
       `resolventPrimeTailMajorant`.
-- [ ] No RH-equivalent estimate is used.
-- [ ] A placeholder-free Lean theorem is added.
-- [ ] Numerical boundary and regression tests are added.
+- [x] No RH-equivalent estimate is used.
+- [x] A placeholder-free Lean theorem is added.
+- [x] Numerical boundary and regression tests are added.
 
 ## Non-goals
 

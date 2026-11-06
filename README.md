@@ -36,7 +36,8 @@ The current modules prove elementary, unconditional results about:
 - three-part error bookkeeping and componentwise convergence;
 - finite Stieltjes and squared-resolvent positivity;
 - paired-spectrum normalization;
-- sign properties of the closed-form prime-tail majorant;
+- summability and the integer-cutoff von Mangoldt tail bound (RF-1), with
+  `N ≥ 3`, `δ > 0`, `σ ≥ 1 + δ`; the scaled continuous formula requires `N = lam²`;
 - finite Rayleigh/gap and residual/separation defects;
 - the scalar candidate rate exponent.
 

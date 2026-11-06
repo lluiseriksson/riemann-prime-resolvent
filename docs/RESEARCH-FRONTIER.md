@@ -9,13 +9,15 @@ machine-readable source is [`research-frontier.json`](research-frontier.json).
 
 ## RF-1 — Integer-cutoff prime tail
 
-Prove an unconditional bound for the omitted von Mangoldt/prime contribution
-with an integer cutoff and connect it to `primeTailMajorant` and
-`resolventPrimeTailMajorant`.
+The integer-tail theorem is now verified in `PrimeTail.lean`: for every
+`N ≥ 3`, `δ > 0`, `σ ≥ 1 + δ`, the actual von Mangoldt tail is summable and
+bounded by `primeTailMajorant δ N`. The scaled theorem keeps `N`; using the
+continuous formula requires `(N : ℝ) = lam²`. Numerical boundary regressions
+and the standard-axiom oracle accompany it. No RH premise is used.
 
-Completion requires a precise sum and parameter range, explicit constants, a
-Lean theorem with no project axioms or placeholders, and numerical boundary
-tests. No RH-equivalent estimate may be imported.
+The issue remains available for integration review. This result does not
+identify a concrete model's error with that tail or discharge RF-3/RF-4.
+See [the exact statement and proof boundary](programme/arithmetic-side.md).
 
 ## RF-2 — Slit-plane Stieltjes criterion
 

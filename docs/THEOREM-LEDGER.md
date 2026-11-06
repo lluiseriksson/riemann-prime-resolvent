@@ -18,6 +18,9 @@ Each entry is exact, fully qualified and in the same order as its
 | `RiemannPrimeResolvent.half_finitePairedTrace` | verified | removes paired-spectrum double counting |
 | `RiemannPrimeResolvent.primeTailMajorant_nonneg` | verified | closed-form majorant is nonnegative |
 | `RiemannPrimeResolvent.resolventPrimeTailMajorant_nonneg` | verified | scaled majorant is nonnegative |
+| `RiemannPrimeResolvent.primeTail_summable_and_le` | verified | summability and tail bound for integer N ≥ 3, δ > 0, σ ≥ 1 + δ |
+| `RiemannPrimeResolvent.scaled_integer_primeTail_le` | verified | division by 2a for a > 1/2, retaining the integer cutoff |
+| `RiemannPrimeResolvent.scaled_primeTail_le_of_integer_square` | verified | continuous formula only under explicit (N : ℝ) = lam² |
 | `RiemannPrimeResolvent.beatsHalfThreshold_witness` | verified | nonempty witness for the critical spectral-rate predicate |
 | `RiemannPrimeResolvent.publicationGate_delivers` | verified | typed publication gate consumes the Xi extension target through its bridge |
 | `RiemannPrimeResolvent.rateExponent_pos` | verified | positivity of the candidate rate exponent |
@@ -27,5 +30,6 @@ Each entry is exact, fully qualified and in the same order as its
 | `RiemannPrimeResolvent.rayleighGapDefect_nonneg` | verified | nonnegativity of the Rayleigh/gap scalar defect |
 | `RiemannPrimeResolvent.residualGapDefect_nonneg` | verified | nonnegativity of the residual/gap scalar defect |
 
-The full integer-cutoff prime-tail inequality, slit-plane criterion and concrete
-operator convergence are not present as verified declarations.
+The integer-cutoff tail is verified. The slit-plane criterion and concrete
+operator convergence remain outside the verified declarations. Numerical
+regressions are smoke checks, not the proof of the infinite-series bound.

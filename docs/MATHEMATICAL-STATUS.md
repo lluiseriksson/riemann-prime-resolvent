@@ -2,7 +2,7 @@
 
 ## Kernel checked here
 
-The Lean source establishes only finite and scalar statements independent of RH: triangle inequalities, convergence glue, positivity of finite Stieltjes sums, paired-spectrum normalization, nonnegativity of a closed-form tail expression, defect estimates and scalar rate identities.
+The Lean source establishes unconditional finite, scalar and integer-tail statements independent of RH: triangle inequalities, convergence glue, positivity of finite Stieltjes sums, paired-spectrum normalization, summability and an integer-cutoff von Mangoldt tail bound, defect estimates and scalar rate identities.
 
 ## Documented reduction
 
