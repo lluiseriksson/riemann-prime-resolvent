@@ -32,5 +32,6 @@ example : RiemannPrimeResolvent.primeTailTerm 2 3 0 =
 
 example : (∑' k, RiemannPrimeResolvent.primeTailTerm (3 / 2) 4 k) / 2 ≤
     RiemannPrimeResolvent.resolventPrimeTailMajorant 1 2 := by
-  simpa using RiemannPrimeResolvent.scaled_primeTail_le_of_integer_square
+  simpa only [show (1 : Real) + 1 / 2 = 3 / 2 by norm_num, mul_one] using
+    RiemannPrimeResolvent.scaled_primeTail_le_of_integer_square
     (a := 1) (lam := 2) (N := 4) (by norm_num) (by norm_num) (by norm_num)
